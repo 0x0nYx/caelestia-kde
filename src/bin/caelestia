@@ -45,7 +45,7 @@ Usage: caelestia <command> [args...]
 
 Commands
   shell [OPTS] [MESSAGE...]    start the shell, or message the running one
-  install                      run the installer for this checkout
+  install                      set up this user's half of the shell
   update [REF]                 update the shell and re-apply the configuration
   wallpaper [OPTS]             set the wallpaper and derive the palette from it
   scheme <list|get|set> [...]  manage the color scheme
@@ -194,15 +194,102 @@ cmd_screenshot() {
     helper caelestia-screenshot "${args[@]}"
 }
 
+# Where the step scripts and the assets they deploy live. A package keeps them in
+# /usr/share/caelestia; a checkout has them one directory above this file's. The
+# order matches how `caelestia-color` resolves its data, so CAELESTIA_DATA_DIR
+# moves both.
+packaged_data_dir() {
+    local candidate
+    for candidate in \
+        "${CAELESTIA_DATA_DIR:-}" \
+        "$CAELESTIA_LIB_DIR" \
+        /usr/share/caelestia \
+        "$(dirname -- "$BIN_DIR")"; do
+        [[ -n "$candidate" && -f "$candidate/scripts/03-deploy-configs.sh" ]] || continue
+        printf '%s\n' "$candidate"
+        return 0
+    done
+    return 1
+}
+
+# The user's half, from a package.
+#
+# A package owns every file under /usr and /etc, so there is no machine to set up
+# and nothing to build: what is left is the configuration only the user's own
+# files can carry. These are the same scripts the checkout's installer runs, told
+# which install they are part of so the sections that write package-owned files
+# stay out of it - that split is parity-6, and this is its packaged front end.
+#
+# The list is that half in the installer's own order: deploy the config files,
+# fetch the wallpapers, apply the KDE settings, set up the user services, write
+# the environment, tweak the session and create the autostart state. The steps
+# before these install packages, which the package manager already did; the ones
+# after them install optional apps, which are the package's business.
+packaged_install() {
+    local data step
+    if ! data="$(packaged_data_dir)"; then
+        cat >&2 <<'EOF'
+[ERR] no installer scripts found.
+
+  A package keeps them in /usr/share/caelestia and runs this command from its own
+  copy. Reinstall the package, or set CAELESTIA_DATA_DIR to where they are.
+EOF
+        return 1
+    fi
+
+    # A directory under /usr is a package's. Anything else has to say so -
+    # CAELESTIA_INSTALL_KIND=package, which is what a test and an unusual layout
+    # use, and what stops a checkout being half-installed from here. A checkout has
+    # its own installer, which does the machine's half too.
+    if [[ "${CAELESTIA_INSTALL_KIND:-}" != "package" ]]; then
+        case "$data" in
+            /usr/*) ;;
+            *)
+                printf '[ERR] %s is a checkout, not a package install.\n\n  Run its installer instead: bash %s/install.sh\n' "$data" "$data" >&2
+                return 1
+                ;;
+        esac
+    fi
+
+    local -a steps=(
+        03-deploy-configs.sh
+        03a-wallpapers.sh
+        04-deploy-kde.sh
+        06-services.sh
+        08-build-shell.sh
+        09-system-tweaks.sh
+        10-autostart.sh
+    )
+
+    echo "Deploying the user's half of a packaged Caelestia install"
+    echo "  steps: $data/scripts"
+    echo
+
+    for step in "${steps[@]}"; do
+        printf '== %s\n' "$step"
+        if ! BUNDLE_DIR="$data" CAELESTIA_INSTALL_KIND=package bash "$data/scripts/$step"; then
+            printf '[ERR] %s failed; nothing after it was run.\n' "$step" >&2
+            return 1
+        fi
+        echo
+    done
+
+    echo "PROGRESS: done: User configuration applied"
+    echo "Log out and back in to start the shell with the new configuration."
+}
+
 cmd_install() {
     case "${1:-}" in
         -h|--help)
             cat <<'EOF'
 Usage: caelestia install
 
-Runs the installer for a Caelestia checkout: it installs the distro packages,
-builds the shell and deploys the configuration. Set CAELESTIA_DIR to point at a
-checkout other than ~/caelestia-kde.
+Set up this user's half of the shell, idempotently: the configuration files, the
+KDE settings, the user services, the environment and the autostart state. Run it
+after installing the package, and again after each update.
+
+A checkout is installed through its own installer, which does the machine's half
+as well: set CAELESTIA_DIR to point at one other than ~/caelestia-kde.
 EOF
             return 0
             ;;
@@ -213,18 +300,13 @@ EOF
     fi
 
     local root="${CAELESTIA_DIR:-$HOME/caelestia-kde}"
-    if [[ ! -f "$root/install.sh" ]]; then
-        cat >&2 <<EOF
-[ERR] no checkout to install from: $root/install.sh not found
-
-  From a checkout:  cd <checkout> && ./install.sh
-  From a package:   your package manager already put the files in place;
-                    'caelestia update' re-applies the configuration.
-EOF
-        return 1
+    if [[ -f "$root/install.sh" ]]; then
+        exec sh "$root/install.sh"
     fi
 
-    exec sh "$root/install.sh"
+    # No checkout, so a package put this command here and owns the files it
+    # installed. The user's half is what is left.
+    packaged_install
 }
 
 cmd_version() {
