@@ -60,7 +60,7 @@ GridLayout {
         Layout.preferredHeight: isHorizontal ? -1 : (barThickness - Tokens.padding.small)
 
         asynchronous: true
-        sourceComponent: Config.bar.workspaces.useIcon ? iconComponent : textComponent
+        sourceComponent: Config.bar.workspaces.displayType === BarWorkspaceDisplay.Text ? textComponent : iconComponent
     }
 
     Component {

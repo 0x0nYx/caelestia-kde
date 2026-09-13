@@ -4,10 +4,24 @@ import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
 import Caelestia.Services
+import qs.components.controls
 import qs.modules.nexus.common
 
 PageBase {
     id: root
+
+    readonly property list<MenuItem> displayTypeItems: [
+        MenuItem {
+            property int value: BarWorkspaceDisplay.Shapes
+
+            text: qsTr("Shape")
+        },
+        MenuItem {
+            property int value: BarWorkspaceDisplay.Text
+
+            text: qsTr("Text")
+        }
+    ]
 
     title: qsTr("Workspaces")
     isSubPage: true
@@ -81,11 +95,13 @@ PageBase {
             onToggled: GlobalConfig.bar.workspaces.occupiedBg = checked
         }
 
-        ToggleRow {
+        SelectRow {
             Layout.fillWidth: true
-            text: qsTr("Use material icons for indicators")
-            checked: Config.bar.workspaces.useIcon
-            onToggled: GlobalConfig.bar.workspaces.useIcon = checked
+            label: qsTr("Indicator style")
+            subtext: qsTr("Draw each workspace as a material shape or as its number")
+            active: Config.bar.workspaces.displayType === BarWorkspaceDisplay.Text ? root.displayTypeItems[1] : root.displayTypeItems[0]
+            menuItems: root.displayTypeItems
+            onSelected: item => GlobalConfig.bar.workspaces.displayType = item.value
         }
 
         ToggleRow {

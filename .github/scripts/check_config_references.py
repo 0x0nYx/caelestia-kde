@@ -2,9 +2,10 @@
 """Cross-reference QML config accesses against the C++ config declarations.
 
 Quickshell QML reads configuration through the `Config` attached type and the
-`GlobalConfig` singleton, e.g. `Config.bar.workspaces.useIcon` or
+`GlobalConfig` singleton, e.g. `Config.bar.workspaces.displayType` or
 `GlobalConfig.ai.enableClaude`. Those properties are declared with the
-CONFIG_PROPERTY / CONFIG_GLOBAL_PROPERTY / CONFIG_SUBOBJECT macros in
+CONFIG_PROPERTY / CONFIG_GLOBAL_PROPERTY / CONFIG_ENUM_PROPERTY /
+CONFIG_GLOBAL_ENUM_PROPERTY / CONFIG_SUBOBJECT macros in
 shell/plugin/src/Caelestia/Config/*.hpp. If a QML file references a config key
 that no longer exists (renamed/removed in C++, typo, wrong nesting), the shell
 logs "Cannot assign to non-existent property" and the widget silently breaks —
@@ -33,8 +34,10 @@ BOLD = "\033[1m"
 RESET = "\033[0m"
 
 # Matches CONFIG_PROPERTY(bool, name, true) / CONFIG_GLOBAL_PROPERTY / CONFIG_SUBOBJECT(Type, name)
-# — DOTALL so multi-line macro invocations are handled.
-PROP_RE = re.compile(r"CONFIG_(?:GLOBAL_)?PROPERTY\(\s*[^,]+,\s*(\w+)", re.DOTALL)
+# and the enum spellings, CONFIG_ENUM_PROPERTY(EnumType, name, default) and its
+# GLOBAL form, whose first argument is the enum's name rather than its type either
+# way — DOTALL so multi-line macro invocations are handled.
+PROP_RE = re.compile(r"CONFIG_(?:GLOBAL_)?(?:ENUM_)?PROPERTY\(\s*[^,]+,\s*(\w+)", re.DOTALL)
 SUBOBJ_RE = re.compile(r"CONFIG_SUBOBJECT\(\s*(\w+),\s*(\w+)", re.DOTALL)
 CLASS_RE = re.compile(r"class\s+(\w+)\s*:\s*public\s+(\w+)")
 # Computed/non-config Q_PROPERTYs on config classes (e.g. BorderConfig.minThickness)

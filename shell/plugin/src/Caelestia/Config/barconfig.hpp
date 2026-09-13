@@ -43,7 +43,9 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, activeTrail, false)
     CONFIG_PROPERTY(bool, monitorCenter, false)
     CONFIG_GLOBAL_PROPERTY(bool, perMonitorWorkspaces, true)
-    CONFIG_PROPERTY(bool, useIcon, true)
+    // Was a boolean called `useIcon`; upstream's name and shape are kept so a
+    // shell.json written for either shell means the same thing here.
+    CONFIG_ENUM_PROPERTY(BarWorkspaceDisplay, displayType, BarWorkspaceDisplay::Shapes)
     CONFIG_PROPERTY(QString, label, u" "_s)
     CONFIG_PROPERTY(QString, occupiedLabel, u" 󰮯"_s)
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
