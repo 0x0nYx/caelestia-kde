@@ -13,6 +13,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SDDM_SCRIPT="$REPO_ROOT/scripts/05-sddm-theme.sh"
+KDE_SCRIPT="$REPO_ROOT/scripts/04-deploy-kde.sh"
 UNINSTALL_SCRIPT="$REPO_ROOT/uninstall.sh"
 SYNC_SCRIPT="$REPO_ROOT/src/sddm/sync.sh"
 
@@ -179,6 +180,25 @@ test_uninstall_removes_only_the_schemes_that_were_copied() {
     # The same pair on the session user's side: the command generates those schemes, so
     # uninstall removes them and nothing else out of that directory.
     assert_contains "$(cat "$UNINSTALL_SCRIPT")" 'rm -f "$HOME/.local/share/color-schemes/Matugen"*.colors' "uninstall should remove the generated schemes from the user's own directory too"
+}
+
+test_the_breeze_login_wallpaper_is_patched_in_one_place() {
+    # The KDE step patches the Breeze theme's own theme.conf, because that theme reads
+    # its background from a file rather than from the theme this project installs. Two
+    # branches need it - the one that sets the default wallpaper and the one that leaves
+    # a user's own wallpaper alone - and the same three-line guard and sed used to be
+    # written out in both, with the image as the only difference. One helper keeps the
+    # packaged-install exemption from being forgotten in one of them.
+    local script
+    script="$(cat "$KDE_SCRIPT")"
+
+    assert_eq "1" "$(printf '%s\n' "$script" | grep -c '^patch_breeze_login_wallpaper() {')" "the patch should be defined once"
+    assert_eq "1" "$(printf '%s\n' "$script" | grep -c 'background=$image')" "and should be the only thing that writes that background"
+    assert_contains "$script" 'patch_breeze_login_wallpaper "$WALLPAPER_IN_USE"' "the branch that keeps the user's wallpaper should still match the logout screen to it"
+    assert_contains "$script" 'patch_breeze_login_wallpaper "$WALLPAPER_PATH"' "and the default branch should match it to the wallpaper it sets"
+
+    # Asserted where it now lives rather than repeated per call site.
+    assert_contains "$script" 'if ! install_is_packaged &&' "the helper should skip a packaged install, where the theme is a package's file"
 }
 
 run_tests

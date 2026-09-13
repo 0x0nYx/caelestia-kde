@@ -28,6 +28,25 @@ darkly_decoration_installed() {
     [[ -f "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3/org.kde.darkly.so" ]]
 }
 
+# Points the Breeze login screen's own background at an image.
+#
+# Only the machines running Breeze need this: the theme this project installs takes
+# its background from its own files, while Breeze reads a package-owned theme.conf,
+# so the only way to match it is to patch that file in place. A package update can
+# revert it until the next run, and that is accepted here rather than fought.
+#
+# Not on a packaged install: the Breeze theme is a package's file, and this step's
+# job there is the user's half only. Both callers rely on this being quiet, because
+# one of them is the branch that is deliberately leaving the user's wallpaper alone.
+patch_breeze_login_wallpaper() {
+    local image="$1"
+    if ! install_is_packaged &&
+        [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] &&
+        command -v sudo >/dev/null 2>&1; then
+        sudo sed -i "s|^background=.*|background=$image|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
+    fi
+}
+
 echo
 echo ""
 info "Applying KDE settings"
@@ -177,12 +196,7 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     # The logout screen is not a wallpaper choice of its own, so it still follows
     # whatever is in use - including here, where the wallpaper is one the user set
     # and this step is deliberately leaving alone.
-    #
-    # Not on a packaged install: the Breeze theme is a package's file, and this
-    # step's job there is the user's half only.
-    if ! install_is_packaged && [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
-        sudo sed -i "s|^background=.*|background=$WALLPAPER_IN_USE|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
-    fi
+    patch_breeze_login_wallpaper "$WALLPAPER_IN_USE"
 elif [[ -f "$WALLPAPER_PATH" ]]; then
     info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
     # Escaped the same way as the branch above; see the comment there.
@@ -209,10 +223,5 @@ elif [[ -f "$WALLPAPER_PATH" ]]; then
     fi
 
     # Mirror it onto the SDDM login screen too, so the logout screen matches.
-    # The breeze theme reads its background from its package-owned theme.conf,
-    # so patch that in place; a package update may revert it until the next run.
-    # Skipped on a packaged install, for the reason given above.
-    if ! install_is_packaged && [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
-        sudo sed -i "s|^background=.*|background=$WALLPAPER_PATH|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
-    fi
+    patch_breeze_login_wallpaper "$WALLPAPER_PATH"
 fi
