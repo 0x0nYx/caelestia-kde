@@ -258,58 +258,7 @@ PageBase {
 
 
 
-        StyledRect {
-            Layout.fillWidth: true
-            Layout.topMargin: Tokens.spacing.large
-            Layout.bottomMargin: Tokens.spacing.extraLarge
-            implicitHeight: row.implicitHeight + Tokens.padding.large * 2
-            radius: Tokens.rounding.large
-            color: Colours.tPalette.m3surfaceContainer
 
-            StateLayer {
-                anchors.fill: parent
-                radius: parent.radius
-                onClicked: root.nState.openSubPage(9)
-            }
-
-            RowLayout {
-                id: row
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: Tokens.padding.large
-                spacing: Tokens.spacing.large
-
-                MaterialIcon {
-                    text: "settings_suggest"
-                    fontStyle: Tokens.font.icon.extraLarge
-                    color: Colours.palette.m3onSurface
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Tokens.spacing.extraSmall
-
-                    StyledText {
-                        text: qsTr("Advanced color settings")
-                        font: Tokens.font.title.small
-                        color: Colours.palette.m3onSurface
-                    }
-                    StyledText {
-                        text: qsTr("Material You engine, terminal and window decoration options")
-                        font: Tokens.font.body.medium
-                        color: Colours.palette.m3onSurfaceVariant
-                    }
-                }
-
-                MaterialIcon {
-                    text: "chevron_right"
-                    fontStyle: Tokens.font.icon.large
-                    color: Colours.palette.m3onSurfaceVariant
-                }
-            }
-        }
 
         Process {
             id: schemeListProc
