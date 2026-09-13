@@ -40,7 +40,28 @@ _quickshell() {
 QS="$(_quickshell)"
 
 # ---- resolve shell config path ------------------------------------------------
-SHELL_CONFIG="${CAELESTIA_SHELL_CONFIG:-$HOME/.config/quickshell/caelestia/shell.qml}"
+#
+# CAELESTIA_SHELL_CONFIG wins when something has set it - both autostart scripts
+# do, so anything started from the session inherits the right answer. For callers
+# outside that environment, such as the lock screen, the config is looked for
+# where the two install kinds put it: the package's /etc/xdg copy first, then the
+# source install's under $HOME. The two can exist on one machine, and the
+# environment variable is what tells them apart when it matters.
+resolve_shell_config() {
+    local candidate
+    for candidate in \
+        /etc/xdg/quickshell/caelestia/shell.qml \
+        "$HOME/.config/quickshell/caelestia/shell.qml"
+    do
+        if [[ -f "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    printf '%s\n' "$HOME/.config/quickshell/caelestia/shell.qml"
+}
+
+SHELL_CONFIG="${CAELESTIA_SHELL_CONFIG:-$(resolve_shell_config)}"
 
 # Start the shell without handing it (and everything it launches) a stdout that
 # goes nowhere. --daemonize detaches from the terminal by pointing stdio at
