@@ -23,6 +23,7 @@ PageBase {
     readonly property var systemToggles: [
         { id: "mic", label: qsTr("Microphone") },
         { id: "dnd", label: qsTr("Do Not Disturb") },
+        { id: "gameMode", label: qsTr("Game Mode") },
         { id: "pauseWallpaper", label: qsTr("Pause Wallpaper") },
         { id: "nightlight", label: qsTr("Night Light") },
         { id: "easyeffects", label: qsTr("EasyEffects") },

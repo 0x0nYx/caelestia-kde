@@ -179,6 +179,14 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "gameMode"
+                    delegate: Toggle {
+                        icon: "gamepad"
+                        checked: GameMode.enabled
+                        onClicked: GameMode.enabled = !GameMode.enabled
+                    }
+                }
+                DelegateChoice {
                     roleValue: "dnd"
                     delegate: Toggle {
                         icon: "notifications_off"
