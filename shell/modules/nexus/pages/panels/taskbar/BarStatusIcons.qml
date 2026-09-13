@@ -21,6 +21,10 @@ PageBase {
             nightlight: qsTr("Night light"),
             notifications: qsTr("Notifications")
         })
+    readonly property var addableIcons: {
+        const present = Config.bar.statusIcons.values.map(entry => entry.id);
+        return Object.keys(root.builtinIcons).filter(id => !present.includes(id)).map(id => ({ id: id, label: root.builtinIcons[id] }));
+    }
 
     title: qsTr("Status icons")
     isSubPage: true
@@ -57,16 +61,22 @@ PageBase {
             onItemToggled: (index, checked) => GlobalConfig.bar.statusIcons.at(index).enabled = checked
         }
 
+        // Only what the list does not have yet: an entry that is in it is already
+        // there to be switched or dragged, and adding a second copy would draw the
+        // icon twice and leave `move` unable to tell the two apart, as it finds an
+        // entry by id. When everything is in the list the row goes away rather than
+        // offering an empty picker.
         DialogSelectButton {
             id: addItemContainer
 
             rootParent: root.flickable
+            visible: root.addableIcons.length > 0
             icon: "add"
             label: qsTr("Add entry")
             header: qsTr("Add new entry")
             acceptLabel: qsTr("Add")
 
-            model: Object.keys(root.builtinIcons).map(id => ({ id: id, label: root.builtinIcons[id] }))
+            model: root.addableIcons
 
             onAccepted: {
                 if (selectedItem)

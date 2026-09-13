@@ -40,7 +40,10 @@ Item {
 
         Accessible.role: Accessible.Button
         Accessible.name: root.modelData.title || root.modelData.id
-        Accessible.description: qsTr("Left-click activates, right-click for the menu, middle-click for the secondary action.")
+        // Whichever of the two the click handler above would take: promising a menu on
+        // a right click that runs the secondary action instead is the kind of guidance
+        // a screen reader user has no way to check.
+        Accessible.description: root.hasMenuEntries && root.popouts ? qsTr("Left-click activates, right-click opens the menu, middle-click runs the secondary action.") : qsTr("Left-click activates, middle- or right-click runs the secondary action.")
 
         onClicked: event => {
             if (event.button === Qt.LeftButton) {

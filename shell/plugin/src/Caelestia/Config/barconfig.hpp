@@ -2,6 +2,7 @@
 
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
+#include "enums.hpp"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -46,6 +47,13 @@ class BarWorkspaces : public settings::ObjectNode {
     // Was a boolean called `useIcon`; upstream's name and shape are kept so a
     // shell.json written for either shell means the same thing here.
     CONFIG_ENUM_PROPERTY(BarWorkspaceDisplay, displayType, BarWorkspaceDisplay::Shapes)
+    // Retired in favour of displayType above, and kept for one release only so the
+    // migration in ConfigMigrations.qml can read what the user had before resetting
+    // it. A key the loader does not know is quarantined rather than readable, and the
+    // settings layer has no way to name a key that is not in the schema, so without
+    // this line a shell.json saying `useIcon: false` would keep asking for workspace
+    // numbers and silently get shapes - the enum default - for the rest of its life.
+    CONFIG_PROPERTY(bool, useIcon, true)
     CONFIG_PROPERTY(QString, label, u" "_s)
     CONFIG_PROPERTY(QString, occupiedLabel, u" 󰮯"_s)
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
@@ -272,7 +280,8 @@ class BarConfig : public settings::ObjectNode {
             LIST_ENTRY(nightlight, true),
             LIST_ENTRY(notifications, true),
         }))
-    CONFIG_SUBOBJECT(BarClock, clock)    CONFIG_SUBOBJECT(BarDock, dock)
+    CONFIG_SUBOBJECT(BarClock, clock)
+    CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_SUBOBJECT(BarGithub, github)
     CONFIG_SUBOBJECT(BarPerformance, performance)
     CONFIG_PROPERTY(QVariantList, entries,

@@ -167,11 +167,14 @@ rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors 2>/dev/null || true
 #
 # The bar kept the order the user dragged its status icons into in a file of its
 # own under ~/.config/caelestia. The order is part of the config now
-# (bar.statusIcons), where the settings editor can see it, so the file has no
-# reader left and is not the user's to keep either - it was ours.
+# (bar.statusIcons), where the settings editor can see it, and the shell is what
+# moves it there: ConfigMigrations.qml reads the file, writes the list from its
+# order and the retired switches, and deletes the file on the following start,
+# once the list it fed is in the config. This script must not delete it - it runs
+# on the same login as the shell does, and a file removed here would take the
+# order with it before the shell has read it.
 if [[ -f "$HOME/.config/caelestia/status_icons_order.txt" ]]; then
-    rm -f "$HOME/.config/caelestia/status_icons_order.txt"
-    ok "Removed the retired status icon order file; the order lives in the config now."
+    skip "Status icon order file left to the shell, which migrates it into bar.statusIcons."
 fi
 
 # Live window thumbnails.
