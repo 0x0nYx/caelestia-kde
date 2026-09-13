@@ -263,14 +263,14 @@ StyledRect {
                             // this strip only shows its own screen.
                             if (w.output !== root.screenName)
                                 continue;
-                            if (w["class"] !== "quickshell" && w["class"] !== "plasmashell") {
+                            if (!Hypr.isIgnoredWindow(w)) {
                                 windows.push(w);
                             }
                         }
                     } else if (typeof Hypr !== "undefined") {
                         const wins = Hypr.toplevels.values;
                         for (let i = 0; i < wins.length; ++i) {
-                            if (wins[i].workspace && wins[i].workspace.id === wsId) {
+                            if (wins[i].workspace && wins[i].workspace.id === wsId && !Hypr.isIgnoredWindow(wins[i])) {
                                 windows.push(wins[i]);
                             }
                         }

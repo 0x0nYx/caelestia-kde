@@ -49,6 +49,16 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
     CONFIG_PROPERTY(QString, capitalisation, u"preserve"_s)
     CONFIG_GLOBAL_PROPERTY(QVariantList, specialWorkspaceIcons, QVariantList())
+    // Windows the bar's workspace pills leave out of their icon lists. Tags are
+    // Hyprland's, and the default below is upstream's; KWin has none, so on KDE the
+    // same entries are matched against the window's app id instead - which is what
+    // a KDE user has to name to hide an app from the bar. The defaults mean nothing
+    // there and simply never match.
+    CONFIG_GLOBAL_PROPERTY(QStringList, ignoredTags,
+        DEFAULT_ARG({
+            u"hide_in_bar"_s,
+            u"xwl_popup"_s,
+        }))
     CONFIG_GLOBAL_PROPERTY(QVariantList, windowIcons,
         { vmap({
             { u"regex"_s, u"steam(_app_(default|[0-9]+))?"_s },
