@@ -89,10 +89,32 @@ private:
             }
         }
 
-        // Schedule cache job (this call will return the original image, but later ones will use cache)
+        // Schedule cache job so that later requests for this size are a file read.
         ImageCacher::instance()->schedule(path, cachePath, size, m_fillMode);
 
-        m_image = QImage(path);
+        // Decode at the size that was asked for rather than handing back the
+        // original. A cold cache is the normal case for a grid of wallpapers - the
+        // first look at a folder asks for fifty tiles at once - and returning
+        // originals there means fifty full-resolution decodes and uploads for
+        // pictures shown a few hundred pixels wide, which is the spike users see
+        // when they open a folder. QImageReader scales as it decodes, so this costs
+        // the tile; the file scheduled above is still what later loads read.
+        QImageReader coldReader(path);
+        coldReader.setAutoTransform(true);
+        if (m_fillMode == ImageCacher::FillMode::Stretch) {
+            coldReader.setScaledSize(size);
+        } else {
+            const QSize source = coldReader.size();
+            if (source.isValid() && !source.isEmpty()) {
+                const Qt::AspectRatioMode mode =
+                    m_fillMode == ImageCacher::FillMode::Crop ? Qt::KeepAspectRatioByExpanding : Qt::KeepAspectRatio;
+                coldReader.setScaledSize(source.scaled(size, mode));
+            }
+        }
+
+        m_image = coldReader.read();
+        if (m_image.isNull())
+            m_image = QImage(path); // Whatever the reader would not do, this will.
         if (m_image.isNull()) {
             m_error = QStringLiteral("Failed to decode source: ") + path;
             qCWarning(lcCProv).noquote() << m_error;
