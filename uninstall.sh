@@ -254,14 +254,29 @@ do
     fi
 done
 
-# The shell's systemd user unit, and the desktop entry an older install wrote. The
-# unit is stopped and disabled first: left enabled, it would keep systemd starting
-# a shell whose files are being removed in the next step.
+# The shell's systemd user unit. It is stopped and disabled by name, not only when the
+# user owns a copy of the file: a packaged install's unit lives in /usr/lib/systemd/user
+# and belongs to pacman, so there is nothing here to test for, while the enable link
+# `systemctl --user enable` wrote is in ~/.config/systemd/user whatever file the unit came
+# from. Left enabled, it would keep starting a shell whose files are removed in the next
+# step.
+systemctl --user disable --now caelestia-shell.service >/dev/null 2>&1 || true
 if [[ -f "$USER_SYSTEMD/caelestia-shell.service" ]]; then
-    systemctl --user disable --now caelestia-shell.service >/dev/null 2>&1 || true
     rm -f "$USER_SYSTEMD/caelestia-shell.service"
     ok "Removed: caelestia-shell.service"
 fi
+
+# That link, when the unit's file has already gone: pacman removes
+# /usr/lib/systemd/user/caelestia-shell.service before this script is run in the documented
+# order, and `disable` cannot clear a link whose unit it cannot resolve. A link with the
+# unit's name is enough for systemd to count the unit as enabled, so the leftovers are
+# dropped by hand here for the same reason 10-autostart.sh drops them on the way in.
+for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
+    [[ -L "$link" ]] || continue
+    [[ -e "$link" ]] && continue
+    rm -f "$link"
+    ok "Removed an enable link whose unit is gone: $link"
+done
 
 # Retired autostart desktop entry, and the unit the xdg-autostart generator made
 # out of it.

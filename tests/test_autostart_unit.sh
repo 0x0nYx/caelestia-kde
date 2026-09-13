@@ -124,6 +124,21 @@ test_uninstall_removes_and_disables_the_unit() {
     assert_contains "$script" 'disable --now caelestia-shell.service' "the unit should be stopped and disabled before its file goes"
     assert_contains "$script" 'rm -f "$USER_SYSTEMD/caelestia-shell.service"' "and removed"
     assert_contains "$script" 'disable app-caelestiashell@autostart.service' "the retired generated unit should be disabled too"
+
+    # Disabled by name, and before the check for a user-owned copy rather than inside it.
+    # A packaged install's unit belongs to pacman, so there is no copy here at all, while
+    # the enable link is there either way.
+    local disable_line file_line
+    disable_line="$(grep -n 'systemctl --user disable --now caelestia-shell.service' "$UNINSTALL_SCRIPT" | cut -d: -f1)"
+    file_line="$(grep -n 'if \[\[ -f "\$USER_SYSTEMD/caelestia-shell.service" \]\]' "$UNINSTALL_SCRIPT" | cut -d: -f1)"
+    assert_ne "" "$disable_line" "the disable should not be conditional on that copy"
+    assert_ne "" "$file_line" "and the copy is still removed when there is one"
+    assert_eq "1" "$(( ${disable_line:-0} < ${file_line:-0} ))" "the disable has to come before that check, not inside it"
+
+    # And the link, for the case where the unit's file is already gone and `disable`
+    # cannot resolve it: a link with the unit's name is what systemd counts.
+    assert_contains "$script" '"$HOME"/.config/systemd/user/*.wants/caelestia-shell.service' "uninstall should clear the enable link pacman does not own"
+    assert_contains "$script" '[[ -e "$link" ]] && continue' "and only the ones whose file is gone"
 }
 
 test_the_package_ships_the_unit_and_not_an_entry() {

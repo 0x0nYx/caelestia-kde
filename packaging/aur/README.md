@@ -116,13 +116,21 @@ a packaged install runs the package manager and then it again.
 
 ### Removing it
 
+    systemctl --user disable caelestia-shell.service
     pacman -Rns caelestia-kde
 
-The shell's unit and its launcher belong to the package, so they go with it and
-nothing is left enabled pointing at a tree that has gone. What stays is the user's
-own state, which the package never owned: `~/.config/caelestia`, the session
-environment at `~/.config/environment.d/caelestia.conf`, the autostart state under
-`~/.local`, the downloaded fonts under `~/.local/share/caelestia`, and the sudoers
+The unit and its launcher belong to the package, so they go with it. The enable link
+does not: `systemctl --user enable` writes it under
+`~/.config/systemd/user/graphical-session.target.wants/`, which pacman neither owns nor
+removes, and a link with the unit's name is enough for systemd to count the unit as
+enabled however dead its target is - it would keep trying to start a shell the package
+has just deleted. Disabling first is the clean order. If the package is already gone,
+that command still clears the link; if it does not, deleting the dangling link under that
+directory does, and a checkout's `uninstall.sh` does both for a source install.
+
+What stays is the user's own state, which the package never owned: `~/.config/caelestia`,
+the session environment at `~/.config/environment.d/caelestia.conf`, the autostart state
+under `~/.local`, the downloaded fonts under `~/.local/share/caelestia`, and the sudoers
 drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that lets the login screen follow the
 wallpaper. Deleting those is what removes the last trace of the install. There is no
 uninstall command, and upstream has none either: removal belongs to whoever installed
