@@ -1,58 +1,49 @@
 # AUR packaging
 
-Two packages are planned. One is written and can be published; the other is
-blocked, for a reason worth writing down.
+One package. It was planned as two, a shell and a CLI, and the split does not
+survive contact with the code: the command's helpers are the shell's own seams
+(`caelestia-shell-ipc` is meaningless without it), the palette it generates comes
+from templates and a scheme catalogue that belong to the shell, and the QML calls
+the command by name. One package is also the argument the lock screen got: nothing
+in it can drift from the shell it locks or the command it calls.
 
 | Package | State | Notes |
 | --- | --- | --- |
-| `caelestia-shell-kde` | written, ready to publish | the shell: Quickshell config, Caelestia QML plugin, M3Shapes, helper commands, autostart |
-| `caelestia-cli-kde` | blocked | needs the `caelestia` name and the color pipeline; see below |
+| `caelestia-shell-kde` | written, waiting on the next release | the shell, the `caelestia` command and its helpers, the palette data, the Plasma lock screen, the workspace-tracker effect, autostart |
+| `caelestia-cli-kde` | not needed | the command ships in the shell package. The name stays free in case the command ever earns a life without the shell |
 
-Names append `kde` to the upstream package names, and both are free on the AUR
-(verified 2026-09-12, `resultcount` 0 for each).
+Both names are free on the AUR (verified 2026-09-12, `resultcount` 0 for each).
 
-## caelestia-shell-kde
+## What the package installs
 
-Builds `shell/` from the release tag's source archive with CMake and installs to
-the same system layout upstream's package uses, so quickshell finds it without a
-per-user copy: `/etc/xdg/quickshell/caelestia`, `/usr/lib/caelestia`,
-`/usr/lib/qt6/qml`.
+- the shell tree, the Caelestia QML plugin and M3Shapes, through the shell's own
+  CMake install: `/etc/xdg/quickshell/caelestia`, `/usr/lib/qt6/qml`,
+  `/usr/lib/caelestia`. That is the system layout upstream's package uses, so
+  quickshell finds it with no per-user copy;
+- `src/bin/*` into `/usr/bin`: `caelestia` and the seven helpers it drives. They
+  are one surface, and the dispatcher runs its siblings from its own directory;
+- `src/matugen/` and `src/schemes/` into `/usr/share/caelestia`. `caelestia-color`
+  looks for them in `$CAELESTIA_DATA_DIR`, `$CAELESTIA_LIB_DIR`,
+  `~/.local/lib/caelestia` and `/usr/share/caelestia`, in that order, so no
+  environment variable is needed;
+- `src/kde/shells/caelestia.desktop` into `/usr/share/plasma/shells`: the lock
+  screen is a Plasma shell package rather than a Quickshell module, so the shell's
+  CMake knows nothing about it;
+- the workspace-tracker KWin effect, built here against this machine's Plasma
+  because it links KWin's ABI;
+- autostart: the desktop entry, the systemd user unit, and
+  `/usr/bin/caelestia-autostart`, which sets the environment the shell needs.
 
 It declares `provides=('caelestia-shell')` and
 `conflicts=('caelestia-shell' 'caelestia-shell-git')`. That is honest: the QML
 interface and the config directory are the same, and the community packages that
 require `caelestia-shell` do so optionally, so nothing breaks.
 
-It still depends on the upstream `caelestia-cli`, exactly as upstream's shell
-does, because that package provides the color pipeline and the `caelestia`
-command the QML calls. This dependency is the reason the second package cannot
-ship yet.
+It no longer depends on `caelestia-cli`. The color pipeline belongs to this
+project now - `caelestia-color` generates the palette with matugen, applies it and
+fans it out - so what the package needs from outside is `matugen` and `python`,
+not another caelestia.
 
-## Why caelestia-cli-kde is blocked
-
-Our command installs `/usr/bin/caelestia`. So does upstream's `caelestia-cli`.
-Two packages cannot own the same path, so `caelestia-cli-kde` has to either
-conflict with `caelestia-cli` and drop it, or not be published at all.
-
-Conflicting is fine only if our command can do everything the shell asks of it.
-Today it cannot: `caelestia wallpaper` and `caelestia scheme` hand off to the
-upstream CLI, because the color pipeline (`score`, `gen_scheme`, the harmonizing
-and templating fan-out) is still upstream's. Conflict on day one and the dynamic
-palette stops working; the shell falls back to its built-in scheme.
-
-Two ways out, both real work:
-
-1. Own the pipeline. Port generation and state (`scheme.json`, the wallpaper
-   path, the thumbnail), which is the option the parity map settled on, and drop
-   the delegation. This keeps our command and needs no upstream package.
-2. Vendor the upstream CLI into this repo, the way `shell/` is vendored: carry
-   its Python source and data under a private path, ship it inside
-   `caelestia-cli-kde`, and have our command call it directly. This is faster,
-   but it means shipping third-party GPL-3.0-only code inside our package, which
-   then has to declare `GPL-3.0-only` rather than `-or-later`.
-
-Until one of those lands, installing `caelestia-shell-kde` gives a working shell
-with the upstream CLI providing the command and the palette.
 
 ## Reusable path fixes a package needs
 
@@ -91,13 +82,19 @@ The AUR repository for a package is the package directory itself. For
 
 Updating for a release:
 
-1. bump `pkgver` and reset `pkgrel=1`;
+1. bump `pkgver` and reset `pkgrel=1`. It currently sits one release ahead of the
+   published tag on purpose, so the tarball's `sha256sums` entry is `SKIP` until
+   that tag exists;
 2. download
    `https://github.com/ladybug-me/caelestia-kde/archive/refs/tags/v<pkgver>.tar.gz`
    and put its sha256 in the first `sha256sums` entry;
 3. the other three sums are the files beside the PKGBUILD, so run `makepkg -g`
    to refresh them all at once;
-4. regenerate `.SRCINFO` before pushing.
+4. check the tag still has everything `package()` copies by name: `src/bin/*`,
+   `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop` and
+   `shell/kwin-effects/workspace-tracker`. A missing path fails the build rather
+   than shipping a package with a silent hole in it, which is why they are named;
+5. regenerate `.SRCINFO` before pushing.
 
 One thing to improve: the tag archive is 271 MB, most of it assets the shell package
 does not install (wallpapers, the monochrome icon set, the bundled fonts). A source

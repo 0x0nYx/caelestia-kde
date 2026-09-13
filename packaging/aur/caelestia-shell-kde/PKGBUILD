@@ -1,16 +1,23 @@
 # Maintainer: ladybug-me <rajveer2027singh@gmail.com>
 #
 # The Caelestia shell ported to KDE Plasma: the Quickshell configuration, the
-# Caelestia QML plugin and the M3Shapes module, installed system-wide the way
-# quickshell expects to find them.
+# Caelestia QML plugin, the M3Shapes module, the `caelestia` command with the
+# helpers it drives, the data the color pipeline generates from, the Plasma lock
+# screen package, and the workspace-tracker KWin effect.
 #
-# This package does not own /usr/bin/caelestia. On a packaged system that name
-# belongs to caelestia-cli (upstream), which provides the color pipeline and the
-# command the QML calls. caelestia-cli-kde replaces both once the pipeline is
-# ours; see packaging/aur/README.md.
+# This package owns /usr/bin/caelestia. It used to leave that name to
+# caelestia-cli (upstream) and take its palette from it; the pipeline is part of
+# this project now, so the command, the helpers, the matugen templates and the
+# scheme catalogue all ship here, and nothing depends on caelestia-cli.
+#
+# pkgver is one release ahead on purpose: the file list below needs the release
+# that contains the pipeline, and that tag is not pushed yet. Its tarball hash is
+# therefore still SKIP - fill in the first sha256sum when the tag exists (see
+# README.md, "Updating for a release"). The other three sums are the files
+# beside this PKGBUILD and are current.
 
 pkgname=caelestia-shell-kde
-pkgver=2.4.2
+pkgver=2.4.3
 pkgrel=1
 pkgdesc='The Caelestia desktop shell, ported to KDE Plasma'
 arch=('x86_64' 'aarch64')
@@ -19,7 +26,9 @@ license=('GPL-3.0-or-later')
 depends=(
     'bash'
     'quickshell'
-    'caelestia-cli'
+    'matugen'
+    'python'
+    'plasma-workspace'
     'qt6-base'
     'qt6-declarative'
     'qt6-imageformats'
@@ -43,10 +52,11 @@ depends=(
     'power-profiles-daemon'
     'ttf-material-symbols-variable'
 )
-makedepends=('cmake' 'ninja' 'qt6-shadertools')
+makedepends=('cmake' 'ninja' 'qt6-shadertools' 'extra-cmake-modules' 'kwin')
 optdepends=(
     'ttf-rubik-vf: clock and workspace font'
     'ttf-cascadia-code-nerd: monospace font'
+    'konsole: the terminal scheme is written into it and its profiles follow it'
     'spectacle: screenshots'
     'swappy: screenshot editing'
     'gpu-screen-recorder: screen recording'
@@ -60,7 +70,7 @@ source=("$pkgname-v$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         'caelestia-autostart'
         'caelestiashell.desktop'
         'caelestia-shell.service')
-sha256sums=('23711329dcfad4e061c7a32304169a147cbd528bbc5427415de0f912c665b2fd'
+sha256sums=('SKIP'
             'd39eff39e9ebed80859289f1f6b99b2e2c144cbad4c55805d2ec5455723df86b'
             'ff8611340f3fc688ca1655e6cc93671dd1c37f397142a4584f8e013ca6c29a63'
             'a906fbc4fc3e315ff4ec89f74a7bacfbcf9802f44f3707818b3ba8cf2639efac')
@@ -73,23 +83,45 @@ build() {
         -DVERSION="$pkgver" \
         -DDISTRIBUTOR="AUR (package: $pkgname)"
     cmake --build build
+
+    # The workspace-tracker effect is its own CMake project and links KWin, so
+    # it is built against this machine's Plasma instead of shipped prebuilt.
+    cmake -B effect-build -S shell/kwin-effects/workspace-tracker -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build effect-build
 }
 
 package() {
     cd "$srcdir/caelestia-kde-$pkgver"
     DESTDIR="$pkgdir" cmake --install build
+    DESTDIR="$pkgdir" cmake --install effect-build
 
-    # The helper commands the shell calls by name. They do not collide with
-    # anything caelestia-cli installs, which is only /usr/bin/caelestia.
-    install -Dm755 src/bin/caelestia-record "$pkgdir/usr/bin/caelestia-record"
-    install -Dm755 src/bin/caelestia-screenshot "$pkgdir/usr/bin/caelestia-screenshot"
-    install -Dm755 src/bin/caelestia-shell-ipc "$pkgdir/usr/bin/caelestia-shell-ipc"
-    install -Dm755 src/bin/caelestia-check-updates "$pkgdir/usr/bin/caelestia-check-updates"
+    # The command and the helpers it drives. They are one surface: the dispatcher
+    # runs its siblings from its own directory, so they live beside it in /usr/bin
+    # and none of them is documented on its own.
+    install -d "$pkgdir/usr/bin"
+    install -m755 src/bin/* "$pkgdir/usr/bin/"
 
-    # Starting the shell on login. The desktop entry name is load bearing:
-    # systemd turns /etc/xdg/autostart/caelestiashell.desktop into
-    # app-caelestiashell@autostart.service, which is the unit restart_shell.sh
-    # restarts and the lock screen expects.
+    # What a palette is generated from: the matugen templates and the named scheme
+    # catalogue. caelestia-color looks in $CAELESTIA_DATA_DIR, $CAELESTIA_LIB_DIR,
+    # ~/.local/lib/caelestia and /usr/share/caelestia, in that order, so this is
+    # found without an environment variable.
+    install -d "$pkgdir/usr/share/caelestia"
+    cp -r src/matugen src/schemes "$pkgdir/usr/share/caelestia/"
+
+    # The lock screen is a Plasma shell package, not a Quickshell QML module, so
+    # the shell's CMake knows nothing about it.
+    install -d "$pkgdir/usr/share/plasma/shells"
+    cp -r src/kde/shells/caelestia.desktop "$pkgdir/usr/share/plasma/shells/"
+
+    # Starting the shell on login, for now still through the autostart entry. The
+    # desktop entry name is load bearing: systemd turns
+    # /etc/xdg/autostart/caelestiashell.desktop into
+    # app-caelestiashell@autostart.service, which restart_shell.sh restarts. The
+    # target is one systemd user unit and nothing else, which needs restart_shell.sh
+    # to name that unit and `caelestia install` to enable it; until both exist this
+    # entry is what starts the shell for a packaged install.
     install -Dm755 "$srcdir/caelestia-autostart" "$pkgdir/usr/bin/caelestia-autostart"
     install -Dm644 "$srcdir/caelestiashell.desktop" \
         "$pkgdir/etc/xdg/autostart/caelestiashell.desktop"
