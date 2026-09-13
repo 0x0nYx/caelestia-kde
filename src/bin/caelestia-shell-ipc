@@ -74,10 +74,13 @@ SHELL_CONFIG="${CAELESTIA_SHELL_CONFIG:-$(resolve_shell_config)}"
 # there is nothing better than the old behavior.
 _start_shell() {
     if command -v systemd-run >/dev/null 2>&1; then
+        # A transient unit of its own, and deliberately not `caelestia-shell`: that
+        # name belongs to the login unit this install writes, and systemd refuses a
+        # transient unit that collides with a loaded one.
         # A unit left behind by a crashed shell would make --unit fail.
-        systemctl --user reset-failed caelestia-shell.service 2>/dev/null || true
+        systemctl --user reset-failed caelestia-shell-start.service 2>/dev/null || true
         exec systemd-run --user --quiet --collect \
-            --unit="caelestia-shell" \
+            --unit="caelestia-shell-start" \
             --description="Caelestia Shell" \
             -- "$QS" -n -p "$SHELL_CONFIG"
     fi

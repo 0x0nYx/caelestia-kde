@@ -85,27 +85,52 @@ exec "$QUICKSHELL_PATH" -n -p "\$HOME/.config/quickshell/caelestia/shell.qml"
 EOF
 chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
 
-# Phase 1 (DesktopServices), not 2 (Applications). The shell registers
-# org.freedesktop.Notifications, and applications decide once, when they start,
-# whether a notification server exists -- one that finds none draws its own
-# popups for the rest of the session, in its own corner, ignoring every setting
-# here. In phase 2 the shell starts alongside the user's autostarted apps with
-# no ordering between them, so which apps end up talking to it is a coin toss
-# per login. Phase 1 finishes before any of them begin.
-cat > "$AUTOSTART_DIR/caelestiashell.desktop" << EOF
-[Desktop Entry]
-Type=Application
-Name=Caelestia Shell
-Comment=Start Caelestia Shell
-Exec=$HOME/.local/bin/caelestia-autostart.sh
-Icon=quickshell
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-X-KDE-AutostartPhase=1
-X-KDE-Wayland-Interfaces=zkde_screencast_unstable_v1
+# The shell is started by one thing: the systemd user unit below. It replaced the
+# desktop entry this script used to write, which KDE's xdg-autostart generator
+# turned into app-caelestiashell@autostart.service - two mechanisms for one shell,
+# and on a machine where the package installed its own entry under /etc, one of
+# them had to be shadowed by the other.
+#
+# The ordering is what the entry's phase used to buy, and it still matters here:
+# the shell registers org.freedesktop.Notifications, and applications decide once,
+# when they start, whether a notification server exists - one that finds none draws
+# its own popups for the rest of the session, in its own corner, ignoring every
+# setting here. Before=xdg-desktop-autostart.target puts this unit in front of the
+# app units that same generator creates. (On a machine without that target the
+# ordering is a no-op, which is worse than the phase but never wrong.)
+echo "  Creating the Caelestia Shell unit..."
+mkdir -p "$HOME/.config/systemd/user"
+cat > "$HOME/.config/systemd/user/caelestia-shell.service" << EOF
+[Unit]
+Description=Caelestia Shell
+PartOf=graphical-session.target
+After=graphical-session.target
+Before=xdg-desktop-autostart.target
+
+[Service]
+Type=exec
+ExecStart=%h/.local/bin/caelestia-autostart.sh
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
 EOF
-ok "Quickshell autostart created."
+
+# Take the older mechanisms back out. The entry is ours, so removing it is safe;
+# the unit it generated is disabled as well, or it would keep starting a shell of
+# its own from the same wrapper.
+if [[ -f "$AUTOSTART_DIR/caelestiashell.desktop" ]]; then
+    rm -f "$AUTOSTART_DIR/caelestiashell.desktop"
+    systemctl --user disable app-caelestiashell@autostart.service >/dev/null 2>&1 || true
+    info "Removed the retired autostart entry; the shell's unit replaced it."
+fi
+
+systemctl --user daemon-reload
+if systemctl --user enable caelestia-shell.service >/dev/null 2>&1; then
+    ok "Caelestia Shell unit enabled."
+else
+    warn "Could not enable caelestia-shell.service; start the shell with 'systemctl --user start caelestia-shell.service'."
+fi
 
 # KWin restricts privileged Wayland protocols (like zkde_screencast_unstable_v1,
 # used for live window thumbnails). For every such protocol, KWin's

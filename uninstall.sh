@@ -254,10 +254,21 @@ do
     fi
 done
 
-# Autostart desktop entry
+# The shell's systemd user unit, and the desktop entry an older install wrote. The
+# unit is stopped and disabled first: left enabled, it would keep systemd starting
+# a shell whose files are being removed in the next step.
+if [[ -f "$USER_SYSTEMD/caelestia-shell.service" ]]; then
+    systemctl --user disable --now caelestia-shell.service >/dev/null 2>&1 || true
+    rm -f "$USER_SYSTEMD/caelestia-shell.service"
+    ok "Removed: caelestia-shell.service"
+fi
+
+# Retired autostart desktop entry, and the unit the xdg-autostart generator made
+# out of it.
 if [[ -f "$HOME/.config/autostart/caelestiashell.desktop" ]]; then
+    systemctl --user disable app-caelestiashell@autostart.service >/dev/null 2>&1 || true
     rm -f "$HOME/.config/autostart/caelestiashell.desktop"
-    ok "Removed autostart entry: caelestiashell.desktop"
+    ok "Removed the retired autostart entry: caelestiashell.desktop"
 fi
 
 systemctl --user daemon-reload 2>/dev/null || true

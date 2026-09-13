@@ -76,7 +76,6 @@ provides=('caelestia-shell')
 conflicts=('caelestia-shell' 'caelestia-shell-git')
 source=("$pkgname-v$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         'caelestia-autostart'
-        'caelestiashell.desktop'
         'caelestia-shell.service')
 sha256sums=('SKIP'
             'd39eff39e9ebed80859289f1f6b99b2e2c144cbad4c55805d2ec5455723df86b'
@@ -123,16 +122,13 @@ package() {
     install -d "$pkgdir/usr/share/plasma/shells"
     cp -r src/kde/shells/caelestia.desktop "$pkgdir/usr/share/plasma/shells/"
 
-    # Starting the shell on login, for now still through the autostart entry. The
-    # desktop entry name is load bearing: systemd turns
-    # /etc/xdg/autostart/caelestiashell.desktop into
-    # app-caelestiashell@autostart.service, which restart_shell.sh restarts. The
-    # target is one systemd user unit and nothing else, which needs restart_shell.sh
-    # to name that unit and `caelestia install` to enable it; until both exist this
-    # entry is what starts the shell for a packaged install.
+    # Starting the shell on login is one systemd user unit, which `caelestia install`
+    # enables once (`systemctl --user enable caelestia-shell.service`). There is no
+    # /etc/xdg/autostart entry any more: that would give the same shell two ways to
+    # start, and the generator's app-caelestiashell@autostart.service races the unit
+    # with no ordering between them. The unit name is load bearing in the other
+    # direction instead - restart_shell.sh and uninstall.sh both name it.
     install -Dm755 "$srcdir/caelestia-autostart" "$pkgdir/usr/bin/caelestia-autostart"
-    install -Dm644 "$srcdir/caelestiashell.desktop" \
-        "$pkgdir/etc/xdg/autostart/caelestiashell.desktop"
     install -Dm644 "$srcdir/caelestia-shell.service" \
         "$pkgdir/usr/lib/systemd/user/caelestia-shell.service"
 

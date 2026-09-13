@@ -147,14 +147,14 @@ The installer does **not** abort on package failure — it logs and continues. C
 
 ### 3.1 Shell Doesn't Start After Login
 
-The shell autostarts via `~/.config/autostart/caelestiashell.desktop` which runs `~/.local/bin/caelestia-autostart.sh`.
+The shell starts from the systemd user unit `caelestia-shell.service`, which `caelestia install` enables once. The environment the shell needs is set by `~/.local/bin/caelestia-autostart.sh` for a source install, and by `/usr/bin/caelestia-autostart` for a packaged one; the unit runs whichever belongs to that install.
 
 | Symptom | Likely Cause |
 |---|---|
 | Blank screen at login | Shell binary launched but crashed immediately. Check `journalctl --user -xe`. |
-| Plasma desktop visible, no shell | Autostart entry didn't execute. Verify the `.desktop` file exists. |
+| Plasma desktop visible, no shell | The unit didn't start. `systemctl --user status caelestia-shell.service`, and `systemctl --user is-enabled caelestia-shell.service` for whether it is on at all. |
 | Shell appears briefly then disappears | Quickshell crashed. Run manually from a terminal. |
-| `quickshell: command not found` | Quickshell not in PATH at login. The autostart wrapper resolves the binary path. |
+| `quickshell: command not found` | Quickshell not in PATH at login. The wrapper the unit runs resolves the binary path. |
 
 **Manual start for debugging:**
 ```bash

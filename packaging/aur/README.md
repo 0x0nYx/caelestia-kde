@@ -31,8 +31,9 @@ Both names are free on the AUR (verified 2026-09-12, `resultcount` 0 for each).
   CMake knows nothing about it;
 - the workspace-tracker KWin effect, built here against this machine's Plasma
   because it links KWin's ABI;
-- autostart: the desktop entry, the systemd user unit, and
-  `/usr/bin/caelestia-autostart`, which sets the environment the shell needs.
+- autostart: `/usr/bin/caelestia-autostart`, the systemd user unit it runs under,
+  and nothing else. The unit is not enabled by the package - packages cannot enable a
+  user's units - so `caelestia install` does it once.
 
 It declares `provides=('caelestia-shell')` and
 `conflicts=('caelestia-shell' 'caelestia-shell-git')`. That is honest: the QML
@@ -94,7 +95,7 @@ The AUR repository for a package is the package directory itself. For
     cp packaging/aur/caelestia-shell-kde/* caelestia-shell-kde/
     cd caelestia-shell-kde
     makepkg --printsrcinfo > .SRCINFO
-    git add PKGBUILD .SRCINFO caelestia-autostart caelestiashell.desktop caelestia-shell.service
+    git add PKGBUILD .SRCINFO caelestia-autostart caelestia-shell.service
     git commit -m "update to 2.4.3"
     git push
 
