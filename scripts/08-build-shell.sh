@@ -12,9 +12,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/submodules.sh"
 BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SHELL_DIR="$BUNDLE_DIR/shell"
 
-# Setting force build to true for dev branch
-CAELESTIA_FORCE_BUILD_SHELL="${CAELESTIA_FORCE_BUILD_SHELL:-true}"
-
 # Prefer Ninja for faster builds; fall back to CMake's default generator when
 # it is not available (e.g. a standalone/update run before package install).
 # Reflected in the toolchain stamp so a build dir is invalidated if the
@@ -43,7 +40,7 @@ caelestia_toolchain_stamp() {
 }
 
 # Stamps written before the fingerprint dropped patch versions carried the full
-# `cmake version X.Y.Z` string. Normalising both sides keeps those build dirs
+# `cmake version X.Y.Z` string. Normalizing both sides keeps those build dirs
 # alive instead of forcing one gratuitous full rebuild on upgrade.
 caelestia_normalise_stamp() {
     sed -E -e 's/cmake version //' -e 's/([0-9]+\.[0-9]+)\.[0-9]+/\1/g'
@@ -250,7 +247,7 @@ fi
 
 # UPDATER ONLY BLOCK END
 
-info "Building Caelestia Shell..."
+info "Building the Caelestia shell..."
 
 if [ ! -d "$SHELL_DIR" ]; then
     err "Shell directory not found at $SHELL_DIR!"
@@ -285,7 +282,7 @@ shell_release_tag() {
 # version binary) into $HOME/.local, and quickshell/caelestia/ (the shell QML
 # source with the install-time shell.qml patch) into $HOME/.config.
 try_download_prebuilt_shell() {
-    local arch qt_abi tag tmp_archive url checksum expected actual
+    local arch qt_abi tag tmp_archive url checksum expected actual asset candidate
     arch="$(uname -m)"
     [[ "$arch" == "x86_64" ]] || return 1
     [[ -f /etc/arch-release ]] || return 1
@@ -293,12 +290,23 @@ try_download_prebuilt_shell() {
     tag="$(shell_release_tag)"
     [[ -n "$qt_abi" && -n "$tag" ]] || return 1
 
+    # The asset is named after the project: caelestia-kde-<arch>-qt<abi>.tar.gz.
+    # Releases cut before that rename still carry the old caelestia-shell- name,
+    # so try the current one first and fall back rather than dropping those
+    # users onto a local compile.
     tmp_archive="$(mktemp --suffix=.tar.gz)"
-    url="https://github.com/ladybug-me/caelestia-dots-kde/releases/download/${tag}/caelestia-shell-${arch}-qt${qt_abi}.tar.gz"
+    url=""
     info "Downloading prebuilt shell artifacts (${tag}, Qt ${qt_abi})..."
-    if ! curl -fL --connect-timeout 10 --progress-bar "$url" -o "$tmp_archive"; then
-        warn "Failed to download prebuilt shell artifacts from $url"
+    for asset in "caelestia-kde-${arch}-qt${qt_abi}.tar.gz" "caelestia-shell-${arch}-qt${qt_abi}.tar.gz"; do
+        candidate="https://github.com/ladybug-me/caelestia-kde/releases/download/${tag}/${asset}"
+        if curl -fL --connect-timeout 10 --progress-bar "$candidate" -o "$tmp_archive"; then
+            url="$candidate"
+            break
+        fi
         rm -f "$tmp_archive"
+    done
+    if [[ -z "$url" ]]; then
+        warn "No prebuilt shell artifacts published for ${tag} (Qt ${qt_abi}) - falling back to a local build."
         return 1
     fi
 
@@ -385,7 +393,7 @@ fi
 if [[ "$SHELL_PREBUILT" -eq 1 ]]; then
     info "Skipping local shell build; prebuilt artifacts installed."
 else
-    # lrelease compiles shell/translations into the .qm catalogues the shell loads.
+    # lrelease compiles shell/translations into the .qm catalogs the shell loads.
     # Checked here rather than with the other dependencies so it also covers a fresh
     # setup run; without it CMake just warns and the shell ships English only.
     if ! linguist_tools_available; then
@@ -580,9 +588,37 @@ install -m 755 "$BUNDLE_DIR/src/bin/caelestia-record" ~/.local/bin/caelestia-rec
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia-screenshot" ~/.local/bin/caelestia-screenshot
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia-shell-ipc" ~/.local/bin/caelestia-shell-ipc
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia" ~/.local/bin/caelestia
+install -m 755 "$BUNDLE_DIR/src/bin/caelestia-color" ~/.local/bin/caelestia-color
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia-update" ~/.local/bin/caelestia-update
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia-check-updates" ~/.local/bin/caelestia-check-updates
 ok "Caelestia bin wrappers installed to ~/.local/bin"
+
+# `caelestia wallpaper` and `caelestia scheme` generate the palette themselves.
+# The templates and the named schemes they read live under CAELESTIA_LIB_DIR,
+# which is the directory already set aside for this checkout's libraries and is
+# what `caelestia-color` looks in first.
+CAELESTIA_SHARE="$HOME/.local/lib/caelestia"
+if [[ -d "$BUNDLE_DIR/src/matugen" && -d "$BUNDLE_DIR/src/schemes" ]]; then
+    info "Installing the color pipeline data..."
+    rm -rf "$CAELESTIA_SHARE/matugen.old"
+    [[ -d "$CAELESTIA_SHARE/matugen" ]] && mv "$CAELESTIA_SHARE/matugen" "$CAELESTIA_SHARE/matugen.old"
+    mkdir -p "$CAELESTIA_SHARE"
+    cp -r "$BUNDLE_DIR/src/matugen" "$CAELESTIA_SHARE/matugen"
+    rm -rf "$CAELESTIA_SHARE/schemes"
+    cp -r "$BUNDLE_DIR/src/schemes" "$CAELESTIA_SHARE/schemes"
+    rm -rf "$CAELESTIA_SHARE/matugen.old"
+    find "$CAELESTIA_SHARE/matugen" "$CAELESTIA_SHARE/schemes" -type d -exec chmod 755 {} +
+    find "$CAELESTIA_SHARE/matugen" "$CAELESTIA_SHARE/schemes" -type f -exec chmod 644 {} +
+    ok "Color pipeline data installed to $CAELESTIA_SHARE"
+else
+    warn "Color pipeline data missing from the checkout; wallpaper and scheme will not work."
+fi
+
+# `caelestia version` reports this, so an installed shell can say which release
+# it is without a checkout to read.
+if [[ -f "$BUNDLE_DIR/.github/version.env" ]]; then
+    install -Dm 644 "$BUNDLE_DIR/.github/version.env" "$HOME/.config/quickshell/caelestia/version.env"
+fi
 
 
 # Copying mono icon theme
@@ -603,7 +639,7 @@ else
     warn "Failed to copy yet-another-monochrome-icon-set."
 fi
 
-# Record which revision the artefacts just installed came from, for the update
+# Record which revision the artifacts just installed came from, for the update
 # checker. The build has happened by this point, so the checkout is what the
 # running shell really is.
 record_installed_revision "$BUNDLE_DIR" "$HOME/.config/quickshell/caelestia" || true

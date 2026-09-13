@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# packages.sh - Arch package installation for Caelestia KDE Port
+# packages.sh - Arch package installation for Caelestia
 
 set -uo pipefail
 
@@ -40,7 +40,7 @@ CORE_PACKAGES=(
     wl-clipboard cliphist wl-clip-persist inotify-tools app2unit wireplumber trash-cli jq
 
     # Audio, Sensors & Hardware
-    aubio lm_sensors libpipewire pulseaudio-qt libpulse
+    aubio lm_sensors libpipewire pulseaudio-qt libpulse fftw
 
     # Qt6 Framework & Tools
     qt6-base qt6-declarative qt6-wayland qt6-shadertools
@@ -54,7 +54,7 @@ CORE_PACKAGES=(
 )
 
 SHELL_PACKAGES=(
-    caelestia-cli quickshell
+    quickshell matugen python
     foot eza fastfetch starship btop bash
 )
 
@@ -130,8 +130,6 @@ SOURCE_BUILD_REPOS=(
     # package            repo
     "ttf-rubik-vf        https://github.com/googlefonts/rubik"
     "app2unit            https://github.com/Vladimir-csp/app2unit"
-    "python-materialyoucolor https://github.com/gregwym/MaterialYouColor.py"
-    "caelestia-cli       https://github.com/dim-ghub/caelestia-cli"
 )
 
 # Resolve a package name to its source repo URL (empty if not a source-build target)

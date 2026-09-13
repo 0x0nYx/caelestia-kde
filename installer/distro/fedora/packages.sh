@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# packages.sh - Fedora package installation for Caelestia KDE Port
+# packages.sh - Fedora package installation for Caelestia
 
 set -uo pipefail
 
@@ -44,7 +44,7 @@ CORE_PACKAGES=(
 
     # Audio, Sensors & Hardware
     aubio aubio-devel lm_sensors lm_sensors-devel pipewire-devel
-    pulseaudio-qt-qt6-devel pulseaudio-libs-devel
+    pulseaudio-qt-qt6-devel pulseaudio-libs-devel fftw-devel
 
     # Qt6 Framework & Tools
     qt6-qtbase qt6-qtbase-private-devel qt6-qtdeclarative qt6-qtdeclarative-devel

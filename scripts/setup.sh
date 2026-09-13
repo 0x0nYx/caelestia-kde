@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================
-#   Caelestia KDE Port - Unified Installer
+#   Caelestia - installer
 #
 #   Original Hyprland dots: Caelestia
 #   KDE port and modifications: ladybug-me
@@ -19,6 +19,13 @@ BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS_DIR="$BUNDLE_DIR/scripts"
 export BUNDLE_DIR
 export INSTALL_START_EPOCH="$(date +%s)"
+
+# 08-build-shell.sh installs the `caelestia` command into ~/.local/bin, and the
+# steps after it call it by name (09-system-tweaks.sh derives the default scheme
+# with it). A shell that has not read a profile yet - and fish, which does not
+# add the directory by itself - would not have it on PATH, so the step would
+# quietly do nothing. Put it there for every step.
+export PATH="$HOME/.local/bin:$PATH"
 
 # Prevent concurrent runs.
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/caelestia-setup.lock"
@@ -196,7 +203,7 @@ try_download_prebuilt_installer() {
     # "--version" check (old builds launched the full TUI instead).
     [[ -n "$version" && -n "$tag" ]] || return 1
     tmp_bin="$(mktemp)"
-    url="https://github.com/ladybug-me/caelestia-dots-kde/releases/download/${tag}/caelestia-install-${arch}-v${version}"
+    url="https://github.com/ladybug-me/caelestia-kde/releases/download/${tag}/caelestia-install-${arch}-v${version}"
     if curl -fsSL --connect-timeout 10 --max-time 30 "$url" -o "$tmp_bin" 2>/dev/null; then
         chmod +x "$tmp_bin"
         printf '%s\n' "$tmp_bin"

@@ -9,7 +9,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
 SRC_DIR="$BUNDLE_DIR/src/sddm"
 
-if [[ "${INSTALL_SDDM:-false}" != "true" ]]; then
+if [[ "${INSTALL_SDDM:-true}" != "true" ]]; then
     skip "SDDM theme not selected."
     exit 0
 fi
@@ -168,10 +168,18 @@ if ! caelestia_sudo_quiet test -f "$SUDOERS_FILE"; then
     ok "Sudoers drop-in created."
 fi
 
-if caelestia_sudo "$SYNC_SCRIPT"; then
+if sync_output="$(caelestia_sudo "$SYNC_SCRIPT" 2>&1)"; then
     ok "Initial sync complete."
 else
-    warn "Initial sync had warnings (non-fatal)."
+    warn "Initial sync had warnings (non-fatal):"
+    # The sync's output is the only place the reason is written down, so it is
+    # echoed here rather than left in the step's exit code. Its markers are
+    # relabelled on the way through: the installer turns any "[WARN]" inside a
+    # step's output into a WARN status for the whole step, and a nested command's
+    # warning is not what this step is reporting.
+    if [[ -n "$sync_output" ]]; then
+        printf '%s\n' "$sync_output" | sed -e 's/\[WARN\]/warning:/g' -e 's/\[ERR\]/error:/g' -e 's/^/  /'
+    fi
     ALL_OK=false
 fi
 

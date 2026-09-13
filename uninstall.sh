@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================
-#   Caelestia KDE Port - Uninstaller
+#   Caelestia - uninstaller
 #
 #   Reverses actions performed by setup.sh.
 #   Restores backups when available and removes generated files.
@@ -53,18 +53,18 @@ if [[ "$BASE_DISTRO" == "unknown" ]]; then
 fi
 
 cat << 'EOF'
-  _    _       _           _        _ _
- | |  | |     (_)         | |      | | |
- | |  | |_ __  _ _ __  ___| |_ __ _| | |
- | |  | | '_ \| | '_ \/ __| __/ _` | | |
- | |__| | | | | | | | \__ \ || (_| | | |
-  \____/|_| |_|_|_| |_|___/\__\__,_|_|_|
+   _____            _           _   _
+  / ____|          | |         | | (_)
+ | |     __ _  ___ | | ___  ___| |_ _  __ _
+ | |    / _` |/ _ \| |/ _ \/ __| __| |/ _` |
+ | |___| (_| | (_) | |  __/\__ \ |_| | (_| |
+  \_____\__,_|\___/|_|\___||___/\__|_|\__,_|
 EOF
 echo "+------------------------------------------------------------------+"
-echo "|                     CAELESTIA KDE UNINSTALLER                     |"
+echo "|                       CAELESTIA UNINSTALLER                       |"
 echo "+------------------------------------------------------------------+"
 echo
-echo " This will remove Caelestia KDE shell files and configs."
+echo " This will remove Caelestia shell files and configs."
 echo " Backups in $BUNDLE_DIR/backups/ can be restored during uninstall."
 echo
 
@@ -78,7 +78,7 @@ trap 'kill $_SUDO_LOOP 2>/dev/null; true' EXIT
 
 # -- Confirmation ---------------------------------------------------------------
 echo
-read -r -p "Are you sure you want to uninstall Caelestia KDE? [y/N]: " _confirm
+read -r -p "Are you sure you want to uninstall Caelestia? [y/N]: " _confirm
 [[ "${_confirm,,}" == "y" || "${_confirm,,}" == "yes" ]] || die "Uninstall cancelled."
 
 echo
@@ -202,6 +202,9 @@ restore_or_remove() {
 
 section "Step 1 - Stop and Disable Services"
 
+# kde-material-you-colors is in the list for installs that predate the palette
+# being applied by caelestia-color: it used to be installed and started, and two
+# programs applying a scheme to one session means whichever runs last wins.
 for svc in qs-kwin-bridge cliphist ydotoold kde-material-you-colors; do
     if systemctl --user is-enabled --quiet "${svc}.service" 2>/dev/null ||
        systemctl --user is-active  --quiet "${svc}.service" 2>/dev/null; then
@@ -287,7 +290,7 @@ if [[ -d "$HOME/.local/share/caelestia-shell" ]]; then
     ok "Removed ~/.local/share/caelestia-shell"
 fi
 
-# Caelestia KDE lockscreen shell package
+# Caelestia lockscreen shell package
 if [[ -d "$HOME/.local/share/plasma/shells/caelestia.desktop" ]]; then
     rm -rf "$HOME/.local/share/plasma/shells/caelestia.desktop"
     ok "Removed ~/.local/share/plasma/shells/caelestia.desktop"
@@ -408,7 +411,7 @@ if [[ -z "$SELECTED_KNSV" ]]; then
     fi
 fi
 
-# Disable Caelestia KWin plugins
+# Disable Caelestia's KWin plugins
 kwriteconfig6 --file kwinrc --group "Plugins" --key "quickshell-kde-bridgeEnabled" "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "krohnkiteEnabled"             "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "kwin_workspace_trackerEnabled" "false" 2>/dev/null || true
@@ -698,7 +701,7 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
     section "Step 9 - Remove Packages (Optional)"
 
     ARCH_PACKAGES=(
-        caelestia-cli quickshell
+        quickshell matugen python
         cmake ninja
         wl-clipboard cliphist inotify-tools app2unit wireplumber trash-cli
         jq aubio lm_sensors libcava libqalculate
@@ -713,7 +716,7 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
     )
 
     FEDORA_PACKAGES=(
-        quickshell-git caelestia-cli
+        quickshell-git matugen
         cmake ninja-build
         wl-clipboard cliphist inotify-tools app2unit wireplumber trash-cli
         jq aubio lm_sensors lm_sensors-devel libcava libcava-devel libqalculate libqalculate-devel
@@ -790,7 +793,9 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         fi
     fi
 
-    # Remove caelestia-cli pip package (both global and user)
+    # The upstream CLI is no longer a dependency: this port generates its own
+    # colors. Still remove it, because an earlier install of this port put it
+    # there and nothing would ever clean it up again.
     if command -v caelestia >/dev/null 2>&1 || python3 -m caelestia --help &>/dev/null 2>&1; then
         sudo pip3 uninstall -y caelestia 2>/dev/null || true
         pip3 uninstall -y caelestia 2>/dev/null || true
@@ -859,7 +864,7 @@ ok "KDE reloaded"
 
 section "Uninstall Complete"
 echo
-ok "Caelestia KDE has been uninstalled."
+ok "Caelestia has been uninstalled."
 echo
 echo "  Backups of your original configs are in:  $BUNDLE_DIR/backups/"
 echo
