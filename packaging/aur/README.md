@@ -145,11 +145,17 @@ The AUR repository for a package is the package directory itself. For
 
 Updating for a release:
 
-1. bump `pkgver` and reset `pkgrel=1`. Nothing else needs a hash: the source is a
-   git clone of the tag (`_ref` defaults to `tag=v$pkgver`), so there is no tarball;
-2. the three `sha256sums` entries that are not `SKIP` are the files beside the
-   PKGBUILD, so run `makepkg -g` to refresh them if any of them changed;
-3. check the tag still has everything `package()` copies by name: `src/bin/*`,
+1. bump `pkgver` and reset `pkgrel=1`;
+2. point the source at the new tarball. It is already named after `pkgver`, so the URL
+   follows the bump on its own, but the first `sha256sums` entry does not: the tarball
+   does not exist until the tag is pushed and `build-source` has attached it. Push the
+   tag, then take the hash from that job's summary (`sha256sum` is printed beside the
+   size) or download the `.sha256` it attaches, and put it in. A `SKIP` in the meantime
+   is what the file ships with, and a wrong hash stops the build with "Integrity checks
+   (sha256) differ";
+3. the other two `sha256sums` entries are the files beside the PKGBUILD, so run
+   `makepkg -g` to refresh them if any of them changed;
+4. check the tag still has everything `package()` copies by name: `src/bin/*`,
    `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop`,
    `shell/kwin-effects/workspace-tracker`, and for the user's half `scripts/`,
    `src/dots/`, `src/dots-extra/`, `src/yet-another-monochrome-icon-set/`,
@@ -158,16 +164,26 @@ Updating for a release:
    is why they are named. No version file is among them: the version the shell and
    the command report is compiled into `/usr/lib/caelestia/version` from the same
    `-DVERSION=$pkgver` the build is given, so there is nothing to keep in step;
-4. regenerate `.SRCINFO` before pushing.
+5. regenerate `.SRCINFO` before pushing.
 
-To build before a tag exists, `_ref=branch=dev makepkg -si`. The version the shell
-reports is still `pkgver`, so that is for testing the flow rather than for a release.
+The source is the tarball the release job attaches, not a clone of the tag. The tree
+carries two submodules and 308 MiB of fonts in its history, so a clone makes every
+build download 645 MiB; the tarball is about 40, with the submodules inlined at the
+commits the tag pins, the fonts left out (`12-fetch-assets.sh` downloads those into
+the user's own asset directory when the shell is installed) and `REVISION` written,
+which is what the compiled helper reports from a tree with no `.git` to ask. Upstream
+does the same thing for the same reason.
 
-One thing to improve: cloning brings the whole history, and the tree is large. A
-source archive produced by the release job - `shell/`, `scripts/`, `src/`,
-`assets/` and `.github/version.env`, with the two submodules' content folded in -
-would cut the download and the build time without changing the package. Until then,
-`makepkg` clones the lot.
+To build before a tag exists, use `packaging/aur/makepkg-from-checkout.sh`. It builds
+the same tarball from the checkout - same exclusions, same submodules, same `REVISION`
+- hashes it, and runs `makepkg` on a staged copy of the PKGBUILD that points at it, so
+this is the real package build and not a variant of it:
+
+    packaging/aur/makepkg-from-checkout.sh -si
+
+The version the shell reports is still `pkgver`, so that is for testing the flow rather
+than for a release. It stages in `~/.cache/caelestia-aur` rather than `/tmp`, because
+makepkg builds the whole shell there.
 
 `makepkg` cannot run on the Windows host this repo is developed on, so a build
 has to be tried on an Arch machine or a container before the first push.

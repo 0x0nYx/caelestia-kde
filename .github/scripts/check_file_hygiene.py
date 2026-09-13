@@ -273,12 +273,15 @@ def git_mode(rel_path: str) -> str | None:
 def is_run_by_path(rel_path: str) -> bool:
     """True for scripts something executes directly rather than through `bash <path>`.
 
-    The step scripts, the command and its helpers, and the three entry points. Not
-    scripts/lib, which is sourced, and not tests/, which run under bash.
+    The step scripts, the command and its helpers, the three entry points, and the
+    packaging helpers. Not scripts/lib, which is sourced, and not tests/, which run
+    under bash.
     """
     if rel_path in ("install.sh", "update.sh", "uninstall.sh"):
         return True
     if rel_path.startswith("src/bin/"):
+        return True
+    if rel_path.startswith("packaging/") and rel_path.endswith(".sh"):
         return True
     return rel_path.startswith("scripts/") and rel_path.count("/") == 1 and rel_path.endswith(".sh")
 

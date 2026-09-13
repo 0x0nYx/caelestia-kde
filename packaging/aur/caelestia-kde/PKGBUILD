@@ -10,16 +10,14 @@
 # this project now, so the command, the helpers, the matugen templates and the
 # scheme catalogue all ship here, and nothing depends on caelestia-cli.
 #
-# The source is a git clone of the tag rather than the release tarball, because the
-# tree has two submodules - the dotfiles `caelestia install` deploys and the
-# monochrome icon set the shell reads - and a tarball cannot carry a submodule's
-# commit. Cloning the tag brings the pins the tag records, and leaves no tarball
-# hash to fill in at release time.
+# The source is the tarball the release job attaches, which is the tree at the tag
+# with the two submodules inlined at the commits the tag pins - the dotfiles
+# `caelestia install` deploys and the monochrome icon set the shell reads. A clone of
+# the tag would pin them too, but it also drags this tree's history, and 308 MiB of
+# fonts live there, so it is a 645 MiB download per build against 40 for the tarball.
 #
-# To build before a tag exists, point _ref at a branch instead. The fragment carries
-# its own keyword, because makepkg resolves `tag=` and `branch=` differently and a
-# branch name under `tag=` fails with "invalid reference":
-#   _ref=branch=dev makepkg -si
+# To build before a tag exists, use packaging/aur/makepkg-from-checkout.sh, which
+# builds the same tarball from the checkout and stages this PKGBUILD pointing at it.
 # The version the shell reports is still pkgver, so that is for testing only.
 
 pkgname=caelestia-kde
@@ -93,42 +91,54 @@ optdepends=(
 provides=('caelestia-shell')
 conflicts=('caelestia-shell' 'caelestia-shell-git')
 
-# The tag this package builds from, and what _ref is for. Declared here, below
-# pkgver, because the default reads it.
-_ref="${_ref:-tag=v$pkgver}"
-
 # Deliberately no `set -e` here. makepkg sources this file into its own shell, so shell
 # options set here change makepkg itself: `set -u` makes its own lint helpers die with
 # "unbound variable" before the build starts. The paths below are named rather than
 # globbed and checked at the end of package() instead, which is where a silent hole
 # would otherwise come from.
 
-source=("$pkgname::git+$url#$_ref"
+# The source is the tarball the release job attaches, not a clone of the tag, and the
+# reason is size: this tree carries two submodules and 308 MiB of fonts, which makes a
+# git source a 645 MiB download per build. The tarball holds the tree at the tag with the
+# submodules inlined, the fonts left out (12-fetch-assets.sh fetches those into the
+# user's own directory) and REVISION written, which is what the compiled helper reports
+# from a tree with no .git to ask.
+#
+# The first sum is SKIP until a release exists to hash. Refreshing it is part of tagging:
+# once the tag is pushed and the tarball is attached, run `makepkg -g` and copy the line
+# in, or the build stops with "Integrity checks (sha256) differ". The other two are the
+# files beside this PKGBUILD and only change when those do.
+#
+# To build before a tag exists, use packaging/aur/makepkg-from-checkout.sh. It builds the
+# same tarball locally and stages a copy of this file with _source_url and _source_sum
+# set, which is what those two are for. They are not a published interface otherwise.
+_source_url="${_source_url:-$url/releases/download/v$pkgver/$pkgname-v$pkgver.tar.gz}"
+_source_sum="${_source_sum:-SKIP}"
+
+source=("$_source_url"
         'caelestia-autostart'
         'caelestia-shell.service')
-sha256sums=('SKIP'
+sha256sums=("$_source_sum"
             'a918c6b60afab7a0489ac77731c8eac388a22c7047b52dd50c76f53dfa41f62e'
             'f219b72c98ad98418cbe9ef2648d0c2cd3664d36bd06f2870b8c8b253d6d17c8')
 
 prepare() {
-    # The submodules, at the commits the tag pins: without them `caelestia install`
-    # has no dotfiles to deploy and the shell has no icon set to draw with. A
-    # submodule that did not arrive is an empty directory, which copies cleanly and
-    # then fails at install time, so it has to be caught here.
-    cd "$srcdir/$pkgname"
-    git submodule update --init --recursive
+    # The submodules arrive inlined in the tarball. One that did not make it in is an
+    # empty directory, which copies cleanly and then fails at install time, so it is
+    # caught here rather than there.
+    cd "$srcdir/$pkgname-$pkgver"
 
     local sub
     for sub in src/dots src/yet-another-monochrome-icon-set; do
         if [[ -z "$(ls -A "$sub" 2>/dev/null)" ]]; then
-            echo "submodule $sub is empty after 'git submodule update'" >&2
+            echo "submodule $sub is empty in the source tarball" >&2
             return 1
         fi
     done
 }
 
 build() {
-    cd "$srcdir/$pkgname"
+    cd "$srcdir/$pkgname-$pkgver"
     cmake -B build -S shell -G Ninja \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX=/ \
@@ -146,7 +156,7 @@ build() {
 }
 
 package() {
-    cd "$srcdir/$pkgname"
+    cd "$srcdir/$pkgname-$pkgver"
     DESTDIR="$pkgdir" cmake --install build
     DESTDIR="$pkgdir" cmake --install effect-build
 
@@ -238,6 +248,12 @@ DROPIN
         "$pkgdir/usr/lib/systemd/user/caelestia-shell.service"
 
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+    # The submodules arrive inlined, carrying their own .git files, .github templates and
+    # .gitignore, and the shell's CMake install brings the icon set's. None of it is
+    # content, and all of it is version control metadata in a package.
+    find "$pkgdir" \( -name '.git' -o -name '.github' -o -name '.gitignore' \) \
+        -prune -exec rm -rf {} + 2>/dev/null || true
 
     # Nothing above reports its own failure - makepkg does not run these steps with
     # errexit - so the result is checked. Each path here is one a packaged install, the

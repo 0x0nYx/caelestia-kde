@@ -207,6 +207,77 @@ test_the_package_leaves_the_fonts_to_the_install() {
     assert_contains "$pkgbuild" 'the fonts are in the package again' "and fail the build if they come back"
 }
 
+test_the_release_tarball_is_the_thing_the_package_sources() {
+    # The package's source is an asset a job in the release workflow builds. The two
+    # halves are in different files and different languages, so nothing but a test
+    # keeps the name, the contents and the exclusions in step; a rename on one side
+    # only shows up as a 404 on a user's machine.
+    local workflow pkgbuild
+    workflow="$(cat "$REPO_ROOT/.github/workflows/version-release.yml")"
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
+
+    assert_contains "$workflow" 'ARTIFACT="caelestia-kde-v$VERSION.tar.gz"' "the release job should build the versioned tarball"
+    assert_contains "$pkgbuild" '$pkgname-v$pkgver.tar.gz' "and the PKGBUILD should source that same name"
+    assert_contains "$pkgbuild" 'releases/download/v$pkgver' "from the release the tag publishes"
+
+    # Extracted to $srcdir/$pkgname-$pkgver by makepkg, which is where every function in
+    # the PKGBUILD cd's.
+    assert_contains "$workflow" 'tar -C dist -czf "$ARTIFACT" "caelestia-kde-$VERSION"' "the archive should carry the directory makepkg extracts to"
+
+    # The three reasons the tarball exists at all: no submodule commit to fetch, no
+    # 308 MiB of fonts per build, and a revision a git-less tree can still report.
+    assert_contains "$workflow" 'submodules: recursive' "the job should check the submodules out to inline them"
+    assert_contains "$workflow" "--exclude 'shell/assets/fonts'" "and leave the fonts out"
+    assert_contains "$workflow" 'git rev-parse HEAD > "dist/$ROOT/REVISION"' "and write the revision"
+
+    # The sum is filled in by hand at release time, from this job's output.
+    assert_contains "$workflow" 'sha256sum "$ARTIFACT" | tee "$ARTIFACT.sha256"' "the job should publish the hash the PKGBUILD needs"
+}
+
+test_the_revision_survives_a_tree_without_git() {
+    # A git-less tree is the whole point of the tarball, and `caelestia version` reports
+    # this value. REVISION first, git second: a checkout has both, and the file is the
+    # one the release job wrote deliberately.
+    local cmake
+    cmake="$(cat "$REPO_ROOT/shell/CMakeLists.txt")"
+
+    assert_contains "$cmake" '${CMAKE_SOURCE_DIR}/../REVISION' "the build should read REVISION beside version.env"
+    assert_contains "$cmake" 'file(STRINGS "${_REVISION_FILE}" GIT_REVISION' "and take the revision from it"
+}
+
+test_the_checkout_build_script_builds_the_same_tarball() {
+    # Before a tag exists there is no asset to download, so this script produces the same
+    # tarball locally and points a staged PKGBUILD at it. If it drifts from the job, the
+    # thing tested before a release is not the thing released.
+    local script
+    script="$(cat "$REPO_ROOT/packaging/aur/makepkg-from-checkout.sh")"
+
+    assert_contains "$script" 'git clone --quiet --depth 1 --recurse-submodules --shallow-submodules "file://$repo" "$tree"' "it should stage a fresh clone, so build output cannot leak in and the submodules are materialized"
+    assert_contains "$script" 'rm -rf "$tree/shell/assets/fonts"' "and drop the fonts, as the job does"
+    assert_contains "$script" 'git -C "$tree" rev-parse HEAD > "$tree/REVISION"' "and write the revision"
+    assert_contains "$script" '_source_url=' "and point the staged PKGBUILD at the local tarball"
+    assert_contains "$script" '_source_sum=' "with its hash, rather than a SKIP"
+
+    # /tmp is a tmpfs on most machines, and makepkg builds the whole shell in there.
+    assert_contains "$script" 'stage="${CAELESTIA_AUR_STAGE:-$HOME/.cache/caelestia-aur}"' 'it should stage under $HOME, not /tmp'
+
+    # The two variables it writes are the ones the PKGBUILD reads, which is what keeps the
+    # real file the only PKGBUILD there is instead of a rewritten copy.
+    local pkgbuild
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
+    assert_contains "$pkgbuild" '_source_url="${_source_url:-' "the PKGBUILD should default the source URL"
+    assert_contains "$pkgbuild" '_source_sum="${_source_sum:-' "and the sum, so the script can override both"
+}
+
+test_the_payload_carries_no_version_control_metadata() {
+    # The submodules arrive inlined, so their .git files, .github templates and
+    # .gitignore land in the payload along with the content. None of it is content.
+    local pkgbuild
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
+
+    assert_contains "$pkgbuild" "-name '.git' -o -name '.github' -o -name '.gitignore'" "the package should strip version control metadata"
+}
+
 test_the_font_step_looks_before_it_downloads() {
     local step
     step="$(cat "$REPO_ROOT/scripts/12-fetch-assets.sh")"
