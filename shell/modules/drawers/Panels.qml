@@ -20,6 +20,7 @@ Item {
 
     required property ShellScreen screen
     Config.screen: screen.name
+    required property ScreenState screenState
     required property DrawerVisibilities visibilities
     required property Bar.BarWrapper bar
     required property real borderThickness
@@ -315,6 +316,7 @@ Item {
         property string vAnchor: "top"
         property string hAnchor: "center"
 
+        screenState: root.screenState
         visibilities: root.visibilities
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top

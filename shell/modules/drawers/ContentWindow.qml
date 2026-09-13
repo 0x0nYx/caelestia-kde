@@ -31,6 +31,10 @@ StyledWindow {
     readonly property alias bar: bar
     readonly property alias interactionWrapper: interactions
     readonly property alias visibilities: visibilities
+    // The per-screen state object the drawers share. The dashboard's tab and the
+    // month its calendar is showing live in it, which is where upstream keeps
+    // them, so both survive the dashboard closing and a shell restart.
+    readonly property ScreenState screenState: ShellState.forScreen(screen)
     // NOTE: strictly typed as HyprlandMonitor upstream, but under the KDE
     // fallback bridge Hypr.monitorFor() returns a plain mock QtObject (not
     // a real qs::hyprland::ipc::HyprlandMonitor), so keep this loosely
@@ -653,6 +657,7 @@ StyledWindow {
             id: panels
 
             screen: root.screen
+            screenState: root.screenState
             visibilities: visibilities
             bar: bar
             borderThickness: root.borderThickness

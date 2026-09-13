@@ -12,9 +12,10 @@ Item {
     id: root
 
     required property DrawerVisibilities visibilities
-    readonly property DashboardState dashState: DashboardState {
-        reloadableId: "dashboardState"
-    }
+    // The dashboard's tab and the month its calendar shows are the screen's own
+    // state, not this widget's: that is where upstream keeps them, and it is what
+    // makes both survive the dashboard closing and a shell restart.
+    required property ScreenState screenState
     readonly property FileDialog facePicker: FileDialog {
         title: qsTr("Select a profile picture")
         filterLabel: qsTr("Image files")
@@ -49,7 +50,7 @@ Item {
         active: root.shouldBeActive || root.visible
         sourceComponent: Content {
             visibilities: root.visibilities
-            dashState: root.dashState
+            screenState: root.screenState
             facePicker: root.facePicker
         }
     }

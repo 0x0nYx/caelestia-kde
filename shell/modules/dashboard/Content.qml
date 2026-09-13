@@ -14,7 +14,7 @@ Item {
     id: root
 
     required property DrawerVisibilities visibilities
-    required property DashboardState dashState
+    required property ScreenState screenState
     required property FileDialog facePicker
 
     readonly property var dashboardTabs: {
@@ -58,8 +58,8 @@ Item {
     // creating a new array reference that resets the ScriptModel and destroys all
     // tab delegates.
     onDashboardTabsChanged: {
-        if (dashboardTabs.length > 0 && dashState.currentTab >= dashboardTabs.length) {
-            dashState.currentTab = dashboardTabs.length - 1;
+        if (dashboardTabs.length > 0 && screenState.dashboardTab >= dashboardTabs.length) {
+            screenState.dashboardTab = dashboardTabs.length - 1;
         }
     }
 
@@ -80,7 +80,7 @@ Item {
         anchors.margins: Tokens.padding.large
 
         nonAnimWidth: root.nonAnimWidth - anchors.margins * 2
-        dashState: root.dashState
+        screenState: root.screenState
         tabs: root.dashboardTabs
     }
 
@@ -99,7 +99,7 @@ Item {
         Flickable {
             id: view
 
-            readonly property int currentIndex: root.dashState.currentTab
+            readonly property int currentIndex: root.screenState.dashboardTab
             readonly property Item currentItem: {
                 repeater.count; // Trigger update on count change
                 return repeater.itemAt(currentIndex);
@@ -122,9 +122,9 @@ Item {
 
                 const x = contentX - currentItem.x;
                 if (x > currentItem.implicitWidth / 2)
-                    root.dashState.currentTab = Math.min(root.dashState.currentTab + 1, tabs.count - 1);
+                    root.screenState.dashboardTab = Math.min(root.screenState.dashboardTab + 1, tabs.count - 1);
                 else if (x < -currentItem.implicitWidth / 2)
-                    root.dashState.currentTab = Math.max(root.dashState.currentTab - 1, 0);
+                    root.screenState.dashboardTab = Math.max(root.screenState.dashboardTab - 1, 0);
             }
 
             onDragEnded: {
@@ -133,9 +133,9 @@ Item {
 
                 const x = contentX - currentItem.x;
                 if (x > currentItem.implicitWidth / 10)
-                    root.dashState.currentTab = Math.min(root.dashState.currentTab + 1, tabs.count - 1);
+                    root.screenState.dashboardTab = Math.min(root.screenState.dashboardTab + 1, tabs.count - 1);
                 else if (x < -currentItem.implicitWidth / 10)
-                    root.dashState.currentTab = Math.max(root.dashState.currentTab - 1, 0);
+                    root.screenState.dashboardTab = Math.max(root.screenState.dashboardTab - 1, 0);
                 else
                     contentX = Qt.binding(() => currentItem?.x ?? 0);
             }
@@ -177,7 +177,7 @@ Item {
 
                 Dash {
                     visibilities: root.visibilities
-                    dashState: root.dashState
+                    screenState: root.screenState
                     facePicker: root.facePicker
                 }
             }
