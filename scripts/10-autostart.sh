@@ -143,6 +143,14 @@ if [[ -f "$AUTOSTART_DIR/caelestiashell.desktop" ]]; then
     info "Removed the retired autostart entry; the shell's unit replaced it."
 fi
 
+# An install that is repairing a machine may be repairing this too: a unit that failed to
+# start repeatedly is refused by systemd with "Start request repeated too quickly" until
+# it is reset, and that is the state an uninstall leaves behind - the unit stays enabled
+# and points at a tree that has gone, which is five failed starts and a `start-limit-hit`.
+# Without this the run that puts the install back reports success and leaves the shell
+# unable to start.
+systemctl --user reset-failed caelestia-shell.service >/dev/null 2>&1 || true
+
 systemctl --user daemon-reload
 if systemctl --user enable caelestia-shell.service >/dev/null 2>&1; then
     ok "Caelestia Shell unit enabled."

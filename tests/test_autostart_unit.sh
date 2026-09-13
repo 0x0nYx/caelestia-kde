@@ -85,6 +85,17 @@ test_the_environment_writer_uses_the_same_layout() {
     assert_not_contains "$script" 'QML2_IMPORT_PATH=/usr/lib/qt6/qml' "and must not carry its own copy of the values"
 }
 
+test_an_install_clears_a_failed_unit_before_using_it() {
+    # Removing the package leaves this unit enabled and pointing at a tree that has gone:
+    # five failed starts, then `start-limit-hit`, after which systemd refuses to start it
+    # at all until it is reset. An install that is putting the machine back is exactly the
+    # case that finds the unit in that state, so it has to clear it - otherwise the run
+    # reports success and leaves the shell unable to start.
+    local script
+    script="$(cat "$AUTOSTART_SCRIPT")"
+    assert_contains "$script" 'systemctl --user reset-failed caelestia-shell.service' "the autostart step should clear a failed unit"
+}
+
 test_restarting_goes_through_that_unit() {
     local script
     script="$(cat "$RESTART_SCRIPT")"
