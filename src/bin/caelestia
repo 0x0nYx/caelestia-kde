@@ -12,15 +12,59 @@
 # Environment:
 #   CAELESTIA_BIN_DIR  where the helper commands live (default: beside this file)
 #   CAELESTIA_DIR      the checkout `install` runs from (default: ~/caelestia-kde)
+#   CAELESTIA_INSTALL_KIND  package or source, when it cannot be told from where this is
 
 set -euo pipefail
 
-# The shell and the upstream CLI both need these, so they are set up front.
-export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
-export CAELESTIA_LIB_DIR="${CAELESTIA_LIB_DIR:-$HOME/.local/lib/caelestia}"
-
 SELF="$(realpath -- "${BASH_SOURCE[0]}" 2>/dev/null || printf '%s' "${BASH_SOURCE[0]}")"
 BIN_DIR="${CAELESTIA_BIN_DIR:-$(dirname -- "$SELF")}"
+SELF_DIR="$(dirname -- "$SELF")"
+
+# Which install this command belongs to, and where that install keeps its files.
+#
+# Everything else is told: the step scripts get CAELESTIA_INSTALL_KIND from the front end
+# that runs them, and a session gets the paths from ~/.config/environment.d. This command
+# is reached by name from a terminal, a unit or a script with nothing set, and has to
+# answer before it can even find the library that owns the layout - so this is the one
+# place that decides, and it decides from where it is: a package installs into /usr/bin,
+# and everything else (a checkout's src/bin, a source install's ~/.local/bin) is a
+# checkout. scripts/lib/install-kind.sh carries the same split and the same paths for the
+# scripts that can source it.
+#
+# This used to be the checkout's paths unconditionally, which on a packaged install put
+# ~/.config/quickshell/caelestia ahead of /etc/xdg/quickshell/caelestia for everything
+# this command spawns: a shell started by `caelestia shell` would have loaded a leftover
+# tree from an old checkout in preference to the one the package installed.
+case "${CAELESTIA_INSTALL_KIND:-$( [[ "$BIN_DIR" == /usr/bin ]] && printf 'package' || printf 'source' )}" in
+    package)
+        KIND=package
+        DATA_DIR="${CAELESTIA_DATA_DIR:-/usr/share/caelestia}"
+        QML_IMPORT_DEFAULT="/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"
+        LIB_DIR_DEFAULT=/usr/lib/caelestia
+        SHELL_CONFIG_DEFAULT=/etc/xdg/quickshell/caelestia/shell.qml
+        VERSION_FILE="$DATA_DIR/version.env"
+        ;;
+    *)
+        KIND=source
+        CHECKOUT="${CAELESTIA_DIR:-$HOME/caelestia-kde}"
+        DATA_DIR="${CAELESTIA_DATA_DIR:-$CHECKOUT}"
+        QML_IMPORT_DEFAULT="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"
+        LIB_DIR_DEFAULT="$HOME/.local/lib/caelestia"
+        SHELL_CONFIG_DEFAULT="$HOME/.config/quickshell/caelestia/shell.qml"
+        # A checkout's own version file: the tree this command is running from, which is
+        # what a developer sitting in one has, or the checkout `install` would run.
+        VERSION_FILE="$SELF_DIR/../../.github/version.env"
+        [[ -f "$VERSION_FILE" ]] || VERSION_FILE="$CHECKOUT/.github/version.env"
+        ;;
+esac
+SCRIPTS_DIR="$DATA_DIR/scripts"
+
+# The shell and the helpers this spawns both need these. CAELESTIA_DATA_DIR is read but
+# never exported: for caelestia-color it means the directory the palette's `matugen/` and
+# `schemes/` are in, which for a checkout is its src directory rather than its root.
+export QML2_IMPORT_PATH="$QML_IMPORT_DEFAULT${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+export CAELESTIA_LIB_DIR="${CAELESTIA_LIB_DIR:-$LIB_DIR_DEFAULT}"
+export CAELESTIA_SHELL_CONFIG="${CAELESTIA_SHELL_CONFIG:-$SHELL_CONFIG_DEFAULT}"
 
 # helper <name> [args...]
 #
@@ -194,22 +238,13 @@ cmd_screenshot() {
     helper caelestia-screenshot "${args[@]}"
 }
 
-# Where the step scripts and the assets they deploy live. A package keeps them in
-# /usr/share/caelestia; a checkout has them one directory above this file's. The
-# order matches how `caelestia-color` resolves its data, so CAELESTIA_DATA_DIR
-# moves both.
-packaged_data_dir() {
-    local candidate
-    for candidate in \
-        "${CAELESTIA_DATA_DIR:-}" \
-        "$CAELESTIA_LIB_DIR" \
-        /usr/share/caelestia \
-        "$(dirname -- "$BIN_DIR")"; do
-        [[ -n "$candidate" && -f "$candidate/scripts/03-deploy-configs.sh" ]] || continue
-        printf '%s\n' "$candidate"
-        return 0
-    done
-    return 1
+# Where the step scripts are. A package keeps them in /usr/share/caelestia and runs this
+# command from its own copy of them; a checkout's are in the checkout. This used to search
+# four candidates for a directory that looked like one of them, which blurred three
+# different things - the scripts, the palette data and the tree this command is in - into
+# one question. The layout above answered it already.
+has_step_scripts() {
+    [[ -f "$SCRIPTS_DIR/03-deploy-configs.sh" ]]
 }
 
 # The user's half, from a package.
@@ -230,10 +265,9 @@ packaged_data_dir() {
 # half: the package ships the theme, the drop-in and the sync helper, and what is
 # left is the posthook in cli.json and the greeter's own files.
 packaged_install() {
-    local data step
-    if ! data="$(packaged_data_dir)"; then
-        cat >&2 <<'EOF'
-[ERR] no installer scripts found.
+    if ! has_step_scripts; then
+        cat >&2 <<EOF
+[ERR] no installer scripts found in $SCRIPTS_DIR
 
   A package keeps them in /usr/share/caelestia and runs this command from its own
   copy. Reinstall the package, or set CAELESTIA_DATA_DIR to where they are.
@@ -241,18 +275,12 @@ EOF
         return 1
     fi
 
-    # A directory under /usr is a package's. Anything else has to say so -
-    # CAELESTIA_INSTALL_KIND=package, which is what a test and an unusual layout
-    # use, and what stops a checkout being half-installed from here. A checkout has
-    # its own installer, which does the machine's half too.
-    if [[ "${CAELESTIA_INSTALL_KIND:-}" != "package" ]]; then
-        case "$data" in
-            /usr/*) ;;
-            *)
-                printf '[ERR] %s is a checkout, not a package install.\n\n  Run its installer instead: bash %s/install.sh\n' "$data" "$data" >&2
-                return 1
-                ;;
-        esac
+    # A package's install is the only one this command owns. A checkout has its own
+    # installer, which does the machine's half as well, and half-installing one from here
+    # would leave the other half of the machine's files unwritten.
+    if [[ "$KIND" != package ]]; then
+        printf '[ERR] %s is a checkout, not a package install.\n\n  Run its installer instead: bash %s/install.sh\n' "$DATA_DIR" "$DATA_DIR" >&2
+        return 1
     fi
 
     local -a steps=(
@@ -267,12 +295,12 @@ EOF
     )
 
     echo "Deploying the user's half of a packaged Caelestia install"
-    echo "  steps: $data/scripts"
+    echo "  steps: $SCRIPTS_DIR"
     echo
 
     for step in "${steps[@]}"; do
         printf '== %s\n' "$step"
-        if ! BUNDLE_DIR="$data" CAELESTIA_INSTALL_KIND=package bash "$data/scripts/$step"; then
+        if ! BUNDLE_DIR="$DATA_DIR" CAELESTIA_INSTALL_KIND=package bash "$SCRIPTS_DIR/$step"; then
             printf '[ERR] %s failed; nothing after it was run.\n' "$step" >&2
             return 1
         fi
@@ -316,15 +344,12 @@ EOF
 
 cmd_version() {
     local file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
-    if [[ ! -f "$file" ]]; then
-        local candidate
-        for candidate in "$BIN_DIR/../../.github/version.env" "$BIN_DIR/../../../.github/version.env"; do
-            if [[ -f "$candidate" ]]; then
-                file="$candidate"
-                break
-            fi
-        done
-    fi
+    # 08-build-shell.sh records the installed version above, which is what an installed
+    # shell should report. Before that step has run - a package straight out of pacman, or
+    # a checkout nobody has installed - the install's own file answers, and the layout at
+    # the top of this script names which one that is instead of counting directory levels
+    # up from this command and hoping.
+    [[ -f "$file" ]] || file="$VERSION_FILE"
 
     local version="unknown"
     if [[ -f "$file" ]]; then

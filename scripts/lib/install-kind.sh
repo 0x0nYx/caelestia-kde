@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# install-kind.sh - Which half of an install a run is doing.
+# install-kind.sh - Which half of an install a run is doing, and where that half's files
+# are.
 #
 # Two things install Caelestia: a checkout, through `install.sh` and the installer
 # TUI, and a package, through `caelestia install` afterwards. The line between them
@@ -18,6 +19,10 @@
 #
 # The step scripts stay the one implementation of both halves (that is what
 # parity-6 decided): this only tells them which of their own sections apply.
+#
+# The same split decides where each kind keeps its files, and the functions below that
+# answer that are the only place the layout is written down. `src/bin/caelestia` sources
+# this file for them as well, so the command and the steps cannot drift apart.
 if [[ -z "${CAELESTIA_INSTALL_KIND_SOURCED:-}" ]]; then
 CAELESTIA_INSTALL_KIND_SOURCED=1
 
@@ -39,6 +44,84 @@ install_kind() {
 
 install_is_packaged() {
     [[ "$(install_kind)" == "package" ]]
+}
+
+# Where that half keeps its files.
+#
+# This is the one definition of the layout, and everything that needs a path asks for it:
+# the steps that write the session environment, the autostart wrapper that repeats those
+# paths, and the command itself, which used to carry their checkout form unconditionally -
+# so on a packaged machine the command put ~/.config/quickshell/caelestia ahead of
+# /etc/xdg/quickshell/caelestia for everything it spawned, and a leftover tree from an old
+# checkout would have won over the one the package installed.
+#
+# Named functions rather than one lookup keyed on a string: the callers want six different
+# things, and a name says which. A checkout answers from BUNDLE_DIR when the front end set
+# it and from this library's own location otherwise, so a step script run by hand is still
+# honest about which install it belongs to.
+checkout_root() {
+    if [[ -n "${BUNDLE_DIR:-}" ]]; then
+        printf '%s\n' "$BUNDLE_DIR"
+        return 0
+    fi
+    (cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+}
+
+# The step scripts and the data they deploy.
+install_data_dir() {
+    if install_is_packaged; then
+        printf '%s\n' "${CAELESTIA_DATA_DIR:-/usr/share/caelestia}"
+    else
+        checkout_root
+    fi
+}
+
+# The palette's templates and named schemes.
+install_lib_dir() {
+    if install_is_packaged; then
+        printf '%s\n' /usr/lib/caelestia
+    else
+        printf '%s\n' "$HOME/.local/lib/caelestia"
+    fi
+}
+
+# Where the helper commands live.
+install_bin_dir() {
+    if install_is_packaged; then
+        printf '%s\n' /usr/bin
+    else
+        printf '%s\n' "$HOME/.local/bin"
+    fi
+}
+
+# What QML2_IMPORT_PATH has to contain for the shell to find its own tree and the plugin
+# modules in it. The two entries are the ones that differ between the install kinds.
+install_qml_import_path() {
+    if install_is_packaged; then
+        printf '%s\n' "/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"
+    else
+        printf '%s\n' "$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"
+    fi
+}
+
+# The shell's entrypoint, which is what the autostart unit runs.
+install_shell_config() {
+    if install_is_packaged; then
+        printf '%s\n' /etc/xdg/quickshell/caelestia/shell.qml
+    else
+        printf '%s\n' "$HOME/.config/quickshell/caelestia/shell.qml"
+    fi
+}
+
+# The version this install was made from: what the package stamped, or a checkout's own
+# file. `caelestia version` reads the copy 08-build-shell.sh records in ~/.config, and
+# falls back to this so the command answers before that step has run.
+install_version_file() {
+    if install_is_packaged; then
+        printf '%s/version.env\n' "$(install_data_dir)"
+    else
+        printf '%s/.github/version.env\n' "$(checkout_root)"
+    fi
 }
 
 fi

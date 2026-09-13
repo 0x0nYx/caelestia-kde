@@ -164,7 +164,13 @@ package() {
     cp -r src/dots src/dots-extra "$pkgdir/usr/share/caelestia/src/"
     cp -r shell/assets/wallpapers "$pkgdir/usr/share/caelestia/shell/assets/"
     cp -r assets/org.quickshell.desktop "$pkgdir/usr/share/caelestia/assets/"
-    install -Dm644 .github/version.env "$pkgdir/usr/share/caelestia/version.env"
+    # /usr/share/caelestia/version.env is what `caelestia version` reports, and what
+# 08-build-shell.sh copies into ~/.config for the session to read. It has to be the
+# version this package was built as - the same number CMake is handed - rather than
+# whatever the tree happened to say, or the command and pacman disagree while a release
+# is being prepared. A tag's version.env is bumped as part of releasing, and pkgver is
+# set ahead of the tag existing.
+printf 'VERSION=v%s\n' "$pkgver" > "$pkgdir/usr/share/caelestia/version.env"
 
     # The login screen. The theme, the helper that keeps the greeter in step with the
     # session, and the drop-in that selects the theme are all /usr and /etc, so a

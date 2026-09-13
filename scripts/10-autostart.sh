@@ -21,40 +21,19 @@ echo ""
 info "Setting up autostart entries"
 echo ""
 
-# Which tree the shell runs from, and where the session finds it. A checkout builds into
-# the user's home and the wrapper below has to name those paths; a package puts the tree
-# in /etc/xdg and the command, the plugin and the palette data in /usr, and
-# 08-build-shell.sh has already written exactly those paths to the session environment.
-# Writing the checkout's paths into the wrapper on such a machine is not a cosmetic
-# difference: QML2_IMPORT_PATH would lose /usr/lib/qt6/qml, which is where the Caelestia
-# plugin modules are, and the shell would start without them.
-#
-# The checkout's paths are written with $HOME escaped, so the unit resolves them when it
-# runs rather than when this script does. The package's are absolute already.
+# Where this install keeps the tree the shell runs from, and what the session needs to
+# find it. The values come from install-kind.sh, which is also what 08-build-shell.sh
+# writes into ~/.config/environment.d: one definition, so this cannot end up naming a
+# tree the install did not put there.
+SHELL_CONFIG="$(install_shell_config)"
+QML_IMPORT_PATH="$(install_qml_import_path)"
+LIB_DIR="$(install_lib_dir)"
+BIN_DIR="$(install_bin_dir)"
+
 if install_is_packaged; then
-    SHELL_CONFIG="/etc/xdg/quickshell/caelestia/shell.qml"
-    SHELL_ENTRYPOINT="$SHELL_CONFIG"
     ENTRYPOINT_HINT="the package owns this path; reinstall caelestia-shell-kde"
-    WRAPPER_PATH_EXPORT='# PATH is left alone: the package puts the command in /usr/bin, which every session
-# already has. Prepending ~/.local/bin would let a leftover copy from a checkout win
-# over the one the package owns.'
-    WRAPPER_QML_EXPORT='export QML2_IMPORT_PATH="/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"'
-    WRAPPER_LIB_EXPORT='export CAELESTIA_LIB_DIR="/usr/lib/caelestia"'
-    WRAPPER_BIN_EXPORT='export CAELESTIA_BIN_DIR="/usr/bin"'
 else
-    SHELL_CONFIG="$HOME/.config/quickshell/caelestia/shell.qml"
-    SHELL_ENTRYPOINT='$HOME/.config/quickshell/caelestia/shell.qml'
     ENTRYPOINT_HINT="run scripts/08-build-shell.sh first"
-    WRAPPER_PATH_EXPORT='# The shell and the widgets it runs call the command by name, and 08-build-shell.sh
-# installs it into ~/.local/bin. A session started by the display manager does not
-# necessarily have that directory on PATH (this script is reached by absolute path, so
-# finding it proves nothing), which is what leaves the wallpaper picker unable to change
-# anything and the palette stuck on the built-in default. Put it there first, for
-# everything the shell spawns.
-export PATH="$HOME/.local/bin:$PATH"'
-    WRAPPER_QML_EXPORT='export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"'
-    WRAPPER_LIB_EXPORT='export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"'
-    WRAPPER_BIN_EXPORT='export CAELESTIA_BIN_DIR="$HOME/.local/bin"'
 fi
 
 if [[ ! -f "$SHELL_CONFIG" ]]; then
@@ -80,10 +59,20 @@ fi
 echo "  Creating Caelestia Shell autostart entry..."
 cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
 #!/bin/bash
-$WRAPPER_PATH_EXPORT
-$WRAPPER_QML_EXPORT
-$WRAPPER_LIB_EXPORT
-$WRAPPER_BIN_EXPORT
+# Where this install's files are. ~/.config/environment.d carries the same values for a
+# session; they are repeated here because the unit can start this script outside one.
+#
+# The command the shell and its widgets call by name has to be on PATH for everything
+# this spawns: 08-build-shell.sh installs it into ~/.local/bin for a checkout, which a
+# session started by the display manager does not necessarily have on PATH (this script
+# is reached by absolute path, so finding it proves nothing), and a package puts it in
+# /usr/bin, which is on PATH but is also where the package's copy should win over any
+# leftover from an earlier checkout.
+export PATH="$BIN_DIR:\$PATH"
+export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
+export CAELESTIA_LIB_DIR="$LIB_DIR"
+export CAELESTIA_BIN_DIR="$BIN_DIR"
+export CAELESTIA_SHELL_CONFIG="$SHELL_CONFIG"
 export QS_NO_RELOAD_POPUP=1
 export QS_DROP_EXPENSIVE_FONTS=1
 export QS_DISABLE_CRASH_HANDLER=1
@@ -110,7 +99,7 @@ fi
 # Dropping it also makes the old stdbuf wrapper unnecessary: journald stdio is
 # what the line-buffering hack was working around, and stdbuf leaked
 # LD_PRELOAD=libstdbuf.so into every launched app on top of that.
-exec "$QUICKSHELL_PATH" -n -p "$SHELL_ENTRYPOINT"
+exec "$QUICKSHELL_PATH" -n -p "$SHELL_CONFIG"
 EOF
 chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
 

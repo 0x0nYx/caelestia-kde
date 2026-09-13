@@ -13,6 +13,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AUTOSTART_SCRIPT="$REPO_ROOT/scripts/10-autostart.sh"
+BUILD_SCRIPT="$REPO_ROOT/scripts/08-build-shell.sh"
 RESTART_SCRIPT="$REPO_ROOT/shell/scripts/restart_shell.sh"
 UNINSTALL_SCRIPT="$REPO_ROOT/uninstall.sh"
 IPC="$REPO_ROOT/src/bin/caelestia-shell-ipc"
@@ -51,28 +52,37 @@ test_the_ordering_the_entry_phase_provided_is_kept() {
     assert_contains "$(cat "$PACKAGED_UNIT")" 'Before=xdg-desktop-autostart.target' "and so should the package's"
 }
 
-test_the_wrapper_names_the_paths_of_the_install_it_is_part_of() {
-    # A packaged install runs the shell from /etc/xdg with the plugin and the palette
-    # data in /usr, and the environment file 08-build-shell.sh writes names those paths.
-    # The wrapper used to name the checkout's paths unconditionally, which on a packaged
-    # machine both failed the entrypoint check - nothing to autostart, so the unit was
-    # never enabled - and would have dropped /usr/lib/qt6/qml from QML2_IMPORT_PATH,
-    # where the Caelestia plugin modules are.
+test_the_wrapper_takes_its_paths_from_the_install_layout() {
+    # These paths used to be written out here, in the environment writer and in the
+    # command's own header - which is how the command came to name a checkout's
+    # directories on a packaged machine. They come from scripts/lib/install-kind.sh now,
+    # and tests/test_install_paths.sh covers the values themselves.
     local script
     script="$(cat "$AUTOSTART_SCRIPT")"
 
-    assert_contains "$script" 'install_is_packaged' "the autostart step has to know which install it is part of"
-    assert_contains "$script" 'SHELL_CONFIG="/etc/xdg/quickshell/caelestia/shell.qml"' "a packaged install should autostart the tree the package installed"
-    assert_contains "$script" 'export QML2_IMPORT_PATH="/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"' "and the wrapper should keep the package's QML import path"
-    assert_contains "$script" 'export CAELESTIA_LIB_DIR="/usr/lib/caelestia"' "and the package's library directory"
-    assert_contains "$script" 'export CAELESTIA_BIN_DIR="/usr/bin"' "and the package's command directory"
+    assert_contains "$script" 'SHELL_CONFIG="$(install_shell_config)"' "the autostart step should ask where the shell's entrypoint is"
+    assert_contains "$script" 'QML_IMPORT_PATH="$(install_qml_import_path)"' "and where its QML modules are"
+    assert_contains "$script" 'BIN_DIR="$(install_bin_dir)"' "and where the command is"
+    assert_not_contains "$script" '/etc/xdg/quickshell/caelestia' "the step must not name a path itself"
+    assert_not_contains "$script" '/usr/lib/qt6/qml' "not even the package's"
 
-    # The checkout's own paths have to survive: this is the same script for both.
-    assert_contains "$script" 'export PATH="$HOME/.local/bin:$PATH"' "a checkout should still put its own bin directory on the shell's PATH"
-    assert_contains "$script" 'export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"' "and keep its own QML import path"
-    assert_contains "$script" 'export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"' "and its own library directory"
-    assert_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$SHELL_ENTRYPOINT"' "the wrapper should take the entrypoint from the install kind, not a fixed path"
-    assert_not_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$HOME/.config/quickshell/caelestia/shell.qml"' "the entrypoint must not be the checkout's on every machine"
+    # The wrapper is generated, so what it exports is text this script writes.
+    assert_contains "$script" 'export QML2_IMPORT_PATH="$QML_IMPORT_PATH"' "the wrapper should carry the environment into everything the shell spawns"
+    assert_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$SHELL_CONFIG"' "and start the entrypoint the install named"
+    assert_not_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$HOME/.config/quickshell/caelestia/shell.qml"' "rather than a checkout's path on every machine"
+}
+
+test_the_environment_writer_uses_the_same_layout() {
+    # The environment the session reads and the wrapper the unit runs have to agree on
+    # where the install put things; they agree by both asking install-kind.sh.
+    local script
+    script="$(cat "$BUILD_SCRIPT")"
+
+    assert_contains "$script" 'QML2_IMPORT_PATH=$(install_qml_import_path)' "the session environment should ask for the layout"
+    assert_contains "$script" 'CAELESTIA_LIB_DIR=$(install_lib_dir)' "as should the library directory"
+    assert_contains "$script" 'CAELESTIA_BIN_DIR=$(install_bin_dir)' "and the command directory"
+    assert_contains "$script" 'CAELESTIA_SHELL_CONFIG=$(install_shell_config)' "and the entrypoint"
+    assert_not_contains "$script" 'QML2_IMPORT_PATH=/usr/lib/qt6/qml' "and must not carry its own copy of the values"
 }
 
 test_restarting_goes_through_that_unit() {
