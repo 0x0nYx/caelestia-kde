@@ -47,25 +47,33 @@ not another caelestia.
 
 ## Reusable path fixes a package needs
 
-A system install puts the shell somewhere other than `$HOME`, and a few paths
-are still written out by hand for a source install. These are the changes the
-package assumes, and they are the next piece of work:
+A system install puts the shell somewhere other than `$HOME`. Done on
+2026-09-12:
 
-- `shell/modules/nexus/pages/PluginsPage.qml`,
-  `shell/modules/nexus/pages/wallandstyle/AppearancePage.qml` and
-  `shell/modules/utilities/cards/Toggles.qml` call `restart_shell.sh` through
-  `${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/scripts/`. Every other
-  call site already uses `Quickshell.shellPath("scripts/...")`, which follows
-  the shell wherever it is installed.
-- `shell/services/Recorder.qml`,
-  `shell/modules/screenshot/regionSelector/RegionSelection.qml` and
-  `src/kde/shells/caelestia.desktop/contents/lockscreen/LockScreenUi.qml` point
-  at `~/.local/bin/caelestia-*`. The package installs those to `/usr/bin`, so
-  they need to resolve like the rest.
+- `Paths.bin(name)` in `shell/utils/Paths.qml` resolves a command through
+  `CAELESTIA_BIN_DIR`, falling back to `~/.local/bin`. `Recorder.qml`,
+  `RegionSelection.qml` and `UpdateChecker.qml` use it, and the source install's
+  autostart script exports the variable the same way the package's does.
+- `PluginsPage.qml`, `AppearancePage.qml`, `Toggles.qml` and `PluginLoader.qml`
+  reach `restart_shell.sh` and `list-plugins.sh` through
+  `Quickshell.shellPath("scripts/...")`, which follows the shell wherever it is
+  installed.
+- `LockScreenUi.qml` resolves the IPC helper inside the command it runs, because
+  kscreenlocker inherits neither the session environment nor its PATH: the helper
+  is looked up with `~/.local/bin` in front, which covers the package's
+  `/usr/bin` and a source install's copy.
+
+Still open:
+
 - `src/bin/caelestia-shell-ipc` resolves the shell config as
   `$HOME/.config/quickshell/caelestia/shell.qml` unless `CAELESTIA_SHELL_CONFIG`
-  is set. It needs the system path as a fallback for the lock screen and any
-  other caller that runs outside the autostart environment.
+  is set. The packaged autostart sets it; the lock screen and anything else
+  running outside that environment does not.
+- `src/systemd/caelestia-update-checker.service` runs
+  `%h/.local/bin/caelestia-check-updates`, a path only a source install has. It
+  gets the same resolution when the environment work lands: a user unit can read
+  `CAELESTIA_BIN_DIR` from the session environment once it is written to
+  `~/.config/environment.d/`.
 
 ## Publishing
 

@@ -101,7 +101,11 @@ Item {
     readonly property int liveTemp: Math.round(Cpu.temperature ?? 0)
     readonly property int liveRam: Math.round((Memory.percentage ?? 0) * 100)
     readonly property int liveDisk: Math.round((Storage.percentage ?? 0) * 100)
-    readonly property string ipcBin: "~/.local/bin/caelestia-shell-ipc"
+    // The IPC helper ships with the shell: /usr/bin for a package install,
+    // ~/.local/bin for a source one. kscreenlocker inherits neither the session
+    // environment nor its PATH, so the resolution happens in the commands below
+    // rather than in this property.
+    readonly property string ipcBin: "PATH=\"${CAELESTIA_BIN_DIR:-$HOME/.local/bin}:$PATH\" caelestia-shell-ipc"
     property var liveMedia: ({})
     property var liveNotifs: []
     property double notifsClearedAt: 0
@@ -290,7 +294,7 @@ Item {
         id: mprisSource
 
         function poll() {
-            connectSource("python3 -c 'import json, subprocess, os; ipc = os.path.expanduser(\"" + lockScreenUi.ipcBin + "\"); get = lambda p: subprocess.run([ipc, \"call\", \"mpris\", \"getActive\", p], capture_output=True, text=True).stdout.strip(); t, a, u, s = get(\"trackTitle\"), get(\"trackArtist\"), get(\"trackArtUrl\"), get(\"playbackState\"); t = \"\" if t == \"No active player\" else t; print(json.dumps({\"title\": t, \"artist\": a, \"artUrl\": u, \"status\": \"Playing\" if s == \"1\" else \"Paused\"}))'");
+            connectSource("PATH=\"${CAELESTIA_BIN_DIR:-$HOME/.local/bin}:$PATH\" python3 -c 'import json, subprocess, os; ipc = \"caelestia-shell-ipc\"; get = lambda p: subprocess.run([ipc, \"call\", \"mpris\", \"getActive\", p], capture_output=True, text=True).stdout.strip(); t, a, u, s = get(\"trackTitle\"), get(\"trackArtist\"), get(\"trackArtUrl\"), get(\"playbackState\"); t = \"\" if t == \"No active player\" else t; print(json.dumps({\"title\": t, \"artist\": a, \"artUrl\": u, \"status\": \"Playing\" if s == \"1\" else \"Paused\"}))'");
         }
 
         engine: "executable"

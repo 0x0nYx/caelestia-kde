@@ -91,7 +91,7 @@ PageBase {
                 Anim { type: Anim.DefaultEffects }
             }
 
-            onClicked: Launch.exec(["bash", "-c", "bash \"${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/scripts/restart_shell.sh\"; sleep 1; caelestia shell nexus openPage 15 0"])
+            onClicked: Launch.exec(["bash", "-c", `bash "${Quickshell.shellPath("scripts/restart_shell.sh")}"; sleep 1; caelestia shell nexus openPage 15 0`])
         }
     ]
 

@@ -199,7 +199,9 @@ Item {
         pendingMeta = 0;
 
         let configHome = Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config");
-        let script = configHome + "/quickshell/caelestia/scripts/list-plugins.sh";
+        // The plugin helper ships with the shell, so it is found wherever the
+        // shell is installed instead of only under ~/.config.
+        let script = Quickshell.shellPath("scripts/list-plugins.sh");
 
         let proc = Qt.createQmlObject(`
             import Quickshell.Io
