@@ -195,18 +195,5 @@ PageBase {
             value: GlobalConfig.notifs.clearThreshold
             onMoved: value => GlobalConfig.notifs.clearThreshold = value
         }
-
-        SectionHeader {
-            text: qsTr("Taskbar")
-        }
-
-        ToggleRow {
-            first: true
-            last: true
-            text: qsTr("Show notification icon")
-            subtext: qsTr("Show notifications in taskbar status icons")
-            checked: Config.bar.status.showNotifications
-            onToggled: GlobalConfig.bar.status.showNotifications = checked
-        }
     }
 }

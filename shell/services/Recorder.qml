@@ -8,7 +8,7 @@ import qs.utils
 Singleton {
     id: root
 
-    readonly property string recordBin: Paths.absolutePath("~/.local/bin/caelestia-record")
+    readonly property string recordBin: Paths.bin("caelestia-record")
 
     readonly property alias running: props.running
     readonly property alias paused: props.paused

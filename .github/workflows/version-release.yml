@@ -107,27 +107,27 @@ jobs:
             echo
 
             if [ -s commit_notes.txt ]; then
-              if grep -qiE '^- (major):' commit_notes.txt; then
+              if grep -qiE '^- (major)(\([^)]*\))?:' commit_notes.txt; then
                 echo "#### Major Changes"
-                grep -iE '^- (major):' commit_notes.txt | sed -E 's/^- (major): /- /i'
+                grep -iE '^- (major)(\([^)]*\))?:' commit_notes.txt | sed -E 's/^- (major)\(([^)]*)\): /- \2: /i; s/^- (major): /- /i'
                 echo
               fi
 
-              if grep -qiE '^- (feat|feature):' commit_notes.txt; then
+              if grep -qiE '^- (feat|feature)(\([^)]*\))?:' commit_notes.txt; then
                 echo "#### Features"
-                grep -iE '^- (feat|feature):' commit_notes.txt | sed -E 's/^- (feat|feature): /- /i'
+                grep -iE '^- (feat|feature)(\([^)]*\))?:' commit_notes.txt | sed -E 's/^- (feat|feature)\(([^)]*)\): /- \2: /i; s/^- (feat|feature): /- /i'
                 echo
               fi
 
-              if grep -qiE '^- (perf|performance):' commit_notes.txt; then
+              if grep -qiE '^- (perf|performance)(\([^)]*\))?:' commit_notes.txt; then
                 echo "#### Performance"
-                grep -iE '^- (perf|performance):' commit_notes.txt | sed -E 's/^- (perf|performance): /- /i'
+                grep -iE '^- (perf|performance)(\([^)]*\))?:' commit_notes.txt | sed -E 's/^- (perf|performance)\(([^)]*)\): /- \2: /i; s/^- (perf|performance): /- /i'
                 echo
               fi
 
-              if grep -qiE '^- (fix|bug):' commit_notes.txt; then
+              if grep -qiE '^- (fix|bug)(\([^)]*\))?:' commit_notes.txt; then
                 echo "#### Bug Fixes"
-                grep -iE '^- (fix|bug):' commit_notes.txt | sed -E 's/^- (fix|bug): /- /i'
+                grep -iE '^- (fix|bug)(\([^)]*\))?:' commit_notes.txt | sed -E 's/^- (fix|bug)\(([^)]*)\): /- \2: /i; s/^- (fix|bug): /- /i'
                 echo
               fi
             else

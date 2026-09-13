@@ -2,6 +2,7 @@
 
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
+#include "enums.hpp"
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -43,12 +44,31 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, activeTrail, false)
     CONFIG_PROPERTY(bool, monitorCenter, false)
     CONFIG_GLOBAL_PROPERTY(bool, perMonitorWorkspaces, true)
+    // Was a boolean called `useIcon`; upstream's name and shape are kept so a
+    // shell.json written for either shell means the same thing here.
+    CONFIG_ENUM_PROPERTY(BarWorkspaceDisplay, displayType, BarWorkspaceDisplay::Shapes)
+    // Retired in favour of displayType above, and kept for one release only so the
+    // migration in ConfigMigrations.qml can read what the user had before resetting
+    // it. A key the loader does not know is quarantined rather than readable, and the
+    // settings layer has no way to name a key that is not in the schema, so without
+    // this line a shell.json saying `useIcon: false` would keep asking for workspace
+    // numbers and silently get shapes - the enum default - for the rest of its life.
     CONFIG_PROPERTY(bool, useIcon, true)
     CONFIG_PROPERTY(QString, label, u" "_s)
     CONFIG_PROPERTY(QString, occupiedLabel, u" 󰮯"_s)
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
     CONFIG_PROPERTY(QString, capitalisation, u"preserve"_s)
     CONFIG_GLOBAL_PROPERTY(QVariantList, specialWorkspaceIcons, QVariantList())
+    // Windows the bar's workspace pills leave out of their icon lists. Tags are
+    // Hyprland's, and the default below is upstream's; KWin has none, so on KDE the
+    // same entries are matched against the window's app id instead - which is what
+    // a KDE user has to name to hide an app from the bar. The defaults mean nothing
+    // there and simply never match.
+    CONFIG_GLOBAL_PROPERTY(QStringList, ignoredTags,
+        DEFAULT_ARG({
+            u"hide_in_bar"_s,
+            u"xwl_popup"_s,
+        }))
     CONFIG_GLOBAL_PROPERTY(QVariantList, windowIcons,
         { vmap({
             { u"regex"_s, u"steam(_app_(default|[0-9]+))?"_s },
@@ -243,6 +263,23 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BarGreeter, activeWindow)
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarStatus, status)
+    // The status area as an ordered list: which icons are there and in what order,
+    // which is upstream's shape for it and what the settings editor reads. An `id`
+    // names one of the icons the bar knows how to draw; `enabled` is its switch.
+    CONFIG_LIST(EntryList, statusIcons,
+        DEFAULT_ARG({
+            LIST_ENTRY(lockStatus, true),
+            LIST_ENTRY(microphone, false),
+            LIST_ENTRY(kbLayout, false),
+            LIST_ENTRY(network, true),
+            LIST_ENTRY(ethernet, true),
+            LIST_ENTRY(bluetooth, true),
+            LIST_ENTRY(audio, true),
+            LIST_ENTRY(battery, true),
+            LIST_ENTRY(peripheralBattery, false),
+            LIST_ENTRY(nightlight, true),
+            LIST_ENTRY(notifications, true),
+        }))
     CONFIG_SUBOBJECT(BarClock, clock)
     CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_SUBOBJECT(BarGithub, github)

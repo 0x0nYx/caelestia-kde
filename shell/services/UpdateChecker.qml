@@ -790,7 +790,7 @@ echo "$INSTALLED|$LATEST"
     Process {
         id: updateProcess
 
-        command: [Paths.absolutePath("~/.local/bin/caelestia-update"), root.currentBranch]
+        command: [Paths.bin("caelestia-update"), root.currentBranch]
             .concat(root.targetVersion !== "" ? [root.targetVersion] : [])
         environment: ({
             CAELESTIA_SKIP_DEPLOY: updaterSettings.deployConfigs ? "0" : "1",

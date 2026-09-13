@@ -56,12 +56,28 @@ else
 fi
 echo "---------------------------------------------"
 
+# --- Which half owns this install ---
+#
+# The directory this copy of the command lives in says it: an installer run puts it
+# in ~/.local/bin (or wherever CAELESTIA_BIN_DIR points, which is what the shell
+# resolves helper paths from) and a package puts it in /usr/bin. Nothing has to be
+# probed on disk for that, and it stays right whatever the package is called.
+SELF_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)"
+PACKAGED=0
+case "$SELF_DIR" in
+    /usr/bin) PACKAGED=1 ;;
+esac
+
 # --- Pre-flight Dependency Checks ---
-for cmd in git cmake make; do
-    if ! command -v "$cmd" &> /dev/null; then
-        die "Required command '$cmd' is missing. Please install it first."
-    fi
-done
+# A package-managed install needs none of these: the branch further down hands the
+# whole update to the package manager.
+if [ "$PACKAGED" -eq 0 ]; then
+    for cmd in git cmake make; do
+        if ! command -v "$cmd" &> /dev/null; then
+            die "Required command '$cmd' is missing. Please install it first."
+        fi
+    done
+fi
 
 # --- Robust Privilege Escalation Wrapper ---
 # The wrapper tries cached credentials first (sudo -n), and only falls
@@ -92,6 +108,37 @@ fi
 EOF
 chmod +x "$UPD_DIR/bin/sudo"
 export PATH="$UPD_DIR/bin:$PATH"
+
+# --- Package-managed install ---
+#
+# A package owns every file it installed, so the update is the package manager and
+# then whatever rebuilds the package - not the work below, which clones the
+# repository and builds a second shell into ~/.config and ~/.local. Two shells on
+# the machine, only one of them known to pacman, is an install that breaks in ways
+# nobody can explain a year later; and it needs a toolchain the package does not.
+if [ "$PACKAGED" -eq 1 ]; then
+    echo "---------------------------------------------"
+    echo "  Caelestia Update (this install came from a package)"
+    echo "---------------------------------------------"
+    echo
+    if [ -n "${1:-}" ]; then
+        echo "  A single version cannot be selected from here; choose it where the"
+        echo "  package was installed from."
+        echo
+    fi
+    if command -v pacman &> /dev/null; then
+        info "Updating the system packages..."
+        sudo pacman -Syu --noconfirm || warn "The package update failed or was cancelled."
+    else
+        warn "No pacman found; update this package with the tool that installed it."
+    fi
+    info "And the shell itself:"
+    echo "    pacman:  sudo pacman -Syu caelestia-shell-kde"
+    echo "    AUR:     rebuild caelestia-shell-kde with the helper it was installed with"
+    echo "    then log out and back in."
+    echo "PROGRESS: done: Package update finished"
+    exit 0
+fi
 
 # --- Prime privilege escalation once, then keep it alive ---
 # Several steps below need root (system package update, the shell install

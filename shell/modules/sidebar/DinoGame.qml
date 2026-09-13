@@ -151,7 +151,7 @@ Item {
                 anchors.centerIn: parent
                 width: 250
                 height: 109.375
-                source: Paths.absolutePath("root:/assets/dino.png")
+                source: Paths.absolutePath(Config.paths.noNotifsPic)
                 fillMode: Image.PreserveAspectFit
                 opacity: GlobalConfig.general.caelestiaMode ? 0 : 1
 

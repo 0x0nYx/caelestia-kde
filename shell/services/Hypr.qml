@@ -156,6 +156,32 @@ Singleton {
         return fallback;
     }
 
+    // Whether the bar's workspace pills should leave a window out of their icon
+    // lists. Tags are Hyprland's, read from the window's IPC object, and the
+    // configured list defaults to upstream's; KWin has no tags, so on KDE the same
+    // entries are matched against the window's app id, which is what a KDE user has
+    // to name to hide an app. A trailing `*` is dropped before matching, as
+    // upstream does. The shell's own surfaces are always left out: they are part of
+    // the bar rather than windows the user put on a desktop.
+    function isIgnoredWindow(win: var): bool {
+        if (!win)
+            return true;
+
+        const cls = String(win["class"] ?? "");
+        if (cls === "quickshell" || cls === "plasmashell")
+            return true;
+
+        const ignored = GlobalConfig.bar.workspaces.ignoredTags;
+        if (!ignored || ignored.length === 0)
+            return false;
+
+        const tags = win.lastIpcObject?.tags ?? win.tags;
+        const names = cls ? [cls] : [];
+        if (tags)
+            names.push(...(Array.isArray(tags) ? tags : [tags]));
+        return names.some(name => ignored.includes(String(name).replace(/\*$/, "")));
+    }
+
     function hasFullscreen(): bool {
         if (typeof KWinActiveWindowBridge !== "undefined") {
             const wins = KWinActiveWindowBridge.windowList || [];

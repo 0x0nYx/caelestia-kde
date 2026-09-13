@@ -54,6 +54,7 @@ cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
 export PATH="\$HOME/.local/bin:\$PATH"
 export QML2_IMPORT_PATH="\$HOME/.local/lib/qt6/qml:\$HOME/.config/quickshell/caelestia"
 export CAELESTIA_LIB_DIR="\$HOME/.local/lib/caelestia"
+export CAELESTIA_BIN_DIR="\$HOME/.local/bin"
 export QS_NO_RELOAD_POPUP=1
 export QS_DROP_EXPENSIVE_FONTS=1
 export QS_DISABLE_CRASH_HANDLER=1
@@ -161,6 +162,20 @@ fi
 # refusing the name already in effect. Ours rotates between two names of its
 # own, and the ones it left behind would only be duplicates in System Settings.
 rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors 2>/dev/null || true
+
+#  Retired: the status icons order file
+#
+# The bar kept the order the user dragged its status icons into in a file of its
+# own under ~/.config/caelestia. The order is part of the config now
+# (bar.statusIcons), where the settings editor can see it, and the shell is what
+# moves it there: ConfigMigrations.qml reads the file, writes the list from its
+# order and the retired switches, and deletes the file on the following start,
+# once the list it fed is in the config. This script must not delete it - it runs
+# on the same login as the shell does, and a file removed here would take the
+# order with it before the shell has read it.
+if [[ -f "$HOME/.config/caelestia/status_icons_order.txt" ]]; then
+    skip "Status icon order file left to the shell, which migrates it into bar.statusIcons."
+fi
 
 # Live window thumbnails.
 #

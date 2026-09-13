@@ -270,7 +270,7 @@ PanelWindow {
     onPreparationDoneChanged: {
         if (!preparationDone) return;
         if (root.isRecording && root.recordingShouldStop) {
-            Launch.exec([Paths.absolutePath("~/.local/bin/caelestia-record")]);
+            Launch.exec([Paths.bin("caelestia-record")]);
             root.dismiss();
             return;
         }

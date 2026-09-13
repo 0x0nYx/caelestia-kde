@@ -60,7 +60,7 @@ GridLayout {
         Layout.preferredHeight: isHorizontal ? -1 : (barThickness - Tokens.padding.small)
 
         asynchronous: true
-        sourceComponent: Config.bar.workspaces.useIcon ? iconComponent : textComponent
+        sourceComponent: Config.bar.workspaces.displayType === BarWorkspaceDisplay.Text ? textComponent : iconComponent
     }
 
     Component {
@@ -340,14 +340,14 @@ GridLayout {
                                 const w = wins[i];
                                 if (w.output !== root.screenName)
                                     continue;
-                                if (w.workspace && w.workspace.id === ws && w["class"] !== "quickshell" && w["class"] !== "plasmashell") {
+                                if (w.workspace && w.workspace.id === ws && !Hypr.isIgnoredWindow(w)) {
                                     windows.push(w);
                                 }
                             }
                         } else if (typeof Hypr !== "undefined") {
                             const wins = Hypr.toplevels.values;
                             for (let i = 0; i < wins.length; ++i) {
-                                if (wins[i].workspace && wins[i].workspace.id === ws) {
+                                if (wins[i].workspace && wins[i].workspace.id === ws && !Hypr.isIgnoredWindow(wins[i])) {
                                     windows.push(wins[i]);
                                 }
                             }
@@ -410,14 +410,14 @@ GridLayout {
                                 const w = wins[i];
                                 if (w.output !== root.screenName)
                                     continue;
-                                if (w.workspace && w.workspace.id === ws && w["class"] !== "quickshell" && w["class"] !== "plasmashell") {
+                                if (w.workspace && w.workspace.id === ws && !Hypr.isIgnoredWindow(w)) {
                                     windows.push(w);
                                 }
                             }
                         } else if (typeof Hypr !== "undefined") {
                             const wins = Hypr.toplevels.values;
                             for (let i = 0; i < wins.length; ++i) {
-                                if (wins[i].workspace && wins[i].workspace.id === ws) {
+                                if (wins[i].workspace && wins[i].workspace.id === ws && !Hypr.isIgnoredWindow(wins[i])) {
                                     windows.push(wins[i]);
                                 }
                             }

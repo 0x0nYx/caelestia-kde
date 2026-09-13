@@ -38,6 +38,114 @@ fi
 
 ALL_OK=true
 
+# Places the sync helper, the posthook that calls it, and the sudoers rule that
+# lets the hook run it. Shared by both display managers below: the helper decides
+# what to do from the machine it runs on, not from where it was installed.
+register_greeter_sync() {
+    local label="${1:-Login screen configured.}"
+
+    POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
+    CLI_JSON="$HOME/.config/caelestia/cli.json"
+
+    if command -v python3 &>/dev/null; then
+        python3 - "$CLI_JSON" "$POSTHOOK_CMD" <<'PYEOF'
+import json, os, re, sys
+
+cli_path, hook_cmd = sys.argv[1], sys.argv[2]
+
+config = {}
+if os.path.exists(cli_path):
+    with open(cli_path) as f:
+        config = json.load(f)
+
+# Assign rather than append. Any posthook of ours comes back out of whatever is
+# there first, then the current one goes in once: a second run of the installer
+# lands on the same string instead of stacking another copy onto it, and a path
+# left behind by the other display manager's install does not survive the switch.
+# A hook the user wrote is kept, in front of ours; every other key in the file is
+# untouched, including ones this script does not know.
+#
+# Only the two helpers this installer owns are recognised, the same pair
+# uninstall.sh recognises. Matching any command called with `--posthook` would
+# delete a posthook the user wrote for a tool of their own the next time they ran
+# this script.
+HELPERS = r"sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook"
+ours = re.compile(
+    r"\s*&&\s*" + HELPERS
+    + r"|" + HELPERS + r"\s*&&\s*"
+    + r"|" + HELPERS
+)
+
+for section in ("wallpaper", "theme"):
+    config.setdefault(section, {})
+    existing = config[section].get("postHook", "")
+    if isinstance(existing, str):
+        cleaned = ours.sub("", existing).strip()
+        config[section]["postHook"] = f"{cleaned} && {hook_cmd}" if cleaned else hook_cmd
+
+os.makedirs(os.path.dirname(cli_path), exist_ok=True)
+with open(cli_path, "w") as f:
+    json.dump(config, f, indent=4)
+    f.write("\n")
+PYEOF
+        ok "Posthook registered in cli.json"
+    else
+        warn "python3 not found, skipping posthook registration. Wallpaper and color changes will not auto-sync to the login screen."
+        ALL_OK=false
+    fi
+
+    SUDOERS_FILE="/etc/sudoers.d/caelestia-sddm-sync"
+    # Written on every run rather than only when it is missing. An install that moved
+    # between display managers, or between the theme's copy of the helper and
+    # /usr/local/bin, leaves behind a drop-in naming the path it used then, while the
+    # posthook above calls the one it uses now - and the login screen is a place where
+    # sudo has nobody to ask for a password.
+    echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
+    caelestia_sudo chmod 440 "$SUDOERS_FILE"
+    ok "Sudoers drop-in written for $SYNC_SCRIPT."
+
+    if [[ "$ALL_OK" == "true" ]]; then
+        ok "$label"
+    else
+        warn "Login screen installed with warnings. Review the output above."
+    fi
+}
+
+# Plasma Login is a fork of SDDM, but its greeter is a Plasma shell of its own and
+# reads no SDDM themes at all: a theme package would sit under /usr/share/sddm and
+# never be loaded, which is what a login screen that ignores the theme looks like.
+# Its wallpaper comes from /etc/plasmalogin.conf and the rest of its look from the
+# plasmalogin user's own Plasma config - the same thing KDE's Login Screen settings
+# module writes when you press its button - so that is what this branch does, and
+# the sync helper is what keeps the two in step afterwards.
+DISPLAY_MANAGER="sddm"
+if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; then
+    DISPLAY_MANAGER="plasmalogin"
+fi
+
+if [[ "$DISPLAY_MANAGER" == "plasmalogin" ]]; then
+    SYNC_SCRIPT="/usr/local/bin/caelestia-greeter-sync"
+
+    caelestia_sudo install -d -m 0755 /usr/local/bin
+    caelestia_sudo install -m 0755 "$SRC_DIR/sync.sh" "$SYNC_SCRIPT"
+    ok "Login screen sync helper installed to $SYNC_SCRIPT"
+
+    # The helper's own work is the same on both display managers, so it does the
+    # configuring here rather than this script writing the same keys twice.
+    if sync_output="$(caelestia_sudo "$SYNC_SCRIPT" 2>&1)"; then
+        ok "Initial login screen sync complete."
+    else
+        warn "Initial login screen sync had warnings (non-fatal):"
+        if [[ -n "$sync_output" ]]; then
+            printf '%s\n' "$sync_output" | sed -e 's/\[WARN\]/warning:/g' -e 's/\[ERR\]/error:/g' -e 's/^/  /'
+        fi
+        ALL_OK=false
+    fi
+
+    register_greeter_sync "Login screen configured for Plasma Login."
+    exit 0
+fi
+
 if [[ "${BASE_DISTRO:-}" == "arch" ]]; then
     SDDM_DEPS=(sddm qt6-declarative qt6-5compat qt6-svg qt6-multimedia)
     MISSING=()
@@ -114,6 +222,16 @@ caelestia_sudo find "$INSTALL_DIR" -type f -exec chmod 644 {} +
 caelestia_sudo chmod 755 "$SYNC_SCRIPT"
 ok "Theme files installed to $INSTALL_DIR ($VARIANT variant)"
 
+# A theme without theme.conf is not a theme as far as SDDM is concerned: it falls
+# back to the distribution default, without an error in the journal, which is
+# indistinguishable from the install never having run. Say which piece is missing.
+for required in theme.conf metadata.desktop Main.qml; do
+    if [[ ! -e "/usr/share/sddm/themes/$THEME_NAME/$required" ]]; then
+        warn "$INSTALL_DIR/$required is missing: SDDM will ignore this theme and show the default."
+        ALL_OK=false
+    fi
+done
+
 mkdir -p "$HOME/.config/caelestia/templates"
 if [[ -f "$THEME_SOURCE/theme.conf.template" ]]; then
     cp "$THEME_SOURCE/theme.conf.template" "$HOME/.config/caelestia/templates/sddm-theme.conf"
@@ -121,73 +239,56 @@ if [[ -f "$THEME_SOURCE/theme.conf.template" ]]; then
 fi
 
 caelestia_sudo mkdir -p /etc/sddm.conf.d
-cat <<'DROPIN' | caelestia_sudo tee /etc/sddm.conf.d/caelestia.conf >/dev/null
+# Named to sort last on purpose. SDDM reads /etc/sddm.conf.d/*.conf in alphabetical
+# order and the last assignment of a key wins, and distributions and sddm-kcm ship
+# drop-ins that set [Theme] Current themselves - kde_settings.conf, for one. A file
+# named after this project loses to every one of those, which looks exactly like no
+# theme having been installed at all: a stock Breeze login screen, with no sign of
+# the theme that was just deployed.
+cat <<'DROPIN' | caelestia_sudo tee /etc/sddm.conf.d/zz-caelestia.conf >/dev/null
 [General]
 GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
 
 [Theme]
 Current=caelestia
 DROPIN
+caelestia_sudo rm -f /etc/sddm.conf.d/caelestia.conf
 ok "SDDM config drop-in created."
 
-POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
-CLI_JSON="$HOME/.config/caelestia/cli.json"
-
-if command -v python3 &>/dev/null; then
-    python3 - "$CLI_JSON" "$POSTHOOK_CMD" <<'PYEOF'
-import json, sys, os
-cli_path, hook_cmd = sys.argv[1], sys.argv[2]
-config = {}
-if os.path.exists(cli_path):
-    with open(cli_path) as f:
-        config = json.load(f)
-for section in ("wallpaper", "theme"):
-    if section not in config:
-        config[section] = {}
-    existing = config[section].get("postHook", "")
-    if hook_cmd in existing:
-        pass
-    elif existing:
-        config[section]["postHook"] = existing + " && " + hook_cmd
-    else:
-        config[section]["postHook"] = hook_cmd
-os.makedirs(os.path.dirname(cli_path), exist_ok=True)
-with open(cli_path, "w") as f:
-    json.dump(config, f, indent=4)
-PYEOF
-    ok "Posthook registered in cli.json"
-else
-    warn "python3 not found, skipping posthook registration. Wallpaper and color changes will not auto-sync to SDDM."
-    ALL_OK=false
-fi
-
-SUDOERS_FILE="/etc/sudoers.d/caelestia-sddm-sync"
-if ! caelestia_sudo_quiet test -f "$SUDOERS_FILE"; then
-    echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
-    caelestia_sudo chmod 440 "$SUDOERS_FILE"
-    ok "Sudoers drop-in created."
-fi
-
-if sync_output="$(caelestia_sudo "$SYNC_SCRIPT" 2>&1)"; then
-    ok "Initial sync complete."
-else
-    warn "Initial sync had warnings (non-fatal):"
-    # The sync's output is the only place the reason is written down, so it is
-    # echoed here rather than left in the step's exit code. Its markers are
-    # relabelled on the way through: the installer turns any "[WARN]" inside a
-    # step's output into a WARN status for the whole step, and a nested command's
-    # warning is not what this step is reporting.
-    if [[ -n "$sync_output" ]]; then
-        printf '%s\n' "$sync_output" | sed -e 's/\[WARN\]/warning:/g' -e 's/\[ERR\]/error:/g' -e 's/^/  /'
+# The drop-in is one of two places the theme can be picked. /etc/sddm.conf is the
+# other, and a `Current=` sitting there - which is where KDE's own Login Screen
+# settings module writes, and where a distribution may ship one - is read after the
+# drop-in directory by some SDDM versions and before it by others. Setting the key
+# in both places means which one wins stops mattering.
+#
+# What was there first is kept before it is overwritten, because it is a user's
+# selection and not ours to lose: uninstall.sh puts it back. The copy is made once,
+# so a second install does not record this installer's own value as the user's.
+SDDM_CONF_BACKUP="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/sddm.conf.theme-current"
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    # Only when the value can be read back. Without kreadconfig6 there is nothing to
+    # record, and a backup saying "there was nothing here" would make uninstall delete a
+    # selection it simply could not see; uninstall's fallback covers that case instead,
+    # by removing the key only while it still names this theme.
+    if [[ ! -f "$SDDM_CONF_BACKUP" ]] && command -v kreadconfig6 >/dev/null 2>&1; then
+        mkdir -p "$(dirname -- "$SDDM_CONF_BACKUP")"
+        PREVIOUS_CURRENT="$(kreadconfig6 --file /etc/sddm.conf --group Theme --key Current 2>/dev/null || true)"
+        # `#none` is a value SDDM cannot be given, so it can stand for "there was no
+        # selection to put back".
+        printf '%s\n' "${PREVIOUS_CURRENT:-#none}" > "$SDDM_CONF_BACKUP"
     fi
-    ALL_OK=false
+    caelestia_sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current "$THEME_NAME" 2>/dev/null \
+        && ok "Theme selected in /etc/sddm.conf as well." \
+        || warn "Could not write to /etc/sddm.conf; the drop-in is the only selection."
 fi
 
-# Non-fatal problems are reported through the [WARN] markers in this step's
-# output, which the TUI turns into a WARN status. The exit code stays 0 so a
-# theme that did install is not reported as FAILED and offered for retry.
-if [[ "$ALL_OK" == "true" ]]; then
-    ok "SDDM theme installed."
-else
-    warn "SDDM theme installed with warnings. Review the output above."
-fi
+# Every file SDDM reads that picks a theme, so a conflict is visible rather than
+# guessed at. Ours is in the list too; it is meant to win.
+for conf in /usr/lib/sddm/sddm.conf.d/*.conf /etc/sddm.conf /etc/sddm.conf.d/*.conf; do
+    [[ -f "$conf" ]] || continue
+    CURRENT_LINE="$(grep -E '^[[:space:]]*Current[[:space:]]*=' "$conf" 2>/dev/null | tail -n 1 || true)"
+    [[ -n "$CURRENT_LINE" ]] || continue
+    info "${conf}: ${CURRENT_LINE// /}"
+done
+
+register_greeter_sync "SDDM theme installed."

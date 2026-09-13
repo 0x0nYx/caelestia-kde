@@ -47,17 +47,9 @@ tweak_disable_kde_osd() {
     kwriteconfig6 --file powerdevilrc --group "AC" \
         --key "brightnessosd" "false" 2>/dev/null || true
 
-    # kmix OSD
-    mkdir -p "$HOME/.config"
-    if [[ -f "$HOME/.config/kmixrc" ]]; then
-        sed -i 's/^ShowOSD=.*/ShowOSD=false/' "$HOME/.config/kmixrc" 2>/dev/null || true
-        grep -q "^ShowOSD=" "$HOME/.config/kmixrc" || echo -e "\n[Global]\nShowOSD=false" >> "$HOME/.config/kmixrc"
-    else
-        cat > "$HOME/.config/kmixrc" <<'EOF'
-[Global]
-ShowOSD=false
-EOF
-    fi
+    # kmix OSD, one key through the same tool as the settings above instead of
+    # rewriting a file that belongs to Plasma.
+    kwriteconfig6 --file kmixrc --group "Global" --key "ShowOSD" "false" 2>/dev/null || true
 
     ok "KDE OSD popups disabled."
 }
@@ -83,18 +75,25 @@ tweak_five_desktops() {
 tweak_remove_panels() {
     info "Removing KDE Plasma panels..."
 
-    # Remove live panels first (persisted by plasmashell when it is running).
-    qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+    # Plasma's own scripting API, so plasmashell persists the change itself and
+    # nothing here writes the file: every containment, widget and setting the user
+    # has besides the panels is left exactly as it was.
+    if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
         "var p = panels(); for (var i = 0; i < p.length; i++) { p[i].remove(); }" \
-        2>/dev/null || true
+        2>/dev/null; then
+        ok "KDE panels removed."
+        return 0
+    fi
 
-    # Then scrub the config so headless installs are covered too. konsave
-    # (00-backup-themes.sh) already backs up desktop-appletsrc; a .bak copy is
-    # kept next to the file as belt and braces.
+    # No plasmashell to ask - a headless install, or this runs before the desktop
+    # is up - so the panels an earlier plasmashell wrote have to go by hand.
+    # Removing a containment key by key is only possible through that API, so this
+    # path drops the whole block of each containment that is a panel, and nothing
+    # outside those blocks. konsave already copied the file (00-backup-themes.sh);
+    # a second copy beside it would be one more file of ours in ~/.config.
     python3 - <<'EOF' || warn "Failed to remove KDE panels from config."
 import os
 import re
-import shutil
 
 path = os.path.expanduser("~/.config/plasma-org.kde.plasma.desktop-appletsrc")
 if not os.path.exists(path):
@@ -119,10 +118,6 @@ for line in lines:
 if not panel_ids:
     raise SystemExit(0)
 
-bak = path + ".caelestia.bak"
-if not os.path.exists(bak):
-    shutil.copy2(path, bak)
-
 out = []
 skip = False
 for line in lines:
@@ -140,11 +135,28 @@ for line in lines:
         continue
     out.append(line)
 
-open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
+with open(path, "w", encoding="utf-8") as f:
+    f.write("\n".join(out) + "\n")
 print(f"Removed {len(panel_ids)} KDE panel(s)")
 EOF
 
     ok "KDE panels removed."
+}
+
+#
+# TWEAK: Turn off the Plasma splash screen
+#
+tweak_no_splash_screen() {
+    info "Turning off the Plasma startup splash..."
+
+    # The splash is a full-screen picture of its own, unrelated to the wallpaper in
+    # use, and it covers the start of the session - so it is what you look at until
+    # the shell has painted, and the wallpaper appears to change a second in. The
+    # shell draws the background here and nothing needs announcing it. This key is
+    # KDE's own "No splash screen" setting.
+    kwriteconfig6 --file ksplashrc --group KSplash --key Engine "none" 2>/dev/null || true
+
+    ok "Plasma splash screen disabled."
 }
 
 #
@@ -288,6 +300,7 @@ fi
 tweak_disable_kde_osd
 tweak_five_desktops
 tweak_remove_panels
+tweak_no_splash_screen
 tweak_default_shell
 tweak_default_scheme
 tweak_user_avatar_symlinks

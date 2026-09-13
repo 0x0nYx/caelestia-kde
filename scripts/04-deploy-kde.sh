@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/js.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 
 # Applies:
@@ -131,19 +132,67 @@ if [[ -f "$PACK_DEFAULT" ]]; then
 else
     WALLPAPER_PATH="$FALLBACK_PATH"
 fi
-info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
-if [[ -f "$WALLPAPER_PATH" ]]; then
+# Set the default wallpaper, but only while there is no wallpaper in use yet.
+# 09-system-tweaks.sh guards its default scheme the same way and for the same
+# reason: this step runs again on every install and every repair, and a wallpaper
+# the user picked - in the shell, in Nexus, on the lock screen - is not ours to
+# replace with the bundled one.
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+WALLPAPER_IN_USE=""
+if [[ -s "$STATE_DIR/wallpaper/path.txt" ]]; then
+    WALLPAPER_IN_USE="$(cat "$STATE_DIR/wallpaper/path.txt" 2>/dev/null || true)"
+fi
+
+if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
+    # The lock screen reads its copy from kscreenlockerrc, which the shell keeps in
+    # step from here on, so leaving both alone is what keeps them equal. A pointer
+    # to a file that is gone falls through to the default below rather than
+    # leaving the desktop and the lock screen without a wallpaper.
+    skip "Keeping the wallpaper in use: $(basename "$WALLPAPER_IN_USE")"
+
+    # Plasma's own desktop has to hold the same picture: it is what is on screen
+    # while the shell is still starting, so a desktop left on the distribution
+    # default is the wallpaper appearing to change a second into the session.
+    #
+    # Plasma's scripting interface takes a script as text, so the path goes in as a
+    # JavaScript string literal rather than pasted between quotes: a wallpaper whose
+    # name holds an apostrophe would otherwise end the literal early and change the
+    # script, and the desktop would keep the picture it had while this step reported
+    # success. lib/js.sh escapes it; Wallpapers.qml feeds the same value to the same
+    # API through JSON.stringify.
+    if command -v qdbus6 >/dev/null 2>&1; then
+        WALLPAPER_URL="$(js_string "file://$WALLPAPER_IN_USE")"
+        qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+            var allDesktops = desktops();
+            for (i=0; i < allDesktops.length; i++) {
+                d = allDesktops[i];
+                d.wallpaperPlugin = 'org.kde.image';
+                d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
+                d.writeConfig('Image', '$WALLPAPER_URL');
+            }
+        " 2>/dev/null || true
+    fi
+
+    # The logout screen is not a wallpaper choice of its own, so it still follows
+    # whatever is in use - including here, where the wallpaper is one the user set
+    # and this step is deliberately leaving alone.
+    if [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
+        sudo sed -i "s|^background=.*|background=$WALLPAPER_IN_USE|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
+    fi
+elif [[ -f "$WALLPAPER_PATH" ]]; then
+    info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
+    # Escaped the same way as the branch above; see the comment there.
+    WALLPAPER_URL="$(js_string "file://$WALLPAPER_PATH")"
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
         var allDesktops = desktops();
         for (i=0; i < allDesktops.length; i++) {
             d = allDesktops[i];
             d.wallpaperPlugin = 'org.kde.image';
             d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
-            d.writeConfig('Image', 'file://' + '$WALLPAPER_PATH');
+            d.writeConfig('Image', '$WALLPAPER_URL');
         }
     " 2>/dev/null || true
     # Save it for Caelestia, in the state dir the shell actually reads.
-    STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
     mkdir -p "$STATE_DIR/wallpaper"
     echo "$WALLPAPER_PATH" > "$STATE_DIR/wallpaper/path.txt"
 

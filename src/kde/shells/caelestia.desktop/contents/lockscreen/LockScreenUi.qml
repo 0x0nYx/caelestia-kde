@@ -40,7 +40,12 @@ Item {
     readonly property alias fprintTries: authHandler.fprintTries
     property int profilePicShape: 13
     property bool rotateProfilePic: false
-    property bool syncWallpaper: true
+    // No syncWallpaper here: the background this screen shows is the greeter's
+    // own wallpaper, read from kscreenlockerrc, and whether it follows the desktop
+    // is decided by the shell that writes that file (Wallpapers.syncPlasmaWallpaper)
+    // and by the lock screen page in Nexus. A property of the same name was copied
+    // over from the Quickshell lock screen and read the config key without ever
+    // using it, which made it look as if this file owned that decision.
     property var sessionIcons: ({})
     property bool showSleep: true
     property bool showHibernate: false
@@ -101,7 +106,11 @@ Item {
     readonly property int liveTemp: Math.round(Cpu.temperature ?? 0)
     readonly property int liveRam: Math.round((Memory.percentage ?? 0) * 100)
     readonly property int liveDisk: Math.round((Storage.percentage ?? 0) * 100)
-    readonly property string ipcBin: "~/.local/bin/caelestia-shell-ipc"
+    // The IPC helper ships with the shell: /usr/bin for a package install,
+    // ~/.local/bin for a source one. kscreenlocker inherits neither the session
+    // environment nor its PATH, so the resolution happens in the commands below
+    // rather than in this property.
+    readonly property string ipcBin: "PATH=\"${CAELESTIA_BIN_DIR:-$HOME/.local/bin}:$PATH\" caelestia-shell-ipc"
     property var liveMedia: ({})
     property var liveNotifs: []
     property double notifsClearedAt: 0
@@ -247,8 +256,6 @@ Item {
                     lockScreenUi.profilePicShape = lk.profilePicShape;
                 if (typeof lk.rotateProfilePic === "boolean")
                     lockScreenUi.rotateProfilePic = lk.rotateProfilePic;
-                if (typeof lk.syncWallpaper === "boolean")
-                    lockScreenUi.syncWallpaper = lk.syncWallpaper;
                 if (typeof lk.blurWallpaper === "boolean")
                     lockScreenUi.blurWallpaper = lk.blurWallpaper;
                 if (cfg.session && cfg.session.icons)
@@ -290,7 +297,7 @@ Item {
         id: mprisSource
 
         function poll() {
-            connectSource("python3 -c 'import json, subprocess, os; ipc = os.path.expanduser(\"" + lockScreenUi.ipcBin + "\"); get = lambda p: subprocess.run([ipc, \"call\", \"mpris\", \"getActive\", p], capture_output=True, text=True).stdout.strip(); t, a, u, s = get(\"trackTitle\"), get(\"trackArtist\"), get(\"trackArtUrl\"), get(\"playbackState\"); t = \"\" if t == \"No active player\" else t; print(json.dumps({\"title\": t, \"artist\": a, \"artUrl\": u, \"status\": \"Playing\" if s == \"1\" else \"Paused\"}))'");
+            connectSource("PATH=\"${CAELESTIA_BIN_DIR:-$HOME/.local/bin}:$PATH\" python3 -c 'import json, subprocess, os; ipc = \"caelestia-shell-ipc\"; get = lambda p: subprocess.run([ipc, \"call\", \"mpris\", \"getActive\", p], capture_output=True, text=True).stdout.strip(); t, a, u, s = get(\"trackTitle\"), get(\"trackArtist\"), get(\"trackArtUrl\"), get(\"playbackState\"); t = \"\" if t == \"No active player\" else t; print(json.dumps({\"title\": t, \"artist\": a, \"artUrl\": u, \"status\": \"Playing\" if s == \"1\" else \"Paused\"}))'");
         }
 
         engine: "executable"

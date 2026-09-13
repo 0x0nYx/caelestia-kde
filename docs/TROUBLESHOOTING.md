@@ -165,17 +165,24 @@ quickshell -d -n -p ~/.config/quickshell/caelestia/shell.qml
 
 ### 3.2 Environment Variables Not Set On Login
 
-The build script appends to `~/.bashrc` and `~/.config/fish/config.fish`:
+They live in one file, `~/.config/environment.d/caelestia.conf`, which systemd
+imports into every session process and into the user manager the shell's unit runs
+under:
 
 ```bash
-export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml"
-export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"
+QML2_IMPORT_PATH=$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia
+CAELESTIA_LIB_DIR=$HOME/.local/lib/caelestia
+CAELESTIA_BIN_DIR=$HOME/.local/bin
+CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
 ```
 
-**Known issues:**
-- **Zsh users:** Only `.bashrc` and `fish/config.fish` are updated — add the exports to `~/.zshrc` manually
-- **Duplicate lines:** Running the installer multiple times adds duplicate exports
-- **Fish users:** The grep check may miss existing entries if they're set via a different mechanism
+**If they are missing:** re-run `scripts/08-build-shell.sh`, then log out and back
+in - systemd reads the directory at login, so a running session keeps the old
+values. `systemctl --user show-environment` lists what the user manager has.
+
+**If a session is not managed by systemd**, the file does nothing and the values
+have to be exported by hand; the shell's own autostart script sets them for the
+shell either way, so only tools started outside it are affected.
 
 ### 3.3 Window Thumbnails / Screencast Not Working
 
@@ -450,6 +457,47 @@ The plugin injects a temporary KWin script for window tracking. If KWin scriptin
 ```bash
 qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.loadScript
 ```
+
+### 7.6 The Login Screen (Plasma Login and SDDM)
+
+Plasma 6.6 and newer boot into Plasma Login, KDE's fork of SDDM. The two are
+configured in different places, and the installer picks a branch at install time:
+
+| | Plasma Login | SDDM |
+|---|---|---|
+| How to tell | `command -v plasmalogin`, or `/etc/plasmalogin.conf` exists | `command -v sddm` |
+| Theme | none: its greeter is a Plasma shell, and it loads no SDDM theme | `/usr/share/sddm/themes/caelestia` |
+| Wallpaper | `[Greeter][Wallpaper][org.kde.image][General] Image` in `/etc/plasmalogin.conf`, pointing at a copy under the `plasmalogin` user's `wallpapers/` | `assets/background` inside the theme |
+| Colors | the `plasmalogin` user's own `~/.config/kdeglobals` plus the scheme files in its `~/.local/share/color-schemes/` | `theme.conf` inside the theme |
+| Sync helper | `/usr/local/bin/caelestia-greeter-sync` | `/usr/share/sddm/themes/caelestia/scripts/sync.sh` |
+
+The greeter runs as its own system user, which cannot read your home directory, so
+anything it shows has to be copied to it. That is what the sync helper does, and it
+runs after every wallpaper or color change through the posthook in
+`~/.config/caelestia/cli.json`. An install that switches display managers replaces
+its hook rather than stacking a second one.
+
+**The login screen shows Breeze colors or no background:**
+
+```bash
+# Which display manager is actually installed
+command -v plasmalogin sddm
+
+# Plasma Login: what the greeter is told to show
+kreadconfig6 --file /etc/plasmalogin.conf --group Greeter --group Wallpaper \
+    --group org.kde.image --group General --key Image
+
+# SDDM: which theme each config source selects, last one read wins
+grep -rn "Current=" /etc/sddm.conf /etc/sddm.conf.d/ /usr/lib/sddm/sddm.conf.d/ 2>/dev/null
+ls /usr/share/sddm/themes/caelestia/theme.conf
+
+# Re-copy the wallpaper and the scheme, then log out
+sudo /usr/local/bin/caelestia-greeter-sync          # Plasma Login
+sudo /usr/share/sddm/themes/caelestia/scripts/sync.sh   # SDDM
+```
+
+Both greeters read their configuration when they start, so a change is visible at
+the next logout rather than immediately.
 
 ---
 
