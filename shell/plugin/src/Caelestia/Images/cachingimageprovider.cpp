@@ -87,18 +87,25 @@ private:
                 if (!m_image.isNull())
                     return;
             }
+
+            // Cold cache. Build the file here, in this request's own thread, rather
+            // than scheduling it and handing back something else: scheduling meant
+            // every tile of a folder nobody had looked at yet was decoded twice, once
+            // for this request and once by the pooled job, which is the spike that
+            // comes with opening a folder of wallpapers.
+            ImageCacher::runJob(path, cachePath, size, m_fillMode);
+
+            QImageReader built(cachePath);
+            if (built.canRead()) {
+                m_image = built.read();
+                if (!m_image.isNull())
+                    return;
+            }
         }
 
-        // Schedule cache job so that later requests for this size are a file read.
-        ImageCacher::instance()->schedule(path, cachePath, size, m_fillMode);
-
-        // Decode at the size that was asked for rather than handing back the
-        // original. A cold cache is the normal case for a grid of wallpapers - the
-        // first look at a folder asks for fifty tiles at once - and returning
-        // originals there means fifty full-resolution decodes and uploads for
-        // pictures shown a few hundred pixels wide, which is the spike users see
-        // when they open a folder. QImageReader scales as it decodes, so this costs
-        // the tile; the file scheduled above is still what later loads read.
+        // No cache to read or write (it is disabled, or the source is not a file):
+        // decode at the size that was asked for. QImageReader scales as it decodes,
+        // so this costs the tile rather than the wallpaper.
         QImageReader coldReader(path);
         coldReader.setAutoTransform(true);
         if (m_fillMode == ImageCacher::FillMode::Stretch) {
