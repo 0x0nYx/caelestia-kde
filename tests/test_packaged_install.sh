@@ -157,6 +157,44 @@ test_missing_scripts_say_where_they_come_from() {
     assert_contains "$(cat "$DIR/out.txt")" "/usr/share/caelestia" "the error should say where a package keeps them"
 }
 
+test_the_package_sources_and_their_hashes_stay_in_step() {
+    # `sha256sums` needs one entry per source, in the same order, or makepkg stops with
+    # "Integrity checks (sha256) differ in size from the source array" - which is what
+    # happened when the retired autostart desktop entry left `source` and stayed in the
+    # sums. Then each hash that is not SKIP has to match the file it points at.
+    local pkgbuild_dir="$REPO_ROOT/packaging/aur/caelestia-shell-kde"
+    local out
+    out="$(
+        bash -c '
+            set -u
+            cd "$1" || exit 1
+            source ./PKGBUILD
+            printf "counts %s %s\n" "${#source[@]}" "${#sha256sums[@]}"
+            printf "source %s\n" "${source[@]}"
+            printf "sum %s\n" "${sha256sums[@]}"
+        ' bash "$pkgbuild_dir"
+    )"
+
+    local counts sources sums
+    counts="$(printf '%s\n' "$out" | awk '/^counts / { print $2, $3 }')"
+    sources="$(printf '%s\n' "$out" | awk '/^source / { $1 = ""; print substr($0, 2) }')"
+    sums="$(printf '%s\n' "$out" | awk '/^sum / { print $2 }')"
+
+    local source_count hash_count
+    source_count="$(printf '%s\n' "$counts" | cut -d' ' -f1)"
+    hash_count="$(printf '%s\n' "$counts" | cut -d' ' -f2)"
+    assert_ne "0" "$source_count" "the PKGBUILD should declare sources"
+    assert_eq "$source_count" "$hash_count" "every source needs exactly one hash entry"
+
+    local i path hash actual
+    for i in $(seq 1 "$source_count"); do
+        path="$(printf '%s\n' "$sources" | sed -n "${i}p" | sed 's/^[^:]*:://')"
+        hash="$(printf '%s\n' "$sums" | sed -n "${i}p")"
+        [[ "$hash" == "SKIP" ]] && continue
+        actual="$(sha256sum "$pkgbuild_dir/$path" | cut -d' ' -f1)"
+        assert_eq "$hash" "$actual" "the hash of $path should match the file beside the PKGBUILD"
+    done
+}
 test_install_help_describes_the_user_half() {
     local out
     out="$("$CLI" install --help 2>&1)"

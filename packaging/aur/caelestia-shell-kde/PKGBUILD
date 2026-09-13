@@ -16,9 +16,11 @@
 # commit. Cloning the tag brings the pins the tag records, and leaves no tarball
 # hash to fill in at release time.
 #
-# To build before a tag exists, point _ref at a branch (the version the shell
-# reports is still pkgver, so this is for testing):
-#   _ref=dev makepkg -si
+# To build before a tag exists, point _ref at a branch instead. The fragment carries
+# its own keyword, because makepkg resolves `tag=` and `branch=` differently and a
+# branch name under `tag=` fails with "invalid reference":
+#   _ref=branch=dev makepkg -si
+# The version the shell reports is still pkgver, so that is for testing only.
 
 pkgname=caelestia-shell-kde
 pkgver=2.4.3
@@ -46,13 +48,15 @@ depends=(
     'qt6-imageformats'
     'qt6-svg'
     'qt6-wayland'
-    'kf6-kwindowsystem'
-    'kf6-kguiaddons'
-    'kf6-networkmanager-qt'
-    'kf6-pulseaudio-qt'
-    'kf6-kglobalaccel'
-    'kf6-kconfig'
-    'kf6-kcoreaddons'
+    # KDE Frameworks 6, under the names Arch uses. `kf6-` as a prefix is Fedora's
+    # naming; `pacman -S kf6-kconfig` is "target not found".
+    'kwindowsystem'
+    'kguiaddons'
+    'networkmanager-qt'
+    'pulseaudio-qt'
+    'kglobalaccel'
+    'kconfig'
+    'kcoreaddons'
     'libqalculate'
     'libpipewire'
     'aubio'
@@ -82,20 +86,20 @@ conflicts=('caelestia-shell' 'caelestia-shell-git')
 
 # The tag this package builds from, and what _ref is for. Declared here, below
 # pkgver, because the default reads it.
-_ref="${_ref:-v$pkgver}"
+_ref="${_ref:-tag=v$pkgver}"
 
-# Every path this file copies is named rather than globbed, so a missing one has to be
-# a failure: without this, a copy into a directory that was never created reports
-# success and ships a package with a hole in it.
-set -euo pipefail
+# Deliberately no `set -e` here. makepkg sources this file into its own shell, so shell
+# options set here change makepkg itself: `set -u` makes its own lint helpers die with
+# "unbound variable" before the build starts. The paths below are named rather than
+# globbed and checked at the end of package() instead, which is where a silent hole
+# would otherwise come from.
 
-source=("$pkgname::git+$url#tag=$_ref"
+source=("$pkgname::git+$url#$_ref"
         'caelestia-autostart'
         'caelestia-shell.service')
 sha256sums=('SKIP'
-            'd39eff39e9ebed80859289f1f6b99b2e2c144cbad4c55805d2ec5455723df86b'
-            'ff8611340f3fc688ca1655e6cc93671dd1c37f397142a4584f8e013ca6c29a63'
-            'a906fbc4fc3e315ff4ec89f74a7bacfbcf9802f44f3707818b3ba8cf2639efac')
+            'a918c6b60afab7a0489ac77731c8eac388a22c7047b52dd50c76f53dfa41f62e'
+            '8d40d6ec05f5c8fab576710c123d09899a9c6a572be0ec3b882c2cfa4ae2e64d')
 
 prepare() {
     # The submodules, at the commits the tag pins: without them `caelestia install`
@@ -121,14 +125,14 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/ \
         -DVERSION="$pkgver" \
         -DDISTRIBUTOR="AUR (package: $pkgname)"
-    cmake --build build
+    cmake --build build || exit 1
 
     # The workspace-tracker effect is its own CMake project and links KWin, so
     # it is built against this machine's Plasma instead of shipped prebuilt.
     cmake -B effect-build -S shell/kwin-effects/workspace-tracker -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr
-    cmake --build effect-build
+    cmake --build effect-build || exit 1
 }
 
 package() {
@@ -213,4 +217,32 @@ DROPIN
         "$pkgdir/usr/lib/systemd/user/caelestia-shell.service"
 
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+    # Nothing above reports its own failure - makepkg does not run these steps with
+    # errexit - so the result is checked. Each path here is one a packaged install, the
+    # shell or the login screen reads, and a copy into a directory that was never
+    # created would otherwise ship a package with a hole in it.
+    local required=(
+        usr/bin/caelestia
+        usr/share/caelestia/scripts/03-deploy-configs.sh
+        usr/share/caelestia/scripts/lib/install-kind.sh
+        usr/share/caelestia/version.env
+        usr/share/caelestia/src/dots
+        usr/share/caelestia/src/dots-extra
+        usr/share/caelestia/shell/assets/wallpapers
+        usr/share/caelestia/assets/org.quickshell.desktop
+        usr/share/sddm/themes/caelestia/theme.conf
+        usr/share/sddm/themes/caelestia/scripts/sync.sh
+        etc/sddm.conf.d/zz-caelestia.conf
+        usr/lib/systemd/user/caelestia-shell.service
+        etc/xdg/quickshell/caelestia/assets/icons/yet-another-monochrome-icon-set
+    )
+    local path
+    for path in "${required[@]}"; do
+        if [[ ! -e "$pkgdir/$path" ]]; then
+            echo "missing from the package: $path" >&2
+            exit 1
+        fi
+    done
+    echo "package layout checked: ${#required[@]} paths"
 }

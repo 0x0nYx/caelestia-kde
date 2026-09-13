@@ -117,7 +117,7 @@ The AUR repository for a package is the package directory itself. For
 Updating for a release:
 
 1. bump `pkgver` and reset `pkgrel=1`. Nothing else needs a hash: the source is a
-   git clone of the tag (`_ref` defaults to `v$pkgver`), so there is no tarball;
+   git clone of the tag (`_ref` defaults to `tag=v$pkgver`), so there is no tarball;
 2. the three `sha256sums` entries that are not `SKIP` are the files beside the
    PKGBUILD, so run `makepkg -g` to refresh them if any of them changed;
 3. check the tag still has everything `package()` copies by name: `src/bin/*`,
@@ -129,8 +129,8 @@ Updating for a release:
    package with a silent hole in it, which is why they are named;
 4. regenerate `.SRCINFO` before pushing.
 
-To build before a tag exists, `_ref=dev makepkg -si`. The version the shell reports
-is still `pkgver`, so that is for testing the flow rather than for a release.
+To build before a tag exists, `_ref=branch=dev makepkg -si`. The version the shell
+reports is still `pkgver`, so that is for testing the flow rather than for a release.
 
 One thing to improve: cloning brings the whole history, and the tree is large. A
 source archive produced by the release job - `shell/`, `scripts/`, `src/`,
