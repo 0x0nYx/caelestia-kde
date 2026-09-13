@@ -204,6 +204,23 @@ PageBase {
                 }
             }
 
+            // The wallpaper the shell ships with, one tap away, above the user's
+            // own. Upstream's tile and its `Wallpapers.fallback` are the same file
+            // there too; this port swaps that file for assets/wallpapers/, so the
+            // tile reads the fallback rather than naming the path a second time.
+            WallItem {
+                Layout.topMargin: Tokens.spacing.medium
+                imgHeight: Math.round(width * 0.3)
+                radius: Tokens.rounding.extraLarge
+                source: Wallpapers.fallback
+                text: qsTr("Featured wallpaper")
+                fillLabel: false
+                onClicked: {
+                    Wallpapers.setWallpaper(Wallpapers.fallback);
+                    root.nState.closeSubPage();
+                }
+            }
+
             // Color sorting and type filtering
             RowLayout {
                 Layout.topMargin: Tokens.spacing.medium
