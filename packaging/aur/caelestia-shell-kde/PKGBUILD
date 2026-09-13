@@ -60,6 +60,12 @@ depends=(
     'libqalculate'
     'libpipewire'
     'aubio'
+    # Arch's `cava` ships the executable only - no headers, no shared library, no .pc -
+    # and the plugin's audio visualiser provider is compiled only when it can find
+    # libcava. Without this the build succeeds and the shell comes up with a dead
+    # visualiser and nothing to explain it, which is how this package first shipped.
+    # libcava is the AUR package that provides the library and headers.
+    'libcava'
     'cava'
     'libx11'
     'wayland'
@@ -127,6 +133,7 @@ build() {
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX=/ \
         -DVERSION="$pkgver" \
+        -DREQUIRE_CAVA=ON \
         -DDISTRIBUTOR="AUR (package: $pkgname)"
     cmake --build build || exit 1
 

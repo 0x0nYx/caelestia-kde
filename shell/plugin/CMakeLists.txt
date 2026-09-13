@@ -44,6 +44,21 @@ if(NOT Cava_FOUND)
         message(STATUS "Found cava (via find_library): ${Cava_LIBRARY}")
     endif()
 endif()
+
+# The provider is compiled only when cava's headers and library are there, so a build
+# without them ships a shell whose visualiser is dead: no error, nothing in the package
+# to say so, and at runtime only "CavaProvider unavailable, visualiser disabled" in the
+# journal. A distribution build that means to include it asks for it and fails here
+# instead, where the message can name what is missing. A developer build leaves it off
+# and gets the provider or not, as the machine allows.
+option(REQUIRE_CAVA "Fail the configure when libcava is missing" OFF)
+if(NOT Cava_FOUND AND REQUIRE_CAVA)
+    message(FATAL_ERROR
+        "libcava was not found and REQUIRE_CAVA is on: this build would leave out the "
+        "audio visualiser. Install libcava (its headers, its shared library and its "
+        "pkg-config file) and configure again. Note that Arch's `cava` package ships only "
+        "the cava executable - the library comes from the separate libcava package.")
+endif()
 include(cmake/sensorslib.cmake)
 
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
