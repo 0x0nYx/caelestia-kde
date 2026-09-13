@@ -19,7 +19,6 @@
 # To build before a tag exists, point _ref at a branch (the version the shell
 # reports is still pkgver, so this is for testing):
 #   _ref=dev makepkg -si
-_ref="${_ref:-v$pkgver}"
 
 pkgname=caelestia-shell-kde
 pkgver=2.4.3
@@ -80,6 +79,16 @@ optdepends=(
 )
 provides=('caelestia-shell')
 conflicts=('caelestia-shell' 'caelestia-shell-git')
+
+# The tag this package builds from, and what _ref is for. Declared here, below
+# pkgver, because the default reads it.
+_ref="${_ref:-v$pkgver}"
+
+# Every path this file copies is named rather than globbed, so a missing one has to be
+# a failure: without this, a copy into a directory that was never created reports
+# success and ships a package with a hole in it.
+set -euo pipefail
+
 source=("$pkgname::git+$url#tag=$_ref"
         'caelestia-autostart'
         'caelestia-shell.service')
@@ -90,9 +99,19 @@ sha256sums=('SKIP'
 
 prepare() {
     # The submodules, at the commits the tag pins: without them `caelestia install`
-    # has no dotfiles to deploy and the shell has no icon set to draw with.
+    # has no dotfiles to deploy and the shell has no icon set to draw with. A
+    # submodule that did not arrive is an empty directory, which copies cleanly and
+    # then fails at install time, so it has to be caught here.
     cd "$srcdir/$pkgname"
     git submodule update --init --recursive
+
+    local sub
+    for sub in src/dots src/yet-another-monochrome-icon-set; do
+        if [[ -z "$(ls -A "$sub" 2>/dev/null)" ]]; then
+            echo "submodule $sub is empty after 'git submodule update'" >&2
+            return 1
+        fi
+    done
 }
 
 build() {
@@ -126,7 +145,8 @@ package() {
     install -d "$pkgdir/usr/share/caelestia/scripts"
     install -m755 scripts/[0-9]*.sh "$pkgdir/usr/share/caelestia/scripts/"
     cp -r scripts/lib "$pkgdir/usr/share/caelestia/scripts/"
-    install -d "$pkgdir/usr/share/caelestia/src" "$pkgdir/usr/share/caelestia/assets"
+    install -d "$pkgdir/usr/share/caelestia/src" "$pkgdir/usr/share/caelestia/assets" \
+        "$pkgdir/usr/share/caelestia/shell/assets"
     cp -r src/dots src/dots-extra "$pkgdir/usr/share/caelestia/src/"
     cp -r shell/assets/wallpapers "$pkgdir/usr/share/caelestia/shell/assets/"
     cp -r assets/org.quickshell.desktop "$pkgdir/usr/share/caelestia/assets/"
