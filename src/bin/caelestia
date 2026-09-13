@@ -343,13 +343,20 @@ EOF
 }
 
 cmd_version() {
-    local file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
-    # 08-build-shell.sh records the installed version above, which is what an installed
-    # shell should report. Before that step has run - a package straight out of pacman, or
-    # a checkout nobody has installed - the install's own file answers, and the layout at
-    # the top of this script names which one that is instead of counting directory levels
-    # up from this command and hoping.
-    [[ -f "$file" ]] || file="$VERSION_FILE"
+    local file
+    if [[ "$KIND" == package ]]; then
+        # A package's own file is the version pacman installed: it cannot lag behind the
+        # package, and the copy 08-build-shell.sh records in ~/.config can, until the next
+        # `caelestia install` after an upgrade - which is what the one in ~/.config is for,
+        # and why it is only the fallback here.
+        file="$VERSION_FILE"
+        [[ -f "$file" ]] || file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
+    else
+        # The other way round for a checkout: the record is what was installed, and the
+        # checkout can have moved on since (a `git pull`) without that having been rerun.
+        file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
+        [[ -f "$file" ]] || file="$VERSION_FILE"
+    fi
 
     local version="unknown"
     if [[ -f "$file" ]]; then

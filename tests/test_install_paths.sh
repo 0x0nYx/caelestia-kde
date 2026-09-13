@@ -103,6 +103,28 @@ test_the_command_prefers_what_the_session_told_it() {
         "$out" "the session's values should survive"
 }
 
+test_a_package_reports_the_version_it_was_installed_as() {
+    # Upgrading the package without rerunning `caelestia install` leaves the copy
+    # 08-build-shell.sh recorded behind, and the command used to report that instead of
+    # the package it is actually running from. A checkout is the other way round: its
+    # record is what was installed, and the tree can have moved on since.
+    local dir home out
+    dir="$(new_tmpdir)"
+    home="$dir/home"
+    mkdir -p "$home/.config/quickshell/caelestia" "$dir/data/scripts"
+    printf 'VERSION=v9.9.9\n' > "$dir/data/version.env"
+    printf 'VERSION=v1.0.0\n' > "$home/.config/quickshell/caelestia/version.env"
+    : > "$dir/data/scripts/03-deploy-configs.sh"
+
+    out="$(env -u CAELESTIA_INSTALL_KIND HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+        CAELESTIA_BIN_DIR=/usr/bin CAELESTIA_DATA_DIR="$dir/data" "$CLI" version 2>&1)"
+    assert_eq "caelestia v9.9.9" "$out" "the package's own file wins over a stale record"
+
+    out="$(env -u CAELESTIA_INSTALL_KIND -u CAELESTIA_DATA_DIR HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+        CAELESTIA_BIN_DIR="$home/.local/bin" CAELESTIA_DIR="$dir/checkout" "$CLI" version 2>&1)"
+    assert_eq "caelestia v1.0.0" "$out" "and a checkout reports what was installed"
+}
+
 test_the_version_file_is_named_not_guessed_at() {
     # `caelestia version` used to count two and three directory levels up from wherever
     # the command was, which is a guess at the checkout's shape.
