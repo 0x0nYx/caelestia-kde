@@ -383,12 +383,15 @@ backup_shell_config || exit 1
 # workspace-tracker KWin effect is still built locally either way (its ABI is
 # Plasma-version-specific).
 SHELL_PREBUILT=0
-if [[ -z "${CAELESTIA_FORCE_BUILD_SHELL:-}" ]] && command -v curl >/dev/null 2>&1; then
+if [[ -z "${CAELESTIA_FORCE_BUILD_SHELL:-}" ]] \
+    && [[ "$(git -C "$BUNDLE_DIR" branch --show-current 2>/dev/null || true)" == "main" ]] \
+    && command -v curl >/dev/null 2>&1; then
     if try_download_prebuilt_shell; then
         SHELL_PREBUILT=1
         ok "Using prebuilt shell artifacts from the release."
     fi
 fi
+
 
 if [[ "$SHELL_PREBUILT" -eq 1 ]]; then
     info "Skipping local shell build; prebuilt artifacts installed."
