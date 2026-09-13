@@ -63,17 +63,11 @@ A system install puts the shell somewhere other than `$HOME`. Done on
   is looked up with `~/.local/bin` in front, which covers the package's
   `/usr/bin` and a source install's copy.
 
-Still open:
-
-- `src/bin/caelestia-shell-ipc` resolves the shell config as
-  `$HOME/.config/quickshell/caelestia/shell.qml` unless `CAELESTIA_SHELL_CONFIG`
-  is set. The packaged autostart sets it; the lock screen and anything else
-  running outside that environment does not.
-- `src/systemd/caelestia-update-checker.service` runs
-  `%h/.local/bin/caelestia-check-updates`, a path only a source install has. It
-  gets the same resolution when the environment work lands: a user unit can read
-  `CAELESTIA_BIN_DIR` from the session environment once it is written to
-  `~/.config/environment.d/`.
+The two items this list used to end with are covered as well: the environment
+file at `~/.config/environment.d/caelestia.conf` carries `CAELESTIA_BIN_DIR` into
+the session and into the user manager, so `caelestia-shell-ipc` finds the shell
+config, and the update-checker unit resolves its helper from that same variable
+instead of a hardcoded `$HOME`.
 
 ## Publishing
 
@@ -85,7 +79,7 @@ The AUR repository for a package is the package directory itself. For
     cd caelestia-shell-kde
     makepkg --printsrcinfo > .SRCINFO
     git add PKGBUILD .SRCINFO caelestia-autostart caelestiashell.desktop caelestia-shell.service
-    git commit -m "update to 2.4.2"
+    git commit -m "update to 2.4.3"
     git push
 
 Updating for a release:

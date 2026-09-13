@@ -574,6 +574,13 @@ else
         ok "Removed Caelestia env vars from ~/.bashrc"
     fi
 
+    # The environment moved to environment.d, so that file is what carries the
+    # values now; the rc files are still cleaned above for older installs.
+    if [[ -f "$HOME/.config/environment.d/caelestia.conf" ]]; then
+        rm -f "$HOME/.config/environment.d/caelestia.conf"
+        ok "Removed the Caelestia environment file"
+    fi
+
     if [[ -f "$HOME/.config/fish/config.fish" ]]; then
         sed -i '/QML2_IMPORT_PATH\|CAELESTIA_LIB_DIR/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
         ok "Removed Caelestia env vars from fish config"

@@ -554,32 +554,34 @@ done
 
 export QML2_IMPORT_PATH="$QML_BASE${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
 
-# Add wrapper config to bashrc/fish
-if grep -q "QML2_IMPORT_PATH" ~/.bashrc; then
-    if ! grep -q "quickshell/caelestia" ~/.bashrc; then
-        sed -i '/QML2_IMPORT_PATH/ s|\(.*[^"]\)\("*\)$|\1:$HOME/.config/quickshell/caelestia\2|' ~/.bashrc
-    fi
-else
-    echo 'export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"' >> ~/.bashrc
-fi
+# The shell's environment lives in ~/.config/environment.d, not in the user's
+# shell rc files. systemd imports that directory into every session process and
+# into the user manager that runs the shell's unit, so bash, fish, zsh and the
+# shell itself read one file instead of three that have to be kept in step - and
+# the three needed four branches of grep and sed between them.
+ENV_D="$HOME/.config/environment.d"
+info "Writing the shell environment to $ENV_D/caelestia.conf"
+mkdir -p "$ENV_D"
+cat > "$ENV_D/caelestia.conf" << EOF
+# Written by Caelestia. Read by systemd for every session process and by the
+# user manager the shell's unit runs under.
+QML2_IMPORT_PATH=$QML_BASE:$HOME/.config/quickshell/caelestia
+CAELESTIA_LIB_DIR=$HOME/.local/lib/caelestia
+CAELESTIA_BIN_DIR=$HOME/.local/bin
+CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
+EOF
+ok "Shell environment written."
 
-if ! grep -q "CAELESTIA_LIB_DIR" ~/.bashrc; then
-    echo 'export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"' >> ~/.bashrc
-fi
-
-if [ -f "$HOME/.config/fish/config.fish" ]; then
-    if grep -q "QML2_IMPORT_PATH" ~/.config/fish/config.fish; then
-        if ! grep -q "quickshell/caelestia" ~/.config/fish/config.fish; then
-            sed -i '/QML2_IMPORT_PATH/ s|\(.*[^"]\)\("*\)$|\1:$HOME/.config/quickshell/caelestia\2|' ~/.config/fish/config.fish
-        fi
-    else
-        echo 'set -gx QML2_IMPORT_PATH "$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"' >> ~/.config/fish/config.fish
+# Take back the lines earlier installs appended to the rc files. The same values
+# in three places is what made them drift, and environment.d now covers all of
+# them; only lines naming this project are touched.
+for rc in "$HOME/.bashrc" "$HOME/.config/fish/config.fish" "$HOME/.zshrc"; do
+    [[ -f "$rc" ]] || continue
+    if grep -q 'CAELESTIA_LIB_DIR\|QML2_IMPORT_PATH.*caelestia' "$rc"; then
+        sed -i '/CAELESTIA_LIB_DIR/d; /QML2_IMPORT_PATH.*caelestia/d' "$rc"
+        info "Removed the Caelestia environment lines from ${rc##*/}"
     fi
-
-    if ! grep -q "CAELESTIA_LIB_DIR" ~/.config/fish/config.fish; then
-        echo 'set -gx CAELESTIA_LIB_DIR "$HOME/.local/lib/caelestia"' >> ~/.config/fish/config.fish
-    fi
-fi
+done
 
 mkdir -p ~/.local/bin ~/.config/systemd/user
 

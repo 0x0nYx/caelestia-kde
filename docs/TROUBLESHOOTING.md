@@ -165,17 +165,24 @@ quickshell -d -n -p ~/.config/quickshell/caelestia/shell.qml
 
 ### 3.2 Environment Variables Not Set On Login
 
-The build script appends to `~/.bashrc` and `~/.config/fish/config.fish`:
+They live in one file, `~/.config/environment.d/caelestia.conf`, which systemd
+imports into every session process and into the user manager the shell's unit runs
+under:
 
 ```bash
-export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml"
-export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"
+QML2_IMPORT_PATH=$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia
+CAELESTIA_LIB_DIR=$HOME/.local/lib/caelestia
+CAELESTIA_BIN_DIR=$HOME/.local/bin
+CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
 ```
 
-**Known issues:**
-- **Zsh users:** Only `.bashrc` and `fish/config.fish` are updated — add the exports to `~/.zshrc` manually
-- **Duplicate lines:** Running the installer multiple times adds duplicate exports
-- **Fish users:** The grep check may miss existing entries if they're set via a different mechanism
+**If they are missing:** re-run `scripts/08-build-shell.sh`, then log out and back
+in - systemd reads the directory at login, so a running session keeps the old
+values. `systemctl --user show-environment` lists what the user manager has.
+
+**If a session is not managed by systemd**, the file does nothing and the values
+have to be exported by hand; the shell's own autostart script sets them for the
+shell either way, so only tools started outside it are affected.
 
 ### 3.3 Window Thumbnails / Screencast Not Working
 
