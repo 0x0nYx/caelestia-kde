@@ -108,7 +108,7 @@ source=("$pkgname::git+$url#$_ref"
         'caelestia-shell.service')
 sha256sums=('SKIP'
             'a918c6b60afab7a0489ac77731c8eac388a22c7047b52dd50c76f53dfa41f62e'
-            '8d40d6ec05f5c8fab576710c123d09899a9c6a572be0ec3b882c2cfa4ae2e64d')
+            'f219b72c98ad98418cbe9ef2648d0c2cd3664d36bd06f2870b8c8b253d6d17c8')
 
 prepare() {
     # The submodules, at the commits the tag pins: without them `caelestia install`
@@ -164,13 +164,10 @@ package() {
     cp -r src/dots src/dots-extra "$pkgdir/usr/share/caelestia/src/"
     cp -r shell/assets/wallpapers "$pkgdir/usr/share/caelestia/shell/assets/"
     cp -r assets/org.quickshell.desktop "$pkgdir/usr/share/caelestia/assets/"
-    # /usr/share/caelestia/version.env is what `caelestia version` reports, and what
-# 08-build-shell.sh copies into ~/.config for the session to read. It has to be the
-# version this package was built as - the same number CMake is handed - rather than
-# whatever the tree happened to say, or the command and pacman disagree while a release
-# is being prepared. A tag's version.env is bumped as part of releasing, and pkgver is
-# set ahead of the tag existing.
-printf 'VERSION=v%s\n' "$pkgver" > "$pkgdir/usr/share/caelestia/version.env"
+    # No version file is installed. The version the shell and the command report is compiled
+# into the `version` helper the extras module installs into INSTALL_LIBDIR, from the same
+# -DVERSION=$pkgver below, so there is nothing to keep in step and nothing to go stale
+# between an upgrade and the next `caelestia install`.
 
     # The login screen. The theme, the helper that keeps the greeter in step with the
     # session, and the drop-in that selects the theme are all /usr and /etc, so a
@@ -242,7 +239,6 @@ DROPIN
         usr/bin/caelestia
         usr/share/caelestia/scripts/03-deploy-configs.sh
         usr/share/caelestia/scripts/lib/install-kind.sh
-        usr/share/caelestia/version.env
         usr/share/caelestia/src/dots
         usr/share/caelestia/src/dots-extra
         usr/share/caelestia/shell/assets/wallpapers

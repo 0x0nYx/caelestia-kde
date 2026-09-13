@@ -30,44 +30,60 @@ QML_IMPORT_PATH="$(install_qml_import_path)"
 LIB_DIR="$(install_lib_dir)"
 BIN_DIR="$(install_bin_dir)"
 
+# The launcher and the unit that starts it.
+#
+# A package ships both - /usr/bin/caelestia-autostart and
+# /usr/lib/systemd/user/caelestia-shell.service - and those are the ones to use. The
+# daemon's files belonging to the package is what makes removing it clean: `pacman -R`
+# takes the unit and the launcher with it, so nothing is left enabled pointing at a tree
+# that has gone. That was the failure this step used to cause - it wrote the user's own
+# copy of both, which survived the package and failed five times in a row afterwards.
+#
+# So a checkout is the case that needs them generated: there is no package to own them,
+# and the unit has to be built around wherever that checkout put its tree.
 if install_is_packaged; then
-    ENTRYPOINT_HINT="the package owns this path; reinstall caelestia-shell-kde"
+    # A copy under ~/.config shadows the package's, because a user unit wins over one in
+    # /usr/lib/systemd/user. An earlier version of this port wrote one, so take it back
+    # out rather than leave the package's unit unused.
+    if [[ -f "$HOME/.config/systemd/user/caelestia-shell.service" ]]; then
+        rm -f "$HOME/.config/systemd/user/caelestia-shell.service"
+        info "Removed the user's copy of the shell unit; the package's is the one to use."
+    fi
+    if [[ -f "$HOME/.local/bin/caelestia-autostart.sh" ]]; then
+        rm -f "$HOME/.local/bin/caelestia-autostart.sh"
+        info "Removed the user's copy of the shell launcher; the package's is the one to use."
+    fi
 else
-    ENTRYPOINT_HINT="run scripts/08-build-shell.sh first"
-fi
+    if [[ ! -f "$SHELL_CONFIG" ]]; then
+        die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
+    fi
 
-if [[ ! -f "$SHELL_CONFIG" ]]; then
-    die "Caelestia Shell entrypoint not found: $SHELL_CONFIG ($ENTRYPOINT_HINT)"
-fi
+    # Determine the path of quickshell to avoid PATH differences at login.
+    if command -v quickshell >/dev/null 2>&1; then
+        QUICKSHELL_PATH="$(command -v quickshell)"
+    elif command -v qs >/dev/null 2>&1; then
+        QUICKSHELL_PATH="$(command -v qs)"
+    elif [ -x "/usr/bin/quickshell" ]; then
+        QUICKSHELL_PATH="/usr/bin/quickshell"
+    elif [ -x "/usr/local/bin/quickshell" ]; then
+        QUICKSHELL_PATH="/usr/local/bin/quickshell"
+    else
+        die "Quickshell is not installed or is not available in PATH."
+    fi
 
-# Determine the path of quickshell to avoid PATH differences at login.
-if command -v quickshell >/dev/null 2>&1; then
-    QUICKSHELL_PATH="$(command -v quickshell)"
-elif command -v qs >/dev/null 2>&1; then
-    QUICKSHELL_PATH="$(command -v qs)"
-elif [ -x "/usr/bin/quickshell" ]; then
-    QUICKSHELL_PATH="/usr/bin/quickshell"
-elif [ -x "/usr/local/bin/quickshell" ]; then
-    QUICKSHELL_PATH="/usr/local/bin/quickshell"
-else
-    die "Quickshell is not installed or is not available in PATH."
-fi
-
-# Caelestia Shell autostart
-# Launch the shell this install produced directly, rather than through a wrapper that
-# would have to guess where it ended up.
-echo "  Creating Caelestia Shell autostart entry..."
-cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
+    # Caelestia Shell autostart
+    # Launch the shell this install produced directly, rather than through a wrapper that
+    # would have to guess where it ended up.
+    echo "  Creating Caelestia Shell autostart entry..."
+    cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
 #!/bin/bash
 # Where this install's files are. ~/.config/environment.d carries the same values for a
 # session; they are repeated here because the unit can start this script outside one.
 #
 # The command the shell and its widgets call by name has to be on PATH for everything
-# this spawns: 08-build-shell.sh installs it into ~/.local/bin for a checkout, which a
-# session started by the display manager does not necessarily have on PATH (this script
-# is reached by absolute path, so finding it proves nothing), and a package puts it in
-# /usr/bin, which is on PATH but is also where the package's copy should win over any
-# leftover from an earlier checkout.
+# this spawns: 08-build-shell.sh installs it into ~/.local/bin, which a session started by
+# the display manager does not necessarily have on PATH (this script is reached by
+# absolute path, so finding it proves nothing).
 export PATH="$BIN_DIR:\$PATH"
 export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
 export CAELESTIA_LIB_DIR="$LIB_DIR"
@@ -101,24 +117,22 @@ fi
 # LD_PRELOAD=libstdbuf.so into every launched app on top of that.
 exec "$QUICKSHELL_PATH" -n -p "$SHELL_CONFIG"
 EOF
-chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
+    chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
 
-# The shell is started by one thing: the systemd user unit below. It replaced the
-# desktop entry this script used to write, which KDE's xdg-autostart generator
-# turned into app-caelestiashell@autostart.service - two mechanisms for one shell,
-# and on a machine where the package installed its own entry under /etc, one of
-# them had to be shadowed by the other.
-#
-# The ordering is what the entry's phase used to buy, and it still matters here:
-# the shell registers org.freedesktop.Notifications, and applications decide once,
-# when they start, whether a notification server exists - one that finds none draws
-# its own popups for the rest of the session, in its own corner, ignoring every
-# setting here. Before=xdg-desktop-autostart.target puts this unit in front of the
-# app units that same generator creates. (On a machine without that target the
-# ordering is a no-op, which is worse than the phase but never wrong.)
-echo "  Creating the Caelestia Shell unit..."
-mkdir -p "$HOME/.config/systemd/user"
-cat > "$HOME/.config/systemd/user/caelestia-shell.service" << EOF
+    # The shell is started by one thing: the systemd user unit below. It replaced the
+    # desktop entry this script used to write, which KDE's xdg-autostart generator turned
+    # into app-caelestiashell@autostart.service - two mechanisms for one shell.
+    #
+    # The ordering is what the entry's phase used to buy, and it still matters: the shell
+    # registers org.freedesktop.Notifications, and applications decide once, when they
+    # start, whether a notification server exists - one that finds none draws its own
+    # popups for the rest of the session, in its own corner, ignoring every setting here.
+    # Before=xdg-desktop-autostart.target puts this unit in front of the app units that
+    # same generator creates. (On a machine without that target the ordering is a no-op,
+    # which is worse than the phase but never wrong.)
+    echo "  Creating the Caelestia Shell unit..."
+    mkdir -p "$HOME/.config/systemd/user"
+    cat > "$HOME/.config/systemd/user/caelestia-shell.service" << EOF
 [Unit]
 Description=Caelestia Shell
 PartOf=graphical-session.target
@@ -128,11 +142,18 @@ Before=xdg-desktop-autostart.target
 [Service]
 Type=exec
 ExecStart=%h/.local/bin/caelestia-autostart.sh
+# A shell that cannot start is retried, but not in a tight loop: systemd gives up on a
+# unit that starts five times in ten seconds, and the state it leaves is one an install
+# then has to clear. Upstream's own unit waits the same five seconds between attempts.
 Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+Slice=session.slice
 
 [Install]
 WantedBy=graphical-session.target
 EOF
+fi
 
 # Take the older mechanisms back out. The entry is ours, so removing it is safe;
 # the unit it generated is disabled as well, or it would keep starting a shell of

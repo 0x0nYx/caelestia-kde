@@ -45,8 +45,6 @@ test_the_packaged_layout_is_the_packages_directories() {
     assert_eq "/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia" "$(layout package install_qml_import_path)" "the QML import path"
     assert_eq "/usr/lib/caelestia" "$(layout package install_lib_dir)" "the library directory"
     assert_eq "/usr/bin" "$(layout package install_bin_dir)" "the command directory"
-    assert_eq "/usr/share/caelestia" "$(layout package install_data_dir)" "the data directory"
-    assert_eq "/usr/share/caelestia/version.env" "$(layout package install_version_file)" "the version file"
 }
 
 test_the_checkout_layout_is_the_users_own_directories() {
@@ -54,15 +52,13 @@ test_the_checkout_layout_is_the_users_own_directories() {
     assert_eq "$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia" "$(layout source install_qml_import_path)" "the QML import path"
     assert_eq "$HOME/.local/lib/caelestia" "$(layout source install_lib_dir)" "the library directory"
     assert_eq "$HOME/.local/bin" "$(layout source install_bin_dir)" "the command directory"
-    assert_eq "$REPO_ROOT" "$(layout source install_data_dir)" "the data directory is the checkout"
-    assert_eq "$REPO_ROOT/.github/version.env" "$(layout source install_version_file)" "the version file"
 }
 
 test_no_path_is_the_same_in_both_layouts() {
     # A copy-paste that left the checkout's value in the package's branch would silently
     # point a package at a directory it never creates.
     local fn
-    for fn in install_shell_config install_qml_import_path install_lib_dir install_bin_dir install_data_dir install_version_file; do
+    for fn in install_shell_config install_qml_import_path install_lib_dir install_bin_dir; do
         assert_ne "$(layout source "$fn")" "$(layout package "$fn")" "$fn should differ between the two installs"
     done
 }
@@ -103,36 +99,47 @@ test_the_command_prefers_what_the_session_told_it() {
         "$out" "the session's values should survive"
 }
 
-test_a_package_reports_the_version_it_was_installed_as() {
-    # Upgrading the package without rerunning `caelestia install` leaves the copy
-    # 08-build-shell.sh recorded behind, and the command used to report that instead of
-    # the package it is actually running from. A checkout is the other way round: its
-    # record is what was installed, and the tree can have moved on since.
+test_the_version_comes_from_the_installed_helper() {
+    # Upstream's CLI reads the helper CMake installs into INSTALL_LIBDIR, and so does this
+    # one: the number is compiled into the build, so on a package it is the one pacman
+    # installed. A copy of version.env beside the config could go stale between an upgrade
+    # and the next `caelestia install`, which is exactly what it did.
     local dir home out
     dir="$(new_tmpdir)"
     home="$dir/home"
-    mkdir -p "$home/.config/quickshell/caelestia" "$dir/data/scripts"
-    printf 'VERSION=v9.9.9\n' > "$dir/data/version.env"
-    printf 'VERSION=v1.0.0\n' > "$home/.config/quickshell/caelestia/version.env"
-    : > "$dir/data/scripts/03-deploy-configs.sh"
+    mkdir -p "$dir/lib" "$home"
+    printf '#!/bin/sh\nprintf "caelestia-shell 9.9.9, revision deadbeef\\n"\n' > "$dir/lib/version"
+    chmod +x "$dir/lib/version"
 
     out="$(env -u CAELESTIA_INSTALL_KIND HOME="$home" XDG_CONFIG_HOME="$home/.config" \
-        CAELESTIA_BIN_DIR=/usr/bin CAELESTIA_DATA_DIR="$dir/data" "$CLI" version 2>&1)"
-    assert_eq "caelestia v9.9.9" "$out" "the package's own file wins over a stale record"
-
-    out="$(env -u CAELESTIA_INSTALL_KIND -u CAELESTIA_DATA_DIR HOME="$home" XDG_CONFIG_HOME="$home/.config" \
-        CAELESTIA_BIN_DIR="$home/.local/bin" CAELESTIA_DIR="$dir/checkout" "$CLI" version 2>&1)"
-    assert_eq "caelestia v1.0.0" "$out" "and a checkout reports what was installed"
+        CAELESTIA_BIN_DIR="$home/.local/bin" CAELESTIA_LIB_DIR="$dir/lib" "$CLI" version 2>&1)"
+    assert_eq "caelestia v9.9.9" "$out" "the helper's version should be reported, with the tag's v"
 }
 
-test_the_version_file_is_named_not_guessed_at() {
-    # `caelestia version` used to count two and three directory levels up from wherever
-    # the command was, which is a guess at the checkout's shape.
+test_a_checkout_with_no_helper_reports_its_version_file() {
+    # A tree that has not been built yet has no helper to ask, and answers from the
+    # repository's own version.env - the source of truth, not a copy of it.
+    local dir home expected out
+    dir="$(new_tmpdir)"
+    home="$dir/home"
+    mkdir -p "$dir/empty" "$home"
+    expected="$(awk -F= '$1 == "VERSION" { print $2; exit }' "$REPO_ROOT/.github/version.env")"
+    assert_ne "" "$expected" "the repository should carry a version"
+
+    out="$(env -u CAELESTIA_INSTALL_KIND HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+        CAELESTIA_BIN_DIR="$home/.local/bin" CAELESTIA_LIB_DIR="$dir/empty" "$CLI" version 2>&1)"
+    assert_eq "caelestia $expected" "$out" "a checkout with no helper should fall back to its version file"
+}
+
+test_the_command_asks_the_install_for_its_version() {
+    # It used to count two and three directory levels up from wherever it was, guessing at
+    # a checkout's shape, and then read a copy of version.env that an upgrade could leave
+    # behind.
     local cli
     cli="$(cat "$CLI")"
-    assert_contains "$cli" 'DATA_DIR="${CAELESTIA_DATA_DIR:-/usr/share/caelestia}"' "a package's data directory should be named"
-    assert_contains "$cli" 'VERSION_FILE="$DATA_DIR/version.env"' "and its version file read from there"
-    assert_not_contains "$cli" '$BIN_DIR/../../.github/version.env' "and the command should not walk up from itself"
+    assert_contains "$cli" '"$CAELESTIA_LIB_DIR/version" -s' "the version should come from the installed helper"
+    assert_not_contains "$cli" 'quickshell/caelestia/version.env' "not from a copy beside the config"
+    assert_not_contains "$cli" '$BIN_DIR/../../.github/version.env' "and not from walking up from itself"
     assert_not_contains "$cli" '$BIN_DIR/../../../.github/version.env' "at two depths either"
 }
 

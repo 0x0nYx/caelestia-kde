@@ -27,7 +27,7 @@ SHELL_DIR="$BUNDLE_DIR/shell"
 # contents, which is what let the command's own copy of these paths go stale.
 write_shell_environment() {
     local env_d="$HOME/.config/environment.d"
-    local rc version_env
+    local rc
 
     info "Writing the shell environment to $env_d/caelestia.conf"
     mkdir -p "$env_d"
@@ -50,18 +50,6 @@ EOF
             info "Removed the Caelestia environment lines from ${rc##*/}"
         fi
     done
-
-    # `caelestia version` reads this, so an installed shell can say which release it is
-    # without a checkout to read. A package stamped its own file, a checkout has the
-    # repository's, and install_version_file names the right one.
-    version_env="$(install_version_file)"
-    if [[ -f "$version_env" ]]; then
-        mkdir -p "$HOME/.config/quickshell/caelestia"
-        install -m 644 "$version_env" "$HOME/.config/quickshell/caelestia/version.env"
-        ok "Recorded the installed version for 'caelestia version'."
-    else
-        warn "No version file at $version_env; 'caelestia version' will not know the release."
-    fi
 }
 
 # packaged_shell_setup

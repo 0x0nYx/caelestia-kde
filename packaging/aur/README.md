@@ -96,9 +96,22 @@ data only a user's files can hold, so installing is two steps:
 
 `caelestia install` runs the same step scripts a checkout's installer runs, for the
 user's half only: the config files, the KDE settings, the user services, the
-environment, the autostart unit (which it enables, because a package cannot enable
-a user's units) and the wallpaper state. It is idempotent, and `caelestia update` on
+environment, the enablement of the shell's unit (a package cannot enable a user's
+units) and the wallpaper state. It is idempotent, and `caelestia update` on
 a packaged install runs the package manager and then it again.
+
+### Removing it
+
+    pacman -Rns caelestia-shell-kde
+
+The shell's unit and its launcher belong to the package, so they go with it and
+nothing is left enabled pointing at a tree that has gone. What stays is the user's
+own state, which the package never owned: `~/.config/caelestia`, the session
+environment at `~/.config/environment.d/caelestia.conf`, the autostart state under
+`~/.local`, and the sudoers drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that
+lets the login screen follow the wallpaper. Deleting those is what removes the last
+trace of the install. There is no uninstall command, and upstream has none either:
+removal belongs to whoever installed the files, which for a package is pacman.
 
 
 ## Publishing
@@ -126,10 +139,9 @@ Updating for a release:
    `src/dots/`, `src/dots-extra/`, `src/yet-another-monochrome-icon-set/`,
    `shell/assets/wallpapers/` and `assets/org.quickshell.desktop`. A missing path
    fails the build rather than shipping a package with a silent hole in it, which
-   is why they are named. The version file is the exception: `package()` writes
-   `v$pkgver` into `/usr/share/caelestia/version.env` rather than copying the
-   tree's, because the tag's `version.env` and `pkgver` are bumped separately and
-   `caelestia version` has to agree with pacman;
+   is why they are named. No version file is among them: the version the shell and
+   the command report is compiled into `/usr/lib/caelestia/version` from the same
+   `-DVERSION=$pkgver` the build is given, so there is nothing to keep in step;
 4. regenerate `.SRCINFO` before pushing.
 
 To build before a tag exists, `_ref=branch=dev makepkg -si`. The version the shell

@@ -147,6 +147,13 @@ if [ "$CURRENT_BRANCH" = "main" ]; then
     if [ -z "$FROM_VERSION" ] && [ -f "$HOME/.config/quickshell/caelestia/.github/version.env" ]; then
         FROM_VERSION="$(sed -nE 's/^VERSION[[:space:]]*=[[:space:]]*([A-Za-z0-9._-]+).*/\\1/p' "$HOME/.config/quickshell/caelestia/.github/version.env" | head -n 1)"
     fi
+    # The compiled version helper, which is what `caelestia version` reports from as well.
+    # On a packaged install it is the only one of these that answers: there is no checkout
+    # for git to describe and no version.env beside the config, and without it the update
+    # row stays empty because an unknown version is never offered as updatable.
+    if [ -z "$FROM_VERSION" ] && [ -x "\${CAELESTIA_LIB_DIR:-/usr/lib/caelestia}/version" ]; then
+        FROM_VERSION="$("\${CAELESTIA_LIB_DIR:-/usr/lib/caelestia}/version" -s 2>/dev/null | awk '{ sub(/,/, "", $2); print $2 }')"
+    fi
     [ -n "$FROM_VERSION" ] || FROM_VERSION="unknown"
     FROM_VERSION="$(normalize_version "$FROM_VERSION")"
 

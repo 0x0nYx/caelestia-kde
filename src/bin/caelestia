@@ -42,7 +42,6 @@ case "${CAELESTIA_INSTALL_KIND:-$( [[ "$BIN_DIR" == /usr/bin ]] && printf 'packa
         QML_IMPORT_DEFAULT="/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"
         LIB_DIR_DEFAULT=/usr/lib/caelestia
         SHELL_CONFIG_DEFAULT=/etc/xdg/quickshell/caelestia/shell.qml
-        VERSION_FILE="$DATA_DIR/version.env"
         ;;
     *)
         KIND=source
@@ -343,27 +342,27 @@ EOF
 }
 
 cmd_version() {
-    local file
-    if [[ "$KIND" == package ]]; then
-        # A package's own file is the version pacman installed: it cannot lag behind the
-        # package, and the copy 08-build-shell.sh records in ~/.config can, until the next
-        # `caelestia install` after an upgrade - which is what the one in ~/.config is for,
-        # and why it is only the fallback here.
-        file="$VERSION_FILE"
-        [[ -f "$file" ]] || file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
-    else
-        # The other way round for a checkout: the record is what was installed, and the
-        # checkout can have moved on since (a `git pull`) without that having been rerun.
-        file="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/version.env"
-        [[ -f "$file" ]] || file="$VERSION_FILE"
+    # The version comes from the helper CMake installs into INSTALL_LIBDIR, which is what
+    # upstream's CLI reads as well. It is compiled with the version the build was made as,
+    # so on a package it is the number pacman installed and there is nothing that can go
+    # stale between an upgrade and the next `caelestia install` - which is what a copy of
+    # version.env in ~/.config could do. A checkout that has not been built yet has no
+    # helper to ask, and reports the repository's own version.env.
+    local version=""
+    if [[ -x "$CAELESTIA_LIB_DIR/version" ]]; then
+        # `caelestia-shell 2.4.3, revision <hash>, distributed by: ...`: the version is the
+        # second field, without the comma that follows it.
+        version="$("$CAELESTIA_LIB_DIR/version" -s 2>/dev/null | awk '{ sub(/,/, "", $2); print $2 }')"
+    fi
+    if [[ -z "$version" && -f "$VERSION_FILE" ]]; then
+        version="$(awk -F= '$1 == "VERSION" { print $2; exit }' "$VERSION_FILE")"
+    fi
+    # The helper prints the bare number; the file carries the tag's `v`.
+    if [[ -n "$version" && "$version" != v* ]]; then
+        version="v$version"
     fi
 
-    local version="unknown"
-    if [[ -f "$file" ]]; then
-        version="$(awk -F= '$1 == "VERSION" { print $2; exit }' "$file")"
-        [[ -n "$version" ]] || version="unknown"
-    fi
-    printf 'caelestia %s\n' "$version"
+    printf 'caelestia %s\n' "${version:-unknown}"
 }
 
 main() {

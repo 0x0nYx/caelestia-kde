@@ -55,27 +55,8 @@ install_is_packaged() {
 # /etc/xdg/quickshell/caelestia for everything it spawned, and a leftover tree from an old
 # checkout would have won over the one the package installed.
 #
-# Named functions rather than one lookup keyed on a string: the callers want six different
-# things, and a name says which. A checkout answers from BUNDLE_DIR when the front end set
-# it and from this library's own location otherwise, so a step script run by hand is still
-# honest about which install it belongs to.
-checkout_root() {
-    if [[ -n "${BUNDLE_DIR:-}" ]]; then
-        printf '%s\n' "$BUNDLE_DIR"
-        return 0
-    fi
-    (cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
-}
-
-# The step scripts and the data they deploy.
-install_data_dir() {
-    if install_is_packaged; then
-        printf '%s\n' "${CAELESTIA_DATA_DIR:-/usr/share/caelestia}"
-    else
-        checkout_root
-    fi
-}
-
+# Named functions rather than one lookup keyed on a string: the callers want five different
+# things, and a name says which.
 # The palette's templates and named schemes.
 install_lib_dir() {
     if install_is_packaged; then
@@ -110,17 +91,6 @@ install_shell_config() {
         printf '%s\n' /etc/xdg/quickshell/caelestia/shell.qml
     else
         printf '%s\n' "$HOME/.config/quickshell/caelestia/shell.qml"
-    fi
-}
-
-# The version this install was made from: what the package stamped, or a checkout's own
-# file. `caelestia version` reads the copy 08-build-shell.sh records in ~/.config, and
-# falls back to this so the command answers before that step has run.
-install_version_file() {
-    if install_is_packaged; then
-        printf '%s/version.env\n' "$(install_data_dir)"
-    else
-        printf '%s/.github/version.env\n' "$(checkout_root)"
     fi
 }
 
