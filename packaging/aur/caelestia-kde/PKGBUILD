@@ -150,6 +150,14 @@ package() {
     DESTDIR="$pkgdir" cmake --install build
     DESTDIR="$pkgdir" cmake --install effect-build
 
+    # The fonts do not ship, and this is the only place that decides it. They are 309 of
+    # the 401 MiB the CMake install above would otherwise put here: 47 SF Pro files, of
+    # which the shell names two families. Upstream's package carries no fonts at all - it
+    # depends on four font packages - and 12-fetch-assets.sh downloads this one family
+    # into the user's own asset directory (shell/modules/Fonts.qml reads both), because a
+    # download into a tree a package owns would outlive the package.
+    rm -rf "$pkgdir/etc/xdg/quickshell/caelestia/assets/fonts"
+
     # What `caelestia install` runs for the user's half, and the assets it deploys
     # from. It is the same set of step scripts a checkout's installer runs, which is
     # what keeps one implementation of that half instead of two that drift. The
@@ -256,5 +264,13 @@ DROPIN
             exit 1
         fi
     done
+
+    # The other direction, for the one path that must not come back: the fonts are the
+    # install step's business, and the CMake install is what would readd them.
+    if [[ -e "$pkgdir/etc/xdg/quickshell/caelestia/assets/fonts" ]]; then
+        echo "the fonts are in the package again: 12-fetch-assets.sh downloads them instead" >&2
+        exit 1
+    fi
+
     echo "package layout checked: ${#required[@]} paths"
 }

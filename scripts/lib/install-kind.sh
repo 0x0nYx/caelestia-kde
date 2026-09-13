@@ -94,4 +94,12 @@ install_shell_config() {
     fi
 }
 
+# The shell's assets, which sit beside the entrypoint: fonts, icons, sounds and the
+# rest of what it draws with. A package ships the small ones and leaves the fonts to
+# the install, so 12-fetch-assets.sh needs to know where the tree is; Fonts.qml looks
+# in the user's own directory as well, which is where that step puts them.
+install_assets_dir() {
+    printf '%s\n' "$(dirname -- "$(install_shell_config)")/assets"
+}
+
 fi

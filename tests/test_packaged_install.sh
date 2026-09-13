@@ -16,7 +16,7 @@ CLI="$REPO_ROOT/src/bin/caelestia"
 
 # The steps a packaged install runs, in order. Kept here as the list the test
 # expects, so a change to the dispatcher's list has to be deliberate.
-EXPECTED_STEPS=(03-deploy-configs.sh 03a-wallpapers.sh 04-deploy-kde.sh 05-sddm-theme.sh 06-services.sh 08-build-shell.sh 09-system-tweaks.sh 10-autostart.sh)
+EXPECTED_STEPS=(03-deploy-configs.sh 03a-wallpapers.sh 04-deploy-kde.sh 05-sddm-theme.sh 06-services.sh 08-build-shell.sh 09-system-tweaks.sh 10-autostart.sh 12-fetch-assets.sh)
 
 DIR=""
 CALLS=""
@@ -195,6 +195,39 @@ test_the_package_sources_and_their_hashes_stay_in_step() {
         assert_eq "$hash" "$actual" "the hash of $path should match the file beside the PKGBUILD"
     done
 }
+test_the_package_leaves_the_fonts_to_the_install() {
+    # The CMake install puts the whole shell tree in the payload, fonts included, and
+    # that is 309 of the 401 MiB the package would otherwise be. The step that fetches
+    # them is only worth anything if the payload really has none, so both ends are
+    # asserted here rather than trusted.
+    local pkgbuild
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
+
+    assert_contains "$pkgbuild" 'rm -rf "$pkgdir/etc/xdg/quickshell/caelestia/assets/fonts"' "the package should drop the fonts from its payload"
+    assert_contains "$pkgbuild" 'the fonts are in the package again' "and fail the build if they come back"
+}
+
+test_the_font_step_looks_before_it_downloads() {
+    local step
+    step="$(cat "$REPO_ROOT/scripts/12-fetch-assets.sh")"
+
+    assert_contains "$step" "Fonts are part of this install's tree." "a checkout already has them, and that is the common case for this step"
+    assert_contains "$step" 'Fonts already downloaded' "a second install should not download them again"
+    assert_contains "$step" 'CAELESTIA_SKIP_ASSETS' "and a machine that does not want 150 MiB should be able to say so"
+    assert_contains "$step" 'sparse-checkout set shell/assets/fonts' "the download should be the font directory, not the repository"
+    assert_not_contains "$step" 'set -e' "a failed download must warn and let the install finish"
+}
+
+test_the_shell_reads_fonts_from_the_user_directory_too() {
+    # Where the download lands, since a package owns the shell's own tree and a
+    # download there would outlive the package.
+    local fonts
+    fonts="$(cat "$REPO_ROOT/shell/modules/Fonts.qml")"
+
+    assert_contains "$fonts" 'Quickshell.shellPath("assets/fonts")' "the tree's fonts should still be read"
+    assert_contains "$fonts" '${Paths.data}/assets/fonts' "and the downloaded ones with them"
+}
+
 test_install_help_describes_the_user_half() {
     local out
     out="$("$CLI" install --help 2>&1)"

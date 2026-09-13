@@ -45,6 +45,15 @@ It declares `provides=('caelestia-shell')` and
 interface and the config directory are the same, and the community packages that
 require `caelestia-shell` do so optionally, so nothing breaks.
 
+It ships no fonts. The tree's `shell/assets/fonts` is 309 MiB of the 401 MiB the payload
+would otherwise be: 47 SF Pro files, of which the shell names two families. Upstream's
+package carries no fonts either (it takes four font packages as dependencies), so the
+fonts are the one family no repository has and the one `caelestia install` fetches, into
+`~/.local/share/caelestia/assets/fonts` rather than the shell's own tree - a package owns
+that tree, so a download there would outlive `pacman -R`. `shell/modules/Fonts.qml` reads
+both directories, and a machine that cannot reach the repository keeps a working shell on
+a system font with a warning from the step. `CAELESTIA_SKIP_ASSETS=1` skips it outright.
+
 It no longer depends on `caelestia-cli`. The color pipeline belongs to this
 project now - `caelestia-color` generates the palette with matugen, applies it and
 fans it out - so what the package needs from outside is `matugen` and `python`,
