@@ -164,7 +164,7 @@ Item {
                 }
             }
             if (icon) {
-                popouts.currentName = icon.name;
+                popouts.currentName = icon.popoutName ?? icon.name;
                 popouts.currentCenter = isHorizontal ? icon.mapToItem(null, icon.width / 2, 0).x : icon.mapToItem(null, 0, icon.height / 2).y;
                 popouts.hasCurrent = true;
             } else {

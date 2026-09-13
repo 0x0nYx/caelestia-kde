@@ -33,6 +33,20 @@ StyledRect {
 
     readonly property var activeEntries: Config.bar.statusIcons.values.filter(entry => entry.enabled && root.entryActive(entry.id))
 
+    // The popout an icon opens is not always its own id: the two that name a
+    // keyboard key are spelled the settings way, and the popouts keep the names
+    // the bar has always used, while the microphone glyph has no popout of its own
+    // - its volume and its input device list live in the audio one.
+    readonly property var popoutNames: ({
+            lockStatus: "lockstatus",
+            kbLayout: "kblayout",
+            microphone: "audio"
+        })
+
+    function popoutFor(id: string): string {
+        return root.popoutNames[id] ?? id;
+    }
+
     // Which icons are shown, and in what order, is the `bar.statusIcons` list, so
     // that the settings page can add, remove and reorder them. Everything below is
     // the other half of the question: whether an icon has anything to say now.
@@ -114,6 +128,7 @@ StyledRect {
                 required property int index
 
                 property string name: modelData.id
+                readonly property string popoutName: root.popoutFor(modelData.id)
 
                 implicitWidth: loader.implicitWidth
                 implicitHeight: loader.implicitHeight
