@@ -51,6 +51,30 @@ test_the_ordering_the_entry_phase_provided_is_kept() {
     assert_contains "$(cat "$PACKAGED_UNIT")" 'Before=xdg-desktop-autostart.target' "and so should the package's"
 }
 
+test_the_wrapper_names_the_paths_of_the_install_it_is_part_of() {
+    # A packaged install runs the shell from /etc/xdg with the plugin and the palette
+    # data in /usr, and the environment file 08-build-shell.sh writes names those paths.
+    # The wrapper used to name the checkout's paths unconditionally, which on a packaged
+    # machine both failed the entrypoint check - nothing to autostart, so the unit was
+    # never enabled - and would have dropped /usr/lib/qt6/qml from QML2_IMPORT_PATH,
+    # where the Caelestia plugin modules are.
+    local script
+    script="$(cat "$AUTOSTART_SCRIPT")"
+
+    assert_contains "$script" 'install_is_packaged' "the autostart step has to know which install it is part of"
+    assert_contains "$script" 'SHELL_CONFIG="/etc/xdg/quickshell/caelestia/shell.qml"' "a packaged install should autostart the tree the package installed"
+    assert_contains "$script" 'export QML2_IMPORT_PATH="/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia"' "and the wrapper should keep the package's QML import path"
+    assert_contains "$script" 'export CAELESTIA_LIB_DIR="/usr/lib/caelestia"' "and the package's library directory"
+    assert_contains "$script" 'export CAELESTIA_BIN_DIR="/usr/bin"' "and the package's command directory"
+
+    # The checkout's own paths have to survive: this is the same script for both.
+    assert_contains "$script" 'export PATH="$HOME/.local/bin:$PATH"' "a checkout should still put its own bin directory on the shell's PATH"
+    assert_contains "$script" 'export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia"' "and keep its own QML import path"
+    assert_contains "$script" 'export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"' "and its own library directory"
+    assert_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$SHELL_ENTRYPOINT"' "the wrapper should take the entrypoint from the install kind, not a fixed path"
+    assert_not_contains "$script" 'exec "$QUICKSHELL_PATH" -n -p "$HOME/.config/quickshell/caelestia/shell.qml"' "the entrypoint must not be the checkout's on every machine"
+}
+
 test_restarting_goes_through_that_unit() {
     local script
     script="$(cat "$RESTART_SCRIPT")"
