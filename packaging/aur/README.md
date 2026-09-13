@@ -122,10 +122,12 @@ The shell's unit and its launcher belong to the package, so they go with it and
 nothing is left enabled pointing at a tree that has gone. What stays is the user's
 own state, which the package never owned: `~/.config/caelestia`, the session
 environment at `~/.config/environment.d/caelestia.conf`, the autostart state under
-`~/.local`, and the sudoers drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that
-lets the login screen follow the wallpaper. Deleting those is what removes the last
-trace of the install. There is no uninstall command, and upstream has none either:
-removal belongs to whoever installed the files, which for a package is pacman.
+`~/.local`, the downloaded fonts under `~/.local/share/caelestia`, and the sudoers
+drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that lets the login screen follow the
+wallpaper. Deleting those is what removes the last trace of the install. There is no
+uninstall command, and upstream has none either: removal belongs to whoever installed
+the files, which for a package is pacman, and for the fonts is the install that
+downloaded them.
 
 
 ## Publishing
