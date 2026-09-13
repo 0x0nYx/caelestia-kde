@@ -121,14 +121,28 @@ if [[ -f "$THEME_SOURCE/theme.conf.template" ]]; then
 fi
 
 caelestia_sudo mkdir -p /etc/sddm.conf.d
-cat <<'DROPIN' | caelestia_sudo tee /etc/sddm.conf.d/caelestia.conf >/dev/null
+# Named to sort last on purpose. SDDM reads /etc/sddm.conf.d/*.conf in alphabetical
+# order and the last assignment of a key wins, and distributions and sddm-kcm ship
+# drop-ins that set [Theme] Current themselves - kde_settings.conf, for one. A file
+# named after this project loses to every one of those, which looks exactly like no
+# theme having been installed at all: a stock Breeze login screen, with no sign of
+# the theme that was just deployed.
+cat <<'DROPIN' | caelestia_sudo tee /etc/sddm.conf.d/zz-caelestia.conf >/dev/null
 [General]
 GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
 
 [Theme]
 Current=caelestia
 DROPIN
+caelestia_sudo rm -f /etc/sddm.conf.d/caelestia.conf
 ok "SDDM config drop-in created."
+
+# Say so when something else also picks a theme. This file is read last, so it
+# wins, but someone looking at a stock login screen wants the conflict named.
+OTHER_SDDM_THEMES="$(grep -l 'Current=' /etc/sddm.conf.d/*.conf 2>/dev/null | grep -v 'zz-caelestia.conf' || true)"
+if [[ -n "$OTHER_SDDM_THEMES" ]]; then
+    warn "Another SDDM drop-in also selects a theme: ${OTHER_SDDM_THEMES//$'\n'/, }"
+fi
 
 POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
 CLI_JSON="$HOME/.config/caelestia/cli.json"

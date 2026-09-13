@@ -148,6 +148,13 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     # to a file that is gone falls through to the default below rather than
     # leaving the desktop and the lock screen without a wallpaper.
     skip "Keeping the wallpaper in use: $(basename "$WALLPAPER_IN_USE")"
+
+    # The logout screen is not a wallpaper choice of its own, so it still follows
+    # whatever is in use - including here, where the wallpaper is one the user set
+    # and this step is deliberately leaving alone.
+    if [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
+        sudo sed -i "s|^background=.*|background=$WALLPAPER_IN_USE|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
+    fi
 elif [[ -f "$WALLPAPER_PATH" ]]; then
     info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
