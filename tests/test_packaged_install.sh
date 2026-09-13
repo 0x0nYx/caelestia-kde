@@ -228,6 +228,18 @@ test_the_shell_reads_fonts_from_the_user_directory_too() {
     assert_contains "$fonts" '${Paths.data}/assets/fonts' "and the downloaded ones with them"
 }
 
+test_the_install_says_how_to_start_the_shell_now() {
+    # The unit is enabled rather than started: a unit enabled after
+    # graphical-session.target is already active does not start, and someone reading this
+    # from inside their session has already reached that target. "Log out and back in" on
+    # its own leaves them with no way to get the shell without doing exactly that.
+    local cli
+    cli="$(cat "$CLI")"
+
+    assert_contains "$cli" 'systemctl --user start caelestia-shell.service' "install should name the command that starts the shell without a logout"
+    assert_not_contains "$cli" 'Log out and back in to start the shell with the new configuration.' "and not only tell them to log out"
+}
+
 test_install_help_describes_the_user_half() {
     local out
     out="$("$CLI" install --help 2>&1)"

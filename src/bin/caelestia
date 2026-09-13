@@ -308,7 +308,12 @@ EOF
     done
 
     echo "PROGRESS: done: User configuration applied"
-    echo "Log out and back in to start the shell with the new configuration."
+    # Not "log out and back in" on its own. 10-autostart enables the unit, and enabling a
+    # unit does not start it when graphical-session.target has already been reached, which
+    # it has if the user is reading this from inside their session. Leaving it there sends
+    # someone who wants the shell now back to the logout screen for no reason.
+    echo "The shell starts at your next login. To start it now:"
+    echo "  systemctl --user start caelestia-shell.service"
 }
 
 cmd_install() {
