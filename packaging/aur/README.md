@@ -124,9 +124,12 @@ Updating for a release:
    `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop`,
    `shell/kwin-effects/workspace-tracker`, and for the user's half `scripts/`,
    `src/dots/`, `src/dots-extra/`, `src/yet-another-monochrome-icon-set/`,
-   `shell/assets/wallpapers/`, `assets/org.quickshell.desktop` and
-   `.github/version.env`. A missing path fails the build rather than shipping a
-   package with a silent hole in it, which is why they are named;
+   `shell/assets/wallpapers/` and `assets/org.quickshell.desktop`. A missing path
+   fails the build rather than shipping a package with a silent hole in it, which
+   is why they are named. The version file is the exception: `package()` writes
+   `v$pkgver` into `/usr/share/caelestia/version.env` rather than copying the
+   tree's, because the tag's `version.env` and `pkgver` are bumped separately and
+   `caelestia version` has to agree with pacman;
 4. regenerate `.SRCINFO` before pushing.
 
 To build before a tag exists, `_ref=branch=dev makepkg -si`. The version the shell
