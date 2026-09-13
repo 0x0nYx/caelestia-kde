@@ -45,6 +45,7 @@ depends=(
     'qt6-multimedia'
     'qt6-5compat'
     'qt6-imageformats'
+    'qt6-svg'
     'qt6-wayland'
     'kf6-kwindowsystem'
     'kf6-kguiaddons'
@@ -130,6 +131,32 @@ package() {
     cp -r shell/assets/wallpapers "$pkgdir/usr/share/caelestia/shell/assets/"
     cp -r assets/org.quickshell.desktop "$pkgdir/usr/share/caelestia/assets/"
     install -Dm644 .github/version.env "$pkgdir/usr/share/caelestia/version.env"
+
+    # The login screen. The theme, the helper that keeps the greeter in step with the
+    # session, and the drop-in that selects the theme are all /usr and /etc, so a
+    # packaged step cannot write them and they ship here. The full variant is the one
+    # packaged; mini is a source-install choice. The font goes where the theme reads
+    # it from, and the drop-in sorts last so nothing shipped by a distribution or by
+    # sddm-kcm can pick a different theme after it.
+    install -d "$pkgdir/usr/share/sddm/themes/caelestia/scripts"
+    cp -r src/sddm/themes/full/* "$pkgdir/usr/share/sddm/themes/caelestia/"
+    install -m755 src/sddm/sync.sh "$pkgdir/usr/share/sddm/themes/caelestia/scripts/sync.sh"
+    install -Dm644 src/kde/shells/caelestia.desktop/contents/fonts/GoogleSansFlex.ttf \
+        "$pkgdir/usr/share/sddm/themes/caelestia/assets/google-sans-flex/GoogleSansFlex.ttf"
+    install -d "$pkgdir/etc/sddm.conf.d"
+    cat > "$pkgdir/etc/sddm.conf.d/zz-caelestia.conf" <<'DROPIN'
+[General]
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
+
+[Theme]
+Current=caelestia
+DROPIN
+
+    # The rule that lets the 'input' group use /dev/uinput, which the on-screen
+    # keyboard injects through. It is /etc, so it ships here; adding the user to that
+    # group is not, and `caelestia install` says so rather than doing it.
+    install -d "$pkgdir/usr/lib/udev/rules.d"
+    echo 'KERNEL=="uinput", GROUP="input", MODE="0660"' > "$pkgdir/usr/lib/udev/rules.d/80-uinput.rules"
 
     # The shell reads the monochrome icon set from its own assets, and it is a
     # submodule, so the shell's CMake install does not carry it.

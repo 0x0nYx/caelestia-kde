@@ -64,6 +64,12 @@ system_setup_needed() {
 if ! system_setup_needed; then
     if install_is_packaged; then
         skip "System-level configuration belongs to the package."
+        # The udev rule is the package's file, but the group it names is the user's
+        # business: parity-6 dropped `usermod -aG input` from a packaged install, so
+        # say what is left for ydotoold to have access to /dev/uinput.
+        if ! groups "$USER" | grep -q '\binput\b'; then
+            info "For the on-screen keyboard, add yourself to the 'input' group: sudo usermod -aG input $USER"
+        fi
     else
         skip "System-level configuration already in place."
     fi

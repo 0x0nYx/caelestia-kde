@@ -3,6 +3,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 
@@ -32,8 +33,20 @@ esac
 THEME_SOURCE="$SRC_DIR/themes/$VARIANT"
 FONT_SOURCE="$BUNDLE_DIR/src/kde/shells/caelestia.desktop/contents/fonts/GoogleSansFlex.ttf"
 
-if [[ ! -d "$THEME_SOURCE" ]]; then
-    die "SDDM theme source not found at $THEME_SOURCE"
+# Where the theme's files come from. A checkout supplies them from src/sddm; a
+# package already installed them, so its own copy under /usr/share/sddm/themes is
+# the source, and what is left for this step is the part a package cannot do:
+# choosing the theme for this user and keeping the greeter in step with the session.
+if install_is_packaged; then
+    THEME_SOURCE="$INSTALL_DIR"
+    FONT_SOURCE="$INSTALL_DIR/assets/google-sans-flex/GoogleSansFlex.ttf"
+    if [[ ! -f "$INSTALL_DIR/theme.conf" ]]; then
+        die "The package's login screen theme is not installed at $INSTALL_DIR"
+    fi
+else
+    if [[ ! -d "$THEME_SOURCE" ]]; then
+        die "SDDM theme source not found at $THEME_SOURCE"
+    fi
 fi
 
 ALL_OK=true
@@ -124,11 +137,21 @@ if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; the
 fi
 
 if [[ "$DISPLAY_MANAGER" == "plasmalogin" ]]; then
-    SYNC_SCRIPT="/usr/local/bin/caelestia-greeter-sync"
+    if install_is_packaged; then
+        # The package ships the helper with the theme, at the same path a checkout's
+        # install puts it, so both display managers run one file and neither copies
+        # anything into /usr/local behind the package manager's back.
+        SYNC_SCRIPT="$INSTALL_DIR/scripts/sync.sh"
+        if [[ ! -x "$SYNC_SCRIPT" ]]; then
+            die "The package's login screen helper is not installed at $SYNC_SCRIPT"
+        fi
+    else
+        SYNC_SCRIPT="/usr/local/bin/caelestia-greeter-sync"
 
-    caelestia_sudo install -d -m 0755 /usr/local/bin
-    caelestia_sudo install -m 0755 "$SRC_DIR/sync.sh" "$SYNC_SCRIPT"
-    ok "Login screen sync helper installed to $SYNC_SCRIPT"
+        caelestia_sudo install -d -m 0755 /usr/local/bin
+        caelestia_sudo install -m 0755 "$SRC_DIR/sync.sh" "$SYNC_SCRIPT"
+        ok "Login screen sync helper installed to $SYNC_SCRIPT"
+    fi
 
     # The helper's own work is the same on both display managers, so it does the
     # configuring here rather than this script writing the same keys twice.
@@ -146,7 +169,9 @@ if [[ "$DISPLAY_MANAGER" == "plasmalogin" ]]; then
     exit 0
 fi
 
-if [[ "${BASE_DISTRO:-}" == "arch" ]]; then
+if install_is_packaged; then
+    skip "The display manager's dependencies belong to the package."
+elif [[ "${BASE_DISTRO:-}" == "arch" ]]; then
     SDDM_DEPS=(sddm qt6-declarative qt6-5compat qt6-svg qt6-multimedia)
     MISSING=()
     for pkg in "${SDDM_DEPS[@]}"; do
@@ -190,37 +215,48 @@ else
     ALL_OK=false
 fi
 
-if [[ -d "$INSTALL_DIR" ]]; then
-    caelestia_sudo rm -rf "$INSTALL_DIR"
-fi
+# Copies the checkout's theme into place, and nothing else: a package owns its copy
+# of these files, and rewriting them would be doing it behind pacman - whose next
+# upgrade would take the result away again.
+install_theme_files() {
+    if [[ -d "$INSTALL_DIR" ]]; then
+        caelestia_sudo rm -rf "$INSTALL_DIR"
+    fi
 
-caelestia_sudo mkdir -p "$INSTALL_DIR/scripts"
-caelestia_sudo cp -r "$THEME_SOURCE"/* "$INSTALL_DIR/"
-caelestia_sudo cp "$SRC_DIR/sync.sh" "$INSTALL_DIR/scripts/"
+    caelestia_sudo mkdir -p "$INSTALL_DIR/scripts"
+    caelestia_sudo cp -r "$THEME_SOURCE"/* "$INSTALL_DIR/"
+    caelestia_sudo cp "$SRC_DIR/sync.sh" "$INSTALL_DIR/scripts/"
 
-caelestia_sudo mkdir -p "$INSTALL_DIR/assets/google-sans-flex"
-if [[ -f "$FONT_SOURCE" ]]; then
-    caelestia_sudo cp "$FONT_SOURCE" "$INSTALL_DIR/assets/google-sans-flex/GoogleSansFlex.ttf"
-else
-    warn "GoogleSansFlex.ttf not found at $FONT_SOURCE, theme text may not render correctly."
-    ALL_OK=false
-fi
-
-# mini reuses full's shape components (coupled by design, keep in sync)
-if [[ "$VARIANT" == "mini" ]]; then
-    if [[ -d "$SRC_DIR/themes/full/components/shapes" ]]; then
-        caelestia_sudo mkdir -p "$INSTALL_DIR/components/shapes"
-        caelestia_sudo cp -r "$SRC_DIR/themes/full/components/shapes"/* "$INSTALL_DIR/components/shapes/"
+    caelestia_sudo mkdir -p "$INSTALL_DIR/assets/google-sans-flex"
+    if [[ -f "$FONT_SOURCE" ]]; then
+        caelestia_sudo cp "$FONT_SOURCE" "$INSTALL_DIR/assets/google-sans-flex/GoogleSansFlex.ttf"
     else
-        warn "Shape components not found at $SRC_DIR/themes/full/components/shapes, mini theme will not render correctly."
+        warn "GoogleSansFlex.ttf not found at $FONT_SOURCE, theme text may not render correctly."
         ALL_OK=false
     fi
-fi
 
-caelestia_sudo find "$INSTALL_DIR" -type d -exec chmod 755 {} +
-caelestia_sudo find "$INSTALL_DIR" -type f -exec chmod 644 {} +
-caelestia_sudo chmod 755 "$SYNC_SCRIPT"
-ok "Theme files installed to $INSTALL_DIR ($VARIANT variant)"
+    # mini reuses full's shape components (coupled by design, keep in sync)
+    if [[ "$VARIANT" == "mini" ]]; then
+        if [[ -d "$SRC_DIR/themes/full/components/shapes" ]]; then
+            caelestia_sudo mkdir -p "$INSTALL_DIR/components/shapes"
+            caelestia_sudo cp -r "$SRC_DIR/themes/full/components/shapes"/* "$INSTALL_DIR/components/shapes/"
+        else
+            warn "Shape components not found at $SRC_DIR/themes/full/components/shapes, mini theme will not render correctly."
+            ALL_OK=false
+        fi
+    fi
+
+    caelestia_sudo find "$INSTALL_DIR" -type d -exec chmod 755 {} +
+    caelestia_sudo find "$INSTALL_DIR" -type f -exec chmod 644 {} +
+    caelestia_sudo chmod 755 "$SYNC_SCRIPT"
+    ok "Theme files installed to $INSTALL_DIR ($VARIANT variant)"
+}
+
+if install_is_packaged; then
+    skip "The theme files belong to the package."
+else
+    install_theme_files
+fi
 
 # A theme without theme.conf is not a theme as far as SDDM is concerned: it falls
 # back to the distribution default, without an error in the journal, which is
@@ -238,6 +274,12 @@ if [[ -f "$THEME_SOURCE/theme.conf.template" ]]; then
     ok "Template config created."
 fi
 
+# Choosing the theme is two writes into /etc, which a package owns: it ships the
+# drop-in that sorts last, and the theme is already selected by the time a packaged
+# step runs. A checkout has neither, so it writes them here.
+if install_is_packaged; then
+    skip "The theme selection belongs to the package."
+else
 caelestia_sudo mkdir -p /etc/sddm.conf.d
 # Named to sort last on purpose. SDDM reads /etc/sddm.conf.d/*.conf in alphabetical
 # order and the last assignment of a key wins, and distributions and sddm-kcm ship
@@ -280,6 +322,7 @@ if command -v kwriteconfig6 >/dev/null 2>&1; then
     caelestia_sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current "$THEME_NAME" 2>/dev/null \
         && ok "Theme selected in /etc/sddm.conf as well." \
         || warn "Could not write to /etc/sddm.conf; the drop-in is the only selection."
+fi
 fi
 
 # Every file SDDM reads that picks a theme, so a conflict is visible rather than

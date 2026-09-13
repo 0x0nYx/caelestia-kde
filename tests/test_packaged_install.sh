@@ -16,7 +16,7 @@ CLI="$REPO_ROOT/src/bin/caelestia"
 
 # The steps a packaged install runs, in order. Kept here as the list the test
 # expects, so a change to the dispatcher's list has to be deliberate.
-EXPECTED_STEPS=(03-deploy-configs.sh 03a-wallpapers.sh 04-deploy-kde.sh 06-services.sh 08-build-shell.sh 09-system-tweaks.sh 10-autostart.sh)
+EXPECTED_STEPS=(03-deploy-configs.sh 03a-wallpapers.sh 04-deploy-kde.sh 05-sddm-theme.sh 06-services.sh 08-build-shell.sh 09-system-tweaks.sh 10-autostart.sh)
 
 DIR=""
 CALLS=""
@@ -82,7 +82,7 @@ test_a_checkout_that_is_not_named_is_refused_with_its_installer() {
     assert_eq "" "$(cat "$CALLS")" "no step should have run"
 }
 
-test_the_packaged_half_runs_the_seven_user_steps_in_order() {
+test_the_packaged_half_runs_the_user_steps_in_order() {
     stub_steps ""
     CAELESTIA_DATA_DIR="$DATA" CAELESTIA_INSTALL_KIND=package "$CLI" install > "$DIR/out.txt" 2>&1
     local status=$?
@@ -100,15 +100,36 @@ test_the_machine_steps_stay_out_of_a_packaged_install() {
     stub_steps ""
     CAELESTIA_DATA_DIR="$DATA" CAELESTIA_INSTALL_KIND=package "$CLI" install > "$DIR/out.txt" 2>&1
 
-    # The steps that install packages, fetch the submodules, install the SDDM theme
-    # and build the shell are the package's own work; running them again would write
-    # into /usr and /etc behind pacman.
+    # The steps that install packages, fetch the submodules and build the shell are
+    # the package's own work; running them again would write into /usr and /etc
+    # behind pacman.
     local calls
     calls="$(cat "$CALLS")"
     local absent
-    for absent in 00-refresh-mirrors.sh 00a-system-update.sh 01-ensure-prereqs.sh 02-all-packages.sh 02a-submodules.sh 05-sddm-theme.sh 07-kde-apps.sh 11-optional-apps.sh; do
+    for absent in 00-refresh-mirrors.sh 00a-system-update.sh 01-ensure-prereqs.sh 02-all-packages.sh 02a-submodules.sh 07-kde-apps.sh 11-optional-apps.sh; do
         assert_not_contains "$calls" "$absent" "$absent belongs to the package, not to the user's half"
     done
+}
+
+test_the_greeter_step_selects_without_installing_the_theme() {
+    # 05 runs on a packaged install because choosing a login screen is the user's
+    # half, but everything it would write under /usr and /etc is the package's.
+    local script
+    script="$(cat "$REPO_ROOT/scripts/05-sddm-theme.sh")"
+
+    assert_contains "$script" 'skip "The theme files belong to the package."' "the theme copy should be skipped"
+    assert_contains "$script" 'skip "The theme selection belongs to the package."' "the selection under /etc should be skipped"
+    assert_contains "$script" "skip \"The display manager's dependencies belong to the package.\"" "the distro dependencies should be skipped"
+    assert_contains "$script" 'register_greeter_sync "SDDM theme installed."' "while the posthook is still registered for both kinds"
+
+    # And the package ships what the step no longer writes, or a packaged install
+    # would have no theme to select at all.
+    local pkgbuild
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-shell-kde/PKGBUILD")"
+    assert_contains "$pkgbuild" 'usr/share/sddm/themes/caelestia' "the package should install the theme"
+    assert_contains "$pkgbuild" 'scripts/sync.sh' "and the helper the posthook runs"
+    assert_contains "$pkgbuild" 'etc/sddm.conf.d/zz-caelestia.conf' "and the drop-in that selects it"
+    assert_contains "$pkgbuild" 'usr/lib/udev/rules.d/80-uinput.rules' "and the udev rule the system block writes for a checkout"
 }
 
 test_a_failing_step_stops_the_run() {

@@ -221,10 +221,14 @@ packaged_data_dir() {
 # stay out of it - that split is parity-6, and this is its packaged front end.
 #
 # The list is that half in the installer's own order: deploy the config files,
-# fetch the wallpapers, apply the KDE settings, set up the user services, write
-# the environment, tweak the session and create the autostart state. The steps
-# before these install packages, which the package manager already did; the ones
-# after them install optional apps, which are the package's business.
+# fetch the wallpapers, apply the KDE settings, select the login screen, set up the
+# user services, write the environment, tweak the session and create the autostart
+# state. The steps before these install packages, which the package manager already
+# did; the ones after them install optional apps, which are the package's business.
+#
+# 05-sddm-theme.sh is in the list because choosing a login screen is the user's
+# half: the package ships the theme, the drop-in and the sync helper, and what is
+# left is the posthook in cli.json and the greeter's own files.
 packaged_install() {
     local data step
     if ! data="$(packaged_data_dir)"; then
@@ -255,6 +259,7 @@ EOF
         03-deploy-configs.sh
         03a-wallpapers.sh
         04-deploy-kde.sh
+        05-sddm-theme.sh
         06-services.sh
         08-build-shell.sh
         09-system-tweaks.sh
