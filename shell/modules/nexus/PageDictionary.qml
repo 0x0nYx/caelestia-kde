@@ -204,7 +204,7 @@ QtObject {
             description: qsTr("Background services, daemon control"),
             category: "shell",
             settings: [
-                { label: qsTr("Background Services"), keywords: ["daemons", "systemd", "tuning"], subPageIdx: 1 },
+                { label: qsTr("Background Services"), keywords: ["daemons", "systemd", "tuning"] },
                 { label: qsTr("Rich Presence"), keywords: ["discord", "steamgriddb", "activity"], pagePath: "services/ArpcPage.qml", subPageIdx: 1 }
             ]
         },

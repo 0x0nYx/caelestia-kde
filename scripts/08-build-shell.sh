@@ -207,7 +207,7 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
     # the password once, instead of polkit prompting per privileged command.
     info "Checking Wayland and KDE build dependencies..."
     if command -v pacman >/dev/null; then
-        mapfile -t MISSING < <(missing_packages qt6-wayland kpipewire kglobalaccel kglobalacceld ksshaskpass)
+        mapfile -t MISSING < <(missing_packages qt6-wayland kpipewire kglobalaccel kglobalacceld ksshaskpass matugen)
         if [[ ${#MISSING[@]} -gt 0 ]]; then
             info "Installing via pacman: ${MISSING[*]}"
             caelestia_sudo pacman -S --needed --noconfirm "${MISSING[@]}" || warn "pacman install failed..."
@@ -613,6 +613,9 @@ if [[ -d "$BUNDLE_DIR/src/matugen" && -d "$BUNDLE_DIR/src/schemes" ]]; then
     find "$CAELESTIA_SHARE/matugen" "$CAELESTIA_SHARE/schemes" -type d -exec chmod 755 {} +
     find "$CAELESTIA_SHARE/matugen" "$CAELESTIA_SHARE/schemes" -type f -exec chmod 644 {} +
     ok "Color pipeline data installed to $CAELESTIA_SHARE"
+    if ! command -v matugen >/dev/null 2>&1; then
+        warn "matugen binary is missing from PATH; dynamic wallpaper color schemes require matugen."
+    fi
 else
     warn "Color pipeline data missing from the checkout; wallpaper and scheme will not work."
 fi
