@@ -96,7 +96,7 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 # sparse checkout only asks for this one path, so the download is the fonts rather than
 # the whole repository. 03a-wallpapers.sh fetches its pack the same way.
 if ! git clone --depth 1 --filter=blob:none --sparse "$REPO" "$TMP_DIR/repo" >/dev/null 2>&1; then
-    warn "Could not reach $REPO; the shell will use a system font. Re-run 'caelestia install' to try again."
+    warn "Could not clone $REPO for the fonts; the shell will use a system font. Re-run 'caelestia install' to try again."
     exit 0
 fi
 
