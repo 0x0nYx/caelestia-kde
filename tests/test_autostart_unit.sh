@@ -104,6 +104,19 @@ test_restarting_goes_through_that_unit() {
     assert_not_contains "$script" 'restart app-caelestiashell@autostart.service' "and not the unit the retired entry generated"
 }
 
+test_a_dead_enable_link_does_not_survive_an_install() {
+    # Taking the user's copy of the unit out leaves the enable link that pointed at it
+    # behind, and systemd counts a unit as enabled whenever a link of that name exists,
+    # however dead - so `enable` leaves it as it is instead of repairing it. That link is
+    # what makes the session start the unit at login, so it has to be dropped and written
+    # again against the unit that survived.
+    local script
+    script="$(cat "$AUTOSTART_SCRIPT")"
+
+    assert_contains "$script" '"$HOME"/.config/systemd/user/*.wants/caelestia-shell.service' "the install should look at the links that enable the unit"
+    assert_contains "$script" '[[ -e "$link" ]] && continue' "and drop the ones whose file is gone"
+}
+
 test_uninstall_removes_and_disables_the_unit() {
     local script
     script="$(cat "$UNINSTALL_SCRIPT")"

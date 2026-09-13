@@ -174,6 +174,23 @@ fi
 # unable to start.
 systemctl --user reset-failed caelestia-shell.service >/dev/null 2>&1 || true
 
+# The links that enable the unit, which are what makes the session start it at login.
+#
+# Taking the user's copy of the unit out - which is what the packaged branch above does to
+# an install an earlier version of this port made - leaves the link that pointed at it
+# behind, and a link whose file has gone is still a link with the unit's name: systemd
+# counts the unit as enabled whenever one of those exists, however dead, so `enable` below
+# leaves it exactly as it is instead of repairing it. The same state is reachable from the
+# other direction, by putting a checkout's install under a package that was later removed.
+# Both leave the link naming a file that is gone, so drop those here and let enable write
+# one against the unit that is actually in use.
+for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
+    [[ -L "$link" ]] || continue
+    [[ -e "$link" ]] && continue
+    rm -f "$link"
+    info "Removed an enable link that named a copy of the shell unit that is gone."
+done
+
 systemctl --user daemon-reload
 if systemctl --user enable caelestia-shell.service >/dev/null 2>&1; then
     ok "Caelestia Shell unit enabled."
