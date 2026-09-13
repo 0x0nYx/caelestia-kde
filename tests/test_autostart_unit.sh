@@ -17,8 +17,8 @@ BUILD_SCRIPT="$REPO_ROOT/scripts/08-build-shell.sh"
 RESTART_SCRIPT="$REPO_ROOT/shell/scripts/restart_shell.sh"
 UNINSTALL_SCRIPT="$REPO_ROOT/uninstall.sh"
 IPC="$REPO_ROOT/src/bin/caelestia-shell-ipc"
-PKGBUILD="$REPO_ROOT/packaging/aur/caelestia-shell-kde/PKGBUILD"
-PACKAGED_UNIT="$REPO_ROOT/packaging/aur/caelestia-shell-kde/caelestia-shell.service"
+PKGBUILD="$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD"
+PACKAGED_UNIT="$REPO_ROOT/packaging/aur/caelestia-kde/caelestia-shell.service"
 
 test_the_checkout_writes_the_unit_instead_of_an_entry() {
     local script

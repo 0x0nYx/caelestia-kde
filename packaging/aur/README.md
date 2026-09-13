@@ -9,10 +9,15 @@ in it can drift from the shell it locks or the command it calls.
 
 | Package | State | Notes |
 | --- | --- | --- |
-| `caelestia-shell-kde` | written, waiting on the next release | the shell, the `caelestia` command and its helpers, the palette data, the Plasma lock screen, the workspace-tracker effect, autostart |
+| `caelestia-kde` | written, waiting on the next release | the shell, the `caelestia` command and its helpers, the palette data, the Plasma lock screen, the workspace-tracker effect, autostart |
 | `caelestia-cli-kde` | not needed | the command ships in the shell package. The name stays free in case the command ever earns a life without the shell |
 
-Both names are free on the AUR (verified 2026-09-12, `resultcount` 0 for each).
+The package is named for the port rather than for one thing inside it. The shell is the
+largest part of the payload, but the lock screen, the KWin effect and the command ship
+in the same install, and `caelestia-shell-kde` said otherwise. Renaming was still free
+when it happened (2026-09-13): `caelestia-kde`, `caelestia-shell-kde` and
+`caelestia-cli-kde` all return `resultcount` 0 on the AUR, so nothing needs a replace
+entry and no user's helper knows the old name.
 
 ## What the package installs
 
@@ -56,7 +61,7 @@ doing the work below it - no repository is cloned and no second shell is built i
 cmake, make and git that the package does not require.
 
 So updating from the shell in a packaged install runs `pacman -Syu`, prints the line
-that finishes the job (`sudo pacman -Syu caelestia-shell-kde`, or a rebuild of the AUR
+that finishes the job (`sudo pacman -Syu caelestia-kde`, or a rebuild of the AUR
 package) and asks for a log out. `caelestia-check-updates` still compares the installed
 version against the project's newest tag, which is what the Update row reports from -
 that is why `git` is a dependency.
@@ -91,7 +96,7 @@ instead of a hardcoded `$HOME`.
 The package owns everything under `/usr` and `/etc`. What it cannot do is the
 data only a user's files can hold, so installing is two steps:
 
-    yay -S caelestia-shell-kde
+    yay -S caelestia-kde
     caelestia install
 
 `caelestia install` runs the same step scripts a checkout's installer runs, for the
@@ -102,7 +107,7 @@ a packaged install runs the package manager and then it again.
 
 ### Removing it
 
-    pacman -Rns caelestia-shell-kde
+    pacman -Rns caelestia-kde
 
 The shell's unit and its launcher belong to the package, so they go with it and
 nothing is left enabled pointing at a tree that has gone. What stays is the user's
@@ -117,11 +122,11 @@ removal belongs to whoever installed the files, which for a package is pacman.
 ## Publishing
 
 The AUR repository for a package is the package directory itself. For
-`caelestia-shell-kde`:
+`caelestia-kde`:
 
-    git clone ssh://aur@aur.archlinux.org/caelestia-shell-kde.git
-    cp packaging/aur/caelestia-shell-kde/* caelestia-shell-kde/
-    cd caelestia-shell-kde
+    git clone ssh://aur@aur.archlinux.org/caelestia-kde.git
+    cp packaging/aur/caelestia-kde/* caelestia-kde/
+    cd caelestia-kde
     makepkg --printsrcinfo > .SRCINFO
     git add PKGBUILD .SRCINFO caelestia-autostart caelestia-shell.service
     git commit -m "update to 2.4.3"

@@ -125,7 +125,7 @@ test_the_greeter_step_selects_without_installing_the_theme() {
     # And the package ships what the step no longer writes, or a packaged install
     # would have no theme to select at all.
     local pkgbuild
-    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-shell-kde/PKGBUILD")"
+    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
     assert_contains "$pkgbuild" 'usr/share/sddm/themes/caelestia' "the package should install the theme"
     assert_contains "$pkgbuild" 'scripts/sync.sh' "and the helper the posthook runs"
     assert_contains "$pkgbuild" 'etc/sddm.conf.d/zz-caelestia.conf' "and the drop-in that selects it"
@@ -162,7 +162,7 @@ test_the_package_sources_and_their_hashes_stay_in_step() {
     # "Integrity checks (sha256) differ in size from the source array" - which is what
     # happened when the retired autostart desktop entry left `source` and stayed in the
     # sums. Then each hash that is not SKIP has to match the file it points at.
-    local pkgbuild_dir="$REPO_ROOT/packaging/aur/caelestia-shell-kde"
+    local pkgbuild_dir="$REPO_ROOT/packaging/aur/caelestia-kde"
     local out
     out="$(
         bash -c '

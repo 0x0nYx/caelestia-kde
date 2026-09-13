@@ -22,7 +22,7 @@
 #   _ref=branch=dev makepkg -si
 # The version the shell reports is still pkgver, so that is for testing only.
 
-pkgname=caelestia-shell-kde
+pkgname=caelestia-kde
 pkgver=2.4.3
 pkgrel=1
 pkgdesc='The Caelestia desktop shell, ported to KDE Plasma'
