@@ -97,6 +97,16 @@ GridLayout {
 
             // Track if this position was active (independent of which workspace)
             readonly property bool active: root.activeWsId === root.ws
+            // The shapes the focused workspace morphs into.
+            //
+            // Upstream's pool also carries the organic ones - Cookie4Sided through
+            // Cookie12Sided, Clover4Leaf, Clover8Leaf, SoftBurst and Ghostish. A cookie
+            // is a circle with a bite taken out of it, which reads as a Pac-Man sitting
+            // in the bar rather than as a Material indicator, so this is a deliberate
+            // divergence: re-check the pool when syncing from upstream, or they return
+            // with the next sync.
+            readonly property list<int> focusShapes: [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny]
+
             property int randShape: MaterialShape.Slanted
             property bool wasPositionActive: false
             property int lastKnownWs: -1
@@ -140,9 +150,7 @@ GridLayout {
                 const wsChanged = lastKnownWs !== root.ws;
                 if (active && (!wasPositionActive || wsChanged)) {
                     if (!hasRandomShape) {
-                        const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish];
-                        const shuffled = [...shapes].sort(() => Math.random() - 0.5);
-                        randShape = shuffled[0];
+                        randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
                         wsShape.shape = randShape;
                         hasRandomShape = true;
                     }
@@ -186,9 +194,7 @@ GridLayout {
                 if (isSwiping) {
                     if (smoothSwipeWeight >= 0.05 && !hasRandomShape) {
                         if (!generatedShapeThisSwipe && !active) {
-                            const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish];
-                            const shuffled = [...shapes].sort(() => Math.random() - 0.5);
-                            randShape = shuffled[0];
+                            randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
                             generatedShapeThisSwipe = true;
                         }
                         wsShape.shape = randShape;
