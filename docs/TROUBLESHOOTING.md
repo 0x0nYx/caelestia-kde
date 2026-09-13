@@ -458,6 +458,47 @@ The plugin injects a temporary KWin script for window tracking. If KWin scriptin
 qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.loadScript
 ```
 
+### 7.6 The Login Screen (Plasma Login and SDDM)
+
+Plasma 6.6 and newer boot into Plasma Login, KDE's fork of SDDM. The two are
+configured in different places, and the installer picks a branch at install time:
+
+| | Plasma Login | SDDM |
+|---|---|---|
+| How to tell | `command -v plasmalogin`, or `/etc/plasmalogin.conf` exists | `command -v sddm` |
+| Theme | none: its greeter is a Plasma shell, and it loads no SDDM theme | `/usr/share/sddm/themes/caelestia` |
+| Wallpaper | `[Greeter][Wallpaper][org.kde.image][General] Image` in `/etc/plasmalogin.conf`, pointing at a copy under the `plasmalogin` user's `wallpapers/` | `assets/background` inside the theme |
+| Colors | the `plasmalogin` user's own `~/.config/kdeglobals` plus the scheme files in its `~/.local/share/color-schemes/` | `theme.conf` inside the theme |
+| Sync helper | `/usr/local/bin/caelestia-greeter-sync` | `/usr/share/sddm/themes/caelestia/scripts/sync.sh` |
+
+The greeter runs as its own system user, which cannot read your home directory, so
+anything it shows has to be copied to it. That is what the sync helper does, and it
+runs after every wallpaper or color change through the posthook in
+`~/.config/caelestia/cli.json`. An install that switches display managers replaces
+its hook rather than stacking a second one.
+
+**The login screen shows Breeze colors or no background:**
+
+```bash
+# Which display manager is actually installed
+command -v plasmalogin sddm
+
+# Plasma Login: what the greeter is told to show
+kreadconfig6 --file /etc/plasmalogin.conf --group Greeter --group Wallpaper \
+    --group org.kde.image --group General --key Image
+
+# SDDM: which theme each config source selects, last one read wins
+grep -rn "Current=" /etc/sddm.conf /etc/sddm.conf.d/ /usr/lib/sddm/sddm.conf.d/ 2>/dev/null
+ls /usr/share/sddm/themes/caelestia/theme.conf
+
+# Re-copy the wallpaper and the scheme, then log out
+sudo /usr/local/bin/caelestia-greeter-sync          # Plasma Login
+sudo /usr/share/sddm/themes/caelestia/scripts/sync.sh   # SDDM
+```
+
+Both greeters read their configuration when they start, so a change is visible at
+the next logout rather than immediately.
+
 ---
 
 ## 8. Post-Install Issues

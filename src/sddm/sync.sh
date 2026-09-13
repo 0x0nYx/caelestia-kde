@@ -145,6 +145,67 @@ else
     fi
 fi
 
+# Plasma Login is a fork of SDDM with a Plasma greeter of its own: it loads no SDDM
+# theme and none of the theme assets the sections below write, so on a machine that
+# has it the work goes to the two places its greeter actually reads -
+# /etc/plasmalogin.conf for the wallpaper, and the plasmalogin system user's own
+# Plasma config for the colours. That pair is what KDE's Login Screen settings
+# module writes when you press its button, done here from the session's state.
+if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; then
+    PLASMALOGIN_HOME="$(getent passwd plasmalogin | cut -d: -f6)"
+    if [[ -z "$PLASMALOGIN_HOME" || "$PLASMALOGIN_HOME" = "/" ]]; then
+        PLASMALOGIN_HOME="/var/lib/plasmalogin"
+    fi
+
+    PLASMALOGIN_CONFIG="$PLASMALOGIN_HOME/.config"
+    PLASMALOGIN_SCHEMES="$PLASMALOGIN_HOME/.local/share/color-schemes"
+    PLASMALOGIN_WALLPAPERS="$PLASMALOGIN_HOME/wallpapers"
+    MAX_LOGIN_WALLPAPER_BYTES=$((50 * 1024 * 1024))
+
+    install -d -o root -g root -m 0755 "$PLASMALOGIN_CONFIG" "$PLASMALOGIN_SCHEMES" "$PLASMALOGIN_WALLPAPERS"
+
+    # The greeter resolves its colour scheme by name, so the scheme files have to be
+    # somewhere it can see, not only in the session user's home directory.
+    for scheme in "$REAL_HOME"/.local/share/color-schemes/Matugen*.colors; do
+        [[ -f "$scheme" ]] || continue
+        install -o root -g root -m 0644 "$scheme" "$PLASMALOGIN_SCHEMES/$(basename -- "$scheme")"
+    done
+
+    # The look, file for file, the way the settings module copies it.
+    for file in kdeglobals plasmarc kxkbrc kcminputrc plasma-localerc; do
+        copy_user_file "$REAL_HOME/.config/$file" "$PLASMALOGIN_CONFIG/$file" "$((1024 * 1024))" || true
+    done
+
+    # Wallpaper last, and only one of them: the greeter runs as its own user, which
+    # cannot read the session user's pictures directory, so the picture is copied to
+    # it and the config points at that copy.
+    WALLPAPER_SOURCE="$(sudo -H -u "$REAL_USER" readlink -f "$CAEL_STATE/wallpaper/current" 2>/dev/null || true)"
+    if [[ -n "$WALLPAPER_SOURCE" && -f "$WALLPAPER_SOURCE" ]]; then
+        WALLPAPER_NAME="$(basename -- "$WALLPAPER_SOURCE")"
+        if copy_user_file "$WALLPAPER_SOURCE" "$PLASMALOGIN_WALLPAPERS/$WALLPAPER_NAME" "$MAX_LOGIN_WALLPAPER_BYTES"; then
+            for old in "$PLASMALOGIN_WALLPAPERS"/*; do
+                [[ "$old" == "$PLASMALOGIN_WALLPAPERS/$WALLPAPER_NAME" ]] || rm -f -- "$old"
+            done
+
+            if command -v kwriteconfig6 >/dev/null 2>&1 \
+                && kwriteconfig6 --file /etc/plasmalogin.conf --group Greeter --key WallpaperPluginId "org.kde.image" \
+                && kwriteconfig6 --file /etc/plasmalogin.conf --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "file://$PLASMALOGIN_WALLPAPERS/$WALLPAPER_NAME"; then
+                echo "✓ Synced the login screen wallpaper"
+            else
+                echo "WARNING: could not write /etc/plasmalogin.conf, the wallpaper is where the greeter expects but is not selected" >&2
+            fi
+        else
+            echo "No readable wallpaper found, leaving the login screen wallpaper unchanged."
+        fi
+    else
+        echo "No readable wallpaper found, leaving the login screen wallpaper unchanged."
+    fi
+
+    chown -R plasmalogin:plasmalogin "$PLASMALOGIN_CONFIG" "$PLASMALOGIN_SCHEMES" "$PLASMALOGIN_WALLPAPERS" 2>/dev/null || true
+
+    exit "$FAILED"
+fi
+
 # 2. Sync avatar files into theme assets so sddm can safely access them without permission issues.
 sync_optional_user_file \
     "$REAL_HOME/.face.icon" \

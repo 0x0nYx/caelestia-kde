@@ -38,6 +38,105 @@ fi
 
 ALL_OK=true
 
+# Places the sync helper, the posthook that calls it, and the sudoers rule that
+# lets the hook run it. Shared by both display managers below: the helper decides
+# what to do from the machine it runs on, not from where it was installed.
+register_greeter_sync() {
+    local label="${1:-Login screen configured.}"
+
+    POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
+    CLI_JSON="$HOME/.config/caelestia/cli.json"
+
+    if command -v python3 &>/dev/null; then
+        python3 - "$CLI_JSON" "$POSTHOOK_CMD" <<'PYEOF'
+import json, os, re, sys
+
+cli_path, hook_cmd = sys.argv[1], sys.argv[2]
+
+config = {}
+if os.path.exists(cli_path):
+    with open(cli_path) as f:
+        config = json.load(f)
+
+# Assign rather than append. Any posthook of ours comes back out of whatever is
+# there first, then the current one goes in once: a second run of the installer
+# lands on the same string instead of stacking another copy onto it, and a path
+# left behind by the other display manager's install does not survive the switch.
+# A hook the user wrote is kept, in front of ours; every other key in the file is
+# untouched, including ones this script does not know.
+ours = re.compile(
+    r"\s*&&\s*sudo\s+\S+\s+--posthook"
+    + r"|sudo\s+\S+\s+--posthook\s*&&\s*"
+    + r"|sudo\s+\S+\s+--posthook"
+)
+
+for section in ("wallpaper", "theme"):
+    config.setdefault(section, {})
+    existing = config[section].get("postHook", "")
+    if isinstance(existing, str):
+        cleaned = ours.sub("", existing).strip()
+        config[section]["postHook"] = f"{cleaned} && {hook_cmd}" if cleaned else hook_cmd
+
+os.makedirs(os.path.dirname(cli_path), exist_ok=True)
+with open(cli_path, "w") as f:
+    json.dump(config, f, indent=4)
+    f.write("\n")
+PYEOF
+        ok "Posthook registered in cli.json"
+    else
+        warn "python3 not found, skipping posthook registration. Wallpaper and color changes will not auto-sync to the login screen."
+        ALL_OK=false
+    fi
+
+    SUDOERS_FILE="/etc/sudoers.d/caelestia-sddm-sync"
+    if ! caelestia_sudo_quiet test -f "$SUDOERS_FILE"; then
+        echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
+        caelestia_sudo chmod 440 "$SUDOERS_FILE"
+        ok "Sudoers drop-in created."
+    fi
+
+    if [[ "$ALL_OK" == "true" ]]; then
+        ok "$label"
+    else
+        warn "Login screen installed with warnings. Review the output above."
+    fi
+}
+
+# Plasma Login is a fork of SDDM, but its greeter is a Plasma shell of its own and
+# reads no SDDM themes at all: a theme package would sit under /usr/share/sddm and
+# never be loaded, which is what a login screen that ignores the theme looks like.
+# Its wallpaper comes from /etc/plasmalogin.conf and the rest of its look from the
+# plasmalogin user's own Plasma config - the same thing KDE's Login Screen settings
+# module writes when you press its button - so that is what this branch does, and
+# the sync helper is what keeps the two in step afterwards.
+DISPLAY_MANAGER="sddm"
+if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; then
+    DISPLAY_MANAGER="plasmalogin"
+fi
+
+if [[ "$DISPLAY_MANAGER" == "plasmalogin" ]]; then
+    SYNC_SCRIPT="/usr/local/bin/caelestia-greeter-sync"
+
+    caelestia_sudo install -d -m 0755 /usr/local/bin
+    caelestia_sudo install -m 0755 "$SRC_DIR/sync.sh" "$SYNC_SCRIPT"
+    ok "Login screen sync helper installed to $SYNC_SCRIPT"
+
+    # The helper's own work is the same on both display managers, so it does the
+    # configuring here rather than this script writing the same keys twice.
+    if sync_output="$(caelestia_sudo "$SYNC_SCRIPT" 2>&1)"; then
+        ok "Initial login screen sync complete."
+    else
+        warn "Initial login screen sync had warnings (non-fatal):"
+        if [[ -n "$sync_output" ]]; then
+            printf '%s\n' "$sync_output" | sed -e 's/\[WARN\]/warning:/g' -e 's/\[ERR\]/error:/g' -e 's/^/  /'
+        fi
+        ALL_OK=false
+    fi
+
+    register_greeter_sync "Login screen configured for Plasma Login."
+    exit 0
+fi
+
 if [[ "${BASE_DISTRO:-}" == "arch" ]]; then
     SDDM_DEPS=(sddm qt6-declarative qt6-5compat qt6-svg qt6-multimedia)
     MISSING=()
@@ -167,76 +266,4 @@ for conf in /usr/lib/sddm/sddm.conf.d/*.conf /etc/sddm.conf /etc/sddm.conf.d/*.c
     info "${conf}: ${CURRENT_LINE// /}"
 done
 
-POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
-CLI_JSON="$HOME/.config/caelestia/cli.json"
-
-if command -v python3 &>/dev/null; then
-    python3 - "$CLI_JSON" "$POSTHOOK_CMD" <<'PYEOF'
-import json, os, re, sys
-
-cli_path, hook_cmd = sys.argv[1], sys.argv[2]
-
-config = {}
-if os.path.exists(cli_path):
-    with open(cli_path) as f:
-        config = json.load(f)
-
-# Assign rather than append. Our own command comes back out of whatever is there
-# first, then goes in once, so a second run of the installer lands on the same
-# string instead of stacking another copy onto it and a stale path from an older
-# install cannot survive. A hook the user wrote is kept, in front of ours; every
-# other key in the file is untouched, including ones this script does not know.
-ours = re.compile(
-    r"\s*&&\s*" + re.escape(hook_cmd)
-    + r"|" + re.escape(hook_cmd) + r"\s*&&\s*"
-    + r"|" + re.escape(hook_cmd)
-)
-
-for section in ("wallpaper", "theme"):
-    config.setdefault(section, {})
-    existing = config[section].get("postHook", "")
-    if isinstance(existing, str):
-        cleaned = ours.sub("", existing).strip()
-        config[section]["postHook"] = f"{cleaned} && {hook_cmd}" if cleaned else hook_cmd
-
-os.makedirs(os.path.dirname(cli_path), exist_ok=True)
-with open(cli_path, "w") as f:
-    json.dump(config, f, indent=4)
-    f.write("\n")
-PYEOF
-    ok "Posthook registered in cli.json"
-else
-    warn "python3 not found, skipping posthook registration. Wallpaper and color changes will not auto-sync to SDDM."
-    ALL_OK=false
-fi
-
-SUDOERS_FILE="/etc/sudoers.d/caelestia-sddm-sync"
-if ! caelestia_sudo_quiet test -f "$SUDOERS_FILE"; then
-    echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
-    caelestia_sudo chmod 440 "$SUDOERS_FILE"
-    ok "Sudoers drop-in created."
-fi
-
-if sync_output="$(caelestia_sudo "$SYNC_SCRIPT" 2>&1)"; then
-    ok "Initial sync complete."
-else
-    warn "Initial sync had warnings (non-fatal):"
-    # The sync's output is the only place the reason is written down, so it is
-    # echoed here rather than left in the step's exit code. Its markers are
-    # relabelled on the way through: the installer turns any "[WARN]" inside a
-    # step's output into a WARN status for the whole step, and a nested command's
-    # warning is not what this step is reporting.
-    if [[ -n "$sync_output" ]]; then
-        printf '%s\n' "$sync_output" | sed -e 's/\[WARN\]/warning:/g' -e 's/\[ERR\]/error:/g' -e 's/^/  /'
-    fi
-    ALL_OK=false
-fi
-
-# Non-fatal problems are reported through the [WARN] markers in this step's
-# output, which the TUI turns into a WARN status. The exit code stays 0 so a
-# theme that did install is not reported as FAILED and offered for retry.
-if [[ "$ALL_OK" == "true" ]]; then
-    ok "SDDM theme installed."
-else
-    warn "SDDM theme installed with warnings. Review the output above."
-fi
+register_greeter_sync "SDDM theme installed."

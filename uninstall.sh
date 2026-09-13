@@ -634,9 +634,43 @@ if [[ -d /usr/share/sddm/themes/caelestia ]]; then
     sudo rm -rf /usr/share/sddm/themes/caelestia
     ok "Removed SDDM theme: /usr/share/sddm/themes/caelestia"
 fi
-if [[ -f /etc/sddm.conf.d/caelestia.conf ]]; then
-    sudo rm -f /etc/sddm.conf.d/caelestia.conf
-    ok "Removed SDDM config drop-in: caelestia.conf"
+for dropin in /etc/sddm.conf.d/caelestia.conf /etc/sddm.conf.d/zz-caelestia.conf; do
+    if [[ -f "$dropin" ]]; then
+        sudo rm -f "$dropin"
+        ok "Removed SDDM config drop-in: $(basename "$dropin")"
+    fi
+done
+# The theme is also named in /etc/sddm.conf, because which of the two SDDM reads
+# last differs between versions; only the key this installer wrote is removed.
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current --delete 2>/dev/null || true
+fi
+
+# Plasma Login, KDE's fork of SDDM and what Plasma 6.6 and newer boot into. Its
+# greeter is a Plasma shell: it reads the wallpaper from /etc/plasmalogin.conf and
+# its colours from the plasmalogin user's own Plasma config, both of which are
+# copies this installer made.
+if [[ -f /usr/local/bin/caelestia-greeter-sync ]]; then
+    sudo rm -f /usr/local/bin/caelestia-greeter-sync
+    ok "Removed login screen sync helper: caelestia-greeter-sync"
+fi
+if [[ -f /etc/plasmalogin.conf ]] && command -v kwriteconfig6 >/dev/null 2>&1; then
+    sudo kwriteconfig6 --file /etc/plasmalogin.conf --group Greeter --group Wallpaper --group org.kde.image --group General --key Image --delete 2>/dev/null || true
+    ok "Removed the login screen wallpaper from /etc/plasmalogin.conf"
+fi
+PLASMALOGIN_HOME="$(getent passwd plasmalogin | cut -d: -f6)"
+if [[ -n "$PLASMALOGIN_HOME" && "$PLASMALOGIN_HOME" != "/" ]]; then
+    if [[ -d "$PLASMALOGIN_HOME/wallpapers" ]]; then
+        sudo rm -rf "$PLASMALOGIN_HOME/wallpapers"
+        ok "Removed the login screen's copy of the wallpaper"
+    fi
+    for file in kdeglobals plasmarc kxkbrc kcminputrc plasma-localerc; do
+        [[ -f "$PLASMALOGIN_HOME/.config/$file" ]] && sudo rm -f "$PLASMALOGIN_HOME/.config/$file"
+    done
+    if [[ -d "$PLASMALOGIN_HOME/.local/share/color-schemes" ]]; then
+        sudo rm -rf "$PLASMALOGIN_HOME/.local/share/color-schemes"
+        ok "Removed the login screen's copies of the colour schemes"
+    fi
 fi
 
 # SDDM posthooks from cli.json
@@ -650,13 +684,18 @@ if not os.path.exists(cli_path):
 with open(cli_path) as f:
     config = json.load(f)
 changed = False
+# Both helpers are ours, and an install that moved between display managers could
+# have left either one behind, so both spellings are recognised.
+ours = re.compile(
+    r'\s*&&\s*sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook'
+    r'|sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook\s*&&\s*'
+    r'|sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook'
+)
 for section in ("wallpaper", "theme"):
     hook = config.get(section, {}).get("postHook", "")
     if not hook:
         continue
-    cleaned = re.sub(r'\s*&&\s*sudo\s+/usr/share/sddm/themes/caelestia/scripts/sync\.sh\s+--posthook', '', hook)
-    cleaned = re.sub(r'sudo\s+/usr/share/sddm/themes/caelestia/scripts/sync\.sh\s+--posthook\s*&&\s*', '', cleaned)
-    cleaned = re.sub(r'sudo\s+/usr/share/sddm/themes/caelestia/scripts/sync\.sh\s+--posthook', '', cleaned).strip()
+    cleaned = ours.sub('', hook).strip()
     if cleaned != hook:
         changed = True
         if cleaned:
