@@ -2,9 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtCore
 import Quickshell
-import Quickshell.Io
 import Quickshell.Bluetooth
 import Quickshell.Services.UPower
 import Caelestia
@@ -32,88 +30,46 @@ StyledRect {
 
     readonly property bool isHovering: hoverPos !== -1
     property real currentHoverExpansion: isHovering ? hoverExpansion : 0
-    property bool isDragging: false
 
-    property bool lockstatusActive: Config.bar.status.showLockStatus && (Hypr.capsLock || Hypr.numLock)
-    property bool audioActive: Config.bar.status.showAudio
-    property bool microphoneActive: Config.bar.status.showMicrophone
-    property bool kblayoutActive: Config.bar.status.showKbLayout && (Hypr.kbLayout || "").length > 0
-    property bool networkActive: Config.bar.status.showNetwork && (!Nmcli.activeEthernet || Config.bar.status.showWifi)
-    property bool ethernetActive: Config.bar.status.showNetwork && Nmcli.activeEthernet
-    property bool bluetoothActive: Config.bar.status.showBluetooth
-    property bool batteryActive: Config.bar.status.showBattery
-    property bool peripheralBatteryActive: Config.bar.status.showPeripheralBattery
-    property bool nightlightActive: Config.bar.status.showNightLight && HyprSunset.active
-    property bool notificationsActive: Config.bar.status.showNotifications
-    property string iconsOrderStr: ""
+    readonly property var activeEntries: Config.bar.statusIcons.values.filter(entry => entry.enabled && root.entryActive(entry.id))
 
-    function syncModel() {
-        if (root.isDragging) return;
-
-        const defaultOrder = ["lockstatus", "microphone", "kblayout", "network", "ethernet", "bluetooth", "audio", "battery", "peripheralBattery", "nightlight", "notifications"];
-        let savedOrder = root.iconsOrderStr ? root.iconsOrderStr.split(",") : [];
-        if (savedOrder.length === 1 && savedOrder[0] === "") savedOrder = [];
-
-        for (let i = 0; i < defaultOrder.length; i++) {
-            if (!savedOrder.includes(defaultOrder[i])) {
-                savedOrder.push(defaultOrder[i]);
-            }
-        }
-        savedOrder = savedOrder.filter(name => defaultOrder.includes(name));
-
-        const activeItems = savedOrder.filter(name => {
-            switch (name) {
-                case "lockstatus": return root.lockstatusActive;
-                case "audio": return root.audioActive;
-                case "microphone": return root.microphoneActive;
-                case "kblayout": return root.kblayoutActive;
-                case "network": return root.networkActive;
-                case "ethernet": return root.ethernetActive;
-                case "bluetooth": return root.bluetoothActive;
-                case "battery": return root.batteryActive;
-                case "peripheralBattery": return root.peripheralBatteryActive;
-                case "nightlight": return root.nightlightActive;
-                case "notifications": return root.notificationsActive;
-                default: return false;
-            }
-        });
-
-        iconModel.clear();
-        for (let i = 0; i < activeItems.length; i++) {
-            iconModel.append({ "itemName": activeItems[i] });
+    // Which icons are shown, and in what order, is the `bar.statusIcons` list, so
+    // that the settings page can add, remove and reorder them. Everything below is
+    // the other half of the question: whether an icon has anything to say now.
+    function entryActive(id: string): bool {
+        switch (id) {
+        case "lockStatus":
+            return Hypr.capsLock || Hypr.numLock;
+        case "kbLayout":
+            return (Hypr.kbLayout || "").length > 0;
+        case "network":
+            return !Nmcli.activeEthernet || Config.bar.status.showWifi;
+        case "ethernet":
+            return Nmcli.activeEthernet;
+        case "nightlight":
+            return HyprSunset.active;
+        case "audio":
+        case "microphone":
+        case "bluetooth":
+        case "battery":
+        case "peripheralBattery":
+        case "notifications":
+            return true;
+        default:
+            return false;
         }
     }
 
-    function saveOrder() {
-        const defaultOrder = ["lockstatus", "microphone", "kblayout", "network", "ethernet", "bluetooth", "audio", "battery", "peripheralBattery", "nightlight", "notifications"];
-
-        let activeOrder = [];
-        for (let i = 0; i < iconModel.count; i++) {
-            activeOrder.push(iconModel.get(i).itemName);
-        }
-
-        let previousOrder = root.iconsOrderStr ? root.iconsOrderStr.split(",") : defaultOrder.slice();
-        if (previousOrder.length === 1 && previousOrder[0] === "") previousOrder = defaultOrder.slice();
-
-        // Find which slots in the full order were occupied by currently-active icons.
-        // We'll place the new active order into those same slots, so inactive icons
-        // stay at their original positions.
-        const activeSet = new Set(activeOrder);
-        const activePositions = [];
-        for (let i = 0; i < previousOrder.length; i++) {
-            if (activeSet.has(previousOrder[i])) {
-                activePositions.push(i);
-            }
-        }
-
-        const newOrder = previousOrder.slice();
-        for (let i = 0; i < activePositions.length; i++) {
-            newOrder[activePositions[i]] = activeOrder[i];
-        }
-
-        root.iconsOrderStr = newOrder.join(",");
-        saveProcess.command = ["bash", "-c", "mkdir -p ~/.config/caelestia && printf '%s' '" + root.iconsOrderStr + "' > ~/.config/caelestia/status_icons_order.txt"];
-        saveProcess.running = true;
+    // Hand a drag back to the list. Both ends are found by id rather than by index:
+    // the icons here are only the enabled ones that have something to say, so an
+    // index in this widget is not an index in the list.
+    function moveEntry(fromId: string, toId: string): void {
+        const entries = Config.bar.statusIcons.values;
+        const from = entries.findIndex(entry => entry.id === fromId);
+        const to = entries.findIndex(entry => entry.id === toId);
+        if (from < 0 || to < 0 || from === to)
+            return;
+        Config.bar.statusIcons.move(from, to);
     }
 
     color: Colours.tPalette.m3surfaceContainer
@@ -122,56 +78,7 @@ StyledRect {
     implicitWidth: isHorizontal ? (iconColumn.implicitWidth + Tokens.padding.medium * 2 + currentHoverExpansion) : barThickness
     implicitHeight: isHorizontal ? barThickness : (iconColumn.implicitHeight + Tokens.padding.medium * 2 + currentHoverExpansion)
 
-    onLockstatusActiveChanged: syncModel()
-    onAudioActiveChanged: syncModel()
-    onMicrophoneActiveChanged: syncModel()
-    onKblayoutActiveChanged: syncModel()
-    onNetworkActiveChanged: syncModel()
-    onEthernetActiveChanged: syncModel()
-    onBluetoothActiveChanged: syncModel()
-    onBatteryActiveChanged: syncModel()
-    onPeripheralBatteryActiveChanged: syncModel()
-    onNightlightActiveChanged: syncModel()
-    onNotificationsActiveChanged: syncModel()
-
-    onIconsOrderStrChanged: {
-        if (iconsOrderStr.length > 0) {
-            root.syncModel();
-        }
-    }
-
-    Component.onCompleted: {
-        loadProcess.running = true;
-    }
-
     Behavior on currentHoverExpansion { Anim { type: Anim.DefaultEffects } }
-
-    Process {
-        id: loadProcess
-
-        command: ["bash", "-c", "cat ~/.config/caelestia/status_icons_order.txt 2>/dev/null || true"]
-
-        stdout: StdioCollector {
-            id: loadStdout
-        }
-
-        onExited: {
-            const outText = (loadStdout.text || "").trim();
-            if (outText.length > 0) {
-                root.iconsOrderStr = outText;
-            } else {
-                root.syncModel();
-            }
-        }
-    }
-
-    Process {
-        id: saveProcess
-    }
-
-    ListModel {
-        id: iconModel
-    }
 
     GridLayout {
         id: iconColumn
@@ -196,15 +103,17 @@ StyledRect {
         rowSpacing: Tokens.spacing.medium / 2
 
         Repeater {
-            model: iconModel
-            
+            model: ScriptModel {
+                values: root.activeEntries
+            }
+
             delegate: Item {
                 id: delegateContainer
 
-                required property string itemName
+                required property var modelData
                 required property int index
 
-                property string name: itemName
+                property string name: modelData.id
 
                 implicitWidth: loader.implicitWidth
                 implicitHeight: loader.implicitHeight
@@ -215,24 +124,14 @@ StyledRect {
 
                 DropArea {
                     anchors.fill: parent
-                    onEntered: drag => {
-                        console.log("StatusIcons DropArea onEntered from:", drag.source.delegateIndex, "to:", delegateContainer.index);
-                        const from = drag.source.delegateIndex;
-                        const to = delegateContainer.index;
-                        if (from !== undefined && to !== undefined && from !== to) {
-                            iconModel.move(from, to, 1);
-                        }
-                    }
-                    onDropped: drag => {
-                        console.log("StatusIcons DropArea onDropped");
-                        root.saveOrder();
-                    }
+                    onDropped: drag => root.moveEntry(drag.source.entryId, delegateContainer.name)
                 }
             
                 Item {
                     id: dragItem
 
                     property int delegateIndex: delegateContainer.index
+                    readonly property string entryId: modelData.id
 
                     width: delegateContainer.width
                     height: delegateContainer.height
@@ -264,11 +163,11 @@ StyledRect {
                         anchors.centerIn: parent
 
                         sourceComponent: {
-                            switch(itemName) {
-                                case "lockstatus": return lockstatusComp;
+                            switch(name) {
+                                case "lockStatus": return lockstatusComp;
                                 case "audio": return audioComp;
                                 case "microphone": return microphoneComp;
-                                case "kblayout": return kblayoutComp;
+                                case "kbLayout": return kblayoutComp;
                                 case "network": return networkComp;
                                 case "ethernet": return ethernetComp;
                                 case "bluetooth": return bluetoothComp;
@@ -293,37 +192,23 @@ StyledRect {
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                     
                         onPressed: mouse => {
-                            console.log("StatusIcons Drag onPressed");
-                            if (mouse.button === Qt.LeftButton) {
+                            if (mouse.button === Qt.LeftButton)
                                 held = true;
-                                root.isDragging = true;
-                            }
-                        }
-                        onPositionChanged: mouse => {
-                            if (held) {
-                                console.log("StatusIcons Drag onPositionChanged, dragItem x:", dragItem.x, "y:", dragItem.y);
-                            }
                         }
                         onReleased: mouse => {
-                            console.log("StatusIcons Drag onReleased");
                             if (mouse.button === Qt.LeftButton) {
                                 held = false;
-                                root.isDragging = false;
                                 dragItem.x = 0;
                                 dragItem.y = 0;
-                                root.saveOrder();
                             }
                         }
                         onCanceled: {
-                            console.log("StatusIcons Drag onCanceled");
                             held = false;
-                            root.isDragging = false;
                             dragItem.x = 0;
                             dragItem.y = 0;
                         }
                         onClicked: mouse => {
-                            console.log("StatusIcons Drag onClicked");
-                            if (itemName === "notifications") {
+                            if (name === "notifications") {
                                 if (mouse.button === Qt.RightButton) {
                                     Notifs.dnd = !Notifs.dnd;
                                 } else {

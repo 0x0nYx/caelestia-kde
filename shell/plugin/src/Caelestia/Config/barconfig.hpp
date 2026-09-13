@@ -255,8 +255,24 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BarGreeter, activeWindow)
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarStatus, status)
-    CONFIG_SUBOBJECT(BarClock, clock)
-    CONFIG_SUBOBJECT(BarDock, dock)
+    // The status area as an ordered list: which icons are there and in what order,
+    // which is upstream's shape for it and what the settings editor reads. An `id`
+    // names one of the icons the bar knows how to draw; `enabled` is its switch.
+    CONFIG_LIST(EntryList, statusIcons,
+        DEFAULT_ARG({
+            LIST_ENTRY(lockStatus, true),
+            LIST_ENTRY(microphone, false),
+            LIST_ENTRY(kbLayout, false),
+            LIST_ENTRY(network, true),
+            LIST_ENTRY(ethernet, true),
+            LIST_ENTRY(bluetooth, true),
+            LIST_ENTRY(audio, true),
+            LIST_ENTRY(battery, true),
+            LIST_ENTRY(peripheralBattery, false),
+            LIST_ENTRY(nightlight, true),
+            LIST_ENTRY(notifications, true),
+        }))
+    CONFIG_SUBOBJECT(BarClock, clock)    CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_SUBOBJECT(BarGithub, github)
     CONFIG_SUBOBJECT(BarPerformance, performance)
     CONFIG_PROPERTY(QVariantList, entries,

@@ -163,6 +163,17 @@ fi
 # own, and the ones it left behind would only be duplicates in System Settings.
 rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors 2>/dev/null || true
 
+#  Retired: the status icons order file
+#
+# The bar kept the order the user dragged its status icons into in a file of its
+# own under ~/.config/caelestia. The order is part of the config now
+# (bar.statusIcons), where the settings editor can see it, so the file has no
+# reader left and is not the user's to keep either - it was ours.
+if [[ -f "$HOME/.config/caelestia/status_icons_order.txt" ]]; then
+    rm -f "$HOME/.config/caelestia/status_icons_order.txt"
+    ok "Removed the retired status icon order file; the order lives in the config now."
+fi
+
 # Live window thumbnails.
 #
 # KWin only advertises its privileged Wayland interfaces to clients whose

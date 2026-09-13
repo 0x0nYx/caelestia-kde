@@ -125,24 +125,6 @@ PageBase {
 
         SectionHeader {
             first: true
-            text: qsTr("Battery indicators")
-        }
-
-        ToggleRow {
-            first: true
-            text: qsTr("Show battery icon")
-            checked: Config.bar.status.showBattery
-            onToggled: GlobalConfig.bar.status.showBattery = checked
-        }
-
-        ToggleRow {
-            last: true
-            text: qsTr("Show peripheral battery")
-            checked: Config.bar.status.showPeripheralBattery
-            onToggled: GlobalConfig.bar.status.showPeripheralBattery = checked
-        }
-
-        SectionHeader {
             text: qsTr("Idle & sleep")
         }
 
