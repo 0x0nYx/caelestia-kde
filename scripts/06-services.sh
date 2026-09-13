@@ -3,6 +3,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 
@@ -44,6 +45,11 @@ fi
 # Everything below needs root, and all of it is one-time setup. Check the
 # end state first so a routine update never asks for a password.
 system_setup_needed() {
+    # A package owns the system half: the udev rule and the group membership are
+    # files under /etc and changes to the user's groups, and writing them from here
+    # would be doing it behind the package manager's back. Parity-6 dropped them
+    # from a packaged install for the same reason.
+    install_is_packaged && return 1
     systemctl is-enabled --quiet keyd.service 2>/dev/null && return 0
     systemctl is-active --quiet keyd.service 2>/dev/null && return 0
     [[ -f /etc/udev/rules.d/80-uinput.rules ]] || return 0
@@ -56,7 +62,11 @@ system_setup_needed() {
 }
 
 if ! system_setup_needed; then
-    skip "System-level configuration already in place."
+    if install_is_packaged; then
+        skip "System-level configuration belongs to the package."
+    else
+        skip "System-level configuration already in place."
+    fi
 else
 echo "  Applying system-level configurations (requires root)..."
 caelestia_sudo bash -s -- "$USER" << 'EOF'

@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-fs.sh"
@@ -11,6 +12,62 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/submodules.sh"
 
 BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SHELL_DIR="$BUNDLE_DIR/shell"
+
+# packaged_shell_setup
+#
+# Everything this script does for a packaged install, which is the part only a
+# user's own files can carry. There is nothing to build: the tree the package's
+# CMake install put in /etc/xdg/quickshell/caelestia is the one to run, the
+# plugin and the command are in /usr, and the palette data is in
+# /usr/share/caelestia. What is left is the environment that tells every session
+# process where those are, and the version the shell reports.
+#
+# The file is the same one the checkout path writes further down, with the
+# package's paths instead of the checkout's; the two cannot be one heredoc
+# because the values are what differ.
+packaged_shell_setup() {
+    local env_d="$HOME/.config/environment.d"
+
+    info "Writing the shell environment to $env_d/caelestia.conf"
+    mkdir -p "$env_d"
+    cat > "$env_d/caelestia.conf" << EOF
+# Written by Caelestia. Read by systemd for every session process and by the
+# user manager the shell's unit runs under.
+QML2_IMPORT_PATH=/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia
+CAELESTIA_LIB_DIR=/usr/lib/caelestia
+CAELESTIA_BIN_DIR=/usr/bin
+CAELESTIA_SHELL_CONFIG=/etc/xdg/quickshell/caelestia/shell.qml
+EOF
+    ok "Shell environment written."
+
+    # Take back the lines earlier installs appended to the rc files, which the
+    # environment file above covers now.
+    local rc
+    for rc in "$HOME/.bashrc" "$HOME/.config/fish/config.fish" "$HOME/.zshrc"; do
+        [[ -f "$rc" ]] || continue
+        if grep -q 'CAELESTIA_LIB_DIR\|QML2_IMPORT_PATH.*caelestia' "$rc"; then
+            sed -i '/CAELESTIA_LIB_DIR/d; /QML2_IMPORT_PATH.*caelestia/d' "$rc"
+            info "Removed the Caelestia environment lines from ${rc##*/}"
+        fi
+    done
+
+    # `caelestia version` reads this. The package ships the same file it stamps
+    # the build from, so the version reported is the one in the running shell.
+    local version_env="$BUNDLE_DIR/version.env"
+    if [[ -f "$version_env" ]]; then
+        mkdir -p "$HOME/.config/quickshell/caelestia"
+        install -m 644 "$version_env" "$HOME/.config/quickshell/caelestia/version.env"
+        ok "Recorded the installed version for 'caelestia version'."
+    fi
+
+    skip "Nothing to build: the shell tree is the package's."
+}
+
+if install_is_packaged; then
+    packaged_shell_setup
+    exit 0
+fi
+
 
 # Prefer Ninja for faster builds; fall back to CMake's default generator when
 # it is not available (e.g. a standalone/update run before package install).

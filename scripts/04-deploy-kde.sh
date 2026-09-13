@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/js.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 
@@ -176,7 +177,10 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     # The logout screen is not a wallpaper choice of its own, so it still follows
     # whatever is in use - including here, where the wallpaper is one the user set
     # and this step is deliberately leaving alone.
-    if [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
+    #
+    # Not on a packaged install: the Breeze theme is a package's file, and this
+    # step's job there is the user's half only.
+    if ! install_is_packaged && [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
         sudo sed -i "s|^background=.*|background=$WALLPAPER_IN_USE|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
     fi
 elif [[ -f "$WALLPAPER_PATH" ]]; then
@@ -207,7 +211,8 @@ elif [[ -f "$WALLPAPER_PATH" ]]; then
     # Mirror it onto the SDDM login screen too, so the logout screen matches.
     # The breeze theme reads its background from its package-owned theme.conf,
     # so patch that in place; a package update may revert it until the next run.
-    if [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
+    # Skipped on a packaged install, for the reason given above.
+    if ! install_is_packaged && [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
         sudo sed -i "s|^background=.*|background=$WALLPAPER_PATH|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
     fi
 fi

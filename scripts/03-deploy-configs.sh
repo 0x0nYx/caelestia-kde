@@ -3,6 +3,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 
 BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
@@ -18,10 +19,11 @@ if [[ -z "${BACKUP_DIR:-}" ]]; then
         BACKUP_DIR="$(cat "$BACKUP_DIR_FILE" 2>/dev/null || true)"
     fi
 
-    # Only reuse the cached backup dir if it belongs to *this* bundle's backups and matches the timestamp format.
+    # Only reuse the cached backup dir if it belongs to this install's backups and matches the timestamp format.
     if [[ -n "$BACKUP_DIR" ]]; then
         case "$BACKUP_DIR" in
             "$BUNDLE_DIR/backups/"[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]) ;;
+            "$CACHE_DIR/backups/"[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]) ;;
             *) BACKUP_DIR="" ;;
         esac
     fi
@@ -31,7 +33,14 @@ if [[ -z "${BACKUP_DIR:-}" ]]; then
     fi
 
     if [[ -z "$BACKUP_DIR" ]]; then
-        BACKUP_DIR="$BUNDLE_DIR/backups/$(date +%Y%m%d_%H%M%S)"
+        # Inside the bundle for a checkout, which is where the installer looks for
+        # it; a package's bundle is under /usr and read-only, so its backups go
+        # beside the other per-user state the command already writes.
+        if install_is_packaged; then
+            BACKUP_DIR="$CACHE_DIR/backups/$(date +%Y%m%d_%H%M%S)"
+        else
+            BACKUP_DIR="$BUNDLE_DIR/backups/$(date +%Y%m%d_%H%M%S)"
+        fi
     fi
 fi
 
@@ -45,8 +54,12 @@ mkdir -p "$DEPLOYED_DIR"
 
 # 02a-submodules.sh checks this too and tries to repair it; reaching this point
 # without content means that step was skipped or its repair failed, so send the
-# user back to it rather than to git.
+# user back to it rather than to git. A package has no submodules to fetch: the
+# content is part of it.
 if [[ ! -d "$DOTS_DIR" ]] || [[ -z "$(ls -A "$DOTS_DIR" 2>/dev/null)" ]]; then
+    if install_is_packaged; then
+        die "Missing dotfiles in $DOTS_DIR. The package should have installed them; reinstall it."
+    fi
     die "Missing src/dots content. Run: bash \"$BUNDLE_DIR/scripts/02a-submodules.sh\""
 fi
 
