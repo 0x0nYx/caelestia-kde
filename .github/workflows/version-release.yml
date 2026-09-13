@@ -250,6 +250,72 @@ jobs:
           # so name the repo explicitly instead of relying on local git state.
           gh release upload "$TAG" "$ARTIFACT" "$CHECKSUM" --repo "$GITHUB_REPOSITORY" --clobber
 
+  # The source tarball the AUR package builds from (packaging/aur/caelestia-kde).
+  # A git source would make every build download 645 MiB: this tree carries two
+  # submodules and 308 MiB of fonts in its history. The tarball is the tree at
+  # the tag with the parts a build does not need left out - no .git, no fonts
+  # (12-fetch-assets.sh downloads those into the user's own directory at install
+  # time) - the submodules inlined at the commits the tag pins, and REVISION
+  # written so the compiled version helper can report a revision from a tree with
+  # no git to ask.
+  #
+  # The asset name is load bearing: the PKGBUILD's source= names this exact file,
+  # and tagging is not finished until the sha256 printed here is copied into its
+  # sha256sums. Nothing checks that for you, by hand or in CI, because the tag's
+  # tree does not exist before the tag does.
+  build-source:
+    name: Build AUR source tarball
+    needs: version-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Load Release Tag
+        run: |
+          set -euo pipefail
+          source .github/version.env
+          echo "TAG=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Stage the Tree
+        run: |
+          set -euo pipefail
+          ROOT="caelestia-kde-$VERSION"
+          mkdir -p "dist/$ROOT"
+          # -a keeps the executable bits, which the package's scripts are run by.
+          # Excluding .git also drops the submodules' .git files, which would
+          # otherwise be copied into the package.
+          rsync -a --exclude '.git' --exclude '.gitmodules' \
+            --exclude 'shell/assets/fonts' ./ "dist/$ROOT/"
+          # Read by shell/CMakeLists.txt when there is no .git: without it a shell
+          # built from this tarball reports "unknown" where a checkout reports the
+          # commit. Same file and same meaning as upstream's release tarballs.
+          git rev-parse HEAD > "dist/$ROOT/REVISION"
+
+      - name: Build the Tarball
+        run: |
+          set -euo pipefail
+          ARTIFACT="caelestia-kde-v$VERSION.tar.gz"
+          # The directory is named in the archive because makepkg extracts to
+          # $srcdir/$pkgname-$pkgver, which is what the PKGBUILD's functions cd
+          # into.
+          tar -C dist -czf "$ARTIFACT" "caelestia-kde-$VERSION"
+          sha256sum "$ARTIFACT" | tee "$ARTIFACT.sha256"
+          du -h "$ARTIFACT"
+          echo "ARTIFACT=$ARTIFACT" >> "$GITHUB_ENV"
+
+      - name: Attach to Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" "$ARTIFACT" "$ARTIFACT.sha256" \
+            --repo "$GITHUB_REPOSITORY" --clobber
+
   # Prebuilt installer TUI binaries (x86_64 + aarch64) so setup.sh
   # can download instead of compiling the TUI on the user's machine.
   # These are versioned executables, so they belong on the version

@@ -9,10 +9,15 @@ in it can drift from the shell it locks or the command it calls.
 
 | Package | State | Notes |
 | --- | --- | --- |
-| `caelestia-shell-kde` | written, waiting on the next release | the shell, the `caelestia` command and its helpers, the palette data, the Plasma lock screen, the workspace-tracker effect, autostart |
+| `caelestia-kde` | written, waiting on the next release | the shell, the `caelestia` command and its helpers, the palette data, the Plasma lock screen, the workspace-tracker effect, autostart |
 | `caelestia-cli-kde` | not needed | the command ships in the shell package. The name stays free in case the command ever earns a life without the shell |
 
-Both names are free on the AUR (verified 2026-09-12, `resultcount` 0 for each).
+The package is named for the port rather than for one thing inside it. The shell is the
+largest part of the payload, but the lock screen, the KWin effect and the command ship
+in the same install, and `caelestia-shell-kde` said otherwise. Renaming was still free
+when it happened (2026-09-13): `caelestia-kde`, `caelestia-shell-kde` and
+`caelestia-cli-kde` all return `resultcount` 0 on the AUR, so nothing needs a replace
+entry and no user's helper knows the old name.
 
 ## What the package installs
 
@@ -31,13 +36,23 @@ Both names are free on the AUR (verified 2026-09-12, `resultcount` 0 for each).
   CMake knows nothing about it;
 - the workspace-tracker KWin effect, built here against this machine's Plasma
   because it links KWin's ABI;
-- autostart: the desktop entry, the systemd user unit, and
-  `/usr/bin/caelestia-autostart`, which sets the environment the shell needs.
+- autostart: `/usr/bin/caelestia-autostart`, the systemd user unit it runs under,
+  and nothing else. The unit is not enabled by the package - packages cannot enable a
+  user's units - so `caelestia install` does it once.
 
 It declares `provides=('caelestia-shell')` and
 `conflicts=('caelestia-shell' 'caelestia-shell-git')`. That is honest: the QML
 interface and the config directory are the same, and the community packages that
 require `caelestia-shell` do so optionally, so nothing breaks.
+
+It ships no fonts. The tree's `shell/assets/fonts` is 309 MiB of the 401 MiB the payload
+would otherwise be: 47 SF Pro files, of which the shell names two families. Upstream's
+package carries no fonts either (it takes four font packages as dependencies), so the
+fonts are the one family no repository has and the one `caelestia install` fetches, into
+`~/.local/share/caelestia/assets/fonts` rather than the shell's own tree - a package owns
+that tree, so a download there would outlive `pacman -R`. `shell/modules/Fonts.qml` reads
+both directories, and a machine that cannot reach the repository keeps a working shell on
+a system font with a warning from the step. `CAELESTIA_SKIP_ASSETS=1` skips it outright.
 
 It no longer depends on `caelestia-cli`. The color pipeline belongs to this
 project now - `caelestia-color` generates the palette with matugen, applies it and
@@ -55,7 +70,7 @@ doing the work below it - no repository is cloned and no second shell is built i
 cmake, make and git that the package does not require.
 
 So updating from the shell in a packaged install runs `pacman -Syu`, prints the line
-that finishes the job (`sudo pacman -Syu caelestia-shell-kde`, or a rebuild of the AUR
+that finishes the job (`sudo pacman -Syu caelestia-kde`, or a rebuild of the AUR
 package) and asks for a log out. `caelestia-check-updates` still compares the installed
 version against the project's newest tag, which is what the Update row reports from -
 that is why `git` is a dependency.
@@ -85,40 +100,90 @@ the session and into the user manager, so `caelestia-shell-ipc` finds the shell
 config, and the update-checker unit resolves its helper from that same variable
 instead of a hardcoded `$HOME`.
 
+## Installing
+
+The package owns everything under `/usr` and `/etc`. What it cannot do is the
+data only a user's files can hold, so installing is two steps:
+
+    yay -S caelestia-kde
+    caelestia install
+
+`caelestia install` runs the same step scripts a checkout's installer runs, for the
+user's half only: the config files, the KDE settings, the user services, the
+environment, the enablement of the shell's unit (a package cannot enable a user's
+units) and the wallpaper state. It is idempotent, and `caelestia update` on
+a packaged install runs the package manager and then it again.
+
+### Removing it
+
+    pacman -Rns caelestia-kde
+
+The shell's unit and its launcher belong to the package, so they go with it and
+nothing is left enabled pointing at a tree that has gone. What stays is the user's
+own state, which the package never owned: `~/.config/caelestia`, the session
+environment at `~/.config/environment.d/caelestia.conf`, the autostart state under
+`~/.local`, the downloaded fonts under `~/.local/share/caelestia`, and the sudoers
+drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that lets the login screen follow the
+wallpaper. Deleting those is what removes the last trace of the install. There is no
+uninstall command, and upstream has none either: removal belongs to whoever installed
+the files, which for a package is pacman, and for the fonts is the install that
+downloaded them.
+
+
 ## Publishing
 
 The AUR repository for a package is the package directory itself. For
-`caelestia-shell-kde`:
+`caelestia-kde`:
 
-    git clone ssh://aur@aur.archlinux.org/caelestia-shell-kde.git
-    cp packaging/aur/caelestia-shell-kde/* caelestia-shell-kde/
-    cd caelestia-shell-kde
+    git clone ssh://aur@aur.archlinux.org/caelestia-kde.git
+    cp packaging/aur/caelestia-kde/* caelestia-kde/
+    cd caelestia-kde
     makepkg --printsrcinfo > .SRCINFO
-    git add PKGBUILD .SRCINFO caelestia-autostart caelestiashell.desktop caelestia-shell.service
+    git add PKGBUILD .SRCINFO caelestia-autostart caelestia-shell.service
     git commit -m "update to 2.4.3"
     git push
 
 Updating for a release:
 
-1. bump `pkgver` and reset `pkgrel=1`. It currently sits one release ahead of the
-   published tag on purpose, so the tarball's `sha256sums` entry is `SKIP` until
-   that tag exists;
-2. download
-   `https://github.com/ladybug-me/caelestia-kde/archive/refs/tags/v<pkgver>.tar.gz`
-   and put its sha256 in the first `sha256sums` entry;
-3. the other three sums are the files beside the PKGBUILD, so run `makepkg -g`
-   to refresh them all at once;
+1. bump `pkgver` and reset `pkgrel=1`;
+2. point the source at the new tarball. It is already named after `pkgver`, so the URL
+   follows the bump on its own, but the first `sha256sums` entry does not: the tarball
+   does not exist until the tag is pushed and `build-source` has attached it. Push the
+   tag, then take the hash from that job's summary (`sha256sum` is printed beside the
+   size) or download the `.sha256` it attaches, and put it in. A `SKIP` in the meantime
+   is what the file ships with, and a wrong hash stops the build with "Integrity checks
+   (sha256) differ";
+3. the other two `sha256sums` entries are the files beside the PKGBUILD, so run
+   `makepkg -g` to refresh them if any of them changed;
 4. check the tag still has everything `package()` copies by name: `src/bin/*`,
-   `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop` and
-   `shell/kwin-effects/workspace-tracker`. A missing path fails the build rather
-   than shipping a package with a silent hole in it, which is why they are named;
+   `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop`,
+   `shell/kwin-effects/workspace-tracker`, and for the user's half `scripts/`,
+   `src/dots/`, `src/dots-extra/`, `src/yet-another-monochrome-icon-set/`,
+   `shell/assets/wallpapers/` and `assets/org.quickshell.desktop`. A missing path
+   fails the build rather than shipping a package with a silent hole in it, which
+   is why they are named. No version file is among them: the version the shell and
+   the command report is compiled into `/usr/lib/caelestia/version` from the same
+   `-DVERSION=$pkgver` the build is given, so there is nothing to keep in step;
 5. regenerate `.SRCINFO` before pushing.
 
-One thing to improve: the tag archive is 271 MB, most of it assets the shell package
-does not install (wallpapers, the monochrome icon set, the bundled fonts). A source
-tarball produced by the release job, containing `shell/` and `.github/version.env`
-only, would cut the download and the build time without changing anything about the
-package. Until then, `makepkg` downloads the whole tree.
+The source is the tarball the release job attaches, not a clone of the tag. The tree
+carries two submodules and 308 MiB of fonts in its history, so a clone makes every
+build download 645 MiB; the tarball is about 40, with the submodules inlined at the
+commits the tag pins, the fonts left out (`12-fetch-assets.sh` downloads those into
+the user's own asset directory when the shell is installed) and `REVISION` written,
+which is what the compiled helper reports from a tree with no `.git` to ask. Upstream
+does the same thing for the same reason.
+
+To build before a tag exists, use `packaging/aur/makepkg-from-checkout.sh`. It builds
+the same tarball from the checkout - same exclusions, same submodules, same `REVISION`
+- hashes it, and runs `makepkg` on a staged copy of the PKGBUILD that points at it, so
+this is the real package build and not a variant of it:
+
+    packaging/aur/makepkg-from-checkout.sh -si
+
+The version the shell reports is still `pkgver`, so that is for testing the flow rather
+than for a release. It stages in `~/.cache/caelestia-aur` rather than `/tmp`, because
+makepkg builds the whole shell there.
 
 `makepkg` cannot run on the Windows host this repo is developed on, so a build
 has to be tried on an Arch machine or a container before the first push.

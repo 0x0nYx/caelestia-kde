@@ -36,12 +36,22 @@ if(NOT DEFINED VERSION)
 endif()
 
 if(NOT DEFINED GIT_REVISION)
-    execute_process(COMMAND git rev-parse HEAD
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        OUTPUT_VARIABLE GIT_REVISION
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-    )
+    # A source tarball has no .git to ask. The release job writes REVISION beside
+    # version.env with the commit the tag points at, so a package built from a tarball
+    # reports the same revision a checkout would instead of "unknown".
+    set(_REVISION_FILE "${CMAKE_SOURCE_DIR}/../REVISION")
+    if(EXISTS "${_REVISION_FILE}")
+        file(STRINGS "${_REVISION_FILE}" GIT_REVISION LIMIT_COUNT 1)
+        string(STRIP "${GIT_REVISION}" GIT_REVISION)
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_REVISION_FILE}")
+    else()
+        execute_process(COMMAND git rev-parse HEAD
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+            OUTPUT_VARIABLE GIT_REVISION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+    endif()
 
     if("${GIT_REVISION}" STREQUAL "")
         set(GIT_REVISION "unknown")

@@ -172,17 +172,22 @@ test_unknown_command_and_option_are_rejected() {
     assert_status 2 "$RUN_STATUS" "an unknown screenshot option should exit 2"
 }
 
-test_install_without_a_checkout_explains_itself() {
+test_install_with_nothing_to_install_from_explains_itself() {
     setup_stubs
 
+    # Install has two sources now: a checkout, which it hands over to, or a package,
+    # whose step scripts it runs for the user's half. With neither it says so. The
+    # packaged path itself is covered in tests/test_packaged_install.sh.
     RUN_OUTPUT="$(CAELESTIA_BIN_DIR="$STUB_DIR" \
         CAELESTIA_DIR="$(dirname "$STUB_DIR")/nowhere" \
+        CAELESTIA_LIB_DIR="$(dirname "$STUB_DIR")/nowhere" \
         XDG_CONFIG_HOME="$XDG_CONFIG_HOME" \
         bash "$CLI" install 2>&1)"
     RUN_STATUS=$?
 
-    assert_status 1 "$RUN_STATUS" "install without a checkout should fail"
-    assert_contains "$RUN_OUTPUT" "no checkout to install from" "the missing checkout is named"
+    assert_status 1 "$RUN_STATUS" "install with nothing to install from should fail"
+    assert_contains "$RUN_OUTPUT" "no installer scripts found" "what is missing is named"
+    assert_contains "$RUN_OUTPUT" "/usr/share/caelestia" "and where a package keeps it"
 }
 
 test_version_reports_the_checkout_version() {

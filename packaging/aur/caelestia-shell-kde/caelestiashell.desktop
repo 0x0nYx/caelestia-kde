@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Caelestia Shell
-Comment=Start the Caelestia desktop shell
-Exec=/usr/bin/caelestia-autostart
-Terminal=false
-NoDisplay=true
-OnlyShowIn=KDE;
-X-KDE-autostart-phase=1

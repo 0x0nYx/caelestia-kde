@@ -133,8 +133,18 @@ if [ "$PACKAGED" -eq 1 ]; then
         warn "No pacman found; update this package with the tool that installed it."
     fi
     info "And the shell itself:"
-    echo "    pacman:  sudo pacman -Syu caelestia-shell-kde"
-    echo "    AUR:     rebuild caelestia-shell-kde with the helper it was installed with"
+    echo "    pacman:  sudo pacman -Syu caelestia-kde"
+    echo "    AUR:     rebuild caelestia-kde with the helper it was installed with"
+    echo
+
+    # What this run can actually do is the user's half: the package's step scripts
+    # are its own copies, and `caelestia install` deploys from them idempotently,
+    # which is the re-run parity-6 asks for after every update.
+    if [[ -x "$SELF_DIR/caelestia" ]]; then
+        info "Re-applying the user's configuration..."
+        "$SELF_DIR/caelestia" install || warn "Applying the user's configuration failed; see the output above."
+    fi
+
     echo "    then log out and back in."
     echo "PROGRESS: done: Package update finished"
     exit 0

@@ -1,10 +1,10 @@
 #!/bin/bash
-# Started by /etc/xdg/autostart/caelestiashell.desktop on login.
+# Started by caelestia-shell.service on login.
 #
-# The environment is set here rather than in the desktop entry because systemd
-# turns that entry into app-caelestiashell@autostart.service, and the variables
-# have to reach the shell whatever starts it. This mirrors what the source
-# install writes into ~/.local/bin/caelestia-autostart.sh.
+# The environment is set here rather than in the unit, so that a shell started by
+# hand gets the same one, and because the variables have to reach every process the
+# shell spawns. This mirrors what the source install writes into
+# ~/.local/bin/caelestia-autostart.sh.
 
 set -euo pipefail
 

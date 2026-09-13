@@ -6,6 +6,7 @@
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 
 # Resolve the bundle root the same way the build script does, so this works
 # whether the installer exports it or the script is run directly.
@@ -20,13 +21,18 @@ echo ""
 info "Setting up autostart entries"
 echo ""
 
-SHELL_CONFIG="$HOME/.config/quickshell/caelestia/shell.qml"
+# Where this install keeps the tree the shell runs from, and what the session needs to
+# find it. The values come from install-kind.sh, which is also what 08-build-shell.sh
+# writes into ~/.config/environment.d: one definition, so this cannot end up naming a
+# tree the install did not put there.
+SHELL_CONFIG="$(install_shell_config)"
+QML_IMPORT_PATH="$(install_qml_import_path)"
+LIB_DIR="$(install_lib_dir)"
+BIN_DIR="$(install_bin_dir)"
 
-if [[ ! -f "$SHELL_CONFIG" ]]; then
-    die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
-fi
-
-# Determine the path of quickshell to avoid PATH differences at login.
+# Determine the path of quickshell to avoid PATH differences at login. Both kinds need it:
+# the wrapper below runs it, and the KWin declaration further down names it so KWin will
+# offer the shell its screencast protocol.
 if command -v quickshell >/dev/null 2>&1; then
     QUICKSHELL_PATH="$(command -v quickshell)"
 elif command -v qs >/dev/null 2>&1; then
@@ -39,22 +45,52 @@ else
     die "Quickshell is not installed or is not available in PATH."
 fi
 
-# Caelestia Shell autostart
-# Launch the shell built by 08-build-shell.sh directly, rather than through a
-# wrapper that would have to guess where the build ended up.
-echo "  Creating Caelestia Shell autostart entry..."
-cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
+# The launcher and the unit that starts it.
+#
+# A package ships both - /usr/bin/caelestia-autostart and
+# /usr/lib/systemd/user/caelestia-shell.service - and those are the ones to use. The
+# daemon's files belonging to the package is what makes removing it clean: `pacman -R`
+# takes the unit and the launcher with it, so nothing is left enabled pointing at a tree
+# that has gone. That was the failure this step used to cause - it wrote the user's own
+# copy of both, which survived the package and failed five times in a row afterwards.
+#
+# So a checkout is the case that needs them generated: there is no package to own them,
+# and the unit has to be built around wherever that checkout put its tree.
+if install_is_packaged; then
+    # A copy under ~/.config shadows the package's, because a user unit wins over one in
+    # /usr/lib/systemd/user. An earlier version of this port wrote one, so take it back
+    # out rather than leave the package's unit unused.
+    if [[ -f "$HOME/.config/systemd/user/caelestia-shell.service" ]]; then
+        rm -f "$HOME/.config/systemd/user/caelestia-shell.service"
+        info "Removed the user's copy of the shell unit; the package's is the one to use."
+    fi
+    if [[ -f "$HOME/.local/bin/caelestia-autostart.sh" ]]; then
+        rm -f "$HOME/.local/bin/caelestia-autostart.sh"
+        info "Removed the user's copy of the shell launcher; the package's is the one to use."
+    fi
+else
+    if [[ ! -f "$SHELL_CONFIG" ]]; then
+        die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
+    fi
+
+    # Caelestia Shell autostart
+    # Launch the shell this install produced directly, rather than through a wrapper that
+    # would have to guess where it ended up.
+    echo "  Creating Caelestia Shell autostart entry..."
+    cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
 #!/bin/bash
-# The shell and the widgets it runs call `caelestia` by name, and 08-build-shell.sh
-# installs it into ~/.local/bin. A session started by the display manager does
-# not necessarily have that directory on PATH (this script is reached by
-# absolute path, so finding it proves nothing), which is what leaves the
-# wallpaper picker unable to change anything and the palette stuck on the
-# built-in default. Put it there first, for everything the shell spawns.
-export PATH="\$HOME/.local/bin:\$PATH"
-export QML2_IMPORT_PATH="\$HOME/.local/lib/qt6/qml:\$HOME/.config/quickshell/caelestia"
-export CAELESTIA_LIB_DIR="\$HOME/.local/lib/caelestia"
-export CAELESTIA_BIN_DIR="\$HOME/.local/bin"
+# Where this install's files are. ~/.config/environment.d carries the same values for a
+# session; they are repeated here because the unit can start this script outside one.
+#
+# The command the shell and its widgets call by name has to be on PATH for everything
+# this spawns: 08-build-shell.sh installs it into ~/.local/bin, which a session started by
+# the display manager does not necessarily have on PATH (this script is reached by
+# absolute path, so finding it proves nothing).
+export PATH="$BIN_DIR:\$PATH"
+export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
+export CAELESTIA_LIB_DIR="$LIB_DIR"
+export CAELESTIA_BIN_DIR="$BIN_DIR"
+export CAELESTIA_SHELL_CONFIG="$SHELL_CONFIG"
 export QS_NO_RELOAD_POPUP=1
 export QS_DROP_EXPENSIVE_FONTS=1
 export QS_DISABLE_CRASH_HANDLER=1
@@ -81,31 +117,86 @@ fi
 # Dropping it also makes the old stdbuf wrapper unnecessary: journald stdio is
 # what the line-buffering hack was working around, and stdbuf leaked
 # LD_PRELOAD=libstdbuf.so into every launched app on top of that.
-exec "$QUICKSHELL_PATH" -n -p "\$HOME/.config/quickshell/caelestia/shell.qml"
+exec "$QUICKSHELL_PATH" -n -p "$SHELL_CONFIG"
 EOF
-chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
+    chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
 
-# Phase 1 (DesktopServices), not 2 (Applications). The shell registers
-# org.freedesktop.Notifications, and applications decide once, when they start,
-# whether a notification server exists -- one that finds none draws its own
-# popups for the rest of the session, in its own corner, ignoring every setting
-# here. In phase 2 the shell starts alongside the user's autostarted apps with
-# no ordering between them, so which apps end up talking to it is a coin toss
-# per login. Phase 1 finishes before any of them begin.
-cat > "$AUTOSTART_DIR/caelestiashell.desktop" << EOF
-[Desktop Entry]
-Type=Application
-Name=Caelestia Shell
-Comment=Start Caelestia Shell
-Exec=$HOME/.local/bin/caelestia-autostart.sh
-Icon=quickshell
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-X-KDE-AutostartPhase=1
-X-KDE-Wayland-Interfaces=zkde_screencast_unstable_v1
+    # The shell is started by one thing: the systemd user unit below. It replaced the
+    # desktop entry this script used to write, which KDE's xdg-autostart generator turned
+    # into app-caelestiashell@autostart.service - two mechanisms for one shell.
+    #
+    # The ordering is what the entry's phase used to buy, and it still matters: the shell
+    # registers org.freedesktop.Notifications, and applications decide once, when they
+    # start, whether a notification server exists - one that finds none draws its own
+    # popups for the rest of the session, in its own corner, ignoring every setting here.
+    # Before=xdg-desktop-autostart.target puts this unit in front of the app units that
+    # same generator creates. (On a machine without that target the ordering is a no-op,
+    # which is worse than the phase but never wrong.)
+    echo "  Creating the Caelestia Shell unit..."
+    mkdir -p "$HOME/.config/systemd/user"
+    cat > "$HOME/.config/systemd/user/caelestia-shell.service" << EOF
+[Unit]
+Description=Caelestia Shell
+PartOf=graphical-session.target
+After=graphical-session.target
+Before=xdg-desktop-autostart.target
+
+[Service]
+Type=exec
+ExecStart=%h/.local/bin/caelestia-autostart.sh
+# A shell that cannot start is retried, but not in a tight loop: systemd gives up on a
+# unit that starts five times in ten seconds, and the state it leaves is one an install
+# then has to clear. Upstream's own unit waits the same five seconds between attempts.
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+Slice=session.slice
+
+[Install]
+WantedBy=graphical-session.target
 EOF
-ok "Quickshell autostart created."
+fi
+
+# Take the older mechanisms back out. The entry is ours, so removing it is safe;
+# the unit it generated is disabled as well, or it would keep starting a shell of
+# its own from the same wrapper.
+if [[ -f "$AUTOSTART_DIR/caelestiashell.desktop" ]]; then
+    rm -f "$AUTOSTART_DIR/caelestiashell.desktop"
+    systemctl --user disable app-caelestiashell@autostart.service >/dev/null 2>&1 || true
+    info "Removed the retired autostart entry; the shell's unit replaced it."
+fi
+
+# An install that is repairing a machine may be repairing this too: a unit that failed to
+# start repeatedly is refused by systemd with "Start request repeated too quickly" until
+# it is reset, and that is the state an uninstall leaves behind - the unit stays enabled
+# and points at a tree that has gone, which is five failed starts and a `start-limit-hit`.
+# Without this the run that puts the install back reports success and leaves the shell
+# unable to start.
+systemctl --user reset-failed caelestia-shell.service >/dev/null 2>&1 || true
+
+# The links that enable the unit, which are what makes the session start it at login.
+#
+# Taking the user's copy of the unit out - which is what the packaged branch above does to
+# an install an earlier version of this port made - leaves the link that pointed at it
+# behind, and a link whose file has gone is still a link with the unit's name: systemd
+# counts the unit as enabled whenever one of those exists, however dead, so `enable` below
+# leaves it exactly as it is instead of repairing it. The same state is reachable from the
+# other direction, by putting a checkout's install under a package that was later removed.
+# Both leave the link naming a file that is gone, so drop those here and let enable write
+# one against the unit that is actually in use.
+for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
+    [[ -L "$link" ]] || continue
+    [[ -e "$link" ]] && continue
+    rm -f "$link"
+    info "Removed an enable link that named a copy of the shell unit that is gone."
+done
+
+systemctl --user daemon-reload
+if systemctl --user enable caelestia-shell.service >/dev/null 2>&1; then
+    ok "Caelestia Shell unit enabled."
+else
+    warn "Could not enable caelestia-shell.service; start the shell with 'systemctl --user start caelestia-shell.service'."
+fi
 
 # KWin restricts privileged Wayland protocols (like zkde_screencast_unstable_v1,
 # used for live window thumbnails). For every such protocol, KWin's

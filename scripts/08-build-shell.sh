@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-fs.sh"
@@ -11,6 +12,65 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/submodules.sh"
 
 BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SHELL_DIR="$BUNDLE_DIR/shell"
+
+# write_shell_environment
+#
+# The environment the session and the shell's unit run under: where the QML modules are,
+# where the command and the palette data are, and the shell's entrypoint. systemd reads
+# ~/.config/environment.d into every session process and into the user manager the unit
+# runs under, so bash, fish, zsh and the shell itself read one file instead of three that
+# have to be kept in step - and the three needed four branches of grep and sed between
+# them.
+#
+# The values come from install-kind.sh, so a checkout and a package write the same file
+# with their own paths in it. This replaced two blocks that differed in nothing but their
+# contents, which is what let the command's own copy of these paths go stale.
+write_shell_environment() {
+    local env_d="$HOME/.config/environment.d"
+    local rc
+
+    info "Writing the shell environment to $env_d/caelestia.conf"
+    mkdir -p "$env_d"
+    cat > "$env_d/caelestia.conf" << EOF
+# Written by Caelestia. Read by systemd for every session process and by the
+# user manager the shell's unit runs under.
+QML2_IMPORT_PATH=$(install_qml_import_path)
+CAELESTIA_LIB_DIR=$(install_lib_dir)
+CAELESTIA_BIN_DIR=$(install_bin_dir)
+CAELESTIA_SHELL_CONFIG=$(install_shell_config)
+EOF
+    ok "Shell environment written."
+
+    # Take back the lines earlier installs appended to the rc files, which the file
+    # above covers now. Only lines naming this project are touched.
+    for rc in "$HOME/.bashrc" "$HOME/.config/fish/config.fish" "$HOME/.zshrc"; do
+        [[ -f "$rc" ]] || continue
+        if grep -q 'CAELESTIA_LIB_DIR\|QML2_IMPORT_PATH.*caelestia' "$rc"; then
+            sed -i '/CAELESTIA_LIB_DIR/d; /QML2_IMPORT_PATH.*caelestia/d' "$rc"
+            info "Removed the Caelestia environment lines from ${rc##*/}"
+        fi
+    done
+}
+
+# packaged_shell_setup
+#
+# Everything this script does for a packaged install, which is the part only a
+# user's own files can carry. There is nothing to build: the tree the package's
+# CMake install put in /etc/xdg/quickshell/caelestia is the one to run, the
+# plugin and the command are in /usr, and the palette data is in
+# /usr/share/caelestia. What is left is the environment that tells every session
+# process where those are.
+packaged_shell_setup() {
+    write_shell_environment
+
+    skip "Nothing to build: the shell tree is the package's."
+}
+
+if install_is_packaged; then
+    packaged_shell_setup
+    exit 0
+fi
+
 
 # Prefer Ninja for faster builds; fall back to CMake's default generator when
 # it is not available (e.g. a standalone/update run before package install).
@@ -557,34 +617,10 @@ done
 
 export QML2_IMPORT_PATH="$QML_BASE${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
 
-# The shell's environment lives in ~/.config/environment.d, not in the user's
-# shell rc files. systemd imports that directory into every session process and
-# into the user manager that runs the shell's unit, so bash, fish, zsh and the
-# shell itself read one file instead of three that have to be kept in step - and
-# the three needed four branches of grep and sed between them.
-ENV_D="$HOME/.config/environment.d"
-info "Writing the shell environment to $ENV_D/caelestia.conf"
-mkdir -p "$ENV_D"
-cat > "$ENV_D/caelestia.conf" << EOF
-# Written by Caelestia. Read by systemd for every session process and by the
-# user manager the shell's unit runs under.
-QML2_IMPORT_PATH=$QML_BASE:$HOME/.config/quickshell/caelestia
-CAELESTIA_LIB_DIR=$HOME/.local/lib/caelestia
-CAELESTIA_BIN_DIR=$HOME/.local/bin
-CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
-EOF
-ok "Shell environment written."
-
-# Take back the lines earlier installs appended to the rc files. The same values
-# in three places is what made them drift, and environment.d now covers all of
-# them; only lines naming this project are touched.
-for rc in "$HOME/.bashrc" "$HOME/.config/fish/config.fish" "$HOME/.zshrc"; do
-    [[ -f "$rc" ]] || continue
-    if grep -q 'CAELESTIA_LIB_DIR\|QML2_IMPORT_PATH.*caelestia' "$rc"; then
-        sed -i '/CAELESTIA_LIB_DIR/d; /QML2_IMPORT_PATH.*caelestia/d' "$rc"
-        info "Removed the Caelestia environment lines from ${rc##*/}"
-    fi
-done
+# The shell's environment lives in ~/.config/environment.d, not in the user's shell rc
+# files, and it is the same file for both install kinds - write_shell_environment takes
+# the paths from install-kind.sh.
+write_shell_environment
 
 mkdir -p ~/.local/bin ~/.config/systemd/user
 
@@ -620,12 +656,6 @@ if [[ -d "$BUNDLE_DIR/src/matugen" && -d "$BUNDLE_DIR/src/schemes" ]]; then
     fi
 else
     warn "Color pipeline data missing from the checkout; wallpaper and scheme will not work."
-fi
-
-# `caelestia version` reports this, so an installed shell can say which release
-# it is without a checkout to read.
-if [[ -f "$BUNDLE_DIR/.github/version.env" ]]; then
-    install -Dm 644 "$BUNDLE_DIR/.github/version.env" "$HOME/.config/quickshell/caelestia/version.env"
 fi
 
 
