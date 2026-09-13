@@ -30,6 +30,21 @@ QML_IMPORT_PATH="$(install_qml_import_path)"
 LIB_DIR="$(install_lib_dir)"
 BIN_DIR="$(install_bin_dir)"
 
+# Determine the path of quickshell to avoid PATH differences at login. Both kinds need it:
+# the wrapper below runs it, and the KWin declaration further down names it so KWin will
+# offer the shell its screencast protocol.
+if command -v quickshell >/dev/null 2>&1; then
+    QUICKSHELL_PATH="$(command -v quickshell)"
+elif command -v qs >/dev/null 2>&1; then
+    QUICKSHELL_PATH="$(command -v qs)"
+elif [ -x "/usr/bin/quickshell" ]; then
+    QUICKSHELL_PATH="/usr/bin/quickshell"
+elif [ -x "/usr/local/bin/quickshell" ]; then
+    QUICKSHELL_PATH="/usr/local/bin/quickshell"
+else
+    die "Quickshell is not installed or is not available in PATH."
+fi
+
 # The launcher and the unit that starts it.
 #
 # A package ships both - /usr/bin/caelestia-autostart and
@@ -56,19 +71,6 @@ if install_is_packaged; then
 else
     if [[ ! -f "$SHELL_CONFIG" ]]; then
         die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
-    fi
-
-    # Determine the path of quickshell to avoid PATH differences at login.
-    if command -v quickshell >/dev/null 2>&1; then
-        QUICKSHELL_PATH="$(command -v quickshell)"
-    elif command -v qs >/dev/null 2>&1; then
-        QUICKSHELL_PATH="$(command -v qs)"
-    elif [ -x "/usr/bin/quickshell" ]; then
-        QUICKSHELL_PATH="/usr/bin/quickshell"
-    elif [ -x "/usr/local/bin/quickshell" ]; then
-        QUICKSHELL_PATH="/usr/local/bin/quickshell"
-    else
-        die "Quickshell is not installed or is not available in PATH."
     fi
 
     # Caelestia Shell autostart
