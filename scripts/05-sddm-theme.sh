@@ -135,25 +135,37 @@ CLI_JSON="$HOME/.config/caelestia/cli.json"
 
 if command -v python3 &>/dev/null; then
     python3 - "$CLI_JSON" "$POSTHOOK_CMD" <<'PYEOF'
-import json, sys, os
+import json, os, re, sys
+
 cli_path, hook_cmd = sys.argv[1], sys.argv[2]
+
 config = {}
 if os.path.exists(cli_path):
     with open(cli_path) as f:
         config = json.load(f)
+
+# Assign rather than append. Our own command comes back out of whatever is there
+# first, then goes in once, so a second run of the installer lands on the same
+# string instead of stacking another copy onto it and a stale path from an older
+# install cannot survive. A hook the user wrote is kept, in front of ours; every
+# other key in the file is untouched, including ones this script does not know.
+ours = re.compile(
+    r"\s*&&\s*" + re.escape(hook_cmd)
+    + r"|" + re.escape(hook_cmd) + r"\s*&&\s*"
+    + r"|" + re.escape(hook_cmd)
+)
+
 for section in ("wallpaper", "theme"):
-    if section not in config:
-        config[section] = {}
+    config.setdefault(section, {})
     existing = config[section].get("postHook", "")
-    if hook_cmd in existing:
-        pass
-    elif existing:
-        config[section]["postHook"] = existing + " && " + hook_cmd
-    else:
-        config[section]["postHook"] = hook_cmd
+    if isinstance(existing, str):
+        cleaned = ours.sub("", existing).strip()
+        config[section]["postHook"] = f"{cleaned} && {hook_cmd}" if cleaned else hook_cmd
+
 os.makedirs(os.path.dirname(cli_path), exist_ok=True)
 with open(cli_path, "w") as f:
     json.dump(config, f, indent=4)
+    f.write("\n")
 PYEOF
     ok "Posthook registered in cli.json"
 else
