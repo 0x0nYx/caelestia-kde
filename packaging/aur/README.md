@@ -86,6 +86,21 @@ the session and into the user manager, so `caelestia-shell-ipc` finds the shell
 config, and the update-checker unit resolves its helper from that same variable
 instead of a hardcoded `$HOME`.
 
+## Installing
+
+The package owns everything under `/usr` and `/etc`. What it cannot do is the
+data only a user's files can hold, so installing is two steps:
+
+    yay -S caelestia-shell-kde
+    caelestia install
+
+`caelestia install` runs the same step scripts a checkout's installer runs, for the
+user's half only: the config files, the KDE settings, the user services, the
+environment, the autostart unit (which it enables, because a package cannot enable
+a user's units) and the wallpaper state. It is idempotent, and `caelestia update` on
+a packaged install runs the package manager and then it again.
+
+
 ## Publishing
 
 The AUR repository for a package is the package directory itself. For
@@ -101,25 +116,27 @@ The AUR repository for a package is the package directory itself. For
 
 Updating for a release:
 
-1. bump `pkgver` and reset `pkgrel=1`. It currently sits one release ahead of the
-   published tag on purpose, so the tarball's `sha256sums` entry is `SKIP` until
-   that tag exists;
-2. download
-   `https://github.com/ladybug-me/caelestia-kde/archive/refs/tags/v<pkgver>.tar.gz`
-   and put its sha256 in the first `sha256sums` entry;
-3. the other three sums are the files beside the PKGBUILD, so run `makepkg -g`
-   to refresh them all at once;
-4. check the tag still has everything `package()` copies by name: `src/bin/*`,
-   `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop` and
-   `shell/kwin-effects/workspace-tracker`. A missing path fails the build rather
-   than shipping a package with a silent hole in it, which is why they are named;
-5. regenerate `.SRCINFO` before pushing.
+1. bump `pkgver` and reset `pkgrel=1`. Nothing else needs a hash: the source is a
+   git clone of the tag (`_ref` defaults to `v$pkgver`), so there is no tarball;
+2. the three `sha256sums` entries that are not `SKIP` are the files beside the
+   PKGBUILD, so run `makepkg -g` to refresh them if any of them changed;
+3. check the tag still has everything `package()` copies by name: `src/bin/*`,
+   `src/matugen/`, `src/schemes/`, `src/kde/shells/caelestia.desktop`,
+   `shell/kwin-effects/workspace-tracker`, and for the user's half `scripts/`,
+   `src/dots/`, `src/dots-extra/`, `src/yet-another-monochrome-icon-set/`,
+   `shell/assets/wallpapers/`, `assets/org.quickshell.desktop` and
+   `.github/version.env`. A missing path fails the build rather than shipping a
+   package with a silent hole in it, which is why they are named;
+4. regenerate `.SRCINFO` before pushing.
 
-One thing to improve: the tag archive is 271 MB, most of it assets the shell package
-does not install (wallpapers, the monochrome icon set, the bundled fonts). A source
-tarball produced by the release job, containing `shell/` and `.github/version.env`
-only, would cut the download and the build time without changing anything about the
-package. Until then, `makepkg` downloads the whole tree.
+To build before a tag exists, `_ref=dev makepkg -si`. The version the shell reports
+is still `pkgver`, so that is for testing the flow rather than for a release.
+
+One thing to improve: cloning brings the whole history, and the tree is large. A
+source archive produced by the release job - `shell/`, `scripts/`, `src/`,
+`assets/` and `.github/version.env`, with the two submodules' content folded in -
+would cut the download and the build time without changing the package. Until then,
+`makepkg` clones the lot.
 
 `makepkg` cannot run on the Windows host this repo is developed on, so a build
 has to be tried on an Arch machine or a container before the first push.
