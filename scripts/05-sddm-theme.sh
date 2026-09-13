@@ -114,6 +114,16 @@ caelestia_sudo find "$INSTALL_DIR" -type f -exec chmod 644 {} +
 caelestia_sudo chmod 755 "$SYNC_SCRIPT"
 ok "Theme files installed to $INSTALL_DIR ($VARIANT variant)"
 
+# A theme without theme.conf is not a theme as far as SDDM is concerned: it falls
+# back to the distribution default, without an error in the journal, which is
+# indistinguishable from the install never having run. Say which piece is missing.
+for required in theme.conf metadata.desktop Main.qml; do
+    if [[ ! -e "/usr/share/sddm/themes/$THEME_NAME/$required" ]]; then
+        warn "$INSTALL_DIR/$required is missing: SDDM will ignore this theme and show the default."
+        ALL_OK=false
+    fi
+done
+
 mkdir -p "$HOME/.config/caelestia/templates"
 if [[ -f "$THEME_SOURCE/theme.conf.template" ]]; then
     cp "$THEME_SOURCE/theme.conf.template" "$HOME/.config/caelestia/templates/sddm-theme.conf"
@@ -137,12 +147,25 @@ DROPIN
 caelestia_sudo rm -f /etc/sddm.conf.d/caelestia.conf
 ok "SDDM config drop-in created."
 
-# Say so when something else also picks a theme. This file is read last, so it
-# wins, but someone looking at a stock login screen wants the conflict named.
-OTHER_SDDM_THEMES="$(grep -l 'Current=' /etc/sddm.conf.d/*.conf 2>/dev/null | grep -v 'zz-caelestia.conf' || true)"
-if [[ -n "$OTHER_SDDM_THEMES" ]]; then
-    warn "Another SDDM drop-in also selects a theme: ${OTHER_SDDM_THEMES//$'\n'/, }"
+# The drop-in is one of two places the theme can be picked. /etc/sddm.conf is the
+# other, and a `Current=` sitting there - which is where KDE's own Login Screen
+# settings module writes, and where a distribution may ship one - is read after the
+# drop-in directory by some SDDM versions and before it by others. Setting the key
+# in both places means which one wins stops mattering.
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    caelestia_sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current "$THEME_NAME" 2>/dev/null \
+        && ok "Theme selected in /etc/sddm.conf as well." \
+        || warn "Could not write to /etc/sddm.conf; the drop-in is the only selection."
 fi
+
+# Every file SDDM reads that picks a theme, so a conflict is visible rather than
+# guessed at. Ours is in the list too; it is meant to win.
+for conf in /usr/lib/sddm/sddm.conf.d/*.conf /etc/sddm.conf /etc/sddm.conf.d/*.conf; do
+    [[ -f "$conf" ]] || continue
+    CURRENT_LINE="$(grep -E '^[[:space:]]*Current[[:space:]]*=' "$conf" 2>/dev/null | tail -n 1 || true)"
+    [[ -n "$CURRENT_LINE" ]] || continue
+    info "${conf}: ${CURRENT_LINE// /}"
+done
 
 POSTHOOK_CMD="sudo $SYNC_SCRIPT --posthook"
 CLI_JSON="$HOME/.config/caelestia/cli.json"
