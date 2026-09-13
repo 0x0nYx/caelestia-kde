@@ -15,7 +15,7 @@ Item {
         if (pam.fprintState === "error")
             return qsTr("FP ERROR: %1").arg(pam.fprint.message);
         if (pam.howdyState === "error")
-            return qsTr("HOWDY ERROR: %1").arg(pam.howdy.message);
+            return qsTr("FACE ERROR: %1").arg(pam.howdy.message);
         if (pam.state === "error")
             return qsTr("PW ERROR: %1").arg(pam.passwd.message);
 
