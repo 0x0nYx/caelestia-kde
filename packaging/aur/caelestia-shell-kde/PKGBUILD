@@ -69,7 +69,10 @@ depends=(
     'power-profiles-daemon'
     'ttf-material-symbols-variable'
 )
-makedepends=('cmake' 'ninja' 'qt6-shadertools' 'extra-cmake-modules' 'kwin')
+# vulkan-headers is here because KWin's CMake package does find_dependency(Vulkan)
+# and fails the configure with "Could NOT find Vulkan (missing: Vulkan_INCLUDE_DIR)"
+# when only `kwin` is present. Arch's `kwin` does not pull the headers in.
+makedepends=('cmake' 'ninja' 'qt6-shadertools' 'extra-cmake-modules' 'kwin' 'vulkan-headers')
 optdepends=(
     'ttf-rubik-vf: clock and workspace font'
     'ttf-cascadia-code-nerd: monospace font'
