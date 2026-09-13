@@ -216,13 +216,20 @@ test_the_release_tarball_is_the_thing_the_package_sources() {
     workflow="$(cat "$REPO_ROOT/.github/workflows/version-release.yml")"
     pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
 
-    assert_contains "$workflow" 'ARTIFACT="caelestia-kde-v$VERSION.tar.gz"' "the release job should build the versioned tarball"
+    assert_contains "$workflow" 'ARTIFACT="caelestia-kde-v$PKGVER.tar.gz"' "the release job should build the versioned tarball"
     assert_contains "$pkgbuild" '$pkgname-v$pkgver.tar.gz' "and the PKGBUILD should source that same name"
     assert_contains "$pkgbuild" 'releases/download/v$pkgver' "from the release the tag publishes"
 
+    # version.env holds the tag, vX.Y.Z, and the package's version is X.Y.Z. Building the
+    # names from the tag publishes caelestia-kde-vvX.Y.Z.tar.gz around a
+    # caelestia-kde-vX.Y.Z directory, which satisfies neither side of the PKGBUILD.
+    assert_contains "$workflow" 'echo "PKGVER=${VERSION#v}" >> "$GITHUB_ENV"' "the tag's v should be stripped once, where the version is read"
+    assert_not_contains "$workflow" 'caelestia-kde-v$VERSION' "the asset name must not double the tag's v"
+    assert_not_contains "$workflow" 'caelestia-kde-$VERSION' "and the directory must not carry it at all"
+
     # Extracted to $srcdir/$pkgname-$pkgver by makepkg, which is where every function in
     # the PKGBUILD cd's.
-    assert_contains "$workflow" 'tar -C dist -czf "$ARTIFACT" "caelestia-kde-$VERSION"' "the archive should carry the directory makepkg extracts to"
+    assert_contains "$workflow" 'tar -C dist -czf "$ARTIFACT" "caelestia-kde-$PKGVER"' "the archive should carry the directory makepkg extracts to"
 
     # The three reasons the tarball exists at all: no submodule commit to fetch, no
     # 308 MiB of fonts per build, and a revision a git-less tree can still report.

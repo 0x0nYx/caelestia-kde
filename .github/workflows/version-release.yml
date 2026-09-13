@@ -280,11 +280,16 @@ jobs:
           set -euo pipefail
           source .github/version.env
           echo "TAG=$VERSION" >> "$GITHUB_ENV"
+          # The tag is vX.Y.Z and the package's version is X.Y.Z. Both names below have to
+          # match the PKGBUILD exactly - the asset it sources, and the directory makepkg
+          # extracts that asset to - so the v is stripped once here, rather than prepended
+          # to a value that already carries it.
+          echo "PKGVER=${VERSION#v}" >> "$GITHUB_ENV"
 
       - name: Stage the Tree
         run: |
           set -euo pipefail
-          ROOT="caelestia-kde-$VERSION"
+          ROOT="caelestia-kde-$PKGVER"
           mkdir -p "dist/$ROOT"
           # -a keeps the executable bits, which the package's scripts are run by.
           # Excluding .git also drops the submodules' .git files, which would
@@ -299,11 +304,11 @@ jobs:
       - name: Build the Tarball
         run: |
           set -euo pipefail
-          ARTIFACT="caelestia-kde-v$VERSION.tar.gz"
+          ARTIFACT="caelestia-kde-v$PKGVER.tar.gz"
           # The directory is named in the archive because makepkg extracts to
           # $srcdir/$pkgname-$pkgver, which is what the PKGBUILD's functions cd
           # into.
-          tar -C dist -czf "$ARTIFACT" "caelestia-kde-$VERSION"
+          tar -C dist -czf "$ARTIFACT" "caelestia-kde-$PKGVER"
           sha256sum "$ARTIFACT" | tee "$ARTIFACT.sha256"
           du -h "$ARTIFACT"
           echo "ARTIFACT=$ARTIFACT" >> "$GITHUB_ENV"
