@@ -40,7 +40,12 @@ Item {
     readonly property alias fprintTries: authHandler.fprintTries
     property int profilePicShape: 13
     property bool rotateProfilePic: false
-    property bool syncWallpaper: true
+    // No syncWallpaper here: the background this screen shows is the greeter's
+    // own wallpaper, read from kscreenlockerrc, and whether it follows the desktop
+    // is decided by the shell that writes that file (Wallpapers.syncPlasmaWallpaper)
+    // and by the lock screen page in Nexus. A property of the same name was copied
+    // over from the Quickshell lock screen and read the config key without ever
+    // using it, which made it look as if this file owned that decision.
     property var sessionIcons: ({})
     property bool showSleep: true
     property bool showHibernate: false
@@ -251,8 +256,6 @@ Item {
                     lockScreenUi.profilePicShape = lk.profilePicShape;
                 if (typeof lk.rotateProfilePic === "boolean")
                     lockScreenUi.rotateProfilePic = lk.rotateProfilePic;
-                if (typeof lk.syncWallpaper === "boolean")
-                    lockScreenUi.syncWallpaper = lk.syncWallpaper;
                 if (typeof lk.blurWallpaper === "boolean")
                     lockScreenUi.blurWallpaper = lk.blurWallpaper;
                 if (cfg.session && cfg.session.icons)

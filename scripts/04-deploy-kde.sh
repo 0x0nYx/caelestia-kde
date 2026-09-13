@@ -131,8 +131,25 @@ if [[ -f "$PACK_DEFAULT" ]]; then
 else
     WALLPAPER_PATH="$FALLBACK_PATH"
 fi
-info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
-if [[ -f "$WALLPAPER_PATH" ]]; then
+# Set the default wallpaper, but only while there is no wallpaper in use yet.
+# 09-system-tweaks.sh guards its default scheme the same way and for the same
+# reason: this step runs again on every install and every repair, and a wallpaper
+# the user picked - in the shell, in Nexus, on the lock screen - is not ours to
+# replace with the bundled one.
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+WALLPAPER_IN_USE=""
+if [[ -s "$STATE_DIR/wallpaper/path.txt" ]]; then
+    WALLPAPER_IN_USE="$(cat "$STATE_DIR/wallpaper/path.txt" 2>/dev/null || true)"
+fi
+
+if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
+    # The lock screen reads its copy from kscreenlockerrc, which the shell keeps in
+    # step from here on, so leaving both alone is what keeps them equal. A pointer
+    # to a file that is gone falls through to the default below rather than
+    # leaving the desktop and the lock screen without a wallpaper.
+    skip "Keeping the wallpaper in use: $(basename "$WALLPAPER_IN_USE")"
+elif [[ -f "$WALLPAPER_PATH" ]]; then
+    info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
         var allDesktops = desktops();
         for (i=0; i < allDesktops.length; i++) {
@@ -143,7 +160,6 @@ if [[ -f "$WALLPAPER_PATH" ]]; then
         }
     " 2>/dev/null || true
     # Save it for Caelestia, in the state dir the shell actually reads.
-    STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
     mkdir -p "$STATE_DIR/wallpaper"
     echo "$WALLPAPER_PATH" > "$STATE_DIR/wallpaper/path.txt"
 
