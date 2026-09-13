@@ -345,12 +345,6 @@ if [[ -f "$HOME/.config/starship.toml" ]]; then
     restore_or_remove "starship.toml" "$HOME/.config/starship.toml" ".config"
 fi
 
-# kmixrc (written fresh by installer - just remove it)
-if [[ -f "$HOME/.config/kmixrc" ]]; then
-    rm -f "$HOME/.config/kmixrc"
-    ok "Removed ~/.config/kmixrc"
-fi
-
 section "Step 6 - Revert KDE Settings"
 
 # Re-enable KDE OSDs
@@ -360,6 +354,9 @@ kwriteconfig6 --file kdeglobals       --group "KDE"              --key "OSDEnabl
 kwriteconfig6 --file plasmanotifyrc   --group "Notifications"    --key "LoudnessChangedOSD" "true"  2>/dev/null || true
 kwriteconfig6 --file powerdevilrc     --group "BrightnessControl"--key "showOSD"            "true"  2>/dev/null || true
 kwriteconfig6 --file powerdevilrc     --group "AC"               --key "brightnessosd"       "true"  2>/dev/null || true
+# kmixrc is kmix's file and may hold settings that are not ours, so only the key
+# the installer changed is put back - the file itself stays.
+kwriteconfig6 --file kmixrc           --group "Global"           --key "ShowOSD"            "true"  2>/dev/null || true
 ok "Re-enabled KDE OSD notifications"
 
 # Restore KDE theme settings
