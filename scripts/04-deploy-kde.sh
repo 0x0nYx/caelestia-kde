@@ -149,6 +149,21 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     # leaving the desktop and the lock screen without a wallpaper.
     skip "Keeping the wallpaper in use: $(basename "$WALLPAPER_IN_USE")"
 
+    # Plasma's own desktop has to hold the same picture: it is what is on screen
+    # while the shell is still starting, so a desktop left on the distribution
+    # default is the wallpaper appearing to change a second into the session.
+    if command -v qdbus6 >/dev/null 2>&1; then
+        qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+            var allDesktops = desktops();
+            for (i=0; i < allDesktops.length; i++) {
+                d = allDesktops[i];
+                d.wallpaperPlugin = 'org.kde.image';
+                d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
+                d.writeConfig('Image', 'file://' + '$WALLPAPER_IN_USE');
+            }
+        " 2>/dev/null || true
+    fi
+
     # The logout screen is not a wallpaper choice of its own, so it still follows
     # whatever is in use - including here, where the wallpaper is one the user set
     # and this step is deliberately leaving alone.

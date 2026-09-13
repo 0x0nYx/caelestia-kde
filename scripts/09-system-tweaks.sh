@@ -144,6 +144,22 @@ EOF
 }
 
 #
+# TWEAK: Turn off the Plasma splash screen
+#
+tweak_no_splash_screen() {
+    info "Turning off the Plasma startup splash..."
+
+    # The splash is a full-screen picture of its own, unrelated to the wallpaper in
+    # use, and it covers the start of the session - so it is what you look at until
+    # the shell has painted, and the wallpaper appears to change a second in. The
+    # shell draws the background here and nothing needs announcing it. This key is
+    # KDE's own "No splash screen" setting.
+    kwriteconfig6 --file ksplashrc --group KSplash --key Engine "none" 2>/dev/null || true
+
+    ok "Plasma splash screen disabled."
+}
+
+#
 # TWEAK: Reload KWin and KGlobalAccel to pick up config changes
 #
 tweak_reload_kde() {
@@ -284,6 +300,7 @@ fi
 tweak_disable_kde_osd
 tweak_five_desktops
 tweak_remove_panels
+tweak_no_splash_screen
 tweak_default_shell
 tweak_default_scheme
 tweak_user_avatar_symlinks
