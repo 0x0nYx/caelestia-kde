@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/js.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 
 # Applies:
@@ -152,14 +153,22 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     # Plasma's own desktop has to hold the same picture: it is what is on screen
     # while the shell is still starting, so a desktop left on the distribution
     # default is the wallpaper appearing to change a second into the session.
+    #
+    # Plasma's scripting interface takes a script as text, so the path goes in as a
+    # JavaScript string literal rather than pasted between quotes: a wallpaper whose
+    # name holds an apostrophe would otherwise end the literal early and change the
+    # script, and the desktop would keep the picture it had while this step reported
+    # success. lib/js.sh escapes it; Wallpapers.qml feeds the same value to the same
+    # API through JSON.stringify.
     if command -v qdbus6 >/dev/null 2>&1; then
+        WALLPAPER_URL="$(js_string "file://$WALLPAPER_IN_USE")"
         qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
             var allDesktops = desktops();
             for (i=0; i < allDesktops.length; i++) {
                 d = allDesktops[i];
                 d.wallpaperPlugin = 'org.kde.image';
                 d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
-                d.writeConfig('Image', 'file://' + '$WALLPAPER_IN_USE');
+                d.writeConfig('Image', '$WALLPAPER_URL');
             }
         " 2>/dev/null || true
     fi
@@ -172,13 +181,15 @@ if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
     fi
 elif [[ -f "$WALLPAPER_PATH" ]]; then
     info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
+    # Escaped the same way as the branch above; see the comment there.
+    WALLPAPER_URL="$(js_string "file://$WALLPAPER_PATH")"
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
         var allDesktops = desktops();
         for (i=0; i < allDesktops.length; i++) {
             d = allDesktops[i];
             d.wallpaperPlugin = 'org.kde.image';
             d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
-            d.writeConfig('Image', 'file://' + '$WALLPAPER_PATH');
+            d.writeConfig('Image', '$WALLPAPER_URL');
         }
     " 2>/dev/null || true
     # Save it for Caelestia, in the state dir the shell actually reads.

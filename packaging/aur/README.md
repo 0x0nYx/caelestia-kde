@@ -45,6 +45,22 @@ fans it out - so what the package needs from outside is `matugen` and `python`,
 not another caelestia.
 
 
+## Updates in a packaged install
+
+The shell's Update page runs `caelestia-update`, and that helper decides what to do
+from the directory it was installed in: `/usr/bin` is a package's, `~/.local/bin` is
+the installer's. A packaged install therefore goes to the package manager instead of
+doing the work below it - no repository is cloned and no second shell is built into
+`~/.config` and `~/.local`, where pacman would know nothing about it and which needs
+cmake, make and git that the package does not require.
+
+So updating from the shell in a packaged install runs `pacman -Syu`, prints the line
+that finishes the job (`sudo pacman -Syu caelestia-shell-kde`, or a rebuild of the AUR
+package) and asks for a log out. `caelestia-check-updates` still compares the installed
+version against the project's newest tag, which is what the Update row reports from -
+that is why `git` is a dependency.
+
+
 ## Reusable path fixes a package needs
 
 A system install puts the shell somewhere other than `$HOME`. Done on

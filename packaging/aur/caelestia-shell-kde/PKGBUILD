@@ -28,9 +28,17 @@ depends=(
     'quickshell'
     'matugen'
     'python'
+    # The update checker in the shell and `caelestia-check-updates` both drive git.
+    'git'
     'plasma-workspace'
     'qt6-base'
     'qt6-declarative'
+    # The shell imports QtMultimedia for audio and the media popouts, and
+    # OptionsToolbar.qml still imports Qt5Compat.GraphicalEffects. Both are direct
+    # imports, so both are direct dependencies rather than someone's transitive
+    # package that happens to be installed.
+    'qt6-multimedia'
+    'qt6-5compat'
     'qt6-imageformats'
     'qt6-wayland'
     'kf6-kwindowsystem'

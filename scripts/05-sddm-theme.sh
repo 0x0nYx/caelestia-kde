@@ -64,10 +64,16 @@ if os.path.exists(cli_path):
 # left behind by the other display manager's install does not survive the switch.
 # A hook the user wrote is kept, in front of ours; every other key in the file is
 # untouched, including ones this script does not know.
+#
+# Only the two helpers this installer owns are recognised, the same pair
+# uninstall.sh recognises. Matching any command called with `--posthook` would
+# delete a posthook the user wrote for a tool of their own the next time they ran
+# this script.
+HELPERS = r"sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook"
 ours = re.compile(
-    r"\s*&&\s*sudo\s+\S+\s+--posthook"
-    + r"|sudo\s+\S+\s+--posthook\s*&&\s*"
-    + r"|sudo\s+\S+\s+--posthook"
+    r"\s*&&\s*" + HELPERS
+    + r"|" + HELPERS + r"\s*&&\s*"
+    + r"|" + HELPERS
 )
 
 for section in ("wallpaper", "theme"):
@@ -89,11 +95,14 @@ PYEOF
     fi
 
     SUDOERS_FILE="/etc/sudoers.d/caelestia-sddm-sync"
-    if ! caelestia_sudo_quiet test -f "$SUDOERS_FILE"; then
-        echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
-        caelestia_sudo chmod 440 "$SUDOERS_FILE"
-        ok "Sudoers drop-in created."
-    fi
+    # Written on every run rather than only when it is missing. An install that moved
+    # between display managers, or between the theme's copy of the helper and
+    # /usr/local/bin, leaves behind a drop-in naming the path it used then, while the
+    # posthook above calls the one it uses now - and the login screen is a place where
+    # sudo has nobody to ask for a password.
+    echo "$USER ALL=(root) NOPASSWD: $SYNC_SCRIPT" | caelestia_sudo tee "$SUDOERS_FILE" >/dev/null
+    caelestia_sudo chmod 440 "$SUDOERS_FILE"
+    ok "Sudoers drop-in written for $SYNC_SCRIPT."
 
     if [[ "$ALL_OK" == "true" ]]; then
         ok "$label"
@@ -251,7 +260,23 @@ ok "SDDM config drop-in created."
 # settings module writes, and where a distribution may ship one - is read after the
 # drop-in directory by some SDDM versions and before it by others. Setting the key
 # in both places means which one wins stops mattering.
+#
+# What was there first is kept before it is overwritten, because it is a user's
+# selection and not ours to lose: uninstall.sh puts it back. The copy is made once,
+# so a second install does not record this installer's own value as the user's.
+SDDM_CONF_BACKUP="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/sddm.conf.theme-current"
 if command -v kwriteconfig6 >/dev/null 2>&1; then
+    # Only when the value can be read back. Without kreadconfig6 there is nothing to
+    # record, and a backup saying "there was nothing here" would make uninstall delete a
+    # selection it simply could not see; uninstall's fallback covers that case instead,
+    # by removing the key only while it still names this theme.
+    if [[ ! -f "$SDDM_CONF_BACKUP" ]] && command -v kreadconfig6 >/dev/null 2>&1; then
+        mkdir -p "$(dirname -- "$SDDM_CONF_BACKUP")"
+        PREVIOUS_CURRENT="$(kreadconfig6 --file /etc/sddm.conf --group Theme --key Current 2>/dev/null || true)"
+        # `#none` is a value SDDM cannot be given, so it can stand for "there was no
+        # selection to put back".
+        printf '%s\n' "${PREVIOUS_CURRENT:-#none}" > "$SDDM_CONF_BACKUP"
+    fi
     caelestia_sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current "$THEME_NAME" 2>/dev/null \
         && ok "Theme selected in /etc/sddm.conf as well." \
         || warn "Could not write to /etc/sddm.conf; the drop-in is the only selection."

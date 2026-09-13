@@ -159,7 +159,12 @@ if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; the
 
     PLASMALOGIN_CONFIG="$PLASMALOGIN_HOME/.config"
     PLASMALOGIN_SCHEMES="$PLASMALOGIN_HOME/.local/share/color-schemes"
-    PLASMALOGIN_WALLPAPERS="$PLASMALOGIN_HOME/wallpapers"
+    # A directory of our own under it. The greeter's wallpapers directory is shared:
+    # KDE's Login Screen settings module puts the picture a user picks there as well,
+    # and the copy below is cleaned up by removing everything in it that is not the
+    # current one - which, run directly in the shared directory, is every other login
+    # screen wallpaper on the machine.
+    PLASMALOGIN_WALLPAPERS="$PLASMALOGIN_HOME/wallpapers/caelestia"
     MAX_LOGIN_WALLPAPER_BYTES=$((50 * 1024 * 1024))
 
     install -d -o root -g root -m 0755 "$PLASMALOGIN_CONFIG" "$PLASMALOGIN_SCHEMES" "$PLASMALOGIN_WALLPAPERS"
