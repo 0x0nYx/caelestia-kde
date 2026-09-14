@@ -57,21 +57,14 @@ ShellRoot {
         value: GlobalConfig.general.language
     }
 
-    Loader {
-        asynchronous: true
-        sourceComponent: Fonts {}
-    }
-
+    Fonts {}
     GSFLoader {}
     ServiceLoader {}
 
     Background {}
     BadAppleOverlay {}
 
-    Loader {
-        asynchronous: true
-        sourceComponent: Drawers {}
-    }
+    Drawers {}
     // AreaPicker {}
     Lock {
         id: lock
@@ -119,8 +112,6 @@ ShellRoot {
 
         onTriggered: {
             PluginLoader.loadPlugins();
-            startupTasksLoader.active = true;
-            whatsNewLoader.active = true;
             bbdxCheckProcess.running = true;
             root._arpcInit = DiscordRPC;
             root._gameModeInit = GameMode;
@@ -129,19 +120,8 @@ ShellRoot {
         }
     }
 
-    Loader {
-        id: startupTasksLoader
-
-        active: false
-        sourceComponent: Services.StartupTasks {}
-    }
-
-    Loader {
-        id: whatsNewLoader
-
-        active: false
-        sourceComponent: WhatsNew.WhatsNewWindow {}
-    }
+    Services.StartupTasks {}
+    WhatsNew.WhatsNewWindow {}
 
     Process {
         id: bbdxCheckProcess

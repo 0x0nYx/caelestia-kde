@@ -91,13 +91,10 @@ Item {
     }
 
     function findFreeCell() {
-        console.log("findFreeCell called. getIconCols(): " + getIconCols() + ", root.width: " + root.width + ", count: " + instantiator.count);
         for (let r = 0; r < 1000; r++) {
             for (let c = 0; c < getIconCols(); c++) {
-                if (isCellFree(c, r, null)) {
-                    console.log("findFreeCell returning: " + c + ", " + r);
+                if (isCellFree(c, r, null))
                     return {col: c, row: r};
-                }
             }
         }
         return {col: 0, row: 0};
@@ -190,7 +187,7 @@ Item {
                     }
                 }
 
-                Component.onCompleted: { Logger.log("DELEGATE CREATED FOR: " + fileName);
+                Component.onCompleted: {
                     if (root.layoutLoaded) {
                         initPosition();
                     }
