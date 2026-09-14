@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Caelestia.Config
-import Caelestia.Services
 import qs.components
 import qs.services
 import qs.modules.dashboard.dash as Dash
@@ -21,17 +20,33 @@ Item {
     property real shapesScale: Config.background.desktopShapes.scale
     readonly property bool autoHide: Config.background.desktopShapes.autoHide
     readonly property bool windowHidesShapes: {
-        let isHidden = false;
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
-            isHidden = KWinActiveWindowBridge.activeWindow.fullscreen || KWinActiveWindowBridge.activeWindow.maximized;
-            if (isHidden && !Config.background.visualiser.hideOnAllMonitors) {
-                isHidden = KWinActiveWindowBridge.activeOutputName === screen.name;
-            }
-        } else {
-            return Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.some(
-                t => !(t.lastIpcObject?.floating ?? true)) ?? false;
-        }
-        return !!isHidden;
+const wins = Kwin.windowList || [];
+const hideOnAll = Config.background.visualiser.hideOnAllMonitors;
+const currentScreenName = root.screen ? root.screen.name : "";
+const byOutput = Kwin.activeByOutput;
+const globalActiveWs = Kwin.activeWsId;
+
+const getActiveWs = outName => {
+    if (byOutput && byOutput[outName] !== undefined)
+        return byOutput[outName];
+    return globalActiveWs;
+};
+
+const isWindowMaximizedOnWs = (win, outName) => {
+    if (win.minimized === true)
+        return false;
+    if (!win.maximized && !win.fullscreen)
+        return false;
+    const winWs = win.workspace?.id ?? -1;
+    const activeWs = getActiveWs(outName);
+    return activeWs === -1 || winWs === -1 || winWs === activeWs;
+};
+
+if (hideOnAll) {
+    return wins.some(w => isWindowMaximizedOnWs(w, w.output || currentScreenName));
+} else {
+    return wins.some(w => (currentScreenName === "" || w.output === currentScreenName) && isWindowMaximizedOnWs(w, currentScreenName));
+}
     }
     readonly property bool shouldHide: autoHide && windowHidesShapes
     readonly property bool isPlaying: Players.active?.isPlaying ?? false

@@ -499,8 +499,8 @@ Item {
                                     let activeIdx = -1;
                                     let activeAddr = "";
                                     
-                                    if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
-                                        activeAddr = KWinActiveWindowBridge.activeWindow.address ? String(KWinActiveWindowBridge.activeWindow.address) : "";
+                                    if (Kwin.activeWindow) {
+                                        activeAddr = Kwin.activeWindow.address ? String(Kwin.activeWindow.address) : "";
                                     } else if (root.activeTop && root.activeTop.address) {
                                         activeAddr = String(root.activeTop.address);
                                     }
@@ -514,29 +514,29 @@ Item {
                                             break;
                                         }
                                     }
-
-                                    const isKWin = (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList);
+                                    
+                                    const isKWin = (Kwin.windowList.length > 0);
                                     
                                     if (modelData.toplevels.length === 1) {
                                         let addr = String(modelData.toplevels[0].address);
                                         if (activeIdx === 0) {
                                             if (isKWin) {
-                                                KWinActiveWindowBridge.minimizeWindow(addr);
+                                                Kwin.minimizeWindow(addr);
                                             }
                                         } else {
                                             if (isKWin) {
-                                                KWinActiveWindowBridge.focusWindow(addr);
+                                                Kwin.focusWindow(addr);
                                             } else {
-                                                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                                Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
                                             }
                                         }
                                     } else {
                                         let nextIdx = activeIdx !== -1 ? (activeIdx + 1) % modelData.toplevels.length : 0;
                                         let addr = String(modelData.toplevels[nextIdx].address);
                                         if (isKWin) {
-                                            KWinActiveWindowBridge.focusWindow(addr);
+                                            Kwin.focusWindow(addr);
                                         } else {
-                                            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                            Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
                                         }
                                     }
                                 } else if (modelData.entry) {
@@ -913,12 +913,7 @@ Item {
         root.modelUpdateTrigger += 1;
     }
 
-    property var _toplevels: {
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList && KWinActiveWindowBridge.windowList.length > 0) {
-            return KWinActiveWindowBridge.windowList;
-        }
-        return HyprlandData.windowList;
-    }
+    property var _toplevels: Kwin.windowList
 
     on_ToplevelsChanged: {
         root.rebuildModel()
@@ -933,12 +928,7 @@ Item {
         onTriggered: root.rebuildModel()
     }
 
-    property var activeTop: {
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow && KWinActiveWindowBridge.activeWindow.address) {
-            return KWinActiveWindowBridge.activeWindow;
-        }
-        return HyprlandData.activeWindow;
-    }
+    property var activeTop: (Kwin.activeWindow && Kwin.activeWindow.address) ? Kwin.activeWindow : null
 
     onActiveTopChanged: {
         root.rebuildModel()

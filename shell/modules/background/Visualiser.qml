@@ -15,20 +15,33 @@ Item {
     required property ShellScreen screen
     required property Item wallpaper
     readonly property bool windowHidesVisualiser: {
-        let isHidden = false;
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
-            isHidden = KWinActiveWindowBridge.activeWindow.fullscreen || KWinActiveWindowBridge.activeWindow.maximized;
-            if (isHidden && !Config.background.visualiser.hideOnAllMonitors) {
-                isHidden = KWinActiveWindowBridge.activeOutputName === screen.name;
-            }
-        } else {
-            if (Config.background.visualiser.hideOnAllMonitors) {
-                isHidden = Hypr.monitors.values.some(m => !(m.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true));
-            } else {
-                isHidden = !(Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true);
-            }
-        }
-        return !!isHidden;
+const wins = Kwin.windowList || [];
+const hideOnAll = Config.background.visualiser.hideOnAllMonitors;
+const currentScreenName = root.screen ? root.screen.name : "";
+const byOutput = Kwin.activeByOutput;
+const globalActiveWs = Kwin.activeWsId;
+
+const getActiveWs = outName => {
+    if (byOutput && byOutput[outName] !== undefined)
+        return byOutput[outName];
+    return globalActiveWs;
+};
+
+const isWindowMaximizedOnWs = (win, outName) => {
+    if (win.minimized === true)
+        return false;
+    if (!win.maximized && !win.fullscreen)
+        return false;
+    const winWs = win.workspace?.id ?? -1;
+    const activeWs = getActiveWs(outName);
+    return activeWs === -1 || winWs === -1 || winWs === activeWs;
+};
+
+if (hideOnAll) {
+    return wins.some(w => isWindowMaximizedOnWs(w, w.output || currentScreenName));
+} else {
+    return wins.some(w => (currentScreenName === "" || w.output === currentScreenName) && isWindowMaximizedOnWs(w, currentScreenName));
+}
     }
     readonly property bool shouldBeActive: Config.background.visualiser.enabled && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableVisualizer) && (!Config.background.visualiser.autoHide || !windowHidesVisualiser)
     property real offset: shouldBeActive ? 0 : screen.height * 0.2
