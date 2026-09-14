@@ -114,13 +114,13 @@ Singleton {
         }
     }
 
-    Connections {
-        enabled: props.running && !props.paused
+    Timer {
+        interval: 1000
+        repeat: true
+        running: props.running && !props.paused
 
-        function onSecondsChanged(): void {
+        onTriggered: {
             props.elapsed++;
         }
-
-        target: Time // qmllint disable incompatible-type
     }
 }
