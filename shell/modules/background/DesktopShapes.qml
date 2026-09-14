@@ -21,42 +21,17 @@ Item {
     property real shapesScale: Config.background.desktopShapes.scale
     readonly property bool autoHide: Config.background.desktopShapes.autoHide
     readonly property bool windowHidesShapes: {
-        if (typeof KWinActiveWindowBridge !== "undefined") {
-            const wins = KWinActiveWindowBridge.windowList || [];
-            const hideOnAll = Config.background.visualiser.hideOnAllMonitors;
-            const currentScreenName = root.screen ? root.screen.name : "";
-            const activeWsState = typeof KWinWorkspaceState !== "undefined" ? KWinWorkspaceState : null;
-            const byOutput = activeWsState?.activeByOutput;
-            const globalActiveWs = activeWsState?.activeId ?? -1;
-
-            const getActiveWs = outName => {
-                if (byOutput && byOutput[outName] !== undefined)
-                    return byOutput[outName];
-                return globalActiveWs;
-            };
-
-            const isWindowMaximizedOnWs = (win, outName) => {
-                if (win.minimized === true)
-                    return false;
-                if (!win.maximized && !win.fullscreen)
-                    return false;
-                const winWs = win.workspace?.id ?? -1;
-                const activeWs = getActiveWs(outName);
-                return activeWs === -1 || winWs === -1 || winWs === activeWs;
-            };
-
-            if (hideOnAll) {
-                return wins.some(w => isWindowMaximizedOnWs(w, w.output || currentScreenName));
-            } else {
-                return wins.some(w => (currentScreenName === "" || w.output === currentScreenName) && isWindowMaximizedOnWs(w, currentScreenName));
+        let isHidden = false;
+        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
+            isHidden = KWinActiveWindowBridge.activeWindow.fullscreen || KWinActiveWindowBridge.activeWindow.maximized;
+            if (isHidden && !Config.background.visualiser.hideOnAllMonitors) {
+                isHidden = KWinActiveWindowBridge.activeOutputName === screen.name;
             }
         } else {
-            if (Config.background.visualiser.hideOnAllMonitors) {
-                return Hypr.monitors.values.some(m => !(m.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true));
-            } else {
-                return !(Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true);
-            }
+            return Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.some(
+                t => !(t.lastIpcObject?.floating ?? true)) ?? false;
         }
+        return !!isHidden;
     }
     readonly property bool shouldHide: autoHide && windowHidesShapes
     readonly property bool isPlaying: Players.active?.isPlaying ?? false

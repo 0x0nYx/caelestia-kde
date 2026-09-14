@@ -114,7 +114,6 @@ ShellRoot {
         }
     }
 
-    ConfigToasts {}
     Shortcuts {}
     ScreenCorners {}
 
