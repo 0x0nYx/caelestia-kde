@@ -1,6 +1,7 @@
 qml_module(caelestia-core
     URI Caelestia
     SOURCES
+        appidentifiers.cpp
         cutils.cpp
         qalculator.cpp
         circularbuffer.cpp
