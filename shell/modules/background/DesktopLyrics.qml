@@ -31,15 +31,46 @@ Item {
     readonly property string sansFont: GlobalConfig.appearance.font.body.family || "Sans Serif"
     readonly property int alignment: Config.background.desktopLyrics.alignment
     readonly property bool autoHide: Config.background.desktopLyrics.autoHide
-    readonly property bool allWindowsFloating: {
+    readonly property bool windowHidesLyrics: {
         if (typeof KWinActiveWindowBridge !== "undefined") {
             const wins = KWinActiveWindowBridge.windowList || [];
-            return wins.every(w => !!w?.floating);
+            const hideOnAll = Config.background.visualiser.hideOnAllMonitors;
+            const currentScreenName = root.screen ? root.screen.name : "";
+            const activeWsState = typeof KWinWorkspaceState !== "undefined" ? KWinWorkspaceState : null;
+            const byOutput = activeWsState?.activeByOutput;
+            const globalActiveWs = activeWsState?.activeId ?? -1;
+
+            const getActiveWs = outName => {
+                if (byOutput && byOutput[outName] !== undefined)
+                    return byOutput[outName];
+                return globalActiveWs;
+            };
+
+            const isWindowMaximizedOnWs = (win, outName) => {
+                if (win.minimized === true)
+                    return false;
+                if (!win.maximized && !win.fullscreen)
+                    return false;
+                const winWs = win.workspace?.id ?? -1;
+                const activeWs = getActiveWs(outName);
+                return activeWs === -1 || winWs === -1 || winWs === activeWs;
+            };
+
+            if (hideOnAll) {
+                return wins.some(w => isWindowMaximizedOnWs(w, w.output || currentScreenName));
+            } else {
+                return wins.some(w => (currentScreenName === "" || w.output === currentScreenName) && isWindowMaximizedOnWs(w, currentScreenName));
+            }
+        } else {
+            if (Config.background.visualiser.hideOnAllMonitors) {
+                return Hypr.monitors.values.some(m => !(m.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true));
+            } else {
+                return !(Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true);
+            }
         }
-        return Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(
-            t => t.lastIpcObject?.floating) ?? true;
     }
-    readonly property bool shouldHide: autoHide && !allWindowsFloating
+    readonly property bool allWindowsFloating: !windowHidesLyrics
+    readonly property bool shouldHide: autoHide && windowHidesLyrics
 
     property bool hasLyrics: Lyrics.hasLyrics
     property int currentLyricIndex: -1
