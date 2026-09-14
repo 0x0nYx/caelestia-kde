@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
-# ==============================================================
-#   Caelestia - uninstaller
-#
-#   Reverses actions performed by setup.sh.
-#   Restores backups when available and removes generated files.
-# ==============================================================
 
 set -uo pipefail
 
 BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Shared log helpers: canonical [INFO]/[OK]/[WARN]/[SKIP]/[ERR] markers,
-# matching the installer TUI and every step script.
 source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/log.sh"
 
 section() {
@@ -22,7 +14,6 @@ section() {
     echo "-------------------------------------------------------------"
 }
 
-# -- OS detection ---------------------------------------------------------------
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     case "$ID" in
@@ -68,15 +59,12 @@ echo " This will remove Caelestia shell files and configs."
 echo " Backups in $BUNDLE_DIR/backups/ can be restored during uninstall."
 echo
 
-# -- Sudo setup ----------------------------------------------------------------
 sudo -v || die "Failed to obtain sudo privileges."
 
-# Keepalive loop
 (while true; do sudo -v 2>/dev/null || break; sleep 55; done) 2>/dev/null &
 _SUDO_LOOP=$!
 trap 'kill $_SUDO_LOOP 2>/dev/null; true' EXIT
 
-# -- Confirmation ---------------------------------------------------------------
 echo
 read -r -p "Are you sure you want to uninstall Caelestia? [y/N]: " _confirm
 [[ "${_confirm,,}" == "y" || "${_confirm,,}" == "yes" ]] || die "Uninstall cancelled."
@@ -88,7 +76,6 @@ read -r -p "Remove packages? [y/N]: " _remove_pkgs
 REMOVE_PACKAGES=false
 [[ "${_remove_pkgs,,}" == "y" || "${_remove_pkgs,,}" == "yes" ]] && REMOVE_PACKAGES=true
 
-# -- Backup selection -----------------------------------------------------------
 SELECTED_BACKUP=""
 SELECTED_KNSV=""
 KONSAVE_BIN=""
@@ -180,7 +167,6 @@ ensure_konsave() {
     [[ -x "$KONSAVE_BIN" ]]
 }
 
-# -- Helper: restore config from backup ----------------------------------------
 restore_or_remove() {
     local name="$1"           # e.g. "fish"
     local target="$2"         # full destination path
@@ -202,9 +188,6 @@ restore_or_remove() {
 
 section "Step 1 - Stop and Disable Services"
 
-# kde-material-you-colors is in the list for installs that predate the palette
-# being applied by caelestia-color: it used to be installed and started, and two
-# programs applying a scheme to one session means whichever runs last wins.
 for svc in qs-kwin-bridge cliphist ydotoold kde-material-you-colors; do
     if systemctl --user is-enabled --quiet "${svc}.service" 2>/dev/null ||
        systemctl --user is-active  --quiet "${svc}.service" 2>/dev/null; then
@@ -222,7 +205,6 @@ if systemctl --user is-enabled --quiet "caelestia-update-checker.timer" 2>/dev/n
     ok "Disabled user timer: caelestia-update-checker"
 fi
 
-# Stop and disable keyd (system service)
 if systemctl is-enabled --quiet keyd 2>/dev/null ||
    systemctl is-active  --quiet keyd 2>/dev/null; then
     sudo systemctl disable --now keyd 2>/dev/null || true
@@ -231,7 +213,6 @@ else
     skip "keyd not active"
 fi
 
-# Kill any running Caelestia / Quickshell processes
 pkill -f "caelestia shell" 2>/dev/null || true
 pkill -f "quickshell"      2>/dev/null || true
 ok "Stopped any running shell processes"
@@ -254,23 +235,12 @@ do
     fi
 done
 
-# The shell's systemd user unit. It is stopped and disabled by name, not only when the
-# user owns a copy of the file: a packaged install's unit lives in /usr/lib/systemd/user
-# and belongs to pacman, so there is nothing here to test for, while the enable link
-# `systemctl --user enable` wrote is in ~/.config/systemd/user whatever file the unit came
-# from. Left enabled, it would keep starting a shell whose files are removed in the next
-# step.
 systemctl --user disable --now caelestia-shell.service >/dev/null 2>&1 || true
 if [[ -f "$USER_SYSTEMD/caelestia-shell.service" ]]; then
     rm -f "$USER_SYSTEMD/caelestia-shell.service"
     ok "Removed: caelestia-shell.service"
 fi
 
-# That link, when the unit's file has already gone: pacman removes
-# /usr/lib/systemd/user/caelestia-shell.service before this script is run in the documented
-# order, and `disable` cannot clear a link whose unit it cannot resolve. A link with the
-# unit's name is enough for systemd to count the unit as enabled, so the leftovers are
-# dropped by hand here for the same reason 10-autostart.sh drops them on the way in.
 for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
     [[ -L "$link" ]] || continue
     [[ -e "$link" ]] && continue
@@ -278,8 +248,6 @@ for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
     ok "Removed an enable link whose unit is gone: $link"
 done
 
-# Retired autostart desktop entry, and the unit the xdg-autostart generator made
-# out of it.
 if [[ -f "$HOME/.config/autostart/caelestiashell.desktop" ]]; then
     systemctl --user disable app-caelestiashell@autostart.service >/dev/null 2>&1 || true
     rm -f "$HOME/.config/autostart/caelestiashell.desktop"
@@ -290,19 +258,16 @@ systemctl --user daemon-reload 2>/dev/null || true
 
 section "Step 3 - Remove Shell Installation"
 
-# Quickshell config (QML files)
 if [[ -d "$HOME/.config/quickshell/caelestia" ]]; then
     rm -rf "$HOME/.config/quickshell/caelestia"
     ok "Removed ~/.config/quickshell/caelestia"
 fi
 
-# Native plugin library
 if [[ -d "$HOME/.local/lib/caelestia" ]]; then
     rm -rf "$HOME/.local/lib/caelestia"
     ok "Removed ~/.local/lib/caelestia"
 fi
 
-# QML module tree (remove only caelestia-specific entries to be safe)
 for qml_mod in Caelestia M3Shapes; do
     if [[ -d "$HOME/.local/lib/qt6/qml/$qml_mod" ]]; then
         rm -rf "$HOME/.local/lib/qt6/qml/$qml_mod"
@@ -310,19 +275,16 @@ for qml_mod in Caelestia M3Shapes; do
     fi
 done
 
-# Legacy share path
 if [[ -d "$HOME/.local/share/caelestia-shell" ]]; then
     rm -rf "$HOME/.local/share/caelestia-shell"
     ok "Removed ~/.local/share/caelestia-shell"
 fi
 
-# Caelestia lockscreen shell package
 if [[ -d "$HOME/.local/share/plasma/shells/caelestia.desktop" ]]; then
     rm -rf "$HOME/.local/share/plasma/shells/caelestia.desktop"
     ok "Removed ~/.local/share/plasma/shells/caelestia.desktop"
 fi
 
-# Plasma wallpaper application plugin
 if command -v kpackagetool6 >/dev/null 2>&1; then
     kpackagetool6 -t Plasma/Wallpaper -r net.dosowisko.PlasmaApplicationWallpaper >/dev/null 2>&1 || true
 fi
@@ -351,7 +313,6 @@ do
     fi
 done
 
-# KWin bridge script
 if [[ -d "$HOME/.local/share/kwin/scripts/quickshell-kde-bridge" ]]; then
     rm -rf "$HOME/.local/share/kwin/scripts/quickshell-kde-bridge"
     ok "Removed KWin script: quickshell-kde-bridge"
@@ -366,26 +327,21 @@ for cfg in btop fastfetch fish foot hypr kitty micro thunar; do
     fi
 done
 
-# starship.toml
 if [[ -f "$HOME/.config/starship.toml" ]]; then
     restore_or_remove "starship.toml" "$HOME/.config/starship.toml" ".config"
 fi
 
 section "Step 6 - Revert KDE Settings"
 
-# Re-enable KDE OSDs
 kwriteconfig6 --file plasmarc         --group "OSD"              --key "Enabled"            "true"  2>/dev/null || true
 kwriteconfig6 --file plasmarc         --group "OSD"              --key "ShowOnActiveScreen"  "true"  2>/dev/null || true
 kwriteconfig6 --file kdeglobals       --group "KDE"              --key "OSDEnabled"          "true"  2>/dev/null || true
 kwriteconfig6 --file plasmanotifyrc   --group "Notifications"    --key "LoudnessChangedOSD" "true"  2>/dev/null || true
 kwriteconfig6 --file powerdevilrc     --group "BrightnessControl"--key "showOSD"            "true"  2>/dev/null || true
 kwriteconfig6 --file powerdevilrc     --group "AC"               --key "brightnessosd"       "true"  2>/dev/null || true
-# kmixrc is kmix's file and may hold settings that are not ours, so only the key
-# the installer changed is put back - the file itself stays.
 kwriteconfig6 --file kmixrc           --group "Global"           --key "ShowOSD"            "true"  2>/dev/null || true
 ok "Re-enabled KDE OSD notifications"
 
-# Restore KDE theme settings
 if [[ -n "$SELECTED_KNSV" ]]; then
     if ensure_konsave; then
         info "Restoring KDE settings from konsave archive..."
@@ -434,13 +390,11 @@ if [[ -z "$SELECTED_KNSV" ]]; then
     fi
 fi
 
-# Disable Caelestia's KWin plugins
 kwriteconfig6 --file kwinrc --group "Plugins" --key "quickshell-kde-bridgeEnabled" "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "krohnkiteEnabled"             "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "kwin_workspace_trackerEnabled" "false" 2>/dev/null || true
 ok "Disabled KWin plugins: quickshell-kde-bridge, krohnkite, kwin_workspace_tracker"
 
-# Restore the stock KDE lock screen: clear custom shell package and restore Breeze
 kwriteconfig6 --file plasmashellrc --group "Shell" --key "ShellPackage" --delete 2>/dev/null || true
 kwriteconfig6 --file kscreenlockerrc --group "Greeter" --key "Theme" "org.kde.breeze.desktop" 2>/dev/null || true
 kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin "org.kde.image" 2>/dev/null || true
@@ -450,7 +404,6 @@ kwriteconfig6 --file kscreenlockerrc --group Greeter --group LnF --group General
 kwriteconfig6 --file kscreenlockerrc --group Greeter --group LnF --group General --key showMediaControls --delete 2>/dev/null || true
 ok "Restored stock KDE lock screen configuration."
 
-# Restore desktop count to 1 (KDE default)
 kwriteconfig6 --file kwinrc --group "Desktops" --key "Number" "1" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Desktops" --key "Rows"   "1" 2>/dev/null || true
 for i in $(seq 1 5); do
@@ -458,7 +411,6 @@ for i in $(seq 1 5); do
 done
 ok "Restored desktop count to 1"
 
-# Remove workspace shortcuts added by the installer
 for i in $(seq 1 5); do
     kwriteconfig6 --file kglobalshortcutsrc --group "kwin" \
         --key "Switch to Desktop $i"  "none,none,Switch to Desktop $i"          2>/dev/null || true
@@ -467,7 +419,6 @@ for i in $(seq 1 5); do
 done
 ok "Cleared installer workspace shortcuts from kglobalshortcutsrc"
 
-# Restore backed-up kglobalshortcutsrc if available
 _bk_dir="$SELECTED_BACKUP"
 if [[ -n "$_bk_dir" ]] && [[ -f "$_bk_dir/.config/kglobalshortcutsrc" ]]; then
     cp "$_bk_dir/.config/kglobalshortcutsrc" "$HOME/.config/kglobalshortcutsrc"
@@ -480,18 +431,13 @@ elif ls "$BUNDLE_DIR/backups/kglobalshortcutsrc_"* >/dev/null 2>&1; then
     fi
 fi
 
-# Clean up generated Konsole profiles
 rm -f "$HOME/.local/share/konsole/MaterialYou.colorscheme"
 rm -f "$HOME/.local/share/konsole/MaterialYouAlt.colorscheme"
 rm -f "$HOME/.local/share/konsole/TempMyou.profile"
 rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors
-# The schemes the color command generates count as generated too. It writes the
-# palette under two names and rotates between them, because
-# plasma-apply-colorscheme ignores a scheme name that is already in effect.
 rm -f "$HOME/.local/share/color-schemes/Matugen"*.colors
 ok "Removed Konsole profiles generated by Caelestia"
 
-# Remove Darkly GTK theme (installed via darkly-gtk) and desktop theme symlinks
 _DARKLY_GTK_THEME="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly"
 _GTK4_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
 if [[ -d "$_DARKLY_GTK_THEME" ]]; then
@@ -509,7 +455,6 @@ if [[ -f "$_GTK4_DIR/gtk-darkly.css" || -d "$_GTK4_DIR/darkly-gtk-assets" ]]; th
     ok "Removed Darkly GTK libadwaita files"
 fi
 
-# Restore Konsole config if backed up
 if [[ -n "$_bk_dir" ]]; then
     if [[ -f "$_bk_dir/.config/konsolerc" ]]; then
         cp "$_bk_dir/.config/konsolerc" "$HOME/.config/konsolerc"
@@ -567,7 +512,6 @@ if [[ -n "$SELECTED_BACKUP" ]]; then
     fi
 fi
 
-# Revert login shell
 _RESTORE_SHELL=""
 if [[ -n "$SELECTED_BACKUP" ]] && [[ -f "$SELECTED_BACKUP/previous_shell.txt" ]]; then
     _PREV_SHELL="$(cat "$SELECTED_BACKUP/previous_shell.txt")"
@@ -595,14 +539,11 @@ fi
 if [[ "$SHELL_RC_RESTORED" == "true" ]]; then
     info "Skipped shell rc line cleanup because original rc files were restored exactly from backup."
 else
-    # Legacy fallback for old backups without shellrc snapshots
     if [[ -f "$HOME/.bashrc" ]]; then
         sed -i '/export QML2_IMPORT_PATH=.*caelestia\|export CAELESTIA_LIB_DIR=/d' "$HOME/.bashrc" 2>/dev/null || true
         ok "Removed Caelestia env vars from ~/.bashrc"
     fi
 
-    # The environment moved to environment.d, so that file is what carries the
-    # values now; the rc files are still cleaned above for older installs.
     if [[ -f "$HOME/.config/environment.d/caelestia.conf" ]]; then
         rm -f "$HOME/.config/environment.d/caelestia.conf"
         ok "Removed the Caelestia environment file"
@@ -621,22 +562,18 @@ fi
 
 section "Step 8 - Remove System-level Files"
 
-# keyd config
 if [[ -f /etc/keyd/quickshell.conf ]]; then
     sudo rm -f /etc/keyd/quickshell.conf
     ok "Removed /etc/keyd/quickshell.conf"
-    # Remove the directory only if it's now empty
     sudo rmdir /etc/keyd 2>/dev/null || true
 fi
 
-# udev rule for uinput
 if [[ -f /etc/udev/rules.d/80-uinput.rules ]]; then
     sudo rm -f /etc/udev/rules.d/80-uinput.rules
     sudo udevadm control --reload-rules 2>/dev/null || true
     ok "Removed udev rule: 80-uinput.rules"
 fi
 
-# Revert the system-wide ccache flip made by 01-ensure-prereqs.sh, if we made it.
 CCACHE_FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/ccache-enabled"
 if [[ -f "$CCACHE_FLAG" ]] && [[ -f /etc/makepkg.conf ]]; then
     if sudo sed -i 's/\(^\|[[:space:]]\)ccache\([[:space:]]\|$\)/\1!ccache\2/' /etc/makepkg.conf; then
@@ -647,19 +584,16 @@ if [[ -f "$CCACHE_FLAG" ]] && [[ -f /etc/makepkg.conf ]]; then
     fi
 fi
 
-# sudoers file for ydotoold
 if [[ -f /etc/sudoers.d/ydotoold-nopasswd ]]; then
     sudo rm -f /etc/sudoers.d/ydotoold-nopasswd
     ok "Removed sudoers rule: ydotoold-nopasswd"
 fi
 
-# sudoers file for SDDM sync
 if [[ -f /etc/sudoers.d/caelestia-sddm-sync ]]; then
     sudo rm -f /etc/sudoers.d/caelestia-sddm-sync
     ok "Removed sudoers rule: caelestia-sddm-sync"
 fi
 
-# SDDM theme and config
 if [[ -d /usr/share/sddm/themes/caelestia ]]; then
     sudo rm -rf /usr/share/sddm/themes/caelestia
     ok "Removed SDDM theme: /usr/share/sddm/themes/caelestia"
@@ -670,11 +604,6 @@ for dropin in /etc/sddm.conf.d/caelestia.conf /etc/sddm.conf.d/zz-caelestia.conf
         ok "Removed SDDM config drop-in: $(basename "$dropin")"
     fi
 done
-# The theme is also named in /etc/sddm.conf, because which of the two SDDM reads
-# last differs between versions. What this installer found there was saved by
-# 05-sddm-theme.sh before it was overwritten, so the user's own selection - KDE's
-# Login Screen settings module writes the same key - goes back rather than being
-# deleted along with ours.
 SDDM_CONF_BACKUP="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/sddm.conf.theme-current"
 if command -v kwriteconfig6 >/dev/null 2>&1; then
     if [[ -f "$SDDM_CONF_BACKUP" ]]; then
@@ -688,17 +617,11 @@ if command -v kwriteconfig6 >/dev/null 2>&1; then
         fi
         rm -f "$SDDM_CONF_BACKUP"
     elif [[ "$(kreadconfig6 --file /etc/sddm.conf --group Theme --key Current 2>/dev/null || true)" == "caelestia" ]]; then
-        # No saved value, but the key is ours, so removing it is safe; anything else
-        # is a selection this installer never saw and has no business touching.
         sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current --delete 2>/dev/null || true
         ok "Removed the login screen theme selection from /etc/sddm.conf"
     fi
 fi
 
-# Plasma Login, KDE's fork of SDDM and what Plasma 6.6 and newer boot into. Its
-# greeter is a Plasma shell: it reads the wallpaper from /etc/plasmalogin.conf and
-# its colours from the plasmalogin user's own Plasma config, both of which are
-# copies this installer made.
 if [[ -f /usr/local/bin/caelestia-greeter-sync ]]; then
     sudo rm -f /usr/local/bin/caelestia-greeter-sync
     ok "Removed login screen sync helper: caelestia-greeter-sync"
@@ -709,10 +632,6 @@ if [[ -f /etc/plasmalogin.conf ]] && command -v kwriteconfig6 >/dev/null 2>&1; t
 fi
 PLASMALOGIN_HOME="$(getent passwd plasmalogin | cut -d: -f6)"
 if [[ -n "$PLASMALOGIN_HOME" && "$PLASMALOGIN_HOME" != "/" ]]; then
-    # Only the directory the sync helper fills, never the shared wallpapers directory
-    # around it: the pictures a user chose in KDE's Login Screen settings live there
-    # too, and they are not this installer's to remove. The same goes for the colour
-    # schemes below, where only the files copied in are named.
     if [[ -d "$PLASMALOGIN_HOME/wallpapers/caelestia" ]]; then
         sudo rm -rf "$PLASMALOGIN_HOME/wallpapers/caelestia"
         ok "Removed the login screen's copy of the wallpaper"
@@ -726,7 +645,6 @@ if [[ -n "$PLASMALOGIN_HOME" && "$PLASMALOGIN_HOME" != "/" ]]; then
     fi
 fi
 
-# SDDM posthooks from cli.json
 CLI_JSON="$HOME/.config/caelestia/cli.json"
 if [[ -f "$CLI_JSON" ]] && command -v python3 &>/dev/null; then
     python3 - "$CLI_JSON" <<'PYEOF'
@@ -737,8 +655,8 @@ if not os.path.exists(cli_path):
 with open(cli_path) as f:
     config = json.load(f)
 changed = False
-# Both helpers are ours, and an install that moved between display managers could
-# have left either one behind, so both spellings are recognised.
+# Both helpers are ours, and an install that moved between display managers could have
+# left either behind, so both spellings are recognised.
 ours = re.compile(
     r'\s*&&\s*sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook'
     r'|sudo\s+\S*(?:sync\.sh|caelestia-greeter-sync)\s+--posthook\s*&&\s*'
@@ -762,10 +680,8 @@ PYEOF
     ok "Removed SDDM posthooks from cli.json"
 fi
 
-# SDDM template config
 rm -f "$HOME/.config/caelestia/templates/sddm-theme.conf"
 
-# Compatibility symlinks and manually installed binaries
 for link in /usr/local/bin/sass /usr/local/bin/qdbus6 /usr/local/bin/caelestia /usr/local/bin/wl-clip-persist /usr/local/bin/gpu-screen-recorder; do
     if [[ -L "$link" || -f "$link" ]]; then
         sudo rm -f "$link"
@@ -773,7 +689,6 @@ for link in /usr/local/bin/sass /usr/local/bin/qdbus6 /usr/local/bin/caelestia /
     fi
 done
 
-# System-level KWin effect
 for effect_lib in /usr/lib/qt6/plugins/kwin/effects/plugins/kwin_workspace_tracker.so /usr/lib64/qt6/plugins/kwin/effects/plugins/kwin_workspace_tracker.so; do
     if [[ -f "$effect_lib" ]]; then
         sudo rm -f "$effect_lib"
@@ -786,7 +701,6 @@ if [[ -f "$HOME/.cargo/bin/satty" ]]; then
     ok "Removed: satty (cargo)"
 fi
 
-# Remove the user from the 'input' group if it was added by the installer
 if groups "$USER" | grep -q '\binput\b'; then
     sudo gpasswd -d "$USER" input 2>/dev/null || \
         warn "Could not remove $USER from input group. Run: sudo gpasswd -d $USER input"
@@ -853,7 +767,6 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         echo
         read -r -p "Proceed? [y/N]: " _pkg_confirm
         if [[ "${_pkg_confirm,,}" == "y" || "${_pkg_confirm,,}" == "yes" ]]; then
-            # Remove packages that are actually installed; ignore errors for missing ones
             mapfile -t _installed < <(yay -Qq "${ARCH_PACKAGES[@]}" 2>/dev/null)
             if [[ ${#_installed[@]} -gt 0 ]]; then
                 yay -Rns --noconfirm "${_installed[@]}" 2>/dev/null || \
@@ -889,23 +802,18 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         fi
     fi
 
-    # The upstream CLI is no longer a dependency: this port generates its own
-    # colors. Still remove it, because an earlier install of this port put it
-    # there and nothing would ever clean it up again.
     if command -v caelestia >/dev/null 2>&1 || python3 -m caelestia --help &>/dev/null 2>&1; then
         sudo pip3 uninstall -y caelestia 2>/dev/null || true
         pip3 uninstall -y caelestia 2>/dev/null || true
         ok "Removed caelestia pip package"
     fi
 
-    # Remove uv-installed tools
     if command -v uv >/dev/null 2>&1; then
         uv tool uninstall kde-material-you-colors 2>/dev/null || true
         uv tool uninstall konsave 2>/dev/null || true
         ok "Removed uv tools: kde-material-you-colors, konsave"
     fi
 
-    # Remove Krohnkite KWin script if installed
     if command -v kpackagetool6 >/dev/null 2>&1; then
         if kpackagetool6 -t KWin/Script -s krohnkite >/dev/null 2>&1; then
             kpackagetool6 -t KWin/Script -r krohnkite 2>/dev/null || true
@@ -918,7 +826,6 @@ fi
 
 section "Step 10 - Clean Up Cache and Build Artifacts"
 
-# CMake build dirs inside the repo
 for build_dir in "$BUNDLE_DIR/shell/build" "$BUNDLE_DIR/shell/plugin/build"; do
     if [[ -d "$build_dir" ]]; then
         rm -rf "$build_dir"
@@ -926,7 +833,6 @@ for build_dir in "$BUNDLE_DIR/shell/build" "$BUNDLE_DIR/shell/plugin/build"; do
     fi
 done
 
-# Installer cache
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
 if [[ -d "$CACHE_DIR" ]]; then
     read -r -p "Remove installer cache at $CACHE_DIR? [y/N]: " _cache_confirm
@@ -967,7 +873,6 @@ echo
 warn "Please log out and back in to fully apply all changes."
 echo
 
-# Prompt user for immediate logout (same behavior as setup finalizer)
 read -r -p "Would you like to log out now? (y/N): " response
 case "$response" in
     [yY][eE][sS]|[yY])

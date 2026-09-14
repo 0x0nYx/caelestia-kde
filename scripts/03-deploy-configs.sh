@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# 03-deploy-configs.sh  Deploy Caelestia configuration files to ~/.config
 
 set -euo pipefail
 
@@ -19,7 +18,6 @@ if [[ -z "${BACKUP_DIR:-}" ]]; then
         BACKUP_DIR="$(cat "$BACKUP_DIR_FILE" 2>/dev/null || true)"
     fi
 
-    # Only reuse the cached backup dir if it belongs to this install's backups and matches the timestamp format.
     if [[ -n "$BACKUP_DIR" ]]; then
         case "$BACKUP_DIR" in
             "$BUNDLE_DIR/backups/"[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]) ;;
@@ -33,9 +31,6 @@ if [[ -z "${BACKUP_DIR:-}" ]]; then
     fi
 
     if [[ -z "$BACKUP_DIR" ]]; then
-        # Inside the bundle for a checkout, which is where the installer looks for
-        # it; a package's bundle is under /usr and read-only, so its backups go
-        # beside the other per-user state the command already writes.
         if install_is_packaged; then
             BACKUP_DIR="$CACHE_DIR/backups/$(date +%Y%m%d_%H%M%S)"
         else
@@ -52,10 +47,6 @@ echo ""
 mkdir -p "$BACKUP_DIR"
 mkdir -p "$DEPLOYED_DIR"
 
-# 02a-submodules.sh checks this too and tries to repair it; reaching this point
-# without content means that step was skipped or its repair failed, so send the
-# user back to it rather than to git. A package has no submodules to fetch: the
-# content is part of it.
 if [[ ! -d "$DOTS_DIR" ]] || [[ -z "$(ls -A "$DOTS_DIR" 2>/dev/null)" ]]; then
     if install_is_packaged; then
         die "Missing dotfiles in $DOTS_DIR. The package should have installed them; reinstall it."
@@ -69,14 +60,12 @@ getent passwd "$USER" | cut -d: -f7 > "$BACKUP_DIR/previous_shell.txt"
 info "Backing up pre-install configs..."
 mkdir -p "$BACKUP_DIR/shellrc" "$BACKUP_DIR/.config" "$BACKUP_DIR/local"
 
-# Backup selected config dirs that may be overwritten/removed during install/uninstall
 for cfg in btop fastfetch fish foot kitty micro thunar; do
     if [[ -e "$HOME/.config/$cfg" ]]; then
         cp -a "$HOME/.config/$cfg" "$BACKUP_DIR/.config/$cfg" 2>/dev/null || true
     fi
 done
 
-# Backup Konsole config/profiles (system tweaks may modify these)
 if [[ -f "$HOME/.config/konsolerc" ]]; then
     cp -a "$HOME/.config/konsolerc" "$BACKUP_DIR/.config/konsolerc" 2>/dev/null || true
 fi
@@ -185,13 +174,11 @@ for config in fish fastfetch; do
     deploy_config "$config" "$FISH_DIR/$config"
 done
 
-# Backup existing starship config
 if [[ -f "$HOME/.config/starship.toml" ]]; then
     mkdir -p "$BACKUP_DIR/.config"
     cp "$HOME/.config/starship.toml" "$BACKUP_DIR/.config/starship.toml"
 fi
 
-# Deploy starship.toml unless the previous Caelestia copy was locally edited.
 if [[ -f "$DOTS_DIR/starship.toml" ]]; then
     mkdir -p "$HOME/.config"
     starship_target="$HOME/.config/starship.toml"
@@ -217,7 +204,6 @@ if [[ -f "$DOTS_DIR/starship.toml" ]]; then
     fi
 fi
 
-#  Deploy Bridge Files
 info "Deploying bridge files (bin, applications, systemd, kwin script)..."
 mkdir -p \
     "$HOME/.local/bin" \
@@ -225,9 +211,7 @@ mkdir -p \
     "$HOME/.config/systemd/user" \
     "$HOME/.local/share/kwin/scripts"
 
-# bin scripts
 if [[ -d "$SRC_DIR/bin" ]]; then
-    # Copy scripts, but skip C++ source files and build files
     for file in "$SRC_DIR/bin/"*; do
         if [[ ! "$file" == *.cpp && ! "$file" == *CMakeLists.txt && ! -d "$file" ]]; then
             cp --remove-destination "$file" "$HOME/.local/bin/" 2>/dev/null || true
@@ -235,7 +219,6 @@ if [[ -d "$SRC_DIR/bin" ]]; then
     done
 fi
 
-# Update desktop database
 update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 ok "Bridge files deployed."
 

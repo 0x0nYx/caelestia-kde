@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# update-translations.sh - Re-scan the shell's QML for qsTr() strings and update
-# every catalog in shell/translations.
-#
-# Usage:
-#   tools/update-translations.sh              # update all existing catalogs
-#   tools/update-translations.sh tr es pt_BR  # also create these catalogs
 
 set -euo pipefail
 
@@ -12,8 +6,6 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHELL_DIR="$REPO_DIR/shell"
 TS_DIR="$SHELL_DIR/translations"
 
-# Sources scanned for qsTr(). Keep in sync with the dirs installed by
-# shell/CMakeLists.txt (build/ and plugin/ are deliberately left out).
 SOURCES=(
     "$SHELL_DIR/shell.qml"
     "$SHELL_DIR/lockscreen.qml"
@@ -26,9 +18,6 @@ SOURCES=(
 find_tool() {
     local name="$1"
     local candidate
-    # Distros disagree on where the Qt 6 tools live and whether they are on PATH:
-    # Arch keeps them in /usr/lib/qt6/bin, Fedora in /usr/lib64/qt6/bin, Debian
-    # ships suffixed names.
     for candidate in "$name" "${name}-qt6" "${name}6" \
         "/usr/lib/qt6/bin/$name" "/usr/lib64/qt6/bin/$name" \
         "/usr/lib/qt/bin/$name" "/usr/lib/x86_64-linux-gnu/qt6/bin/$name"; do
@@ -75,9 +64,6 @@ for lang in "${LANGS[@]}"; do
         grep -E 'Found|Warning' || true
 done
 
-# The compiled catalogs are committed so that a build without Qt's Linguist
-# tools still ships every language. They are only useful if they keep up with
-# the sources, so recompile them here rather than leaving it to be remembered.
 if LRELEASE="$(find_tool lrelease)"; then
     for lang in "${LANGS[@]}"; do
         [[ -f "$TS_DIR/caelestia_$lang.ts" ]] || continue

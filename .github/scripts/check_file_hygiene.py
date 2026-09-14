@@ -30,16 +30,12 @@ MAX_FILE_SIZE_KB = 500
 EXIT_CODE = 0
 VIOLATIONS: list[str] = []
 
-# Files and directories to always skip
 SKIP_PATTERNS = [
     "diff_upstream.txt",
     "QMLTermWidget",
     "json.hpp",
 ]
 
-# Files/dirs skipped for whitespace/tab checks (vendored/generated)
-# `templates` covers the theming templates vendored from matugen-themes under
-# src/matugen/templates/, which are upstream files with upstream formatting.
 STYLE_SKIP_DIRS = {"QMLTermWidget", "build", "__pycache__", ".git", "templates"}
 
 
@@ -77,10 +73,8 @@ def should_skip(rel_path: str, patterns: list[str] | None = None) -> bool:
 
 def get_changed_files() -> list[str]:
     """Get list of files changed in this PR/push, or empty list if no diff available."""
-    # For pull_request events, use GITHUB_BASE_REF
     base_ref = os.environ.get("GITHUB_BASE_REF")
     if not base_ref:
-        # For push events, try comparing with origin/main
         result = subprocess.run(
             ["git", "rev-parse", "--verify", "origin/main"],
             capture_output=True, text=True, cwd=ROOT,
@@ -98,7 +92,6 @@ def get_changed_files() -> list[str]:
             print(f"Checking {len(files)} changed file(s) against {base_ref}")
             return files
 
-    # On push to main/dev with no diff context, skip to avoid flagging pre-existing issues
     print("No diff context available - skipping file hygiene check")
     return []
 
@@ -181,7 +174,6 @@ def check_trailing_whitespace(changed_files: list[str]) -> None:
         if not is_text_file(filepath):
             continue
 
-        # Skip vendored directories
         if any(d in rel_path.replace("\\", "/").split("/") for d in STYLE_SKIP_DIRS):
             continue
 
@@ -309,8 +301,6 @@ def check_shell_executable(changed_files: list[str]) -> None:
 
 
 def main() -> int:
-    # --all scans every git-tracked file (used for push events where there is
-    # no PR diff to diff against). Without it, only changed files are checked.
     all_files = "--all" in sys.argv
     if all_files:
         result = subprocess.run(

@@ -1,62 +1,35 @@
 #!/usr/bin/env bash
-# 09-system-tweaks.sh  Apply live system configuration tweaks to the running KDE session.
-#
-# This script ONLY writes config values and reloads KDE daemons.
-# It does NOT copy any files. It is designed to be:
-#   - Run standalone at any time: bash scripts/09-system-tweaks.sh
-#   - Called by the main installer (after deploying files)
-#   - Easily extended: add new tweak_* functions below, then call them in main()
-#
-# Usage:
-#   bash scripts/09-system-tweaks.sh           # Apply all tweaks
-#   bash scripts/09-system-tweaks.sh --list    # List available tweaks
 
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
-
-# This script never opens an interactive sudo prompt: caelestia_sudo_quiet
-# reuses cached credentials or the password the installer exported, and fails
-# instead of asking.
 
 echo
 echo ""
 echo "  Caelestia  Live System Tweaks"
 echo ""
 
-#
-# TWEAK: Disable KDE OSD popups (volume, brightness notifications)
-#
 tweak_disable_kde_osd() {
     info "Disabling KDE OSD popups (volume/brightness)..."
 
-    # Plasma OSD daemon
     kwriteconfig6 --file plasmarc --group "OSD" --key "Enabled" "false" 2>/dev/null || true
     kwriteconfig6 --file plasmarc --group "OSD" --key "ShowOnActiveScreen" "false" 2>/dev/null || true
 
-    # kdeglobals fallback key
     kwriteconfig6 --file kdeglobals --group "KDE" --key "OSDEnabled" "false" 2>/dev/null || true
 
-    # plasma-volume OSD via notify
     kwriteconfig6 --file plasmanotifyrc --group "Notifications" \
         --key "LoudnessChangedOSD" "false" 2>/dev/null || true
 
-    # powerdevil brightness OSD
     kwriteconfig6 --file powerdevilrc --group "BrightnessControl" \
         --key "showOSD" "false" 2>/dev/null || true
     kwriteconfig6 --file powerdevilrc --group "AC" \
         --key "brightnessosd" "false" 2>/dev/null || true
 
-    # kmix OSD, one key through the same tool as the settings above instead of
-    # rewriting a file that belongs to Plasma.
     kwriteconfig6 --file kmixrc --group "Global" --key "ShowOSD" "false" 2>/dev/null || true
 
     ok "KDE OSD popups disabled."
 }
 
-#
-# TWEAK: Create 5 virtual desktops
-#
 tweak_five_desktops() {
     info "Configuring 5 virtual desktops..."
 
@@ -69,15 +42,9 @@ tweak_five_desktops() {
     ok "5 virtual desktops configured."
 }
 
-#
-# TWEAK: Remove KDE panels so the Caelestia bar and dock take over
-#
 tweak_remove_panels() {
     info "Removing KDE Plasma panels..."
 
-    # Plasma's own scripting API, so plasmashell persists the change itself and
-    # nothing here writes the file: every containment, widget and setting the user
-    # has besides the panels is left exactly as it was.
     if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
         "var p = panels(); for (var i = 0; i < p.length; i++) { p[i].remove(); }" \
         2>/dev/null; then
@@ -85,12 +52,6 @@ tweak_remove_panels() {
         return 0
     fi
 
-    # No plasmashell to ask - a headless install, or this runs before the desktop
-    # is up - so the panels an earlier plasmashell wrote have to go by hand.
-    # Removing a containment key by key is only possible through that API, so this
-    # path drops the whole block of each containment that is a panel, and nothing
-    # outside those blocks. konsave already copied the file (00-backup-themes.sh);
-    # a second copy beside it would be one more file of ours in ~/.config.
     python3 - <<'EOF' || warn "Failed to remove KDE panels from config."
 import os
 import re
@@ -143,25 +104,14 @@ EOF
     ok "KDE panels removed."
 }
 
-#
-# TWEAK: Turn off the Plasma splash screen
-#
 tweak_no_splash_screen() {
     info "Turning off the Plasma startup splash..."
 
-    # The splash is a full-screen picture of its own, unrelated to the wallpaper in
-    # use, and it covers the start of the session - so it is what you look at until
-    # the shell has painted, and the wallpaper appears to change a second in. The
-    # shell draws the background here and nothing needs announcing it. This key is
-    # KDE's own "No splash screen" setting.
     kwriteconfig6 --file ksplashrc --group KSplash --key Engine "none" 2>/dev/null || true
 
     ok "Plasma splash screen disabled."
 }
 
-#
-# TWEAK: Reload KWin and KGlobalAccel to pick up config changes
-#
 tweak_reload_kde() {
     info "Reloading KWin and plasma-kglobalaccel..."
     qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
@@ -169,15 +119,9 @@ tweak_reload_kde() {
     ok "KDE daemons reloaded."
 }
 
-#
-# TWEAK: Set default Caelestia shell scheme
-#
 tweak_default_scheme() {
     info "Setting default Caelestia color scheme..."
     if command -v caelestia >/dev/null 2>&1; then
-        # Only force the "dynamic" default when the user has not picked a scheme
-        # yet. This tweak also runs on every update, so it must not clobber a
-        # scheme the user chose.
         STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
         CURRENT=""
         if [[ -s "$STATE_DIR/scheme.json" ]] && command -v python3 >/dev/null 2>&1; then
@@ -189,10 +133,6 @@ tweak_default_scheme() {
             return
         fi
 
-        # Dynamic derives colors from the wallpaper the CLI was last told about
-        # (caelestia wallpaper). 04-deploy-kde.sh writes path.txt directly without
-        # seeding the CLI, so seed it here first, then switch to dynamic - otherwise
-        # `scheme set -n dynamic` fails silently and the default stays mocha.
         WALLPAPER="$(cat "$STATE_DIR/wallpaper/path.txt" 2>/dev/null || true)"
         if [[ -n "$WALLPAPER" && -f "$WALLPAPER" ]]; then
             timeout 10s caelestia wallpaper -f "$WALLPAPER" >/dev/null 2>&1 || true
@@ -203,9 +143,6 @@ tweak_default_scheme() {
 }
 
 
-#
-# TWEAK: Set default shell to Fish
-#
 tweak_default_shell() {
     local target_shell="${DEFAULT_SHELL:-fish}"
     info "Setting default shell to $target_shell..."
@@ -214,7 +151,6 @@ tweak_default_shell() {
         local shell_path
         shell_path="$(command -v "$target_shell")"
 
-        # Compare with current login shell
         local current_shell
         current_shell="$(getent passwd "$USER" | cut -d: -f7)"
         if [[ -z "$current_shell" ]]; then
@@ -230,7 +166,6 @@ tweak_default_shell() {
         local konsole_profile_dir="$HOME/.local/share/konsole"
         mkdir -p "$konsole_profile_dir"
 
-        # Inject target shell into all existing Konsole profiles
         local profiles_found=0
         for profile in "$konsole_profile_dir"/*.profile; do
             if [[ -f "$profile" ]]; then
@@ -239,7 +174,6 @@ tweak_default_shell() {
             fi
         done
 
-        # If no profiles existed, create the standard fallback one so the shell works
         if [[ $profiles_found -eq 0 ]]; then
             kwriteconfig6 --file "$konsole_profile_dir/Profile 1.profile" --group "General" --key "Name" "Profile 1"
             kwriteconfig6 --file "$konsole_profile_dir/Profile 1.profile" --group "General" --key "Command" "$shell_path"
@@ -252,12 +186,8 @@ tweak_default_shell() {
     ok "Shell configuration applied."
 }
 
-#
-# TWEAK: Link KDE user avatar to ~/.face and ~/.face.icon for Caelestia and SDDM
-#
 tweak_user_avatar_symlinks() {
     if [[ -e "$HOME/.face.icon" || -L "$HOME/.face.icon" ]]; then
-        # A message to the user, not a path: the tilde is intentional here.
         # shellcheck disable=SC2088
         info "~/.face.icon already exists. Skipping avatar setup."
         return 0
@@ -279,16 +209,6 @@ tweak_user_avatar_symlinks() {
     fi
 }
 
-#
-#  ADD NEW TWEAKS ABOVE THIS LINE
-# To add a new tweak:
-#   1. Define a function: tweak_<name>() { ... }
-#   2. Call it in the main() section below
-#
-
-#
-# Main  apply all tweaks in order
-#
 if [[ "${1:-}" == "--list" ]]; then
     echo
     echo "Available tweaks:"

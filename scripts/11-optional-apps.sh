@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
-# 11-optional-apps.sh  Deploy the optional components the main installer
-# leaves off by default: editor integrations (VSCode/VSCodium, Zed),
-# Spicetify theming, Discord/Equibop, Todoist, and Firefox theming.
-#
-# Each component is gated by a menu toggle exported by the installer
-# (INSTALL_VSCODE, INSTALL_ZED, INSTALL_SPICETIFY, INSTALL_DISCORD,
-# INSTALL_TODOIST, INSTALL_FIREFOX_THEME). All toggles default to false,
-# so a stock install runs this script and it does nothing.
-#
-# Idempotent: skips already-installed packages and missing source files.
+# editor integrations, Spicetify, Discord/Equibop, Todoist and Firefox theming.
+# INSTALL_SPICETIFY, INSTALL_DISCORD, INSTALL_TODOIST, INSTALL_FIREFOX_THEME),
 
 set -euo pipefail
 
@@ -73,7 +65,6 @@ deploy_file() {
     fi
 }
 
-#  VSCode / VSCodium
 if [[ "${INSTALL_VSCODE:-false}" == "true" ]]; then
     echo "  Setting up VSCode/VSCodium integration..."
     install_if_missing code || install_if_missing visual-studio-code-bin || true
@@ -97,7 +88,6 @@ if [[ "${INSTALL_VSCODE:-false}" == "true" ]]; then
     deploy_vscode "VSCodium" "codium"
 fi
 
-#  Zed
 if [[ "${INSTALL_ZED:-false}" == "true" ]]; then
     echo "  Setting up Zed..."
     if [[ "$BASE_DISTRO" == "arch" ]]; then
@@ -109,13 +99,10 @@ if [[ "${INSTALL_ZED:-false}" == "true" ]]; then
     deploy_file "$DOTS_DIR/zed/settings.json" "$HOME/.config/zed/settings.json"
 fi
 
-#  Spicetify
 if [[ "${INSTALL_SPICETIFY:-false}" == "true" ]]; then
     echo "  Setting up Spicetify..."
     install_if_missing spicetify-cli || true
 
-    # Prefer the KDE-specific override in src/dots-extra; fall back to the
-    # upstream submodule copy if this bundle predates the override.
     theme_css="$EXTRA_DIR/spicetify/Themes/caelestia/user.css"
     [[ -f "$theme_css" ]] || theme_css="$DOTS_DIR/spicetify/Themes/caelestia/user.css"
     deploy_file "$theme_css" "$HOME/.config/spicetify/Themes/caelestia/user.css"
@@ -127,7 +114,6 @@ if [[ "${INSTALL_SPICETIFY:-false}" == "true" ]]; then
     fi
 fi
 
-#  Discord / Equibop
 if [[ "${INSTALL_DISCORD:-false}" == "true" ]]; then
     echo "  Installing Discord/Equibop..."
     if [[ "$BASE_DISTRO" == "arch" ]]; then
@@ -137,7 +123,7 @@ if [[ "${INSTALL_DISCORD:-false}" == "true" ]]; then
     fi
 fi
 
-#  Todoist (AppImage)
+# Todoist (AppImage)
 if [[ "${INSTALL_TODOIST:-false}" == "true" ]]; then
     echo "  Installing Todoist AppImage..."
     appimage="$HOME/.local/bin/todoist.AppImage"
@@ -155,7 +141,6 @@ if [[ "${INSTALL_TODOIST:-false}" == "true" ]]; then
     fi
 fi
 
-#  Firefox theming (user.js + userChrome.css)
 if [[ "${INSTALL_FIREFOX_THEME:-false}" == "true" ]]; then
     echo "  Setting up Firefox theming..."
     install_if_missing firefox || true
@@ -176,10 +161,6 @@ if [[ "${INSTALL_FIREFOX_THEME:-false}" == "true" ]]; then
         fi
     fi
 
-    # The native-messaging companion (caelestiafox) needs the host binary at
-    # /usr/lib/caelestia/caelestiafox and the matching browser extension, which
-    # live in the upstream caelestia repo and are not wired into this build, so
-    # it is intentionally not deployed here.
 fi
 
 ok "Optional components done."

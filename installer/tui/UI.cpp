@@ -28,12 +28,7 @@ std::map<std::string, std::string> g_answers;
 
 namespace {
 
-// Writes password to a file with secure permissions (0600) atomically at
-// creation time — avoids the TOCTOU race of creating with default umask then
-// chmod'ing afterwards.
 bool write_password_file_secure(const string& path, const string& password) {
-    // Mode 0600 ensures only the owner can read, from the moment of creation.
-    // This avoids the TOCTOU window of creating with default umask then chmod.
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0600);
     if (fd == -1) {
         return false;
@@ -44,8 +39,6 @@ bool write_password_file_secure(const string& path, const string& password) {
     return written == static_cast<ssize_t>(data.size());
 }
 
-// Writes @p content to @p path with O_EXCL, so a file (or symlink) already at
-// that path is never followed or overwritten.
 bool write_file_excl(const string& path, const string& content, int mode) {
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, mode);
     if (fd == -1) {
@@ -79,13 +72,7 @@ void release_kde_inhibit(const string& cookie_file) {
         waitpid(child, nullptr, 0);
 }
 
-// Sets up the sudo askpass environment after a successful password
-// verification. Creates the password file, askpass helper, sudo wrapper,
-// screen inhibitor, and exports SUDO_PASS.
 bool setup_sudo_environment(const string& pw) {
-    // Per-run, user-owned temp dir instead of a fixed, predictable /tmp path.
-    // mkdtemp creates it 0700, and the O_EXCL writes below can't follow a
-    // symlink someone else planted at a known name.
     char tmpl[] = "/tmp/caelestia-bin.XXXXXX";
     char* dir = mkdtemp(tmpl);
     if (!dir) {
@@ -114,7 +101,6 @@ bool setup_sudo_environment(const string& pw) {
         return false;
     }
 
-    // Also export SUDO_PASS for some scripts (like 09-system-tweaks.sh) that might rely on it
     setenv("SUDO_PASS", pw.c_str(), 1);
 
     const char* runtime = getenv("XDG_RUNTIME_DIR");
@@ -132,9 +118,6 @@ bool setup_sudo_environment(const string& pw) {
     const string pid_file = state_dir + "/inhibit.pid";
     const string cookie_file = state_dir + "/kde_inhibit.cookie";
 
-    // Reap an inhibitor left by a killed earlier run before starting a fresh
-    // one; the shell EXIT trap can't run on SIGKILL or a hard crash. Only kill
-    // a process whose command line identifies it as our systemd inhibitor.
     ifstream old_pid(pid_file);
     pid_t pid = 0;
     old_pid >> pid;
@@ -142,7 +125,6 @@ bool setup_sudo_environment(const string& pw) {
         kill(pid, SIGKILL);
     release_kde_inhibit(cookie_file);
 
-    // Start background keep-awake for display (sleep inhibitor)
     pid = fork();
     if (pid == 0) {
         execlp("systemd-inhibit", "systemd-inhibit", "--what=idle:sleep",
@@ -174,7 +156,6 @@ bool setup_sudo_environment(const string& pw) {
     return true;
 }
 
-// Human-readable distro label shown on the welcome screen.
 string distro_label(const string& id) {
     if (id == "arch") return "Arch-based Linux";
     if (id == "fedora") return "Fedora";
@@ -186,7 +167,6 @@ const char* navigate_hint() {
     return "Up/Down navigate  Enter select  Left/Esc back";
 }
 
-// True when the given step name appears in the failed-steps file.
 bool check_failed(const string& file, const string& target) {
     ifstream f(file);
     string line;
@@ -196,8 +176,6 @@ bool check_failed(const string& file, const string& target) {
     return false;
 }
 
-// True when the caelestia command (the shell wrapper installed by the
-// installer) exists. Update and Uninstall are only offered once it does.
 bool is_caelestia_installed() {
     auto executable = [](const string& p) {
         return access(p.c_str(), X_OK) == 0;
@@ -211,7 +189,6 @@ bool is_caelestia_installed() {
     if (executable("/usr/bin/caelestia"))
         return true;
 
-    // Fall back to a PATH search for installs in other prefixes.
     const char* path = getenv("PATH");
     if (path) {
         string paths(path);
@@ -233,8 +210,6 @@ bool is_caelestia_installed() {
 
 namespace UI {
     void welcome_screen() {
-        // Drain buffered input left over from terminal setup, so stale
-        // escape sequences cannot skip the screen instantly.
         for (int drain = 0; drain < 10 && !Input::get().empty(); ++drain) { }
 
         vector<string> art;
@@ -301,8 +276,7 @@ namespace UI {
             Draw::text_center(ty + 3, "Caelestia installer", "primary");
             Draw::text_center(ty + 6, "Detected distribution: " + distro_label(g_base_distro), "secondary");
 
-            // Startup problems sit under the distribution line, but only when
-            // there is room for them above the continue hint.
+            // Startup problems sit under the distro line, if there is room above the hint.
             if (ty + 7 < y + h - 3)
                 Draw::problems(x + 2, ty + 7, w - 4, 2);
 
@@ -416,7 +390,7 @@ namespace UI {
             Draw::text(left + 2, top + 2, "Root privileges are required to install packages.", "on_surface");
             Draw::text(left + 2, top + 3, "Password: ", Draw::bold + Draw::color("primary"));
 
-            // Draw masked password
+            // Masked password
             string masked(pw.length(), '*');
             masked.resize(30, ' ');
             Draw::text(left + 12, top + 3, masked, Draw::reset);
@@ -559,10 +533,8 @@ namespace UI {
         return false;
     }
 
-    // Parse + redraw one frame of the full-screen log view. Non-blocking:
-    // call repeatedly while the view is on screen (it handles resize itself).
-    // A cheap size check skips re-reading when the log has not grown, so an
-    // idle frame costs a stat() rather than a full file read.
+    // Parses and redraws one frame of the log view. Non-blocking: call it repeatedly while
+    // up; a size check skips re-reading an unchanged log.
     void log_view_tick(const std::string& log_path, LogViewState& s) {
         if (g_resized) { Term::get_size(); g_resized = false; s.redraw = true; }
 
@@ -612,8 +584,7 @@ namespace UI {
             push_line();
         s.redraw = true;
 
-        // Clamp the viewport from the current size; follow keeps the newest
-        // line on screen, otherwise keep the user's paused position.
+        // Follow keeps the newest line on screen; otherwise hold the paused position.
         int show = g_term_height - 6;
         if (show < 1) show = 1;
         long max_scroll = (long)s.lines.size() - show;
@@ -651,10 +622,8 @@ namespace UI {
         cout << Draw::sync_end() << flush;
     }
 
-    // Applies one key to the log view state (scroll/pause/next-issue).
-    // Returns true when the key asks to leave the view (L/Tab/Esc/Ctrl+C).
-    // Paging is recomputed from the current terminal height so scroll amounts
-    // survive a resize.
+    // Applies one key to the log view; true when it leaves the view (L/Tab/Esc/Ctrl+C).
+    // Paging is recomputed per frame, so it survives a resize.
     bool log_view_key(const std::string& key, LogViewState& s) {
         if (key == "l" || key == "L" || key == "KEY_shift_tab" ||
             key == "escape" || key == "signal_interrupt")
@@ -721,12 +690,9 @@ namespace UI {
         return false;
     }
 
-    // Blocking full-screen tail of the install log. Only safe where no step is
-    // still running (Complete screen): it reads keys until the user leaves, so
-    // the install loop must NOT call it mid-step - that stalls the install
-    // until the user returns to the progress screen. The runner instead keeps
-    // log_open state and calls log_view_tick/log_view_key so steps advance
-    // underneath an open log view.
+    // Blocking full-screen tail of the log. Only safe on the Complete screen: it reads keys
+    // until the user leaves, so the install loop must not call it mid-step. The runner keeps
+    // log_open instead and drives log_view_tick/log_view_key, so steps advance underneath.
     void log_view(const std::string& log_path) {
         LogViewState s;
         while (!g_quit) {

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# packages.sh - Arch package installation for Caelestia
 
 set -uo pipefail
 
@@ -16,7 +15,6 @@ INSTALL_FISH="${INSTALL_FISH:-true}"
 INSTALL_PAPIRUS="${INSTALL_PAPIRUS:-true}"
 INSTALL_DARKLY="${INSTALL_DARKLY:-true}"
 
-# Ensure yay
 if ! command -v yay >/dev/null 2>&1; then
     log "yay not found - installing..."
     sudo pacman -S --needed --noconfirm base-devel git || true
@@ -29,27 +27,20 @@ if ! command -v yay >/dev/null 2>&1; then
     rm -rf "$tmpdir"
 fi
 
-# Core dependencies split by group — controlled via PACKAGE_GROUP env var
 PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
 
 CORE_PACKAGES=(
-    # Build tools & compilers
     cmake ninja ccache qt6-tools extra-cmake-modules gcc-libs glibc
 
-    # CLI & System utilities
     wl-clipboard cliphist wl-clip-persist inotify-tools app2unit wireplumber trash-cli jq
 
-    # Audio, Sensors & Hardware
     aubio lm_sensors libpipewire pulseaudio-qt libpulse fftw
 
-    # Qt6 Framework & Tools
     qt6-base qt6-declarative qt6-wayland qt6-shadertools
 
-    # KDE 6 Frameworks & KWin
     kglobalaccel kglobalacceld kguiaddons kwindowsystem
     kcoreaddons kconfig networkmanager-qt kpipewire kwin
 
-    # Media, Calculation & Security
     ffmpeg libqalculate libsecret ksshaskpass libx11 vulkan-headers
 )
 
@@ -68,7 +59,6 @@ UTILITY_PACKAGES=(
     satty spectacle xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
 )
 
-# Build final package list based on selected group
 PACKAGES=()
 case "$PACKAGE_GROUP" in
     core)   PACKAGES=("${CORE_PACKAGES[@]}") ;;
@@ -94,7 +84,6 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     fi
 fi
 
-# Developer SDK (libcava) extracted from prebuilt release assets.
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "core" ]]; then
     if install_cava_sdk arch; then
         log "Installed prebuilt CAVA SDK from release."
@@ -110,9 +99,6 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     fi
 fi
 
-# Older installs registered a caelestia-bin pacman repo that pointed at the
-# now-deleted caelestia-bin-repo GitHub release. Drop any stale entry so
-# `pacman -Sy` does not fail against the dead Server URL.
 if grep -q '^\[caelestia-bin\]' /etc/pacman.conf 2>/dev/null; then
     log "Removing stale caelestia-bin repo entry from pacman.conf..."
     sudo sed -i '/^\[caelestia-bin\]/,/^$/d' /etc/pacman.conf
@@ -121,18 +107,11 @@ fi
 log "Installing packages (group: $PACKAGE_GROUP)..."
 FAILED_PKGS=()
 
-# Source-compilation fallbacks for AUR packages with no reliable binary repo
-# copy. When yay can't download/fetch an AUR package (or its source), build it
-# directly from the upstream source instead of failing outright.
-# Key: AUR package name -> source repo URL. Labels under "build type" below
-# select the build backend.
 SOURCE_BUILD_REPOS=(
-    # package            repo
     "ttf-rubik-vf        https://github.com/googlefonts/rubik"
     "app2unit            https://github.com/Vladimir-csp/app2unit"
 )
 
-# Resolve a package name to its source repo URL (empty if not a source-build target)
 source_repo_for() {
     local name="$1" entry pkg url
     for entry in "${SOURCE_BUILD_REPOS[@]}"; do
@@ -146,8 +125,6 @@ source_repo_for() {
     return 1
 }
 
-# Build a package from its upstream source repository. Uses the build backend
-# the project ships (meson, CMake, autotools, or a plain makefile).
 build_from_source() {
     local pkg="$1" repo="$2" tmpdir
     tmpdir="$(mktemp -d)"
@@ -180,11 +157,9 @@ build_from_source() {
     return 0
 }
 
-# Batch install all packages at once — much faster than individual yay calls
 if ! yay -S --needed --noconfirm "${PACKAGES[@]}"; then
     log "Batch install had failures. Retrying individually..."
     for pkg in "${PACKAGES[@]}"; do
-        # Skip packages already installed by the batch attempt
         if pacman -Q "$pkg" >/dev/null 2>&1; then
             continue
         fi
@@ -204,8 +179,6 @@ if ! yay -S --needed --noconfirm "${PACKAGES[@]}"; then
             fi
             rm -rf "$tmpdir"
 
-            # Last resort: compile straight from upstream source if the AUR
-            # build (or its source download) failed and we know the repo.
             if [[ "$_built" != "yes" ]]; then
                 repo="$(source_repo_for "$pkg")"
                 if [[ -n "$repo" ]]; then

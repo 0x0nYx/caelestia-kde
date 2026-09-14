@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2024 ladybug-me
 # SPDX-License-Identifier: GPL-3.0-or-later
-#
-# sysinfo.py — Caelestia lockscreen system info provider
-#
-# Outputs a single JSON line with: os, wm, user, uptime, id, logoPath
-# Called via Plasma5Support.DataSource (executable engine) from LockScreenUi.qml.
-# Extracted from the inline python3 -c one-liner to avoid shell-command
-# concatenation in a pre-auth context (security review fix).
 
 import json
 import os

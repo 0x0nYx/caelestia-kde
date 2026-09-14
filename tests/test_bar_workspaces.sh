@@ -1,18 +1,4 @@
 #!/usr/bin/env bash
-# test_bar_workspaces.sh - What the bar draws for a workspace.
-#
-# The bar gives each workspace a Material shape: a square when it is occupied, a circle
-# when it is empty, and something larger for the one in focus. Upstream picks that
-# larger shape at random from a pool that carries the organic ones as well -
-# Cookie4Sided through Cookie12Sided, Clover4Leaf, Clover8Leaf, SoftBurst and Ghostish.
-# A cookie is a circle with a bite taken out of it, so the focused workspace reads as a
-# Pac-Man sitting in the bar.
-#
-# This port draws from a pool without them, which is a deliberate divergence from the
-# shell it is ported from. That makes this file the record of it: the rest of the bar is
-# synced from upstream, and a sync that brought the pool back would look entirely
-# correct. Both the pool and the two places that draw from it are asserted, because two
-# copies of the list is how a divergence like this survives in only one of them.
 
 set -uo pipefail
 

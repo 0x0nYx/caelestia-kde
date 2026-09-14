@@ -1,14 +1,4 @@
 #!/usr/bin/env bash
-# check_shell_quality.sh - Shell script quality checks for CI.
-#
-# Checks performed:
-#   1. All .sh files parse with `bash -n` (syntax check)
-#   2. All executable .sh files pass shellcheck at warning severity (if installed)
-#   3. All .sh files inside scripts/ and src/bin/ use `set -euo pipefail`
-#   4. No bare `sudo` usage in scripts/ (should use the privilege wrapper)
-#   5. No hardcoded insecure patterns (e.g. curl | bash)
-#
-# Usage: bash .github/scripts/check_shell_quality.sh [--fix]
 
 set -euo pipefail
 
@@ -32,15 +22,11 @@ is_in_git() {
     git ls-files --error-unmatch "$1" &>/dev/null
 }
 
-# Returns 0 if file has a shebang indicating it's meant to be executed directly
 is_executable_script() {
     local file="$1"
     head -c 30 "$file" 2>/dev/null | grep -qE '^#!.*/(ba)?sh'
 }
 
-# Every tracked shell script: *.sh files plus extensionless files with a shell
-# shebang (e.g. src/bin/caelestia-update, src/bin/caelestia-shell-ipc). The
-# extensionless ones are easy to forget, so we enumerate them by shebang.
 get_shell_files() {
     git ls-files '*.sh'
     git ls-files | while IFS= read -r f; do
@@ -55,7 +41,6 @@ get_shell_files() {
     done
 }
 
-# ─── 1. Syntax check: bash -n on every shell script ───
 echo -e "${BOLD}=== Shell Syntax Check (bash -n) ===${RESET}"
 for f in $(get_shell_files); do
     if ! bash -n "$f" 2>/dev/null; then
@@ -67,7 +52,7 @@ if [[ "$EXIT_CODE" -eq 0 ]]; then
     log_ok "All shell scripts passed syntax check"
 fi
 
-# ─── 2. shellcheck ───
+# 2. shellcheck
 echo ""
 echo -e "${BOLD}=== ShellCheck Lint ===${RESET}"
 if command -v shellcheck &>/dev/null; then
@@ -85,19 +70,9 @@ else
     log_warn "shellcheck not installed - skipping (install with: apt install shellcheck)"
 fi
 
-# ─── 3. Strict mode check (set -euo pipefail) ───
 echo ""
 echo -e "${BOLD}=== Strict Mode Check ===${RESET}"
-# Enforced for scripts/ where every script follows the convention. src/bin/*
-# are covered by syntax + shellcheck above but deliberately vary their `set`
-# flags (e.g. caelestia-check-updates relies on explicit exits), so they are
-# not forced to -euo here.
-# scripts/lib/* are sourced helpers, not entry points: setting -e there would
-# silently impose it on every caller, including ones that deliberately run
-# without it.
-# A step whose header documents that it must never fail the install opts out
-# with a `ci:allow-no-strict-mode` marker, the same way `ci:allow-curl-pipe`
-# opts out of the pattern check below.
+# that must never fail the install opts out with `ci:allow-no-strict-mode`.
 for f in $(git ls-files 'scripts/*.sh' 2>/dev/null | grep -v '^scripts/lib/' || true); do
     grep -q 'ci:allow-no-strict-mode' "$f" 2>/dev/null && continue
     if ! grep -qE 'set\s+-euo\s+pipefail|set\s+-eu\s+-o\s+pipefail' "$f" 2>/dev/null; then
@@ -108,19 +83,15 @@ if [[ "$EXIT_CODE" -eq 0 ]]; then
     log_ok "All scripts in scripts/ use strict mode"
 fi
 
-# ─── 4. No curl-pipe-bash patterns ───
 echo ""
 echo -e "${BOLD}=== Unsafe Pattern Detection ===${RESET}"
 CURL_PIPE_FOUND=0
 for f in $(git ls-files '*.sh'); do
-    # Skip this checker itself — it describes patterns, not uses them.
     [[ "$f" == ".github/scripts/check_shell_quality.sh" ]] && continue
-    # Skip comment-only lines so doc strings don't self-match.
     if grep -nE 'curl\s.*\|\s*(sudo\s+)?(ba)?sh\b' "$f" 2>/dev/null | grep -vE '(^[0-9]+:\s*#|ci:allow-curl-pipe)'; then
         log_err "$f contains unsafe 'curl | bash' pattern"
         CURL_PIPE_FOUND=1
     fi
-    # Flag wget -O - | sh patterns too
     if grep -nE 'wget\s.*-O\s*-\s*.*\|\s*(sudo\s+)?(ba)?sh\b' "$f" 2>/dev/null | grep -vE '(^[0-9]+:\s*#|ci:allow-curl-pipe)'; then
         log_err "$f contains unsafe 'wget -O - | sh' pattern"
         CURL_PIPE_FOUND=1
@@ -130,7 +101,6 @@ if [[ "$CURL_PIPE_FOUND" -eq 0 ]]; then
     log_ok "No unsafe curl/wget-pipe-shell patterns found"
 fi
 
-# ─── Summary ───
 echo ""
 if [[ "$EXIT_CODE" -eq 0 ]]; then
     echo -e "${BOLD}${GREEN}All shell quality checks passed.${RESET}"

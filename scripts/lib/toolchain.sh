@@ -1,39 +1,11 @@
 #!/usr/bin/env bash
-# toolchain.sh - Build-tool prerequisites for the install/update step scripts.
-#
-# Source alongside lib/privileges.sh, which provides caelestia_sudo:
-#
-#     source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
-#
-#   linguist_tools_available   Is Qt's lrelease reachable?
-#   install_linguist_tools     Install it through caelestia_sudo
-#   install_cava_sdk           Download & extract prebuilt CAVA SDK tarball
-#
-# These helpers never log; callers decide what to tell the user.
 
-# linguist_tools_available
-#
-# True when `lrelease` can be run, either from PATH or from the location
-# distros use when they keep the Qt tools out of PATH.
 linguist_tools_available() {
     local fallback="${CAELESTIA_LRELEASE_FALLBACK:-/usr/lib/qt6/bin/lrelease}"
 
     command -v lrelease >/dev/null 2>&1 || [[ -x "$fallback" ]]
 }
 
-# install_linguist_tools
-#
-# Install Qt's Linguist tools so CMake can compile the translation catalogs.
-# Without lrelease CMake only warns and the shell ships English regardless of
-# the catalogs in shell/translations.
-#
-# Privileged package calls go through caelestia_sudo rather than plain sudo:
-# this step also runs from a GUI-triggered update with no controlling terminal,
-# where a bare sudo has nothing to prompt on and fails silently (#664).
-# caelestia_sudo falls back through cached credentials, SUDO_PASS, an askpass
-# helper and finally pkexec.
-#
-# Returns 0 when the tools are already present or were installed, 1 otherwise.
 install_linguist_tools() {
     if linguist_tools_available; then
         return 0
@@ -50,15 +22,6 @@ install_linguist_tools() {
     fi
 }
 
-# install_cava_sdk [distro]
-#
-# Download and extract the prebuilt CAVA SDK (libcava + headers) from the CAVA
-# continuous release so the shell can link against it without building from source.
-#
-# Distro can be explicitly passed (e.g. arch, fedora, debian/ubuntu) or defaults
-# to $BASE_DISTRO / detected package manager.
-#
-# Returns 0 on success, 1 on failure.
 install_cava_sdk() {
     local arch="${CAELESTIA_TARGET_ARCH:-}"
     if [[ -z "$arch" ]]; then

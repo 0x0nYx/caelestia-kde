@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# 02-packages.sh - Ensure the runtime tooling the shell needs: Python for
-# konsave backups and the helpers, and matugen for the color palette.
-# (Package groups are installed by the individual 02-*-packages.sh scripts)
 
 set -euo pipefail
 
@@ -39,9 +36,6 @@ fi
 echo
 info "Ensuring the palette generator"
 export PATH="$HOME/.cargo/bin:$PATH"
-# matugen is what turns a wallpaper into a palette, and only Arch packages it.
-# Report its absence here, where the fix is a package command, rather than let
-# the first wallpaper change fail with nothing to say about why.
 if command -v matugen >/dev/null 2>&1; then
     ok "matugen is installed."
 else

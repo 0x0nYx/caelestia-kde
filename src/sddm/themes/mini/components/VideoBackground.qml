@@ -32,8 +32,6 @@ Item {
 
         videoOutput: videoSurface
         loops: MediaPlayer.Infinite
-        // Probe failures (missing/corrupt files) fall through to the next
-        // candidate extension until one loads, else the image stays visible.
         onErrorOccurred: function (error, errorString) {
             if (root.isActive)
                 return;
