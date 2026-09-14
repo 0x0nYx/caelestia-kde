@@ -57,14 +57,21 @@ ShellRoot {
         value: GlobalConfig.general.language
     }
 
-    Fonts {}
+    Loader {
+        asynchronous: true
+        sourceComponent: Fonts {}
+    }
+
     GSFLoader {}
     ServiceLoader {}
 
     Background {}
     BadAppleOverlay {}
 
-    Drawers {}
+    Loader {
+        asynchronous: true
+        sourceComponent: Drawers {}
+    }
     // AreaPicker {}
     Lock {
         id: lock
@@ -101,17 +108,45 @@ ShellRoot {
     ScreenCorners {}
 
     Component.onCompleted: {
-        Qt.callLater(() => { Weather.reload(); });
-        PluginLoader.loadPlugins();
+        deferredStartup.start();
     }
 
-    Services.StartupTasks {}
-    WhatsNew.WhatsNewWindow {}
+    Timer {
+        id: deferredStartup
+
+        interval: 250
+        repeat: false
+
+        onTriggered: {
+            PluginLoader.loadPlugins();
+            startupTasksLoader.active = true;
+            whatsNewLoader.active = true;
+            bbdxCheckProcess.running = true;
+            root._arpcInit = DiscordRPC;
+            root._gameModeInit = GameMode;
+            root._updateCheckerInit = UpdateChecker;
+            root._autoSchemeInit = AutoScheme;
+        }
+    }
+
+    Loader {
+        id: startupTasksLoader
+
+        active: false
+        sourceComponent: Services.StartupTasks {}
+    }
+
+    Loader {
+        id: whatsNewLoader
+
+        active: false
+        sourceComponent: WhatsNew.WhatsNewWindow {}
+    }
 
     Process {
         id: bbdxCheckProcess
 
-        running: true
+        running: false
         command: ["bash", "-c", `
             IS_ENABLED=$(kreadconfig6 --file kwinrc --group Plugins --key better_blur_dxEnabled)
             if [ "$IS_ENABLED" = "true" ]; then

@@ -20,7 +20,7 @@ HyprExtras::HyprExtras(QObject* parent)
     , m_devices(new HyprDevices(this)) {
     const auto his = qEnvironmentVariable("HYPRLAND_INSTANCE_SIGNATURE");
     if (his.isEmpty()) {
-        qCWarning(lcHypr) << "$HYPRLAND_INSTANCE_SIGNATURE is unset. Unable to connect to Hyprland socket.";
+        qCDebug(lcHypr) << "Hyprland socket unavailable; using the KDE compatibility path.";
         return;
     }
 

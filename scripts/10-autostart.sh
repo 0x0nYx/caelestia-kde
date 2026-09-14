@@ -66,6 +66,15 @@ export QS_DROP_EXPENSIVE_FONTS=1
 export QS_DISABLE_CRASH_HANDLER=1
 export QSG_RENDER_LOOP=threaded
 export QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
+# Quickshell imports its Hyprland IPC module even on KDE for API compatibility.
+# Its missing-socket warning is expected when this KDE port has no Hyprland instance.
+if [[ -z "\${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    if [[ -n "\${QT_LOGGING_RULES:-}" ]]; then
+        export QT_LOGGING_RULES="\${QT_LOGGING_RULES};quickshell.hyprland.ipc.warning=false"
+    else
+        export QT_LOGGING_RULES="quickshell.hyprland.ipc.warning=false"
+    fi
+fi
 # Self-heal Caelestia lock screen if KDE updates or kconf_update reset it
 if [ -f "\$HOME/.local/share/plasma/shells/caelestia.desktop/contents/lockscreen/LockScreen.qml" ] || [ -f "/usr/share/plasma/shells/caelestia.desktop/contents/lockscreen/LockScreen.qml" ]; then
     if command -v kreadconfig6 >/dev/null 2>&1 && command -v kwriteconfig6 >/dev/null 2>&1; then
