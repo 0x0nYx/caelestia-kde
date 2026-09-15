@@ -94,6 +94,9 @@ def main() -> int:
     else:
         files = [f for f in changed_files() if is_cpp(f)]
 
+    # A deleted file has nothing to format.
+    files = [f for f in files if (ROOT / f).exists()]
+
     if not files:
         print("No C++ files to check")
         return 0
