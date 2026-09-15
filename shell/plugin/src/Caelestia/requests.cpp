@@ -143,7 +143,7 @@ int Requests::registerReply(QNetworkReply* reply, QJSValue callback, QJSValue on
 
         // Success path for GET/POST
         if (it->onComplete.isCallable()) {
-            it->onComplete.call({ QString(reply->readAll()), status });
+            it->onComplete.call({ QString::fromUtf8(reply->readAll()), status });
         }
 
         cleanupRequest(reqId);

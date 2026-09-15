@@ -42,8 +42,8 @@ EmojiDb::EmojiDb(QObject* parent)
 
     // Frequency file: $XDG_CONFIG_HOME/caelestia/emoji-frequencies.json
     const auto configDir = qEnvironmentVariable("XDG_CONFIG_HOME",
-        QDir::homePath() + "/.config");
-    m_freqPath = configDir + "/caelestia/emoji-frequencies.json";
+        QDir::homePath() + QStringLiteral("/.config"));
+    m_freqPath = configDir + QStringLiteral("/caelestia/emoji-frequencies.json");
 
     loadEmojis();
     loadFrequencies();
@@ -116,7 +116,7 @@ void EmojiDb::saveFrequencies() {
     const auto path = m_freqPath;
     // Ensure parent dir exists
     QDir dir(QFileInfo(path).absolutePath());
-    if (!dir.exists()) dir.mkpath(".");
+    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
 
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -159,9 +159,9 @@ QVariantList EmojiDb::getSortedItems(const QStringList& favourites, int limit) c
     for (int i = 0; i < actualLimit; ++i) {
         const auto& e = m_emojis[indices[i]];
         result.append(QVariantMap{
-            {"ch",        e.ch},
-            {"name",      e.name},
-            {"nameLower", e.nameLower},
+            {QStringLiteral("ch"),        e.ch},
+            {QStringLiteral("name"),      e.name},
+            {QStringLiteral("nameLower"), e.nameLower},
         });
     }
     return result;
@@ -178,9 +178,9 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
     for (const auto& e : m_emojis) {
         if (e.nameLower.contains(lower)) {
             result.append(QVariantMap{
-                {"ch",        e.ch},
-                {"name",      e.name},
-                {"nameLower", e.nameLower},
+                {QStringLiteral("ch"),        e.ch},
+                {QStringLiteral("name"),      e.name},
+                {QStringLiteral("nameLower"), e.nameLower},
             });
             if (result.size() >= limit) break;
         }

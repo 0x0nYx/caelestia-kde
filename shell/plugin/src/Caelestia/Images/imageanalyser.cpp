@@ -14,7 +14,7 @@ namespace caelestia::images {
 ImageAnalyser::ImageAnalyser(QObject* parent)
     : QObject(parent)
     , m_futureWatcher(new QFutureWatcher<AnalyseResult>(this))
-    , m_source("")
+    , m_source(QString())
     , m_sourceItem(nullptr)
     , m_rescaleSize(128)
     , m_dominantColour(0, 0, 0)
@@ -69,7 +69,7 @@ void ImageAnalyser::setSourceItem(QQuickItem* sourceItem) {
     emit sourceItemChanged();
 
     if (!m_source.isEmpty()) {
-        m_source = "";
+        m_source = QString();
         emit sourceChanged();
     }
 

@@ -15,8 +15,8 @@ namespace caelestia::services {
 NightColorBridge::NightColorBridge(QObject* parent)
     : QObject(parent) {
 
-    QDBusConnection::sessionBus().connect("org.kde.KWin", "/org/kde/KWin/NightLight", "org.freedesktop.DBus.Properties",
-        "PropertiesChanged", this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/org/kde/KWin/NightLight"), QStringLiteral("org.freedesktop.DBus.Properties"),
+        QStringLiteral("PropertiesChanged"), this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
 
     fetchInitialState();
 }

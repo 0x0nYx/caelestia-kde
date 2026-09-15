@@ -181,7 +181,7 @@ void KrohnkiteConfig::apply() {
 void KrohnkiteConfig::setScreenGapBetween(int gap) {
     if (m_screenGapBetween != gap) {
         m_screenGapBetween = gap;
-        setKWinConfig("screenGapBetween", QString::number(gap));
+        setKWinConfig(QStringLiteral("screenGapBetween"), QString::number(gap));
         emit gapsChanged();
     }
 }
@@ -189,7 +189,7 @@ void KrohnkiteConfig::setScreenGapBetween(int gap) {
 void KrohnkiteConfig::setScreenGapBottom(int gap) {
     if (m_screenGapBottom != gap) {
         m_screenGapBottom = gap;
-        setKWinConfig("screenGapBottom", QString::number(gap));
+        setKWinConfig(QStringLiteral("screenGapBottom"), QString::number(gap));
         emit gapsChanged();
     }
 }
@@ -197,7 +197,7 @@ void KrohnkiteConfig::setScreenGapBottom(int gap) {
 void KrohnkiteConfig::setScreenGapLeft(int gap) {
     if (m_screenGapLeft != gap) {
         m_screenGapLeft = gap;
-        setKWinConfig("screenGapLeft", QString::number(gap));
+        setKWinConfig(QStringLiteral("screenGapLeft"), QString::number(gap));
         emit gapsChanged();
     }
 }
@@ -205,7 +205,7 @@ void KrohnkiteConfig::setScreenGapLeft(int gap) {
 void KrohnkiteConfig::setScreenGapRight(int gap) {
     if (m_screenGapRight != gap) {
         m_screenGapRight = gap;
-        setKWinConfig("screenGapRight", QString::number(gap));
+        setKWinConfig(QStringLiteral("screenGapRight"), QString::number(gap));
         emit gapsChanged();
     }
 }
@@ -213,7 +213,7 @@ void KrohnkiteConfig::setScreenGapRight(int gap) {
 void KrohnkiteConfig::setScreenGapTop(int gap) {
     if (m_screenGapTop != gap) {
         m_screenGapTop = gap;
-        setKWinConfig("screenGapTop", QString::number(gap));
+        setKWinConfig(QStringLiteral("screenGapTop"), QString::number(gap));
         emit gapsChanged();
     }
 }
@@ -221,7 +221,7 @@ void KrohnkiteConfig::setScreenGapTop(int gap) {
 void KrohnkiteConfig::setIgnoreClass(const QString& classes) {
     if (m_ignoreClass != classes) {
         m_ignoreClass = classes;
-        setKWinConfig("ignoreClass", classes);
+        setKWinConfig(QStringLiteral("ignoreClass"), classes);
         emit ignoreClassChanged();
     }
 }
@@ -229,7 +229,7 @@ void KrohnkiteConfig::setIgnoreClass(const QString& classes) {
 void KrohnkiteConfig::setBinaryTreeLayoutEnabled(bool enabled) {
     if (m_binaryTreeLayoutEnabled != enabled) {
         m_binaryTreeLayoutEnabled = enabled;
-        setLayoutEnabled("binaryTreeLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("binaryTreeLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -237,7 +237,7 @@ void KrohnkiteConfig::setBinaryTreeLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setCascadeLayoutEnabled(bool enabled) {
     if (m_cascadeLayoutEnabled != enabled) {
         m_cascadeLayoutEnabled = enabled;
-        setLayoutEnabled("cascadeLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("cascadeLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -245,7 +245,7 @@ void KrohnkiteConfig::setCascadeLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setColumnsLayoutEnabled(bool enabled) {
     if (m_columnsLayoutEnabled != enabled) {
         m_columnsLayoutEnabled = enabled;
-        setLayoutEnabled("columnsLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("columnsLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -253,7 +253,7 @@ void KrohnkiteConfig::setColumnsLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setFloatingLayoutEnabled(bool enabled) {
     if (m_floatingLayoutEnabled != enabled) {
         m_floatingLayoutEnabled = enabled;
-        setLayoutEnabled("floatingLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("floatingLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -261,7 +261,7 @@ void KrohnkiteConfig::setFloatingLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setMonocleLayoutEnabled(bool enabled) {
     if (m_monocleLayoutEnabled != enabled) {
         m_monocleLayoutEnabled = enabled;
-        setLayoutEnabled("monocleLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("monocleLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -269,7 +269,7 @@ void KrohnkiteConfig::setMonocleLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setQuarterLayoutEnabled(bool enabled) {
     if (m_quarterLayoutEnabled != enabled) {
         m_quarterLayoutEnabled = enabled;
-        setLayoutEnabled("quarterLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("quarterLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -277,7 +277,7 @@ void KrohnkiteConfig::setQuarterLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setSpiralLayoutEnabled(bool enabled) {
     if (m_spiralLayoutEnabled != enabled) {
         m_spiralLayoutEnabled = enabled;
-        setLayoutEnabled("spiralLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("spiralLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -285,7 +285,7 @@ void KrohnkiteConfig::setSpiralLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setSpreadLayoutEnabled(bool enabled) {
     if (m_spreadLayoutEnabled != enabled) {
         m_spreadLayoutEnabled = enabled;
-        setLayoutEnabled("spreadLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("spreadLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -293,7 +293,7 @@ void KrohnkiteConfig::setSpreadLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setStackedLayoutEnabled(bool enabled) {
     if (m_stackedLayoutEnabled != enabled) {
         m_stackedLayoutEnabled = enabled;
-        setLayoutEnabled("stackedLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("stackedLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -301,7 +301,7 @@ void KrohnkiteConfig::setStackedLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setStairLayoutEnabled(bool enabled) {
     if (m_stairLayoutEnabled != enabled) {
         m_stairLayoutEnabled = enabled;
-        setLayoutEnabled("stairLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("stairLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -309,7 +309,7 @@ void KrohnkiteConfig::setStairLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setThreeColumnLayoutEnabled(bool enabled) {
     if (m_threeColumnLayoutEnabled != enabled) {
         m_threeColumnLayoutEnabled = enabled;
-        setLayoutEnabled("threeColumnLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("threeColumnLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }
@@ -317,7 +317,7 @@ void KrohnkiteConfig::setThreeColumnLayoutEnabled(bool enabled) {
 void KrohnkiteConfig::setTileLayoutEnabled(bool enabled) {
     if (m_tileLayoutEnabled != enabled) {
         m_tileLayoutEnabled = enabled;
-        setLayoutEnabled("tileLayoutOrder", enabled);
+        setLayoutEnabled(QStringLiteral("tileLayoutOrder"), enabled);
         emit layoutsChanged();
     }
 }

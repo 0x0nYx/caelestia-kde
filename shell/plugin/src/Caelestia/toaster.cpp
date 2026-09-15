@@ -19,16 +19,16 @@ Toast::Toast(const QString& title, const QString& message, const QString& icon, 
     if (m_icon.isEmpty()) {
         switch (m_type) {
         case Type::Success:
-            m_icon = "radio_button_checked_unread";
+            m_icon = QStringLiteral("radio_button_checked_unread");
             break;
         case Type::Warning:
-            m_icon = "warning";
+            m_icon = QStringLiteral("warning");
             break;
         case Type::Error:
-            m_icon = "error";
+            m_icon = QStringLiteral("error");
             break;
         default:
-            m_icon = "info";
+            m_icon = QStringLiteral("info");
             break;
         }
     }

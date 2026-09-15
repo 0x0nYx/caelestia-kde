@@ -69,7 +69,9 @@ bool IUtils::isVideo(const QString& path) {
         return false;
     
     const QString suffix = QFileInfo(path).suffix().toLower();
-    static const QStringList videoExtensions = { "mp4", "webm", "mkv", "avi", "mov", "wmv", "flv" };
+    static const QStringList videoExtensions = { QStringLiteral("mp4"), QStringLiteral("webm"),
+        QStringLiteral("mkv"), QStringLiteral("avi"), QStringLiteral("mov"), QStringLiteral("wmv"),
+        QStringLiteral("flv") };
     return videoExtensions.contains(suffix);
 }
 

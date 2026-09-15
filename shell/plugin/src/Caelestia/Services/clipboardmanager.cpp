@@ -23,14 +23,14 @@ ClipboardManager::ClipboardManager(QObject* parent)
     : QObject(parent) {
     QString runtimeDir = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
     if (runtimeDir.isEmpty()) {
-        runtimeDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/caelestia-" + qEnvironmentVariable("USER");
+        runtimeDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QStringLiteral("/caelestia-") + qEnvironmentVariable("USER");
     }
-    m_imageCacheDir = runtimeDir + "/clipboard";
+    m_imageCacheDir = runtimeDir + QStringLiteral("/clipboard");
 
     // Pins live in the state dir, not the runtime dir: they have to outlive a
     // reboot, and they must not sit inside the cache clearHistory() wipes.
-    const auto stateDir = qEnvironmentVariable("XDG_STATE_HOME", QDir::homePath() + "/.local/state");
-    m_pinDir = stateDir + "/caelestia/clipboard-pins";
+    const auto stateDir = qEnvironmentVariable("XDG_STATE_HOME", QDir::homePath() + QStringLiteral("/.local/state"));
+    m_pinDir = stateDir + QStringLiteral("/caelestia/clipboard-pins");
     loadPins();
 }
 
@@ -51,11 +51,11 @@ void ClipboardManager::setAvailable(bool available) {
 QVariantList ClipboardManager::pinnedItems() const { return m_pinnedItems; }
 
 QString ClipboardManager::pinFilePath(int pinId, bool isImage) const {
-    return m_pinDir + "/" + QString::number(pinId) + (isImage ? ".png" : ".bin");
+    return m_pinDir + QStringLiteral("/") + QString::number(pinId) + (isImage ? QStringLiteral(".png") : QStringLiteral(".bin"));
 }
 
 void ClipboardManager::loadPins() {
-    QFile index(m_pinDir + "/index.json");
+    QFile index(m_pinDir + QStringLiteral("/index.json"));
     if (!index.exists() || !index.open(QIODevice::ReadOnly)) {
         return;
     }
@@ -68,17 +68,17 @@ void ClipboardManager::loadPins() {
     }
 
     const auto obj = doc.object();
-    m_nextPinId = obj.value("nextPinId").toInt(1);
+    m_nextPinId = obj.value(QStringLiteral("nextPinId")).toInt(1);
 
     QVariantList loaded;
-    const auto entries = obj.value("pins").toArray();
+    const auto entries = obj.value(QStringLiteral("pins")).toArray();
     for (const auto& value : entries) {
         const auto entry = value.toObject();
-        const int pinId = entry.value("pinId").toInt(-1);
+        const int pinId = entry.value(QStringLiteral("pinId")).toInt(-1);
         if (pinId < 0) {
             continue;
         }
-        const bool isImage = entry.value("isImage").toBool();
+        const bool isImage = entry.value(QStringLiteral("isImage")).toBool();
 
         // Drop entries whose payload went missing rather than showing a pin
         // that cannot be pasted.
@@ -89,10 +89,10 @@ void ClipboardManager::loadPins() {
         }
 
         loaded.append(QVariantMap{
-            { "pinId",     pinId                          },
-            { "preview",   entry.value("preview").toString() },
-            { "isImage",   isImage                        },
-            { "imagePath", isImage ? path : QString()     },
+            { QStringLiteral("pinId"),     pinId                          },
+            { QStringLiteral("preview"),   entry.value(QStringLiteral("preview")).toString() },
+            { QStringLiteral("isImage"),   isImage                        },
+            { QStringLiteral("imagePath"), isImage ? path : QString()     },
         });
     }
 
@@ -112,18 +112,18 @@ void ClipboardManager::savePins() {
     for (const auto& value : std::as_const(m_pinnedItems)) {
         const auto map = value.toMap();
         entries.append(QJsonObject{
-            { "pinId",   map.value("pinId").toInt()        },
-            { "preview", map.value("preview").toString()   },
-            { "isImage", map.value("isImage").toBool()     },
+            { QStringLiteral("pinId"),   map.value(QStringLiteral("pinId")).toInt()        },
+            { QStringLiteral("preview"), map.value(QStringLiteral("preview")).toString()   },
+            { QStringLiteral("isImage"), map.value(QStringLiteral("isImage")).toBool()     },
         });
     }
 
     const QJsonObject root{
-        { "nextPinId", m_nextPinId },
-        { "pins",      entries     },
+        { QStringLiteral("nextPinId"), m_nextPinId },
+        { QStringLiteral("pins"),      entries     },
     };
 
-    QFile index(m_pinDir + "/index.json");
+    QFile index(m_pinDir + QStringLiteral("/index.json"));
     if (!index.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         qCWarning(lcClipboard) << "Failed to write clipboard pin index:" << index.fileName();
         return;
@@ -138,7 +138,7 @@ void ClipboardManager::pin(int id) {
     QVariantMap source;
     for (const auto& value : std::as_const(m_items)) {
         const auto map = value.toMap();
-        if (map.value("id").toInt() == id) {
+        if (map.value(QStringLiteral("id")).toInt() == id) {
             source = map;
             break;
         }
@@ -155,14 +155,14 @@ void ClipboardManager::pin(int id) {
         return;
     }
 
-    const bool isImage = source.value("isImage").toBool();
+    const bool isImage = source.value(QStringLiteral("isImage")).toBool();
     const int pinId = m_nextPinId;
     const auto path = pinFilePath(pinId, isImage);
-    const auto preview = source.value("preview").toString();
+    const auto preview = source.value(QStringLiteral("preview")).toString();
 
     auto* proc = new QProcess(this);
-    proc->setProgram("cliphist");
-    proc->setArguments({ "decode", QString::number(id) });
+    proc->setProgram(QStringLiteral("cliphist"));
+    proc->setArguments({ QStringLiteral("decode"), QString::number(id) });
 
     connect(proc, &QProcess::finished, this,
         [this, proc, id, pinId, path, preview, isImage](int exitCode, QProcess::ExitStatus status) {
@@ -187,10 +187,10 @@ void ClipboardManager::pin(int id) {
             // Only claim the id once the payload is safely on disk.
             m_nextPinId = pinId + 1;
             m_pinnedItems.append(QVariantMap{
-                { "pinId",     pinId                     },
-                { "preview",   preview                   },
-                { "isImage",   isImage                   },
-                { "imagePath", isImage ? path : QString() },
+                { QStringLiteral("pinId"),     pinId                     },
+                { QStringLiteral("preview"),   preview                   },
+                { QStringLiteral("isImage"),   isImage                   },
+                { QStringLiteral("imagePath"), isImage ? path : QString() },
             });
             savePins();
             emit pinnedItemsChanged();
@@ -211,11 +211,11 @@ void ClipboardManager::pin(int id) {
 void ClipboardManager::unpin(int pinId) {
     for (int i = 0; i < m_pinnedItems.size(); ++i) {
         const auto map = m_pinnedItems.at(i).toMap();
-        if (map.value("pinId").toInt() != pinId) {
+        if (map.value(QStringLiteral("pinId")).toInt() != pinId) {
             continue;
         }
 
-        const auto path = pinFilePath(pinId, map.value("isImage").toBool());
+        const auto path = pinFilePath(pinId, map.value(QStringLiteral("isImage")).toBool());
         if (QFileInfo::exists(path) && !QFile::remove(path)) {
             qCWarning(lcClipboard) << "Failed to remove clipboard pin payload:" << path;
         }
@@ -230,11 +230,11 @@ void ClipboardManager::unpin(int pinId) {
 void ClipboardManager::copyPinned(int pinId) {
     for (const auto& value : std::as_const(m_pinnedItems)) {
         const auto map = value.toMap();
-        if (map.value("pinId").toInt() != pinId) {
+        if (map.value(QStringLiteral("pinId")).toInt() != pinId) {
             continue;
         }
 
-        const bool isImage = map.value("isImage").toBool();
+        const bool isImage = map.value(QStringLiteral("isImage")).toBool();
         QFile f(pinFilePath(pinId, isImage));
         if (!f.open(QIODevice::ReadOnly)) {
             qCWarning(lcClipboard) << "Failed to read clipboard pin payload:" << f.fileName();
@@ -244,10 +244,10 @@ void ClipboardManager::copyPinned(int pinId) {
         f.close();
 
         auto* proc = new QProcess(this);
-        proc->setProgram("wl-copy");
+        proc->setProgram(QStringLiteral("wl-copy"));
         // wl-copy sniffs the type from stdin, but binary image data is exactly
         // the case where it guesses wrong, so be explicit.
-        proc->setArguments(isImage ? QStringList{ "--type", "image/png" } : QStringList{});
+        proc->setArguments(isImage ? QStringList{ QStringLiteral("--type"), QStringLiteral("image/png") } : QStringList{});
 
         connect(proc, &QProcess::finished, proc, &QProcess::deleteLater);
         connect(proc, &QProcess::errorOccurred, this, [proc](QProcess::ProcessError err) {
@@ -267,7 +267,7 @@ void ClipboardManager::copyPinned(int pinId) {
 }
 
 bool ClipboardManager::isImageCached(int id) const {
-    const QString path = m_imageCacheDir + "/" + QString::number(id) + ".png";
+    const QString path = m_imageCacheDir + QStringLiteral("/") + QString::number(id) + QStringLiteral(".png");
     const QFileInfo fi(path);
     return fi.exists() && fi.size() > 0;
 }
@@ -281,8 +281,8 @@ void ClipboardManager::reload() {
 
     auto* proc = new QProcess(this);
     m_listProc = proc;
-    proc->setProgram("cliphist");
-    proc->setArguments({"list"});
+    proc->setProgram(QStringLiteral("cliphist"));
+    proc->setArguments({QStringLiteral("list")});
 
     // Capture the process itself rather than reading m_listProc from the
     // handlers: a crashed cliphist emits errorOccurred() *and* finished() for
@@ -330,7 +330,7 @@ void ClipboardManager::reload() {
             const auto line = QString::fromUtf8(rawLine);
             if (line.isEmpty()) continue;
 
-            const auto tabIdx = line.indexOf('\t');
+            const auto tabIdx = line.indexOf(u'\t');
             if (tabIdx < 0) continue;
 
             bool ok = false;
@@ -341,9 +341,9 @@ void ClipboardManager::reload() {
             const bool isImage = imageRe.match(preview).hasMatch();
 
             result.append(QVariantMap{
-                {"id",      id},
-                {"preview", preview},
-                {"isImage", isImage},
+                {QStringLiteral("id"),      id},
+                {QStringLiteral("preview"), preview},
+                {QStringLiteral("isImage"), isImage},
             });
             count++;
         }
@@ -357,9 +357,9 @@ void ClipboardManager::reload() {
         QFile::setPermissions(m_imageCacheDir, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
         for (const auto& entry : std::as_const(m_items)) {
             const auto map = entry.toMap();
-            if (!map.value("isImage").toBool()) continue;
-            const int id = map.value("id").toInt();
-            const QString outPath = m_imageCacheDir + "/" + QString::number(id) + ".png";
+            if (!map.value(QStringLiteral("isImage")).toBool()) continue;
+            const int id = map.value(QStringLiteral("id")).toInt();
+            const QString outPath = m_imageCacheDir + QStringLiteral("/") + QString::number(id) + QStringLiteral(".png");
             // Skip if already cached from a previous reload
             if (isImageCached(id)) {
                 emit imageReady(id, outPath);
@@ -400,7 +400,7 @@ void ClipboardManager::decodeImage(int id, const QString& outPath) {
     // Ensure output directory exists
     const QFileInfo fi(outPath);
     QDir dir(fi.absolutePath());
-    if (!dir.exists() && !dir.mkpath(".")) {
+    if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
         qCWarning(lcClipboard) << "Failed to create cache directory:" << dir.absolutePath();
         return;
     }
@@ -409,8 +409,8 @@ void ClipboardManager::decodeImage(int id, const QString& outPath) {
     m_activeDecodes.insert(id);
 
     auto* proc = new QProcess(this);
-    proc->setProgram("cliphist");
-    proc->setArguments({"decode", QString::number(id)});
+    proc->setProgram(QStringLiteral("cliphist"));
+    proc->setArguments({QStringLiteral("decode"), QString::number(id)});
 
     connect(proc, &QProcess::finished, this, [this, proc, outPath, id](int exitCode, QProcess::ExitStatus) {
         m_activeDecodes.remove(id);
@@ -470,8 +470,8 @@ void ClipboardManager::clearHistory() {
     }
 
     m_wipeProc = new QProcess(this);
-    m_wipeProc->setProgram("cliphist");
-    m_wipeProc->setArguments({"wipe"});
+    m_wipeProc->setProgram(QStringLiteral("cliphist"));
+    m_wipeProc->setArguments({QStringLiteral("wipe")});
 
     connect(m_wipeProc, &QProcess::finished, this, [this](int exitCode, QProcess::ExitStatus exitStatus) {
         const bool success = (exitStatus == QProcess::NormalExit && exitCode == 0);

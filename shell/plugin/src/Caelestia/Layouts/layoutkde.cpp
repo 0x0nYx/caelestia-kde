@@ -228,11 +228,11 @@ QVariantMap LayoutKde::calculateLayout(const QVariantList& windows, double areaW
 
     for (const QVariant& wVar : windows) {
         QVariantMap w = wVar.toMap();
-        QString addr = w.value("address").toString();
-        qreal wx = w.value("x").toDouble();
-        qreal wy = w.value("y").toDouble();
-        qreal ww = w.value("width", 800).toDouble();
-        qreal wh = w.value("height", 600).toDouble();
+        QString addr = w.value(QStringLiteral("address")).toString();
+        qreal wx = w.value(QStringLiteral("x")).toDouble();
+        qreal wy = w.value(QStringLiteral("y")).toDouble();
+        qreal ww = w.value(QStringLiteral("width"), 800).toDouble();
+        qreal wh = w.value(QStringLiteral("height"), 600).toDouble();
 
         addresses.append(addr);
 
@@ -256,10 +256,10 @@ QVariantMap LayoutKde::calculateLayout(const QVariantList& windows, double areaW
 
     for (int i = 0; i < layouts.size(); ++i) {
         QVariantMap props;
-        props["x"] = layouts[i].x();
-        props["y"] = layouts[i].y();
-        props["width"] = layouts[i].width();
-        props["height"] = layouts[i].height();
+        props[QStringLiteral("x")] = layouts[i].x();
+        props[QStringLiteral("y")] = layouts[i].y();
+        props[QStringLiteral("width")] = layouts[i].width();
+        props[QStringLiteral("height")] = layouts[i].height();
         result[addresses[i]] = props;
     }
 

@@ -23,13 +23,13 @@ namespace {
 
 QString escapeGVariantString(const QString& value) {
     QString escaped = value;
-    escaped.replace('\\', QStringLiteral("\\\\"));
-    escaped.replace('\'', QStringLiteral("\\'"));
+    escaped.replace(u'\\', QStringLiteral("\\\\"));
+    escaped.replace(u'\'', QStringLiteral("\\'"));
     return escaped;
 }
 
 QString stolenShortcutsPath() {
-    return QDir::homePath() + "/.config/caelestia/stolen-shortcuts.json";
+    return QDir::homePath() + QStringLiteral("/.config/caelestia/stolen-shortcuts.json");
 }
 
 // Build gdbus args to restore a single stolen shortcut
@@ -40,16 +40,16 @@ QStringList buildRestoreArgs(const QString& component, const QString& action, co
         int k2 = seq.count() > 1 ? seq[1].toCombined() : 0;
         int k3 = seq.count() > 2 ? seq[2].toCombined() : 0;
         int k4 = seq.count() > 3 ? seq[3].toCombined() : 0;
-        seqStrings.append(QString("([%1, %2, %3, %4],)").arg(k1).arg(k2).arg(k3).arg(k4));
+        seqStrings.append(QStringLiteral("([%1, %2, %3, %4],)").arg(k1).arg(k2).arg(k3).arg(k4));
     }
-    QString arrayStr = seqStrings.isEmpty() ? QStringLiteral("[([0, 0, 0, 0],)]") : "[" + seqStrings.join(", ") + "]";
+    QString arrayStr = seqStrings.isEmpty() ? QStringLiteral("[([0, 0, 0, 0],)]") : QStringLiteral("[") + seqStrings.join(QStringLiteral(", ")) + QStringLiteral("]");
     return {
         QStringLiteral("call"),
         QStringLiteral("--session"),
         QStringLiteral("--dest"), QStringLiteral("org.kde.kglobalaccel"),
         QStringLiteral("--object-path"), QStringLiteral("/kglobalaccel"),
         QStringLiteral("--method"), QStringLiteral("org.kde.KGlobalAccel.setShortcutKeys"),
-        QString("['%1', '%2', '', '']").arg(escapeGVariantString(component), escapeGVariantString(action)),
+        QStringLiteral("['%1', '%2', '', '']").arg(escapeGVariantString(component), escapeGVariantString(action)),
         arrayStr,
         QStringLiteral("4")
     };
@@ -101,12 +101,12 @@ GlobalShortcutDispatcher* GlobalShortcutDispatcher::instance() {
                 const QJsonArray entries = doc.array();
                 for (const QJsonValue& val : entries) {
                     QJsonObject obj = val.toObject();
-                    QString component = obj.value("component").toString();
-                    QString action = obj.value("action").toString();
-                    QString componentFriendly = obj.value("componentFriendlyName").toString();
-                    QString actionFriendly = obj.value("actionFriendlyName").toString();
+                    QString component = obj.value(QStringLiteral("component")).toString();
+                    QString action = obj.value(QStringLiteral("action")).toString();
+                    QString componentFriendly = obj.value(QStringLiteral("componentFriendlyName")).toString();
+                    QString actionFriendly = obj.value(QStringLiteral("actionFriendlyName")).toString();
                     QList<QKeySequence> keys;
-                    for (const QJsonValue& kv : obj.value("keys").toArray()) {
+                    for (const QJsonValue& kv : obj.value(QStringLiteral("keys")).toArray()) {
                         QKeySequence seq = QKeySequence::fromString(kv.toString());
                         if (!seq.isEmpty()) keys.append(seq);
                     }
@@ -118,7 +118,7 @@ GlobalShortcutDispatcher* GlobalShortcutDispatcher::instance() {
                         // even though no GlobalShortcut instances have been created yet.
                         QString label = componentFriendly.isEmpty() ? component : componentFriendly;
                         QString actionLabel = actionFriendly.isEmpty() ? action : actionFriendly;
-                        QString friendlyLabel = label + " - " + actionLabel;
+                        QString friendlyLabel = label + QStringLiteral(" - ") + actionLabel;
                         for (const QKeySequence& seq : keys) {
                             inst->m_collisionIndex.insert(seq.toString(QKeySequence::PortableText), friendlyLabel);
                         }
@@ -163,7 +163,7 @@ void GlobalShortcut::rebuildCollisionIndex() {
         for (const auto& stolen : sc->m_stolenShortcuts) {
             const QString label = stolen.componentFriendlyName.isEmpty() ? stolen.component : stolen.componentFriendlyName;
             const QString actionLabel = stolen.actionFriendlyName.isEmpty() ? stolen.action : stolen.actionFriendlyName;
-            const QString friendlyLabel = label + " - " + actionLabel;
+            const QString friendlyLabel = label + QStringLiteral(" - ") + actionLabel;
             for (const QKeySequence& seq : stolen.keys) {
                 dispatcher->m_collisionIndex.insert(seq.toString(QKeySequence::PortableText), friendlyLabel);
             }
@@ -290,7 +290,7 @@ void GlobalShortcut::setName(const QString& name) {
     }
 
     m_name = name;
-    m_action->setObjectName("caelestia-shortcut-" + m_name);
+    m_action->setObjectName(QStringLiteral("caelestia-shortcut-") + m_name);
 
     if (!m_name.isEmpty()) {
         s_registry.insert(m_name, this);
@@ -323,7 +323,7 @@ QString GlobalShortcut::getCollisionName() const {
     QString actionName = s.actionFriendlyName;
     if (actionName.isEmpty())
         actionName = s.action;
-    return s.componentFriendlyName + " - " + actionName;
+    return s.componentFriendlyName + QStringLiteral(" - ") + actionName;
 }
 
 QString GlobalShortcut::getCollisionNameForKey(const QString& keyPart) const {
@@ -335,7 +335,7 @@ QString GlobalShortcut::getCollisionNameForKey(const QString& keyPart) const {
             QString actionName = s.actionFriendlyName;
             if (actionName.isEmpty())
                 actionName = s.action;
-            return s.componentFriendlyName + " - " + actionName;
+            return s.componentFriendlyName + QStringLiteral(" - ") + actionName;
         }
     }
     return QString();
@@ -374,12 +374,12 @@ void GlobalShortcut::updateShortcut() {
     // previous call are aborted before they can race-bind a stale shortcut.
     const int myGeneration = ++m_registerGeneration;
 
-    m_action->setText(m_description.isEmpty() ? "Caelestia Action" : m_description);
+    m_action->setText(m_description.isEmpty() ? QStringLiteral("Caelestia Action") : m_description);
 
     // Parse the new desired key sequences
     QList<QKeySequence> newSeqs;
     if (!m_key.isEmpty()) {
-        const QStringList parts = m_key.split(";");
+        const QStringList parts = m_key.split(QStringLiteral(";"));
         for (const QString& part : parts) {
             const QString trimmed = part.trimmed();
             if (!trimmed.isEmpty()) {
@@ -442,9 +442,9 @@ void GlobalShortcut::updateShortcut() {
     for (const QKeySequence& seq : addedSeqs) {
         const QList<KGlobalShortcutInfo> conflicts = KGlobalAccel::globalShortcutsByKey(seq);
         for (const auto& info : conflicts) {
-            if (info.componentUniqueName() == "caelestia" ||
+            if (info.componentUniqueName() == QStringLiteral("caelestia") ||
                 info.componentUniqueName() == QCoreApplication::applicationName() ||
-                info.componentUniqueName() == "quickshell") {
+                info.componentUniqueName() == QStringLiteral("quickshell")) {
                 continue;
             }
 
@@ -469,7 +469,7 @@ void GlobalShortcut::updateShortcut() {
                 QStringLiteral("--dest"), QStringLiteral("org.kde.kglobalaccel"),
                 QStringLiteral("--object-path"), QStringLiteral("/kglobalaccel"),
                 QStringLiteral("--method"), QStringLiteral("org.kde.KGlobalAccel.setShortcutKeys"),
-                QString("['%1', '%2', '', '']").arg(escapeGVariantString(info.componentUniqueName()),
+                QStringLiteral("['%1', '%2', '', '']").arg(escapeGVariantString(info.componentUniqueName()),
                                                     escapeGVariantString(info.uniqueName())),
                 QStringLiteral("[([0, 0, 0, 0],)]"),
                 QStringLiteral("4")

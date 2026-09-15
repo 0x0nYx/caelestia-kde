@@ -52,11 +52,11 @@ QVariantMap LayoutGnome::calculateLayout(const QVariantList& windows, double are
     for (const QVariant& wVar : windows) {
         QVariantMap w = wVar.toMap();
         WindowInfo info;
-        info.address = w.value("address").toString();
-        info.x = w.value("x").toDouble();
-        info.y = w.value("y").toDouble();
-        info.width = w.value("width", 800).toDouble();
-        info.height = w.value("height", 600).toDouble();
+        info.address = w.value(QStringLiteral("address")).toString();
+        info.x = w.value(QStringLiteral("x")).toDouble();
+        info.y = w.value(QStringLiteral("y")).toDouble();
+        info.width = w.value(QStringLiteral("width"), 800).toDouble();
+        info.height = w.value(QStringLiteral("height"), 600).toDouble();
         info.center_x = info.x + info.width / 2.0;
         info.center_y = info.y + info.height / 2.0;
         winInfos.append(info);
@@ -190,10 +190,10 @@ QVariantMap LayoutGnome::calculateLayout(const QVariantList& windows, double are
             }
 
             QVariantMap props;
-            props["x"] = std::floor(cloneX);
-            props["y"] = std::floor(cloneY);
-            props["width"] = cloneWidth;
-            props["height"] = cloneHeight;
+            props[QStringLiteral("x")] = std::floor(cloneX);
+            props[QStringLiteral("y")] = std::floor(cloneY);
+            props[QStringLiteral("width")] = cloneWidth;
+            props[QStringLiteral("height")] = cloneHeight;
             result[win.address] = props;
 
             currentX += cellWidth + columnSpacing;

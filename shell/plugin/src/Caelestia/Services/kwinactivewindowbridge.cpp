@@ -51,13 +51,13 @@ QVariantList KWinActiveWindowBridge::windowsForWorkspace(const QVariant& workspa
     QVariantList out;
     for (const QVariant& v : m_windowList) {
         const QVariantMap window = v.toMap();
-        const QVariantMap ws = window.value("workspace").toMap();
+        const QVariantMap ws = window.value(QStringLiteral("workspace")).toMap();
         if (ws.isEmpty()) { // No workspace info: can't rule it out.
             out.push_back(v);
             continue;
         }
-        const QVariant id = ws.value("id");
-        const QString uuid = ws.value("uuid").toString();
+        const QVariant id = ws.value(QStringLiteral("id"));
+        const QString uuid = ws.value(QStringLiteral("uuid")).toString();
         const bool onAll = (id.type() == QVariant::Int && id.toInt() == -1) || uuid.isEmpty();
         if (onAll) {
             if (includeOnAllWorkspaces)
@@ -85,7 +85,7 @@ QString KWinActiveWindowBridge::pendingFocusAddress() const {
 }
 
 QString KWinActiveWindowBridge::cursorOutputName() const {
-    const auto message = QDBusMessage::createMethodCall("org.kde.KWin", "/KWin", "org.kde.KWin", "activeOutputName");
+    const auto message = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("activeOutputName"));
     return QDBusConnection::sessionBus().call(message).arguments().value(0).toString();
 }
 
@@ -177,8 +177,8 @@ void KWinActiveWindowBridge::sendToOutput(const QString &address, const QString 
     // Focus has to have landed before the action fires, or it moves whatever
     // was focused before.
     QTimer::singleShot(120, this, [action]() {
-        QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.kglobalaccel", "/component/kwin",
-            "org.kde.kglobalaccel.Component", "invokeShortcut");
+        QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.kglobalaccel"), QStringLiteral("/component/kwin"),
+            QStringLiteral("org.kde.kglobalaccel.Component"), QStringLiteral("invokeShortcut"));
         msg << action;
         QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
     });
@@ -236,7 +236,7 @@ QString KWinActiveWindowBridge::getOutputNameForGeometry(int x, int y, int w, in
 
 QVariantMap KWinActiveWindowBridge::windowToVariant(PlasmaWindowHandle* w) const {
     QVariant desktopId = -1;
-    QVariant desktopUuid = "";
+    QVariant desktopUuid = QString();
     if (!w->desktops().isEmpty()) {
         QString firstDesktop = w->desktops().first();
         bool ok;
@@ -255,21 +255,21 @@ QVariantMap KWinActiveWindowBridge::windowToVariant(PlasmaWindowHandle* w) const
     }
 
     QVariantMap map = {
-        {"address", w->uuid()},
-        {"pid", w->pid()},
-        {"title", w->title()},
-        {"class", w->appId()},
-        {"x", w->x()},
-        {"y", w->y()},
-        {"width", w->width()},
-        {"height", w->height()},
-        {"fullscreen", w->isFullscreen()},
-        {"maximized", w->isMaximized()},
-        {"minimized", w->isMinimized()},
-        {"focused", w->isActive()},
-        {"floating", !w->isFullscreen() && !w->isMaximized()}, // Fallback for floating state
-        {"output", getOutputNameForGeometry(w->x(), w->y(), w->width(), w->height())},
-        {"workspace", QVariantMap{{"id", desktopId}, {"uuid", desktopUuid}}}
+        {QStringLiteral("address"), w->uuid()},
+        {QStringLiteral("pid"), w->pid()},
+        {QStringLiteral("title"), w->title()},
+        {QStringLiteral("class"), w->appId()},
+        {QStringLiteral("x"), w->x()},
+        {QStringLiteral("y"), w->y()},
+        {QStringLiteral("width"), w->width()},
+        {QStringLiteral("height"), w->height()},
+        {QStringLiteral("fullscreen"), w->isFullscreen()},
+        {QStringLiteral("maximized"), w->isMaximized()},
+        {QStringLiteral("minimized"), w->isMinimized()},
+        {QStringLiteral("focused"), w->isActive()},
+        {QStringLiteral("floating"), !w->isFullscreen() && !w->isMaximized()}, // Fallback for floating state
+        {QStringLiteral("output"), getOutputNameForGeometry(w->x(), w->y(), w->width(), w->height())},
+        {QStringLiteral("workspace"), QVariantMap{{QStringLiteral("id"), desktopId}, {QStringLiteral("uuid"), desktopUuid}}}
     };
     return map;
 }
@@ -304,11 +304,11 @@ void KWinActiveWindowBridge::buildWindowList() {
         // Keep activeOutputName in sync so Hypr.focusedMonitor resolves correctly
         // on multi-monitor setups. Without this it stays empty forever and the QML
         // fallback always picks monitor index 0.
-        const QString newOutput = newActiveWindow.value("output").toString();
+        const QString newOutput = newActiveWindow.value(QStringLiteral("output")).toString();
         if (!newOutput.isEmpty())
             setActiveOutputName(newOutput);
 
-        if (m_activeWindow.value("address").toString() == m_pendingFocusAddress) {
+        if (m_activeWindow.value(QStringLiteral("address")).toString() == m_pendingFocusAddress) {
             m_pendingFocusAddress.clear();
             emit pendingFocusAddressChanged();
         }
@@ -359,10 +359,10 @@ void KWinActiveWindowBridge::raiseWindow(const QString &address) {
 void KWinActiveWindowBridge::setWindowProperty(const QString &address, const QString &property, bool enable) {
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
         uint32_t state = 0;
-        if (property == "keep_above") state = QtWayland::org_kde_plasma_window_management::state_keep_above;
-        else if (property == "keep_below") state = QtWayland::org_kde_plasma_window_management::state_keep_below;
-        else if (property == "skip_taskbar") state = QtWayland::org_kde_plasma_window_management::state_skiptaskbar;
-        else if (property == "demands_attention") state = QtWayland::org_kde_plasma_window_management::state_demands_attention;
+        if (property == QStringLiteral("keep_above")) state = QtWayland::org_kde_plasma_window_management::state_keep_above;
+        else if (property == QStringLiteral("keep_below")) state = QtWayland::org_kde_plasma_window_management::state_keep_below;
+        else if (property == QStringLiteral("skip_taskbar")) state = QtWayland::org_kde_plasma_window_management::state_skiptaskbar;
+        else if (property == QStringLiteral("demands_attention")) state = QtWayland::org_kde_plasma_window_management::state_demands_attention;
 
         if (state != 0) {
             handle->set_state(enable ? state : 0, state);

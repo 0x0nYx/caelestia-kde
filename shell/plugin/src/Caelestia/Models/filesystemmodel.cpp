@@ -300,7 +300,7 @@ void FileSystemModel::updateEntriesForDir(const QString& dir) {
             QStringList extraNameFilters = nameFilters;
             const auto formats = QImageReader::supportedImageFormats();
             for (const auto& format : formats) {
-                extraNameFilters << "*." + format;
+                extraNameFilters << QStringLiteral("*.") + QString::fromUtf8(format);
             }
 
             QDir::Filters filters = QDir::Files;
@@ -310,10 +310,10 @@ void FileSystemModel::updateEntriesForDir(const QString& dir) {
 
             iter.emplace(dir, extraNameFilters, filters, flags);
         } else if (filter == Videos) {
-            const QStringList videoExtensions = { "mp4", "webm", "mkv", "avi", "mov", "wmv", "flv" };
+            const QStringList videoExtensions = { QStringLiteral("mp4"), QStringLiteral("webm"), QStringLiteral("mkv"), QStringLiteral("avi"), QStringLiteral("mov"), QStringLiteral("wmv"), QStringLiteral("flv") };
             QStringList extraNameFilters;
             for (const auto& ext : videoExtensions) {
-                extraNameFilters << "*." + ext;
+                extraNameFilters += QStringLiteral("*.") + ext;
             }
             extraNameFilters << nameFilters;
 

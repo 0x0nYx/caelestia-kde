@@ -32,7 +32,7 @@ KeybindsModel::KeybindsModel(QObject* parent)
     bool krohnkiteEnabled = caelestia::config::ConfigSingleton::instance()->general()->krohnkiteEnabled();
 
     for (auto it = defaults.begin(); it != defaults.end(); ++it) {
-        if (it.key().startsWith("krohnkite") && !krohnkiteEnabled) {
+        if (it.key().startsWith(QStringLiteral("krohnkite")) && !krohnkiteEnabled) {
             continue;
         }
         // Don't inject empty defaults into m_keybinds to allow QML to set the initial key
@@ -47,7 +47,7 @@ KeybindsModel::KeybindsModel(QObject* parent)
             QJsonObject obj = doc.object();
             // Merge user JSON over defaults
             for (auto it = obj.begin(); it != obj.end(); ++it) {
-                if (it.key().startsWith("krohnkite") && !krohnkiteEnabled) {
+                if (it.key().startsWith(QStringLiteral("krohnkite")) && !krohnkiteEnabled) {
                     continue;
                 }
                 if (it.value().isString()) {
@@ -154,7 +154,7 @@ void KeybindsModel::resetKey(const QString& name) {
     if (defaults.contains(name)) {
         setKey(name, defaults.value(name).toString());
     } else {
-        setKey(name, "");
+        setKey(name, QStringLiteral(""));
     }
 }
 
@@ -178,9 +178,9 @@ QVariantList KeybindsModel::query(const QString& searchText) const {
             sc->description().toLower().contains(lower) || sc->name().toLower().contains(lower)) {
 
             QJsonObject defaults = caelestia::config::defaultKeybinds();
-            result.append(QVariantMap{ { "bind", sc->key() }, { "action", sc->name() }, { "name", sc->name() },
-                { "description", sc->description() },
-                { "isOverridden", defaults.value(sc->name()).toString() != sc->key() } });
+            result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() }, { QStringLiteral("name"), sc->name() },
+                { QStringLiteral("description"), sc->description() },
+                { QStringLiteral("isOverridden"), defaults.value(sc->name()).toString() != sc->key() } });
         }
     }
     return result;
@@ -259,7 +259,7 @@ void KeybindsModel::onShortcutUnregistered(GlobalShortcut* sc) {
 }
 
 QString KeybindsModel::keybindsPath() const {
-    return QDir::homePath() + "/.config/caelestia/keybinds.json";
+    return QDir::homePath() + QStringLiteral("/.config/caelestia/keybinds.json");
 }
 
 void KeybindsModel::saveKeybinds() {

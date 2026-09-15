@@ -11,8 +11,8 @@ namespace caelestia::services {
 
 HyprlandState::HyprlandState(QObject* parent)
     : QObject(parent)
-    , m_requestSocket("")
-    , m_eventSocket("")
+    , m_requestSocket(QStringLiteral(""))
+    , m_eventSocket(QStringLiteral(""))
     , m_socket(nullptr)
     , m_socketValid(false) {
 
@@ -29,9 +29,9 @@ HyprlandState::HyprlandState(QObject* parent)
         return;
     }
 
-    auto hyprDir = QString("%1/hypr/%2").arg(qEnvironmentVariable("XDG_RUNTIME_DIR"), his);
+    auto hyprDir = QStringLiteral("%1/hypr/%2").arg(qEnvironmentVariable("XDG_RUNTIME_DIR"), his);
     if (!QDir(hyprDir).exists()) {
-        hyprDir = "/tmp/hypr/" + his;
+        hyprDir = QStringLiteral("/tmp/hypr/") + his;
 
         if (!QDir(hyprDir).exists()) {
             qCWarning(lcHyprState) << "Hyprland socket directory does not exist. Unable to connect to Hyprland socket.";
@@ -39,8 +39,8 @@ HyprlandState::HyprlandState(QObject* parent)
         }
     }
 
-    m_requestSocket = hyprDir + "/.socket.sock";
-    m_eventSocket = hyprDir + "/.socket2.sock";
+    m_requestSocket = hyprDir + QStringLiteral("/.socket.sock");
+    m_eventSocket = hyprDir + QStringLiteral("/.socket2.sock");
 
     m_socket = new QLocalSocket(this);
 
@@ -91,19 +91,19 @@ void HyprlandState::onKWinWindowListChanged() {
         auto* handle = pw->handleFor(uuid);
         if (!handle) continue;
         const auto cls = handle->appId();
-        if (cls.isEmpty() || cls.toLower().contains("quickshell")) continue;
+        if (cls.isEmpty() || cls.toLower().contains(QStringLiteral("quickshell"))) continue;
         const QVariantMap variant = {
-            { "address", handle->uuid() },
-            { "pid",     static_cast<int>(handle->pid()) },
-            { "title",   handle->title() },
-            { "class",   handle->appId() },
-            { "x",       handle->x() },
-            { "y",       handle->y() },
-            { "width",   static_cast<int>(handle->width()) },
-            { "height",  static_cast<int>(handle->height()) },
-            { "fullscreen", handle->isFullscreen() },
-            { "maximized",  handle->isMaximized() },
-            { "minimized",  handle->isMinimized() },
+            { QStringLiteral("address"), handle->uuid() },
+            { QStringLiteral("pid"),     static_cast<int>(handle->pid()) },
+            { QStringLiteral("title"),   handle->title() },
+            { QStringLiteral("class"),   handle->appId() },
+            { QStringLiteral("x"),       handle->x() },
+            { QStringLiteral("y"),       handle->y() },
+            { QStringLiteral("width"),   static_cast<int>(handle->width()) },
+            { QStringLiteral("height"),  static_cast<int>(handle->height()) },
+            { QStringLiteral("fullscreen"), handle->isFullscreen() },
+            { QStringLiteral("maximized"),  handle->isMaximized() },
+            { QStringLiteral("minimized"),  handle->isMinimized() },
         };
         newList.append(variant);
         newByAddress.insert(handle->uuid(), variant);
@@ -140,7 +140,7 @@ void HyprlandState::updateWindowList() {
         m_clientsRefresh->close();
     }
 
-    m_clientsRefresh = makeRequestJson("clients", [this](bool success, const QJsonDocument& response) {
+    m_clientsRefresh = makeRequestJson(QStringLiteral("clients"), [this](bool success, const QJsonDocument& response) {
         m_clientsRefresh.reset();
         if (!success) {
             m_windowList.clear();
@@ -157,13 +157,13 @@ void HyprlandState::updateWindowList() {
 
         for (const auto& c : clients) {
             const auto obj = c.toObject();
-            const auto cls = obj.value("class").toString();
-            if (cls.isEmpty() || cls.toLower().contains("quickshell")) {
+            const auto cls = obj.value(QStringLiteral("class")).toString();
+            if (cls.isEmpty() || cls.toLower().contains(QStringLiteral("quickshell"))) {
                 continue;
             }
             const auto variant = obj.toVariantMap();
             newList.append(variant);
-            const auto addr = obj.value("address").toString();
+            const auto addr = obj.value(QStringLiteral("address")).toString();
             newByAddress.insert(addr, variant);
             newAddresses.append(addr);
         }
@@ -180,7 +180,7 @@ void HyprlandState::updateWorkspaces() {
         m_workspacesRefresh->close();
     }
 
-    m_workspacesRefresh = makeRequestJson("workspaces", [this](bool success, const QJsonDocument& response) {
+    m_workspacesRefresh = makeRequestJson(QStringLiteral("workspaces"), [this](bool success, const QJsonDocument& response) {
         m_workspacesRefresh.reset();
         if (!success) {
             m_workspaces.clear();
@@ -197,7 +197,7 @@ void HyprlandState::updateWorkspaces() {
 
         for (const auto& w : workspaces) {
             const auto obj = w.toObject();
-            const auto id = obj.value("id").toInt();
+            const auto id = obj.value(QStringLiteral("id")).toInt();
             if (id >= 1 && id <= 100) {
                 const auto variant = obj.toVariantMap();
                 newList.append(variant);
@@ -218,7 +218,7 @@ void HyprlandState::updateMonitors() {
         m_monitorsRefresh->close();
     }
 
-    m_monitorsRefresh = makeRequestJson("monitors", [this](bool success, const QJsonDocument& response) {
+    m_monitorsRefresh = makeRequestJson(QStringLiteral("monitors"), [this](bool success, const QJsonDocument& response) {
         m_monitorsRefresh.reset();
         if (success) {
             m_monitors = response.array().toVariantList();
@@ -232,7 +232,7 @@ void HyprlandState::updateLayers() {
         m_layersRefresh->close();
     }
 
-    m_layersRefresh = makeRequestJson("layers", [this](bool success, const QJsonDocument& response) {
+    m_layersRefresh = makeRequestJson(QStringLiteral("layers"), [this](bool success, const QJsonDocument& response) {
         m_layersRefresh.reset();
         if (success) {
             m_layers = response.object().toVariantMap();
@@ -246,7 +246,7 @@ void HyprlandState::updateActiveWorkspace() {
         m_activeWorkspaceRefresh->close();
     }
 
-    m_activeWorkspaceRefresh = makeRequestJson("activeworkspace", [this](bool success, const QJsonDocument& response) {
+    m_activeWorkspaceRefresh = makeRequestJson(QStringLiteral("activeworkspace"), [this](bool success, const QJsonDocument& response) {
         m_activeWorkspaceRefresh.reset();
         if (success) {
             m_activeWorkspace = response.object().toVariantMap();
@@ -284,20 +284,20 @@ void HyprlandState::readEvent() {
 
 void HyprlandState::handleEvent(const QString& event) {
     // We only care about events that affect our state
-    if (event == "openlayer" || event == "closelayer" || event == "screencast") {
+    if (event == QStringLiteral("openlayer") || event == QStringLiteral("closelayer") || event == QStringLiteral("screencast")) {
         return;
     }
 
-    if (event == "workspace" || event == "createworkspace" || event == "destroyworkspace" || event == "renameworkspace") {
+    if (event == QStringLiteral("workspace") || event == QStringLiteral("createworkspace") || event == QStringLiteral("destroyworkspace") || event == QStringLiteral("renameworkspace")) {
         updateWorkspaces();
         updateActiveWorkspace();
-    } else if (event == "activewindow" || event == "activewindowv2" || event == "openwindow" || event == "closewindow" || event == "movewindow" || event == "windowtitle") {
+    } else if (event == QStringLiteral("activewindow") || event == QStringLiteral("activewindowv2") || event == QStringLiteral("openwindow") || event == QStringLiteral("closewindow") || event == QStringLiteral("movewindow") || event == QStringLiteral("windowtitle")) {
         updateWindowList();
-    } else if (event == "monitoradded" || event == "monitorremoved" || event == "focusedmon") {
+    } else if (event == QStringLiteral("monitoradded") || event == QStringLiteral("monitorremoved") || event == QStringLiteral("focusedmon")) {
         updateMonitors();
         updateWorkspaces(); // active workspace on monitor changes
         updateActiveWorkspace();
-    } else if (event == "activelayout") {
+    } else if (event == QStringLiteral("activelayout")) {
         // Just in case keyboard layout changes affect anything, but typically they don't affect this state.
     } else {
         // For other events, we can safely update everything to be sure, or just ignore.
@@ -308,7 +308,7 @@ void HyprlandState::handleEvent(const QString& event) {
 
 HyprlandState::SocketPtr HyprlandState::makeRequestJson(
     const QString& request, const std::function<void(bool, QJsonDocument)>& callback) {
-    return makeRequest("j/" + request, [callback](bool success, const QByteArray& response) {
+    return makeRequest(QStringLiteral("j/") + request, [callback](bool success, const QByteArray& response) {
         callback(success, QJsonDocument::fromJson(response));
     });
 }
