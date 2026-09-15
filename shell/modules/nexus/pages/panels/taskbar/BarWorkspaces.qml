@@ -47,7 +47,7 @@ let len = Kwin.workspaces.length;
 if (len > 0 && GlobalConfig.bar.workspaces.shown !== len) {
     GlobalConfig.bar.workspaces.shown = len;
 }
-        
+
         }
 
         StepperRow {
@@ -70,7 +70,7 @@ while (count > v) {
     Kwin.removeWorkspace(d[count - 1].id);
     count--;
 }
-            
+
             }
         }
 

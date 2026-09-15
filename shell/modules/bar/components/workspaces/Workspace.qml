@@ -150,7 +150,7 @@ GridLayout {
 
             readonly property real swipeWeight: {
                 if (!isSwiping || rawSwipeOffset === 0.0) return active ? 1.0 : 0.0;
-                
+
                 // Use swipeStartWsId to prevent KWin desyncs when activeWsId changes before rawSwipeOffset resets
                 const startId = swipeStartWsId !== -1 ? swipeStartWsId : root.activeWsId;
                 const activeIdx = startId - 1;
@@ -368,7 +368,7 @@ GridLayout {
                                 windows.push(w);
                             }
                         }
-                   
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");
@@ -430,7 +430,7 @@ GridLayout {
                                 windows.push(w);
                             }
                         }
-                   
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");
