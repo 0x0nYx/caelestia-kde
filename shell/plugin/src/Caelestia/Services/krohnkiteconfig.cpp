@@ -1,4 +1,5 @@
 #include "krohnkiteconfig.hpp"
+
 #include <KConfigGroup>
 #include <KSharedConfig>
 #include <QDebug>
@@ -12,9 +13,9 @@ namespace caelestia::services {
 static const QString KROHNKITE_GROUP = QStringLiteral("Script-krohnkite");
 
 /// Class list Krohnkite assumes when kwinrc has no ignoreClass key yet.
-static const QString DEFAULT_IGNORE_CLASS = QStringLiteral(
-    "krunner,yakuake,spectacle,kded5,xwaylandvideobridge,plasmashell,ksplashqml,"
-    "org.kde.plasmashell,org.kde.polkit-kde-authentication-agent-1,quickshell");
+static const QString DEFAULT_IGNORE_CLASS =
+    QStringLiteral("krunner,yakuake,spectacle,kded5,xwaylandvideobridge,plasmashell,ksplashqml,"
+                   "org.kde.plasmashell,org.kde.polkit-kde-authentication-agent-1,quickshell");
 
 KrohnkiteConfig::KrohnkiteConfig(QObject* parent)
     : QObject(parent) {

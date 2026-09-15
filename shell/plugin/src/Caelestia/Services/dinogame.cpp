@@ -3,15 +3,14 @@
 
 #include <QDir>
 #include <QFile>
-#include <QStandardPaths>
 #include <QRandomGenerator>
+#include <QStandardPaths>
 #include <cmath>
 
 namespace caelestia::services {
 
 DinoGameBackend::DinoGameBackend(QObject* parent)
-    : QObject(parent)
-{
+    : QObject(parent) {
     m_timer = new QTimer(this);
     m_timer->setTimerType(Qt::PreciseTimer);
     m_timer->setInterval(16);
@@ -55,11 +54,11 @@ void DinoGameBackend::startGame() {
     emit isPlayingChanged();
     m_isGameOver = false;
     emit isGameOverChanged();
-    
+
     m_dinoY = 0;
     emit dinoYChanged();
     m_dinoVelocityY = 0;
-    
+
     emit gameStarted();
     m_timer->start();
 }
@@ -69,7 +68,7 @@ void DinoGameBackend::gameOver() {
     emit isPlayingChanged();
     m_isGameOver = true;
     emit isGameOverChanged();
-    
+
     m_timer->stop();
     emit gameDied();
 
@@ -178,8 +177,10 @@ void DinoGameBackend::tick() {
     if (m_obstacleTimer > 60 + QRandomGenerator::global()->generateDouble() * 80) {
         m_obstacleTimer = 0;
         bool canSpawnBird = m_score > 300;
-        QString spawnType = (canSpawnBird && QRandomGenerator::global()->generateDouble() > 0.7) ? QStringLiteral("bird") :
-            (QRandomGenerator::global()->generateDouble() > 0.5 ? QStringLiteral("small") : QStringLiteral("large"));
+        QString spawnType = (canSpawnBird && QRandomGenerator::global()->generateDouble() > 0.7)
+                                ? QStringLiteral("bird")
+                                : (QRandomGenerator::global()->generateDouble() > 0.5 ? QStringLiteral("small")
+                                                                                      : QStringLiteral("large"));
 
         QVariantMap newObs;
         newObs[QStringLiteral("x")] = m_width;
@@ -187,7 +188,7 @@ void DinoGameBackend::tick() {
         if (spawnType == QStringLiteral("bird")) {
             newObs[QStringLiteral("width")] = 46;
             newObs[QStringLiteral("height")] = 40;
-            double heights[] = {10, 35, 60};
+            double heights[] = { 10, 35, 60 };
             newObs[QStringLiteral("yOffset")] = heights[QRandomGenerator::global()->bounded(3)];
         } else if (spawnType == QStringLiteral("small")) {
             newObs[QStringLiteral("width")] = 34;
@@ -204,7 +205,8 @@ void DinoGameBackend::tick() {
 }
 
 void DinoGameBackend::readHighScore() {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QStringLiteral("/caelestia/dino_highscore.txt");
+    QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) +
+                   QStringLiteral("/caelestia/dino_highscore.txt");
     QFile f(path);
     if (f.open(QIODevice::ReadOnly)) {
         m_highScore = QString::fromUtf8(f.readAll()).trimmed().toDouble();

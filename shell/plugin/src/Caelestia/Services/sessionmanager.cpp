@@ -31,12 +31,13 @@ SessionManager::SessionManager(QObject* parent)
     if (!bus)
         return;
 
-    bool ok = bus->connect(
-        LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("PrepareForSleep"), this, SLOT(handlePrepareForSleep(bool)));
+    bool ok = bus->connect(LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("PrepareForSleep"), this,
+        SLOT(handlePrepareForSleep(bool)));
     if (!ok)
         qCWarning(lcSessionManager) << "Failed to connect to PrepareForSleep signal:" << bus->lastError().message();
 
-    auto sessionMsg = QDBusMessage::createMethodCall(LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("GetSession"));
+    auto sessionMsg =
+        QDBusMessage::createMethodCall(LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("GetSession"));
     sessionMsg.setArguments({ QStringLiteral("auto") });
     const QDBusReply<QDBusObjectPath> sessionReply = bus->call(sessionMsg);
     if (!sessionReply.isValid()) {
@@ -45,11 +46,13 @@ SessionManager::SessionManager(QObject* parent)
     }
     m_sessionPath = sessionReply.value().path();
 
-    ok = bus->connect(LOGIN_SERVICE, m_sessionPath, SESSION_IFACE, QStringLiteral("Lock"), this, SLOT(handleLockRequested()));
+    ok = bus->connect(
+        LOGIN_SERVICE, m_sessionPath, SESSION_IFACE, QStringLiteral("Lock"), this, SLOT(handleLockRequested()));
     if (!ok)
         qCWarning(lcSessionManager) << "Failed to connect to Lock signal:" << bus->lastError().message();
 
-    ok = bus->connect(LOGIN_SERVICE, m_sessionPath, SESSION_IFACE, QStringLiteral("Unlock"), this, SLOT(handleUnlockRequested()));
+    ok = bus->connect(
+        LOGIN_SERVICE, m_sessionPath, SESSION_IFACE, QStringLiteral("Unlock"), this, SLOT(handleUnlockRequested()));
     if (!ok)
         qCWarning(lcSessionManager) << "Failed to connect to Unlock signal:" << bus->lastError().message();
 }
@@ -118,8 +121,8 @@ void SessionManager::hibernate() {
         auto* const toaster = engine->singletonInstance<Toaster*>("Caelestia", "Toaster");
         if (!toaster)
             return;
-        toaster->toast(
-            tr("Hibernate failed"), tr("Enable hibernation to use this feature."), QStringLiteral("warning"), Toast::Type::Warning);
+        toaster->toast(tr("Hibernate failed"), tr("Enable hibernation to use this feature."), QStringLiteral("warning"),
+            Toast::Type::Warning);
     }
 }
 
@@ -145,7 +148,8 @@ bool SessionManager::queryHibernateAvailable() const {
     if (!bus)
         return false;
 
-    auto hibernateMsg = QDBusMessage::createMethodCall(LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("CanHibernate"));
+    auto hibernateMsg =
+        QDBusMessage::createMethodCall(LOGIN_SERVICE, LOGIN_PATH, LOGIN_IFACE, QStringLiteral("CanHibernate"));
     const QDBusReply<QString> hibernateReply = bus->call(hibernateMsg);
     if (!hibernateReply.isValid()) {
         qCWarning(lcSessionManager) << "Failed to query hibernate support:" << hibernateReply.error().message();

@@ -1,11 +1,12 @@
 #include "hyprextras.hpp"
-#include "hyprdevices.hpp"
 
 #include <qdir.h>
 #include <qjsonarray.h>
 #include <qlocalsocket.h>
 #include <qloggingcategory.h>
 #include <qvariant.h>
+
+#include "hyprdevices.hpp"
 
 Q_LOGGING_CATEGORY(lcHypr, "caelestia.internal.hypr", QtInfoMsg)
 
@@ -74,11 +75,12 @@ void HyprExtras::batchMessage(const QStringList& messages) {
         return;
     }
 
-    makeRequest(QStringLiteral("[[BATCH]]") + messages.join(QStringLiteral(";")), [](bool success, const QByteArray& res) {
-        if (!success) {
-            qCWarning(lcHypr) << "batchMessage: request error:" << QString::fromUtf8(res);
-        }
-    });
+    makeRequest(
+        QStringLiteral("[[BATCH]]") + messages.join(QStringLiteral(";")), [](bool success, const QByteArray& res) {
+            if (!success) {
+                qCWarning(lcHypr) << "batchMessage: request error:" << QString::fromUtf8(res);
+            }
+        });
 }
 
 void HyprExtras::applyOptions(const QVariantHash& options) {
@@ -95,8 +97,9 @@ void HyprExtras::applyOptions(const QVariantHash& options) {
                 QLatin1String("keyword ") + it.key() + QLatin1Char(' ') + it.value().toString() + QLatin1Char(';');
         } else {
             auto parts = it.key().split(u':');
-            request += QStringLiteral("eval hl.config({ ") + parts.join(QStringLiteral(" = { ")) + QStringLiteral(" = ") + it.value().toString() +
-                       QStringLiteral(" }").repeated(parts.size() - 1) + QStringLiteral(" });");
+            request += QStringLiteral("eval hl.config({ ") + parts.join(QStringLiteral(" = { ")) +
+                       QStringLiteral(" = ") + it.value().toString() + QStringLiteral(" }").repeated(parts.size() - 1) +
+                       QStringLiteral(" });");
         }
     }
 
@@ -114,29 +117,31 @@ void HyprExtras::refreshOptions() {
         m_optionsRefresh->close();
     }
 
-    m_optionsRefresh = makeRequestJson(QStringLiteral("descriptions"), [this](bool success, const QJsonDocument& response) {
-        m_optionsRefresh.reset();
-        if (!success) {
-            return;
-        }
-
-        const auto options = response.array();
-        bool dirty = false;
-
-        for (const auto& o : std::as_const(options)) {
-            const auto obj = o.toObject();
-            const auto key = obj.value(QStringLiteral("value")).toString();
-            const auto value = obj.value(QStringLiteral("data")).toObject().value(QStringLiteral("current")).toVariant();
-            if (m_options.value(key) != value) {
-                dirty = true;
-                m_options.insert(key, value);
+    m_optionsRefresh =
+        makeRequestJson(QStringLiteral("descriptions"), [this](bool success, const QJsonDocument& response) {
+            m_optionsRefresh.reset();
+            if (!success) {
+                return;
             }
-        }
 
-        if (dirty) {
-            emit optionsChanged();
-        }
-    });
+            const auto options = response.array();
+            bool dirty = false;
+
+            for (const auto& o : std::as_const(options)) {
+                const auto obj = o.toObject();
+                const auto key = obj.value(QStringLiteral("value")).toString();
+                const auto value =
+                    obj.value(QStringLiteral("data")).toObject().value(QStringLiteral("current")).toVariant();
+                if (m_options.value(key) != value) {
+                    dirty = true;
+                    m_options.insert(key, value);
+                }
+            }
+
+            if (dirty) {
+                emit optionsChanged();
+            }
+        });
 }
 
 void HyprExtras::refreshDevices() {

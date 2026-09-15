@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "palettemanager.hpp"
 
-#include <cmath>
-#include <algorithm>
-
 #include <qloggingcategory.h>
+
+#include <algorithm>
+#include <cmath>
 
 Q_LOGGING_CATEGORY(lcPalette, "caelestia.services.palettemanager", QtInfoMsg)
 
@@ -87,24 +87,23 @@ static const QSet<QString> kLayer0Keys = {
 PaletteManager::PaletteManager(QObject* parent)
     : QObject(parent) {}
 
-QVariantMap PaletteManager::tPalette() const { return m_tPalette; }
+QVariantMap PaletteManager::tPalette() const {
+    return m_tPalette;
+}
 
 double PaletteManager::getLuminance(const QColor& c) const {
     const double r = c.redF();
     const double g = c.greenF();
     const double b = c.blueF();
-    if (r == 0.0 && g == 0.0 && b == 0.0) return 0.0;
+    if (r == 0.0 && g == 0.0 && b == 0.0)
+        return 0.0;
     return std::sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b);
 }
 
-QColor PaletteManager::applyLayer(const QColor& c,
-                                   bool light,
-                                   bool transpEnabled,
-                                   double transpBase,
-                                   double transpLayers,
-                                   double wallLuminance,
-                                   int layer) const {
-    if (!transpEnabled) return c;
+QColor PaletteManager::applyLayer(const QColor& c, bool light, bool transpEnabled, double transpBase,
+    double transpLayers, double wallLuminance, int layer) const {
+    if (!transpEnabled)
+        return c;
 
     if (layer == 0) {
         // Base transparency: Qt.alpha(c, transpBase)
@@ -123,25 +122,19 @@ QColor PaletteManager::applyLayer(const QColor& c,
 
     const double layerSign = (!light || layer == 1) ? 1.0 : (-static_cast<double>(layer) / 2.0);
     const double lightMul = light ? 0.2 : 0.3;
-    const double wallFactor = light
-        ? (layer == 1 ? 3.0 : 1.0)
-        : 2.5;
+    const double wallFactor = light ? (layer == 1 ? 3.0 : 1.0) : 2.5;
     const double offset = layerSign * lightMul * (1.0 - transpBase) * (1.0 + wallLuminance * wallFactor);
     const double scale = (luminance + offset) / luminance;
 
-    const double r = std::clamp(c.redF()   * scale, 0.0, 1.0);
+    const double r = std::clamp(c.redF() * scale, 0.0, 1.0);
     const double g = std::clamp(c.greenF() * scale, 0.0, 1.0);
-    const double b = std::clamp(c.blueF()  * scale, 0.0, 1.0);
+    const double b = std::clamp(c.blueF() * scale, 0.0, 1.0);
 
     return QColor::fromRgbF(r, g, b, transpLayers);
 }
 
-void PaletteManager::update(const QVariantMap& palette,
-                             bool light,
-                             bool transpEnabled,
-                             double transpBase,
-                             double transpLayers,
-                             double wallLuminance) {
+void PaletteManager::update(const QVariantMap& palette, bool light, bool transpEnabled, double transpBase,
+    double transpLayers, double wallLuminance) {
     QVariantMap result;
 
     for (const auto& key : kPaletteKeys) {
@@ -161,9 +154,7 @@ void PaletteManager::update(const QVariantMap& palette,
         }
 
         const int layer = kLayer0Keys.contains(key) ? 0 : 1;
-        result.insert(key, applyLayer(color, light, transpEnabled,
-                                      transpBase, transpLayers,
-                                      wallLuminance, layer));
+        result.insert(key, applyLayer(color, light, transpEnabled, transpBase, transpLayers, wallLuminance, layer));
     }
 
     m_tPalette = result;

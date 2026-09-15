@@ -1,15 +1,14 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
 #include <QFileInfo>
 #include <QStandardPaths>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
 using Qt::StringLiterals::operator""_s;
-using settings::vmap;
 using settings::vmap;
 
 class GeneralApps : public settings::ObjectNode {

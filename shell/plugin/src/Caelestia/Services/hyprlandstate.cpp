@@ -1,9 +1,10 @@
 #include "hyprlandstate.hpp"
-#include "plasmawindows.hpp"
 
 #include <qdir.h>
 #include <qlocalsocket.h>
 #include <qloggingcategory.h>
+
+#include "plasmawindows.hpp"
 
 Q_LOGGING_CATEGORY(lcHyprState, "caelestia.services.hyprlandstate", QtInfoMsg)
 
@@ -54,12 +55,30 @@ HyprlandState::HyprlandState(QObject* parent)
     updateAll();
 }
 
-QVariantList HyprlandState::windowList() const { return m_windowList; }
-QVariantMap HyprlandState::windowByAddress() const { return m_windowByAddress; }
-QVariantList HyprlandState::addresses() const { return m_addresses; }
-QVariantList HyprlandState::workspaces() const { return m_workspaces; }
-QVariantMap HyprlandState::workspaceById() const { return m_workspaceById; }
-QVariantList HyprlandState::workspaceIds() const { return m_workspaceIds; }
+QVariantList HyprlandState::windowList() const {
+    return m_windowList;
+}
+
+QVariantMap HyprlandState::windowByAddress() const {
+    return m_windowByAddress;
+}
+
+QVariantList HyprlandState::addresses() const {
+    return m_addresses;
+}
+
+QVariantList HyprlandState::workspaces() const {
+    return m_workspaces;
+}
+
+QVariantMap HyprlandState::workspaceById() const {
+    return m_workspaceById;
+}
+
+QVariantList HyprlandState::workspaceIds() const {
+    return m_workspaceIds;
+}
+
 QVariantMap HyprlandState::activeWorkspace() const {
     return m_activeWorkspace;
 }
@@ -68,10 +87,17 @@ QVariantMap HyprlandState::activeWindow() const {
     return m_activeWindow;
 }
 
-QVariantList HyprlandState::monitors() const { return m_monitors; }
-QVariantMap HyprlandState::layers() const { return m_layers; }
+QVariantList HyprlandState::monitors() const {
+    return m_monitors;
+}
 
-bool HyprlandState::kdeFallback() const { return m_kdeFallback; }
+QVariantMap HyprlandState::layers() const {
+    return m_layers;
+}
+
+bool HyprlandState::kdeFallback() const {
+    return m_kdeFallback;
+}
 
 void HyprlandState::updateAll() {
     updateWindowList();
@@ -89,21 +115,23 @@ void HyprlandState::onKWinWindowListChanged() {
     QVariantMap newActiveWindow;
     for (const QString& uuid : pw->windowUuids()) {
         auto* handle = pw->handleFor(uuid);
-        if (!handle) continue;
+        if (!handle)
+            continue;
         const auto cls = handle->appId();
-        if (cls.isEmpty() || cls.toLower().contains(QStringLiteral("quickshell"))) continue;
+        if (cls.isEmpty() || cls.toLower().contains(QStringLiteral("quickshell")))
+            continue;
         const QVariantMap variant = {
             { QStringLiteral("address"), handle->uuid() },
-            { QStringLiteral("pid"),     static_cast<int>(handle->pid()) },
-            { QStringLiteral("title"),   handle->title() },
-            { QStringLiteral("class"),   handle->appId() },
-            { QStringLiteral("x"),       handle->x() },
-            { QStringLiteral("y"),       handle->y() },
-            { QStringLiteral("width"),   static_cast<int>(handle->width()) },
-            { QStringLiteral("height"),  static_cast<int>(handle->height()) },
+            { QStringLiteral("pid"), static_cast<int>(handle->pid()) },
+            { QStringLiteral("title"), handle->title() },
+            { QStringLiteral("class"), handle->appId() },
+            { QStringLiteral("x"), handle->x() },
+            { QStringLiteral("y"), handle->y() },
+            { QStringLiteral("width"), static_cast<int>(handle->width()) },
+            { QStringLiteral("height"), static_cast<int>(handle->height()) },
             { QStringLiteral("fullscreen"), handle->isFullscreen() },
-            { QStringLiteral("maximized"),  handle->isMaximized() },
-            { QStringLiteral("minimized"),  handle->isMinimized() },
+            { QStringLiteral("maximized"), handle->isMaximized() },
+            { QStringLiteral("minimized"), handle->isMinimized() },
         };
         newList.append(variant);
         newByAddress.insert(handle->uuid(), variant);
@@ -180,37 +208,38 @@ void HyprlandState::updateWorkspaces() {
         m_workspacesRefresh->close();
     }
 
-    m_workspacesRefresh = makeRequestJson(QStringLiteral("workspaces"), [this](bool success, const QJsonDocument& response) {
-        m_workspacesRefresh.reset();
-        if (!success) {
-            m_workspaces.clear();
-            m_workspaceById.clear();
-            m_workspaceIds.clear();
-            emit workspacesChanged();
-            return;
-        }
-
-        const auto workspaces = response.array();
-        QVariantList newList;
-        QVariantMap newById;
-        QVariantList newIds;
-
-        for (const auto& w : workspaces) {
-            const auto obj = w.toObject();
-            const auto id = obj.value(QStringLiteral("id")).toInt();
-            if (id >= 1 && id <= 100) {
-                const auto variant = obj.toVariantMap();
-                newList.append(variant);
-                newById.insert(QString::number(id), variant);
-                newIds.append(id);
+    m_workspacesRefresh =
+        makeRequestJson(QStringLiteral("workspaces"), [this](bool success, const QJsonDocument& response) {
+            m_workspacesRefresh.reset();
+            if (!success) {
+                m_workspaces.clear();
+                m_workspaceById.clear();
+                m_workspaceIds.clear();
+                emit workspacesChanged();
+                return;
             }
-        }
 
-        m_workspaces = newList;
-        m_workspaceById = newById;
-        m_workspaceIds = newIds;
-        emit workspacesChanged();
-    });
+            const auto workspaces = response.array();
+            QVariantList newList;
+            QVariantMap newById;
+            QVariantList newIds;
+
+            for (const auto& w : workspaces) {
+                const auto obj = w.toObject();
+                const auto id = obj.value(QStringLiteral("id")).toInt();
+                if (id >= 1 && id <= 100) {
+                    const auto variant = obj.toVariantMap();
+                    newList.append(variant);
+                    newById.insert(QString::number(id), variant);
+                    newIds.append(id);
+                }
+            }
+
+            m_workspaces = newList;
+            m_workspaceById = newById;
+            m_workspaceIds = newIds;
+            emit workspacesChanged();
+        });
 }
 
 void HyprlandState::updateMonitors() {
@@ -218,13 +247,14 @@ void HyprlandState::updateMonitors() {
         m_monitorsRefresh->close();
     }
 
-    m_monitorsRefresh = makeRequestJson(QStringLiteral("monitors"), [this](bool success, const QJsonDocument& response) {
-        m_monitorsRefresh.reset();
-        if (success) {
-            m_monitors = response.array().toVariantList();
-            emit monitorsChanged();
-        }
-    });
+    m_monitorsRefresh =
+        makeRequestJson(QStringLiteral("monitors"), [this](bool success, const QJsonDocument& response) {
+            m_monitorsRefresh.reset();
+            if (success) {
+                m_monitors = response.array().toVariantList();
+                emit monitorsChanged();
+            }
+        });
 }
 
 void HyprlandState::updateLayers() {
@@ -246,13 +276,14 @@ void HyprlandState::updateActiveWorkspace() {
         m_activeWorkspaceRefresh->close();
     }
 
-    m_activeWorkspaceRefresh = makeRequestJson(QStringLiteral("activeworkspace"), [this](bool success, const QJsonDocument& response) {
-        m_activeWorkspaceRefresh.reset();
-        if (success) {
-            m_activeWorkspace = response.object().toVariantMap();
-            emit activeWorkspaceChanged();
-        }
-    });
+    m_activeWorkspaceRefresh =
+        makeRequestJson(QStringLiteral("activeworkspace"), [this](bool success, const QJsonDocument& response) {
+            m_activeWorkspaceRefresh.reset();
+            if (success) {
+                m_activeWorkspace = response.object().toVariantMap();
+                emit activeWorkspaceChanged();
+            }
+        });
 }
 
 void HyprlandState::socketError(QLocalSocket::LocalSocketError error) const {
@@ -284,16 +315,21 @@ void HyprlandState::readEvent() {
 
 void HyprlandState::handleEvent(const QString& event) {
     // We only care about events that affect our state
-    if (event == QStringLiteral("openlayer") || event == QStringLiteral("closelayer") || event == QStringLiteral("screencast")) {
+    if (event == QStringLiteral("openlayer") || event == QStringLiteral("closelayer") ||
+        event == QStringLiteral("screencast")) {
         return;
     }
 
-    if (event == QStringLiteral("workspace") || event == QStringLiteral("createworkspace") || event == QStringLiteral("destroyworkspace") || event == QStringLiteral("renameworkspace")) {
+    if (event == QStringLiteral("workspace") || event == QStringLiteral("createworkspace") ||
+        event == QStringLiteral("destroyworkspace") || event == QStringLiteral("renameworkspace")) {
         updateWorkspaces();
         updateActiveWorkspace();
-    } else if (event == QStringLiteral("activewindow") || event == QStringLiteral("activewindowv2") || event == QStringLiteral("openwindow") || event == QStringLiteral("closewindow") || event == QStringLiteral("movewindow") || event == QStringLiteral("windowtitle")) {
+    } else if (event == QStringLiteral("activewindow") || event == QStringLiteral("activewindowv2") ||
+               event == QStringLiteral("openwindow") || event == QStringLiteral("closewindow") ||
+               event == QStringLiteral("movewindow") || event == QStringLiteral("windowtitle")) {
         updateWindowList();
-    } else if (event == QStringLiteral("monitoradded") || event == QStringLiteral("monitorremoved") || event == QStringLiteral("focusedmon")) {
+    } else if (event == QStringLiteral("monitoradded") || event == QStringLiteral("monitorremoved") ||
+               event == QStringLiteral("focusedmon")) {
         updateMonitors();
         updateWorkspaces(); // active workspace on monitor changes
         updateActiveWorkspace();

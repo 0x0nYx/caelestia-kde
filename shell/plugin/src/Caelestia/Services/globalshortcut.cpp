@@ -1,7 +1,5 @@
 #include "globalshortcut.hpp"
 
-#include "../Config/rootnodes.hpp"
-#include "../Config/generalconfig.hpp"
 #include <KGlobalAccel>
 #include <QCoreApplication>
 #include <QDebug>
@@ -16,6 +14,9 @@
 #include <QStringList>
 #include <QTextStream>
 #include <cstdlib>
+
+#include "../Config/generalconfig.hpp"
+#include "../Config/rootnodes.hpp"
 
 Q_GLOBAL_STATIC(GlobalShortcutDispatcher, s_dispatcher)
 
@@ -42,17 +43,14 @@ QStringList buildRestoreArgs(const QString& component, const QString& action, co
         int k4 = seq.count() > 3 ? seq[3].toCombined() : 0;
         seqStrings.append(QStringLiteral("([%1, %2, %3, %4],)").arg(k1).arg(k2).arg(k3).arg(k4));
     }
-    QString arrayStr = seqStrings.isEmpty() ? QStringLiteral("[([0, 0, 0, 0],)]") : QStringLiteral("[") + seqStrings.join(QStringLiteral(", ")) + QStringLiteral("]");
-    return {
-        QStringLiteral("call"),
-        QStringLiteral("--session"),
-        QStringLiteral("--dest"), QStringLiteral("org.kde.kglobalaccel"),
-        QStringLiteral("--object-path"), QStringLiteral("/kglobalaccel"),
+    QString arrayStr = seqStrings.isEmpty()
+                           ? QStringLiteral("[([0, 0, 0, 0],)]")
+                           : QStringLiteral("[") + seqStrings.join(QStringLiteral(", ")) + QStringLiteral("]");
+    return { QStringLiteral("call"), QStringLiteral("--session"), QStringLiteral("--dest"),
+        QStringLiteral("org.kde.kglobalaccel"), QStringLiteral("--object-path"), QStringLiteral("/kglobalaccel"),
         QStringLiteral("--method"), QStringLiteral("org.kde.KGlobalAccel.setShortcutKeys"),
         QStringLiteral("['%1', '%2', '', '']").arg(escapeGVariantString(component), escapeGVariantString(action)),
-        arrayStr,
-        QStringLiteral("4")
-    };
+        arrayStr, QStringLiteral("4") };
 }
 
 bool isLockscreen() {
@@ -96,41 +94,43 @@ GlobalShortcutDispatcher* GlobalShortcutDispatcher::instance() {
             QFile file(path);
             if (file.open(QIODevice::ReadOnly)) {
                 QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-            file.close();
-            if (doc.isArray()) {
-                const QJsonArray entries = doc.array();
-                for (const QJsonValue& val : entries) {
-                    QJsonObject obj = val.toObject();
-                    QString component = obj.value(QStringLiteral("component")).toString();
-                    QString action = obj.value(QStringLiteral("action")).toString();
-                    QString componentFriendly = obj.value(QStringLiteral("componentFriendlyName")).toString();
-                    QString actionFriendly = obj.value(QStringLiteral("actionFriendlyName")).toString();
-                    QList<QKeySequence> keys;
-                    for (const QJsonValue& kv : obj.value(QStringLiteral("keys")).toArray()) {
-                        QKeySequence seq = QKeySequence::fromString(kv.toString());
-                        if (!seq.isEmpty()) keys.append(seq);
-                    }
-                    if (!component.isEmpty() && !action.isEmpty()) {
-                        qDebug() << "[Caelestia] Crash recovery: restoring shortcut" << action << "for" << component;
-                        QProcess::startDetached(QStringLiteral("gdbus"), buildRestoreArgs(component, action, keys));
+                file.close();
+                if (doc.isArray()) {
+                    const QJsonArray entries = doc.array();
+                    for (const QJsonValue& val : entries) {
+                        QJsonObject obj = val.toObject();
+                        QString component = obj.value(QStringLiteral("component")).toString();
+                        QString action = obj.value(QStringLiteral("action")).toString();
+                        QString componentFriendly = obj.value(QStringLiteral("componentFriendlyName")).toString();
+                        QString actionFriendly = obj.value(QStringLiteral("actionFriendlyName")).toString();
+                        QList<QKeySequence> keys;
+                        for (const QJsonValue& kv : obj.value(QStringLiteral("keys")).toArray()) {
+                            QKeySequence seq = QKeySequence::fromString(kv.toString());
+                            if (!seq.isEmpty())
+                                keys.append(seq);
+                        }
+                        if (!component.isEmpty() && !action.isEmpty()) {
+                            qDebug() << "[Caelestia] Crash recovery: restoring shortcut" << action << "for"
+                                     << component;
+                            QProcess::startDetached(QStringLiteral("gdbus"), buildRestoreArgs(component, action, keys));
 
-                        // Populate the collision index so the blinker shows collisions
-                        // even though no GlobalShortcut instances have been created yet.
-                        QString label = componentFriendly.isEmpty() ? component : componentFriendly;
-                        QString actionLabel = actionFriendly.isEmpty() ? action : actionFriendly;
-                        QString friendlyLabel = label + QStringLiteral(" - ") + actionLabel;
-                        for (const QKeySequence& seq : keys) {
-                            inst->m_collisionIndex.insert(seq.toString(QKeySequence::PortableText), friendlyLabel);
+                            // Populate the collision index so the blinker shows collisions
+                            // even though no GlobalShortcut instances have been created yet.
+                            QString label = componentFriendly.isEmpty() ? component : componentFriendly;
+                            QString actionLabel = actionFriendly.isEmpty() ? action : actionFriendly;
+                            QString friendlyLabel = label + QStringLiteral(" - ") + actionLabel;
+                            for (const QKeySequence& seq : keys) {
+                                inst->m_collisionIndex.insert(seq.toString(QKeySequence::PortableText), friendlyLabel);
+                            }
                         }
                     }
+                    if (!inst->m_collisionIndex.isEmpty()) {
+                        emit inst->collisionIndexChanged();
+                    }
                 }
-                if (!inst->m_collisionIndex.isEmpty()) {
-                    emit inst->collisionIndexChanged();
-                }
+                // Remove recovery file — crash recovery is done
+                QFile::remove(path);
             }
-            // Remove recovery file — crash recovery is done
-            QFile::remove(path);
-        }
         } // close if (!isLockscreen())
 
         // Register clean exit handler to delete the recovery file
@@ -161,7 +161,8 @@ void GlobalShortcut::rebuildCollisionIndex() {
     dispatcher->m_collisionIndex.clear();
     for (const GlobalShortcut* sc : s_registry) {
         for (const auto& stolen : sc->m_stolenShortcuts) {
-            const QString label = stolen.componentFriendlyName.isEmpty() ? stolen.component : stolen.componentFriendlyName;
+            const QString label =
+                stolen.componentFriendlyName.isEmpty() ? stolen.component : stolen.componentFriendlyName;
             const QString actionLabel = stolen.actionFriendlyName.isEmpty() ? stolen.action : stolen.actionFriendlyName;
             const QString friendlyLabel = label + QStringLiteral(" - ") + actionLabel;
             for (const QKeySequence& seq : stolen.keys) {
@@ -204,8 +205,8 @@ void GlobalShortcut::rebuildCollisionIndex() {
         }
         names.sort(); // QHash iteration order is unspecified; keep the label stable.
 
-        dispatcher->m_collisionIndex.insert(it.key(),
-            QStringLiteral("Caelestia - ") + names.join(QStringLiteral(", ")));
+        dispatcher->m_collisionIndex.insert(
+            it.key(), QStringLiteral("Caelestia - ") + names.join(QStringLiteral(", ")));
     }
 
     emit dispatcher->collisionIndexChanged();
@@ -235,7 +236,8 @@ GlobalShortcut::~GlobalShortcut() {
 
     // Restore any KDE shortcuts we stole on startup
     for (const auto& stolen : m_stolenShortcuts) {
-        QProcess::startDetached(QStringLiteral("gdbus"), buildRestoreArgs(stolen.component, stolen.action, stolen.keys));
+        QProcess::startDetached(
+            QStringLiteral("gdbus"), buildRestoreArgs(stolen.component, stolen.action, stolen.keys));
     }
 
     // Re-persist so the recovery file and collision index reflect the restored
@@ -328,7 +330,8 @@ QString GlobalShortcut::getCollisionName() const {
 
 QString GlobalShortcut::getCollisionNameForKey(const QString& keyPart) const {
     QKeySequence targetSeq(keyPart.trimmed());
-    if (targetSeq.isEmpty()) return QString();
+    if (targetSeq.isEmpty())
+        return QString();
 
     for (const auto& s : m_stolenShortcuts) {
         if (s.keys.contains(targetSeq)) {
@@ -408,10 +411,10 @@ void GlobalShortcut::updateShortcut() {
         QList<StolenShortcut> toKeep;
         for (const auto& stolen : m_stolenShortcuts) {
             if (removedSeqs.contains(stolen.triggerKey)) {
-                qDebug() << "[Caelestia] Restoring shortcut" << stolen.action
-                         << "for" << stolen.component << "— trigger key removed";
-                QProcess::startDetached(QStringLiteral("gdbus"),
-                    buildRestoreArgs(stolen.component, stolen.action, stolen.keys));
+                qDebug() << "[Caelestia] Restoring shortcut" << stolen.action << "for" << stolen.component
+                         << "— trigger key removed";
+                QProcess::startDetached(
+                    QStringLiteral("gdbus"), buildRestoreArgs(stolen.component, stolen.action, stolen.keys));
             } else {
                 toKeep.append(stolen);
             }
@@ -451,29 +454,24 @@ void GlobalShortcut::updateShortcut() {
             // Deduplicate: don't steal the same component/action twice
             bool alreadyStolen = false;
             for (const auto& existing : m_stolenShortcuts) {
-                if (existing.component == info.componentUniqueName() &&
-                    existing.action == info.uniqueName()) {
+                if (existing.component == info.componentUniqueName() && existing.action == info.uniqueName()) {
                     alreadyStolen = true;
                     break;
                 }
             }
-            if (alreadyStolen) continue;
+            if (alreadyStolen)
+                continue;
 
             m_stolenShortcuts.append({ info.componentUniqueName(), info.uniqueName(), info.keys(),
                 info.componentFriendlyName(), info.friendlyName(), seq });
 
-
-            stealCmds.append({
-                QStringLiteral("call"),
-                QStringLiteral("--session"),
-                QStringLiteral("--dest"), QStringLiteral("org.kde.kglobalaccel"),
-                QStringLiteral("--object-path"), QStringLiteral("/kglobalaccel"),
-                QStringLiteral("--method"), QStringLiteral("org.kde.KGlobalAccel.setShortcutKeys"),
-                QStringLiteral("['%1', '%2', '', '']").arg(escapeGVariantString(info.componentUniqueName()),
-                                                    escapeGVariantString(info.uniqueName())),
-                QStringLiteral("[([0, 0, 0, 0],)]"),
-                QStringLiteral("4")
-            });
+            stealCmds.append({ QStringLiteral("call"), QStringLiteral("--session"), QStringLiteral("--dest"),
+                QStringLiteral("org.kde.kglobalaccel"), QStringLiteral("--object-path"),
+                QStringLiteral("/kglobalaccel"), QStringLiteral("--method"),
+                QStringLiteral("org.kde.KGlobalAccel.setShortcutKeys"),
+                QStringLiteral("['%1', '%2', '', '']")
+                    .arg(escapeGVariantString(info.componentUniqueName()), escapeGVariantString(info.uniqueName())),
+                QStringLiteral("[([0, 0, 0, 0],)]"), QStringLiteral("4") });
         }
     }
 
@@ -489,15 +487,15 @@ void GlobalShortcut::updateShortcut() {
     auto pending = std::make_shared<QAtomicInt>(stealCmds.size());
     for (const QStringList& args : stealCmds) {
         auto* proc = new QProcess();
-        connect(proc, &QProcess::finished, proc, [this, pending, newSeqs, myGeneration, proc](int, QProcess::ExitStatus) {
-            proc->deleteLater();
-            if (pending->fetchAndSubRelaxed(1) == 1) {
-                if (m_registerGeneration == myGeneration) {
-                    KGlobalAccel::self()->setShortcut(m_action, newSeqs, KGlobalAccel::NoAutoloading);
+        connect(
+            proc, &QProcess::finished, proc, [this, pending, newSeqs, myGeneration, proc](int, QProcess::ExitStatus) {
+                proc->deleteLater();
+                if (pending->fetchAndSubRelaxed(1) == 1) {
+                    if (m_registerGeneration == myGeneration) {
+                        KGlobalAccel::self()->setShortcut(m_action, newSeqs, KGlobalAccel::NoAutoloading);
+                    }
                 }
-            }
-        });
+            });
         proc->start(QStringLiteral("gdbus"), args);
     }
 }
-

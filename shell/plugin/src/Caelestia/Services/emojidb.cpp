@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "emojidb.hpp"
 
-#include <algorithm>
-
 #include <qdir.h>
 #include <qdiriterator.h>
 #include <qfile.h>
@@ -11,6 +9,8 @@
 #include <qloggingcategory.h>
 #include <qstandardpaths.h>
 #include <qtextstream.h>
+
+#include <algorithm>
 
 Q_LOGGING_CATEGORY(lcEmojiDb, "caelestia.services.emojidb", QtInfoMsg)
 
@@ -29,7 +29,7 @@ EmojiDb::EmojiDb(QObject* parent)
     };
     for (const auto& root : searchRoots) {
         QDir rootDir(root);
-        const auto dirs = rootDir.entryList({QStringLiteral("python*")}, QDir::Dirs | QDir::NoDotAndDotDot);
+        const auto dirs = rootDir.entryList({ QStringLiteral("python*") }, QDir::Dirs | QDir::NoDotAndDotDot);
         for (const auto& pydir : dirs) {
             QString path = rootDir.absoluteFilePath(pydir) + QStringLiteral("/site-packages/caelestia/data/emojis.txt");
             if (QFile::exists(path)) {
@@ -37,20 +37,25 @@ EmojiDb::EmojiDb(QObject* parent)
                 break;
             }
         }
-        if (!m_emojiPath.isEmpty()) break;
+        if (!m_emojiPath.isEmpty())
+            break;
     }
 
     // Frequency file: $XDG_CONFIG_HOME/caelestia/emoji-frequencies.json
-    const auto configDir = qEnvironmentVariable("XDG_CONFIG_HOME",
-        QDir::homePath() + QStringLiteral("/.config"));
+    const auto configDir = qEnvironmentVariable("XDG_CONFIG_HOME", QDir::homePath() + QStringLiteral("/.config"));
     m_freqPath = configDir + QStringLiteral("/caelestia/emoji-frequencies.json");
 
     loadEmojis();
     loadFrequencies();
 }
 
-bool EmojiDb::loaded() const { return m_loaded; }
-int EmojiDb::count() const { return static_cast<int>(m_emojis.size()); }
+bool EmojiDb::loaded() const {
+    return m_loaded;
+}
+
+int EmojiDb::count() const {
+    return static_cast<int>(m_emojis.size());
+}
 
 void EmojiDb::loadEmojis() {
     if (m_emojiPath.isEmpty()) {
@@ -70,10 +75,12 @@ void EmojiDb::loadEmojis() {
 
     while (!in.atEnd()) {
         const auto line = in.readLine();
-        if (line.isEmpty()) continue;
+        if (line.isEmpty())
+            continue;
 
         const auto spaceIdx = line.indexOf(u' ');
-        if (spaceIdx < 0) continue;
+        if (spaceIdx < 0)
+            continue;
 
         EmojiEntry entry;
         entry.ch = line.left(spaceIdx);
@@ -89,7 +96,8 @@ void EmojiDb::loadEmojis() {
 
 void EmojiDb::loadFrequencies() {
     QFile f(m_freqPath);
-    if (!f.exists()) return;
+    if (!f.exists())
+        return;
 
     if (!f.open(QIODevice::ReadOnly)) {
         qCWarning(lcEmojiDb) << "Failed to open frequency file:" << m_freqPath;
@@ -97,7 +105,8 @@ void EmojiDb::loadFrequencies() {
     }
 
     const auto doc = QJsonDocument::fromJson(f.readAll());
-    if (!doc.isObject()) return;
+    if (!doc.isObject())
+        return;
 
     const auto obj = doc.object();
     m_frequencies.clear();
@@ -116,7 +125,8 @@ void EmojiDb::saveFrequencies() {
     const auto path = m_freqPath;
     // Ensure parent dir exists
     QDir dir(QFileInfo(path).absolutePath());
-    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
+    if (!dir.exists())
+        dir.mkpath(QStringLiteral("."));
 
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -136,7 +146,8 @@ int EmojiDb::getFrequency(const QString& ch) const {
 }
 
 QVariantList EmojiDb::getSortedItems(const QStringList& favourites, int limit) const {
-    if (m_emojis.isEmpty()) return {};
+    if (m_emojis.isEmpty())
+        return {};
 
     const QSet<QString> favSet(favourites.begin(), favourites.end());
 
@@ -147,29 +158,33 @@ QVariantList EmojiDb::getSortedItems(const QStringList& favourites, int limit) c
     std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) {
         const bool aFav = favSet.contains(m_emojis[a].ch);
         const bool bFav = favSet.contains(m_emojis[b].ch);
-        if (aFav != bFav) return aFav;
+        if (aFav != bFav)
+            return aFav;
         const int freqA = m_frequencies.value(m_emojis[a].ch, 0);
         const int freqB = m_frequencies.value(m_emojis[b].ch, 0);
         return freqA > freqB;
     });
 
     QVariantList result;
-    const int actualLimit = (limit <= 0) ? static_cast<int>(m_emojis.size()) : std::min(limit, static_cast<int>(m_emojis.size()));
+    const int actualLimit =
+        (limit <= 0) ? static_cast<int>(m_emojis.size()) : std::min(limit, static_cast<int>(m_emojis.size()));
     result.reserve(actualLimit);
     for (int i = 0; i < actualLimit; ++i) {
         const auto& e = m_emojis[indices[i]];
         result.append(QVariantMap{
-            {QStringLiteral("ch"),        e.ch},
-            {QStringLiteral("name"),      e.name},
-            {QStringLiteral("nameLower"), e.nameLower},
+            { QStringLiteral("ch"), e.ch },
+            { QStringLiteral("name"), e.name },
+            { QStringLiteral("nameLower"), e.nameLower },
         });
     }
     return result;
 }
 
 QVariantList EmojiDb::search(const QString& text, int limit) const {
-    if (m_emojis.isEmpty()) return {};
-    if (text.isEmpty()) return getSortedItems({});
+    if (m_emojis.isEmpty())
+        return {};
+    if (text.isEmpty())
+        return getSortedItems({});
 
     const auto lower = text.toLower();
     QVariantList result;
@@ -178,11 +193,12 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
     for (const auto& e : m_emojis) {
         if (e.nameLower.contains(lower)) {
             result.append(QVariantMap{
-                {QStringLiteral("ch"),        e.ch},
-                {QStringLiteral("name"),      e.name},
-                {QStringLiteral("nameLower"), e.nameLower},
+                { QStringLiteral("ch"), e.ch },
+                { QStringLiteral("name"), e.name },
+                { QStringLiteral("nameLower"), e.nameLower },
             });
-            if (result.size() >= limit) break;
+            if (result.size() >= limit)
+                break;
         }
     }
     return result;

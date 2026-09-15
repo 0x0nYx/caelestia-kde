@@ -1,17 +1,18 @@
 #include "gpu.hpp"
 
-#include "../Config/rootnodes.hpp"
-#include "../Config/serviceconfig.hpp"
-#include "sensorslib.hpp"
-
-#include <array>
-#include <cmath>
-#include <functional>
 #include <qdir.h>
 #include <qdiriterator.h>
 #include <qfile.h>
 #include <qregularexpression.h>
+
 #include <QTimer>
+#include <array>
+#include <cmath>
+#include <functional>
+
+#include "../Config/rootnodes.hpp"
+#include "../Config/serviceconfig.hpp"
+#include "sensorslib.hpp"
 
 namespace caelestia::services {
 

@@ -1,9 +1,9 @@
 #include "cutils.hpp"
 
 #include <QtConcurrent/qtconcurrentrun.h>
-#include <qcryptographichash.h>
 #include <QtQuick/qquickitemgrabresult.h>
 #include <QtQuick/qquickwindow.h>
+#include <qcryptographichash.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -11,10 +11,11 @@
 #include <qloggingcategory.h>
 #include <qqmlengine.h>
 #include <qregularexpression.h>
-#include <QStandardPaths>
-#include <KWindowEffects>
+
 #include <KModifierKeyInfo>
+#include <KWindowEffects>
 #include <QCursor>
+#include <QStandardPaths>
 
 #include "util/metaenum.hpp"
 
@@ -259,7 +260,8 @@ bool CUtils::isAltPressed() const {
 }
 
 bool CUtils::isMetaPressed() const {
-    return d->keyInfo.isKeyPressed(Qt::Key_Meta) || d->keyInfo.isKeyPressed(Qt::Key_Super_L) || d->keyInfo.isKeyPressed(Qt::Key_Super_R);
+    return d->keyInfo.isKeyPressed(Qt::Key_Meta) || d->keyInfo.isKeyPressed(Qt::Key_Super_L) ||
+           d->keyInfo.isKeyPressed(Qt::Key_Super_R);
 }
 
 bool CUtils::isCtrlPressed() const {
@@ -276,13 +278,17 @@ bool CUtils::isShortcutModifierPressed(const QString& shortcutKey) const {
     }
     const QString upper = shortcutKey.toUpper();
     const bool hasAlt = upper.contains(QLatin1String("ALT"));
-    const bool hasMeta = upper.contains(QLatin1String("META")) || upper.contains(QLatin1String("SUPER")) || upper.contains(QLatin1String("WIN"));
+    const bool hasMeta = upper.contains(QLatin1String("META")) || upper.contains(QLatin1String("SUPER")) ||
+                         upper.contains(QLatin1String("WIN"));
     const bool hasCtrl = upper.contains(QLatin1String("CTRL")) || upper.contains(QLatin1String("CONTROL"));
 
     // Check primary holding modifiers
-    if (hasAlt && isAltPressed()) return true;
-    if (hasMeta && isMetaPressed()) return true;
-    if (hasCtrl && isCtrlPressed()) return true;
+    if (hasAlt && isAltPressed())
+        return true;
+    if (hasMeta && isMetaPressed())
+        return true;
+    if (hasCtrl && isCtrlPressed())
+        return true;
 
     // If none of the standard primary holding modifiers are in the shortcut, check shift if specified
     if (!hasAlt && !hasMeta && !hasCtrl) {
@@ -340,9 +346,12 @@ QQuickItem* CUtils::findChild(QQuickItem* root, const QString& name) {
 QList<QQuickItem*> CUtils::findChildren(QQuickItem* root, const QString& name) {
     QList<QQuickItem*> children;
     if (root) {
-        findChildrenDfs(root, [&name](const QQuickItem* item) {
-            return item->objectName() == name;
-        }, children);
+        findChildrenDfs(
+            root,
+            [&name](const QQuickItem* item) {
+                return item->objectName() == name;
+            },
+            children);
     }
     return children;
 }
@@ -351,9 +360,12 @@ QList<QQuickItem*> CUtils::findChildrenMatching(QQuickItem* root, const QString&
     QList<QQuickItem*> children;
     if (root) {
         const QRegularExpression re(pattern);
-        findChildrenDfs(root, [&re](const QQuickItem* item) {
-            return re.match(item->objectName()).hasMatch();
-        }, children);
+        findChildrenDfs(
+            root,
+            [&re](const QQuickItem* item) {
+                return re.match(item->objectName()).hasMatch();
+            },
+            children);
     }
     return children;
 }

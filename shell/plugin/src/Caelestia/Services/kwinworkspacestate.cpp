@@ -1,25 +1,26 @@
 #include "kwinworkspacestate.hpp"
+
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusMessage>
+#include <QDBusMetaType>
+#include <QDBusReply>
 #include <QDebug>
 #include <QLocalServer>
 #include <QLocalSocket>
-#include <QDBusConnection>
-#include <QDBusMessage>
-#include <QDBusReply>
-#include <QDBusInterface>
-#include <QDBusMetaType>
 #include <QStandardPaths>
 #include <algorithm>
 
 namespace caelestia::services {
 
-QDBusArgument &operator<<(QDBusArgument &argument, const KWinDesktopData &data) {
+QDBusArgument& operator<<(QDBusArgument& argument, const KWinDesktopData& data) {
     argument.beginStructure();
     argument << data.position << data.id << data.name;
     argument.endStructure();
     return argument;
 }
 
-const QDBusArgument &operator>>(const QDBusArgument &argument, KWinDesktopData &data) {
+const QDBusArgument& operator>>(const QDBusArgument& argument, KWinDesktopData& data) {
     argument.beginStructure();
     argument >> data.position >> data.id >> data.name;
     argument.endStructure();
@@ -66,37 +67,42 @@ bool KWinWorkspaceState::showingDesktop() const {
 }
 
 KWinWorkspaceState::KWinWorkspaceState(QObject* parent)
-    : QObject(parent)
-{
+    : QObject(parent) {
     s_instance = this;
     qDBusRegisterMetaType<KWinDesktopData>();
     qDBusRegisterMetaType<QList<KWinDesktopData>>();
 
     QDBusConnection bus = QDBusConnection::sessionBus();
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopCreated"),
-                this, SLOT(onDesktopCreated(QString, caelestia::services::KWinDesktopData)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopRemoved"),
-                this, SLOT(onDesktopRemoved(QString)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopDataChanged"),
-                this, SLOT(onDesktopDataChanged(QString, caelestia::services::KWinDesktopData)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("currentChanged"),
-                this, SLOT(onCurrentChanged(QString)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("countChanged"),
-                this, SLOT(onCountChanged(uint)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("rowsChanged"),
-                this, SLOT(onRowsChanged(uint)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopCreated"), this,
+        SLOT(onDesktopCreated(QString, caelestia::services::KWinDesktopData)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopRemoved"), this,
+        SLOT(onDesktopRemoved(QString)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("desktopDataChanged"), this,
+        SLOT(onDesktopDataChanged(QString, caelestia::services::KWinDesktopData)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("currentChanged"), this,
+        SLOT(onCurrentChanged(QString)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("countChanged"), this,
+        SLOT(onCountChanged(uint)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+        QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("rowsChanged"), this,
+        SLOT(onRowsChanged(uint)));
 
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("showingDesktopChanged"),
-                this, SLOT(onShowingDesktopChanged(bool)));
-    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("PropertiesChanged"),
-                this, SLOT(onKWinPropertiesChanged(QString, QVariantMap, QStringList)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"),
+        QStringLiteral("showingDesktopChanged"), this, SLOT(onShowingDesktopChanged(bool)));
+    bus.connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+        QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("PropertiesChanged"), this,
+        SLOT(onKWinPropertiesChanged(QString, QVariantMap, QStringList)));
 
     fetchInitialState();
     setupTrackerServer();
 }
 
-KWinWorkspaceState::~KWinWorkspaceState()
-{
+KWinWorkspaceState::~KWinWorkspaceState() {
     if (m_trackerServer) {
         m_trackerServer->close();
         m_trackerServer->deleteLater();
@@ -108,7 +114,8 @@ KWinWorkspaceState::~KWinWorkspaceState()
 
 void KWinWorkspaceState::setupTrackerServer() {
     m_trackerServer = new QLocalServer(this);
-    QString socketPath = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QStringLiteral("/caelestia-workspace-tracker");
+    QString socketPath = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) +
+                         QStringLiteral("/caelestia-workspace-tracker");
     QLocalServer::removeServer(socketPath);
 
     qDebug() << "KWinWorkspaceState: Setting up tracker server at" << socketPath;
@@ -192,7 +199,9 @@ void KWinWorkspaceState::setupTrackerServer() {
 }
 
 void KWinWorkspaceState::fetchInitialState() {
-    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
+    QDBusMessage msg =
+        QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+            QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
     msg << QStringLiteral("org.kde.KWin.VirtualDesktopManager") << QStringLiteral("desktops");
     QDBusReply<QDBusVariant> reply = QDBusConnection::sessionBus().call(msg);
 
@@ -204,7 +213,9 @@ void KWinWorkspaceState::fetchInitialState() {
         }
     }
 
-    QDBusMessage currentMsg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
+    QDBusMessage currentMsg =
+        QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+            QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
     currentMsg << QStringLiteral("org.kde.KWin.VirtualDesktopManager") << QStringLiteral("current");
     QDBusReply<QDBusVariant> currentReply = QDBusConnection::sessionBus().call(currentMsg);
 
@@ -212,7 +223,9 @@ void KWinWorkspaceState::fetchInitialState() {
         m_currentUuid = currentReply.value().variant().toString();
     }
 
-    QDBusMessage rowsMsg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
+    QDBusMessage rowsMsg =
+        QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+            QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
     rowsMsg << QStringLiteral("org.kde.KWin.VirtualDesktopManager") << QStringLiteral("rows");
     QDBusReply<QDBusVariant> rowsReply = QDBusConnection::sessionBus().call(rowsMsg);
 
@@ -224,7 +237,8 @@ void KWinWorkspaceState::fetchInitialState() {
         }
     }
 
-    QDBusMessage showingMsg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
+    QDBusMessage showingMsg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+        QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Get"));
     showingMsg << QStringLiteral("org.kde.KWin") << QStringLiteral("showingDesktop");
     QDBusReply<QDBusVariant> showingReply = QDBusConnection::sessionBus().call(showingMsg);
     if (showingReply.isValid()) {
@@ -238,7 +252,8 @@ void KWinWorkspaceState::onShowingDesktopChanged(bool showing) {
     updateShowingDesktop(showing);
 }
 
-void KWinWorkspaceState::onKWinPropertiesChanged(const QString& interface, const QVariantMap& changedProps, const QStringList& invalidatedProps) {
+void KWinWorkspaceState::onKWinPropertiesChanged(
+    const QString& interface, const QVariantMap& changedProps, const QStringList& invalidatedProps) {
     Q_UNUSED(interface)
     Q_UNUSED(invalidatedProps)
     if (changedProps.contains(QStringLiteral("showingDesktop"))) {
@@ -288,12 +303,9 @@ QVariantList KWinWorkspaceState::workspaces() const {
         const auto& d = m_desktops[i];
         if (d.id.isEmpty())
             continue;
-        list.append(QVariantMap{
-            { QStringLiteral("id"), d.id },
+        list.append(QVariantMap{ { QStringLiteral("id"), d.id },
             { QStringLiteral("name"), d.name.isEmpty() ? QString::number(i + 1) : d.name },
-            { QStringLiteral("index"), i + 1 },
-            { QStringLiteral("active"), (d.id == m_currentUuid) }
-        });
+            { QStringLiteral("index"), i + 1 }, { QStringLiteral("active"), (d.id == m_currentUuid) } });
     }
     return list;
 }
@@ -333,13 +345,14 @@ void KWinWorkspaceState::switchTo(const QString& id, const QString& output) {
         if (!output.isEmpty()) {
             if (m_perOutputSwitchAvailable == -1) {
                 QDBusMessage probe = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"),
-                    QStringLiteral("/Caelestia/Workspaces"), QStringLiteral("org.freedesktop.DBus.Introspectable"), QStringLiteral("Introspect"));
+                    QStringLiteral("/Caelestia/Workspaces"), QStringLiteral("org.freedesktop.DBus.Introspectable"),
+                    QStringLiteral("Introspect"));
                 const QDBusMessage reply = QDBusConnection::sessionBus().call(probe, QDBus::Block, 1000);
-                m_perOutputSwitchAvailable = (reply.type() == QDBusMessage::ReplyMessage
-                                                 && reply.arguments().value(0).toString().contains(
-                                                     QStringLiteral("SetDesktop")))
-                    ? 1
-                    : 0;
+                m_perOutputSwitchAvailable =
+                    (reply.type() == QDBusMessage::ReplyMessage &&
+                        reply.arguments().value(0).toString().contains(QStringLiteral("SetDesktop")))
+                        ? 1
+                        : 0;
                 if (!m_perOutputSwitchAvailable) {
                     qWarning() << "KWinWorkspaceState: workspace-tracker effect has no SetDesktop; "
                                   "falling back to switching the active output's desktop";
@@ -347,16 +360,20 @@ void KWinWorkspaceState::switchTo(const QString& id, const QString& output) {
             }
 
             if (m_perOutputSwitchAvailable == 1) {
-                QDBusMessage msg = QDBusMessage::createMethodCall(
-                    QStringLiteral("org.kde.KWin"), QStringLiteral("/Caelestia/Workspaces"), QStringLiteral("org.caelestia.Workspaces"), QStringLiteral("SetDesktop"));
+                QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"),
+                    QStringLiteral("/Caelestia/Workspaces"), QStringLiteral("org.caelestia.Workspaces"),
+                    QStringLiteral("SetDesktop"));
                 msg << output << indexForId(targetUuid);
                 QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
                 return;
             }
         }
 
-        QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Set"));
-        msg << QStringLiteral("org.kde.KWin.VirtualDesktopManager") << QStringLiteral("current") << QVariant::fromValue(QDBusVariant(targetUuid));
+        QDBusMessage msg =
+            QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+                QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("Set"));
+        msg << QStringLiteral("org.kde.KWin.VirtualDesktopManager") << QStringLiteral("current")
+            << QVariant::fromValue(QDBusVariant(targetUuid));
         QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
     }
 }
@@ -366,17 +383,21 @@ void KWinWorkspaceState::setDesktop(int desktopId) {
 }
 
 void KWinWorkspaceState::nextDesktop() {
-    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("nextDesktop"));
+    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+        QStringLiteral("org.kde.KWin"), QStringLiteral("nextDesktop"));
     QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
 }
 
 void KWinWorkspaceState::previousDesktop() {
-    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"), QStringLiteral("org.kde.KWin"), QStringLiteral("previousDesktop"));
+    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+        QStringLiteral("org.kde.KWin"), QStringLiteral("previousDesktop"));
     QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
 }
 
 void KWinWorkspaceState::createWorkspace(const QString& name) {
-    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("createDesktop"));
+    QDBusMessage msg =
+        QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+            QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("createDesktop"));
     msg << std::numeric_limits<uint32_t>::max() << name;
     QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
 }
@@ -385,7 +406,9 @@ void KWinWorkspaceState::removeWorkspace(const QString& id) {
     const QString targetUuid = resolveDesktopUuid(id);
 
     if (!targetUuid.isEmpty()) {
-        QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"), QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("removeDesktop"));
+        QDBusMessage msg =
+            QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
+                QStringLiteral("org.kde.KWin.VirtualDesktopManager"), QStringLiteral("removeDesktop"));
         msg << targetUuid;
         QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
     }
@@ -416,7 +439,8 @@ void KWinWorkspaceState::onDesktopRemoved(const QString& id) {
     updateActiveId();
 }
 
-void KWinWorkspaceState::onDesktopDataChanged(const QString& id, const caelestia::services::KWinDesktopData& desktopData) {
+void KWinWorkspaceState::onDesktopDataChanged(
+    const QString& id, const caelestia::services::KWinDesktopData& desktopData) {
     for (auto& d : m_desktops) {
         if (d.id == id) {
             d = desktopData;

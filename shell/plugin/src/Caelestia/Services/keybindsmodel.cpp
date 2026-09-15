@@ -178,8 +178,8 @@ QVariantList KeybindsModel::query(const QString& searchText) const {
             sc->description().toLower().contains(lower) || sc->name().toLower().contains(lower)) {
 
             QJsonObject defaults = caelestia::config::defaultKeybinds();
-            result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() }, { QStringLiteral("name"), sc->name() },
-                { QStringLiteral("description"), sc->description() },
+            result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
+                { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
                 { QStringLiteral("isOverridden"), defaults.value(sc->name()).toString() != sc->key() } });
         }
     }
