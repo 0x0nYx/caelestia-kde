@@ -190,8 +190,8 @@ Item {
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
                             text: {
-                                const min = Weather.formatTemp(forecastItem.modelData.minTempC).slice(0, -1);
-                                const max = Weather.formatTemp(forecastItem.modelData.maxTempC).slice(0, -1);
+                                const min = Weather.formatTemp(forecastItem.modelData.minTempC, true);
+                                const max = Weather.formatTemp(forecastItem.modelData.maxTempC, true);
                                 return `${min} / ${max}`;
                             }
                             font: Tokens.font.body.builders.small.weight(Font.DemiBold).build()

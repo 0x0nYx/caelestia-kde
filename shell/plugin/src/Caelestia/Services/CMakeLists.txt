@@ -27,7 +27,6 @@ qml_module(caelestia-services
         ${CAVA_SOURCES}
         tickingservice.cpp
         sensorslib.cpp
-        usagefmt.cpp
         networkusage.cpp
         networkusage.hpp
         cpu.cpp

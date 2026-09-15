@@ -39,13 +39,31 @@ PageBase {
 
     Component.onCompleted: Weather.reload()
 
-    // Temperature units (index 0 = Celsius, 1 = Fahrenheit — matches Weather.formatTemp)
+    // Temperature units (there must be one for each value of the TemperatureUnit enum)
     readonly property list<MenuItem> tempItems: [
         MenuItem {
-            text: "°C"
+            text: qsTr("°C")
+            value: TemperatureUnit.Celsius
         },
         MenuItem {
-            text: "°F"
+            text: qsTr("°F")
+            value: TemperatureUnit.Fahrenheit
+        },
+        MenuItem {
+            text: qsTr("K")
+            value: TemperatureUnit.Kelvin
+        }
+    ]
+
+    // Data size units (there must be one for each value of the DataUnit enum)
+    readonly property list<MenuItem> dataItems: [
+        MenuItem {
+            text: qsTr("Binary (KiB, MiB)")
+            value: DataUnit.Binary
+        },
+        MenuItem {
+            text: qsTr("Decimal (KB, MB)")
+            value: DataUnit.Decimal
         }
     ]
 
@@ -362,17 +380,25 @@ PageBase {
             label: qsTr("Temperature")
             subtext: qsTr("Units for weather temperatures")
             menuItems: root.tempItems
-            active: root.tempItems[GlobalConfig.services.useFahrenheit ? 1 : 0]
-            onSelected: item => GlobalConfig.services.useFahrenheit = root.tempItems.indexOf(item) === 1
+            active: root.tempItems.find(i => i.value === GlobalConfig.services.weatherUnits)
+            onSelected: item => GlobalConfig.services.weatherUnits = item.value
+        }
+
+        SelectRow {
+            label: qsTr("System temperatures")
+            subtext: qsTr("Units for CPU and GPU temperatures")
+            menuItems: root.tempItems
+            active: root.tempItems.find(i => i.value === GlobalConfig.services.sensorUnits)
+            onSelected: item => GlobalConfig.services.sensorUnits = item.value
         }
 
         SelectRow {
             last: true
-            label: qsTr("System temperatures")
-            subtext: qsTr("Units for CPU and GPU temperatures")
-            menuItems: root.tempItems
-            active: root.tempItems[GlobalConfig.services.useFahrenheitPerformance ? 1 : 0]
-            onSelected: item => GlobalConfig.services.useFahrenheitPerformance = root.tempItems.indexOf(item) === 1
+            label: qsTr("Data sizes")
+            subtext: qsTr("Units for data sizes and network speeds")
+            menuItems: root.dataItems
+            active: root.dataItems.find(i => i.value === GlobalConfig.services.dataUnits)
+            onSelected: item => GlobalConfig.services.dataUnits = item.value
         }
 
         // Time & date

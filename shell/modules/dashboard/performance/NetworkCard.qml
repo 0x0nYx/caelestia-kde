@@ -122,10 +122,7 @@ StyledRect {
             }
 
             StyledText {
-                text: {
-                    const fmt = NetworkUsage.formatBytesRate(NetworkUsage.downloadSpeed ?? 0);
-                    return fmt ? `${fmt.value.toFixed(1)} ${fmt.unit}` : "0.0 B/s";
-                }
+                text: Units.formatBytes(NetworkUsage.downloadSpeed ?? 0, true)
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3tertiary
             }
@@ -153,10 +150,7 @@ StyledRect {
             }
 
             StyledText {
-                text: {
-                    const fmt = NetworkUsage.formatBytesRate(NetworkUsage.uploadSpeed ?? 0);
-                    return fmt ? `${fmt.value.toFixed(1)} ${fmt.unit}` : "0.0 B/s";
-                }
+                text: Units.formatBytes(NetworkUsage.uploadSpeed ?? 0, true)
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3secondary
             }
@@ -184,11 +178,7 @@ StyledRect {
             }
 
             StyledText {
-                text: {
-                    const down = NetworkUsage.formatBytes(NetworkUsage.downloadTotal ?? 0);
-                    const up = NetworkUsage.formatBytes(NetworkUsage.uploadTotal ?? 0);
-                    return (down && up) ? `↓${down.value.toFixed(1)}${down.unit} ↑${up.value.toFixed(1)}${up.unit}` : "↓0.0B ↑0.0B";
-                }
+                text: `↓${Units.formatBytes(NetworkUsage.downloadTotal ?? 0)} ↑${Units.formatBytes(NetworkUsage.uploadTotal ?? 0)}`
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
