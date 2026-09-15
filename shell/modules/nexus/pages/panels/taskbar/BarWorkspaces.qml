@@ -110,6 +110,14 @@ while (count > v) {
         }
 
         ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Show unoccupied")
+            subtext: qsTr("Show workspaces that are inactive and empty")
+            checked: Config.bar.workspaces.showUnoccupied
+            onToggled: GlobalConfig.bar.workspaces.showUnoccupied = checked
+        }
+
+        ToggleRow {
             text: qsTr("Windows on special workspaces")
             checked: Config.bar.workspaces.showWindowsOnSpecialWorkspaces
             onToggled: GlobalConfig.bar.workspaces.showWindowsOnSpecialWorkspaces = checked
