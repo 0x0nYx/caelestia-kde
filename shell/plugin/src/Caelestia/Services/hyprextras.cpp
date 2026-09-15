@@ -20,7 +20,7 @@ HyprExtras::HyprExtras(QObject* parent)
     , m_devices(new HyprDevices(this)) {
     const auto his = qEnvironmentVariable("HYPRLAND_INSTANCE_SIGNATURE");
     if (his.isEmpty()) {
-        qCDebug(lcHypr) << "Hyprland socket unavailable; using the KDE compatibility path.";
+        qCDebug(lcHypr) << "Hyprland-specific extras are disabled without a Hyprland instance.";
         return;
     }
 

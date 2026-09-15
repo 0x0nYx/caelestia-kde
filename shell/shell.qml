@@ -187,11 +187,11 @@ ShellRoot {
     BluetoothReconnect {}
 
     // Force service initialization
-    property var _arpcInit: DiscordRPC
+    property var _arpcInit: null
 
-    property var _gameModeInit: GameMode
+    property var _gameModeInit: null
 
-    property var _updateCheckerInit: UpdateChecker
+    property var _updateCheckerInit: null
 
-    property var _autoSchemeInit: AutoScheme
+    property var _autoSchemeInit: null
 }
