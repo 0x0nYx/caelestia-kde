@@ -92,7 +92,10 @@ StyledRect {
             id: items
 
             model: ScriptModel {
-                values: SystemTray.items.values.filter(i => !GlobalConfig.bar.tray.hiddenIcons.includes(i.id))
+                // Passive items are hidden by the protocol and by upstream's bar; TrayItem's
+                // trayIndex and the popout names in popouts/Content.qml both come from this
+                // same filter, so it must match the one there exactly.
+                values: SystemTray.items.values.filter(i => i.status !== Status.Passive && !GlobalConfig.bar.tray.hiddenIcons.includes(i.id))
             }
 
             TrayItem {
