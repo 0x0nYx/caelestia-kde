@@ -41,23 +41,6 @@ ShellRoot {
         value: root
     }
 
-    // Several QtCore.Settings {} elements throughout the codebase (BlurOffsets,
-    // ContentWindow, UpdateChecker) rely on QCoreApplication's organization/app
-    // identifiers to build their QSettings storage path. Quickshell's host
-    // binary never sets these, so QSettings previously failed to initialize
-    // (status code 1) with "application identifiers have not been set"
-    // warnings everywhere. Setting Qt.application.* here runs during this
-    // object's property-binding phase, which always completes (for the whole
-    // tree) before any child's componentComplete/Component.onCompleted -
-    // i.e. before any Settings {} element is finalized - so this reliably
-    // fixes it project-wide from a single place.
-    readonly property bool _appIdentifiersSet: (function() {
-        Qt.application.organization = "Caelestia";
-        Qt.application.domain = "caelestia.dots";
-        Qt.application.name = "caelestia-shell";
-        return true;
-    })()
-
     // UI translations. The catalogues live next to the shell (shell/translations,
     // installed as <shell>/translations/caelestia_<code>.qm), so resolving the
     // path relative to this file works both from the install tree and when
@@ -114,13 +97,27 @@ ShellRoot {
         }
     }
 
-    ConfigToasts {}
     Shortcuts {}
     ScreenCorners {}
 
     Component.onCompleted: {
-        Qt.callLater(() => { Weather.reload(); });
-        PluginLoader.loadPlugins();
+        deferredStartup.start();
+    }
+
+    Timer {
+        id: deferredStartup
+
+        interval: 250
+        repeat: false
+
+        onTriggered: {
+            PluginLoader.loadPlugins();
+            bbdxCheckProcess.running = true;
+            root._arpcInit = DiscordRPC;
+            root._gameModeInit = GameMode;
+            root._updateCheckerInit = UpdateChecker;
+            root._autoSchemeInit = AutoScheme;
+        }
     }
 
     Services.StartupTasks {}
@@ -129,7 +126,7 @@ ShellRoot {
     Process {
         id: bbdxCheckProcess
 
-        running: true
+        running: false
         command: ["bash", "-c", `
             IS_ENABLED=$(kreadconfig6 --file kwinrc --group Plugins --key better_blur_dxEnabled)
             if [ "$IS_ENABLED" = "true" ]; then
@@ -190,11 +187,11 @@ ShellRoot {
     BluetoothReconnect {}
 
     // Force service initialization
-    property var _arpcInit: DiscordRPC
+    property var _arpcInit: null
 
-    property var _gameModeInit: GameMode
+    property var _gameModeInit: null
 
-    property var _updateCheckerInit: UpdateChecker
+    property var _updateCheckerInit: null
 
-    property var _autoSchemeInit: AutoScheme
+    property var _autoSchemeInit: null
 }

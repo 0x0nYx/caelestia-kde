@@ -124,12 +124,22 @@ Item {
         }
     }
 
-    ServiceRef {
-        service: Audio.cava
+    // The audio services are refcounted, and holding them open costs two analysis threads
+    // running whether or not there is anything to analyse. These shapes are only shown while
+    // media plays (on the desktop) or while the media view is up (in the dashboard), so the
+    // reference belongs to that state and not to the shapes existing at all.
+    Loader {
+        active: root.visible
+        sourceComponent: ServiceRef {
+            service: Audio.cava
+        }
     }
 
-    ServiceRef {
-        service: Audio.beatTracker
+    Loader {
+        active: root.visible
+        sourceComponent: ServiceRef {
+            service: Audio.beatTracker
+        }
     }
 
     FrameAnimation {

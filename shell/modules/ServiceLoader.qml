@@ -5,20 +5,28 @@ import qs.services
 
 Scope {
     Component.onCompleted: {
-        // Force certain singletons to load on shell init instead of lazily
-
-        // First, so that settings the rest of the shell is about to read are in the
-        // shape it reads them in.
+        // Keep configuration migration and notification registration ahead of
+        // other applications, then defer the rest until the shell has started.
         ConfigMigrations;
-
-        IdleInhibitor;
-        GameMode;
         Notifs;
-        Players;
-        Brightness;
-        Weather.reload();
+    }
 
-        if (GlobalConfig.utilities.vpn.enabled)
-            VPN;
+    Timer {
+        id: deferredServices
+
+        interval: 250
+        repeat: false
+        running: true
+
+        onTriggered: {
+            IdleInhibitor;
+            GameMode;
+            Players;
+            Brightness;
+            Weather.reload();
+
+            if (GlobalConfig.utilities.vpn.enabled)
+                VPN;
+        }
     }
 }

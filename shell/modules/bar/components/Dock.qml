@@ -501,40 +501,29 @@ Item {
                                     
                                     if (Kwin.activeWindow) {
                                         activeAddr = Kwin.activeWindow.address ? String(Kwin.activeWindow.address) : "";
-                                        Logger.log("Dock debug: KWin activeWindow address is:", activeAddr);
                                     } else if (root.activeTop && root.activeTop.address) {
                                         activeAddr = String(root.activeTop.address);
-                                        Logger.log("Dock debug: Hyprland activeTop address is:", activeAddr);
-                                    } else {
-                                        Logger.log("Dock debug: No active window detected!");
                                     }
 
-                                    Logger.log("Dock debug: Checking", modelData.toplevels.length, "toplevels for app.");
                                     for (let i = 0; i < modelData.toplevels.length; i++) {
                                         let top = modelData.toplevels[i];
                                         let topAddr = String(top.address);
                                         let isMinimized = top.minimized || false;
-                                        Logger.log("Dock debug: Toplevel", i, "address:", topAddr, "focused:", top.focused, "minimized:", isMinimized);
                                         if (!isMinimized && (top.focused || (activeAddr !== "" && activeAddr === topAddr))) {
                                             activeIdx = i;
-                                            Logger.log("Dock debug: Match found at index", i);
                                             break;
                                         }
                                     }
-                                    
-                                    Logger.log("Dock debug: Final activeIdx:", activeIdx);
                                     
                                     const isKWin = (Kwin.windowList.length > 0);
                                     
                                     if (modelData.toplevels.length === 1) {
                                         let addr = String(modelData.toplevels[0].address);
                                         if (activeIdx === 0) {
-                                            Logger.log("Dock debug: Single window, currently focused. Minimizing.");
                                             if (isKWin) {
                                                 Kwin.minimizeWindow(addr);
                                             }
                                         } else {
-                                            Logger.log("Dock debug: Single window, NOT focused. Focusing.");
                                             if (isKWin) {
                                                 Kwin.focusWindow(addr);
                                             } else {
@@ -544,7 +533,6 @@ Item {
                                     } else {
                                         let nextIdx = activeIdx !== -1 ? (activeIdx + 1) % modelData.toplevels.length : 0;
                                         let addr = String(modelData.toplevels[nextIdx].address);
-                                        Logger.log("Dock debug: Multiple windows. Cycling to index", nextIdx);
                                         if (isKWin) {
                                             Kwin.focusWindow(addr);
                                         } else {

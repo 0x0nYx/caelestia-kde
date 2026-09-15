@@ -39,8 +39,11 @@ Item {
         onTriggered: Players.active?.positionChanged()
     }
 
-    ServiceRef {
-        service: Audio.beatTracker
+    Loader {
+        active: root.visible && (Players.active?.isPlaying ?? false)
+        sourceComponent: ServiceRef {
+            service: Audio.beatTracker
+        }
     }
 
     CircularProgress {

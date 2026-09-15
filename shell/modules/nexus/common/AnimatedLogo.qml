@@ -26,6 +26,12 @@ Item {
     readonly property alias star2: star2
     readonly property alias star3: star3
 
+    // Every animation below wakes the main thread at the display refresh rate for
+    // as long as it runs, and the star twinkle never ends. The logo also lives in
+    // windows that are created at startup but stay hidden (the What's New window),
+    // so the animations are tied to the window actually being on screen.
+    readonly property bool onScreen: Window.window ? Window.window.visible : false
+
     signal animationCompleted
 
     implicitWidth: 128
@@ -161,7 +167,7 @@ Item {
     }
 
     SequentialAnimation {
-        running: !root.skipIntroAnimation
+        running: root.onScreen && !root.skipIntroAnimation
         onFinished: root.animationCompleted()
 
         ParallelAnimation {
@@ -369,7 +375,7 @@ Item {
     }
 
     SequentialAnimation {
-        running: true
+        running: root.onScreen
         loops: Animation.Infinite
 
         PauseAnimation {

@@ -18,6 +18,16 @@ export QS_DISABLE_CRASH_HANDLER=1
 export QSG_RENDER_LOOP=threaded
 export QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
 
+# Quickshell imports its Hyprland IPC module even on KDE for API compatibility.
+# Its missing-socket warning is expected when this KDE port has no Hyprland instance.
+if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+	if [[ -n "${QT_LOGGING_RULES:-}" ]]; then
+		export QT_LOGGING_RULES="${QT_LOGGING_RULES};quickshell.hyprland.ipc.warning=false"
+	else
+		export QT_LOGGING_RULES="quickshell.hyprland.ipc.warning=false"
+	fi
+fi
+
 # No --daemonize: the autostart entry runs under a systemd user unit, which
 # supervises the process and connects its output to the journal. Detaching would
 # hand every application the shell launches a stdout that goes nowhere, and

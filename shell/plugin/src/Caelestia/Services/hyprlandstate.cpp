@@ -19,10 +19,7 @@ HyprlandState::HyprlandState(QObject* parent)
     const auto his = qEnvironmentVariable("HYPRLAND_INSTANCE_SIGNATURE");
     if (his.isEmpty()) {
         m_kdeFallback = true;
-        qCWarning(lcHyprState) << "$HYPRLAND_INSTANCE_SIGNATURE is unset. Using KDE (PlasmaWindows) bridge.";
-        qCWarning(lcHyprState) << "The KDE bridge only backs windowList, windowByAddress, addresses and activeWindow."
-                                  " workspaces, workspaceById, workspaceIds, activeWorkspace, monitors and layers"
-                                  " have no KDE source and stay empty - check kdeFallback before reading them.";
+        qCDebug(lcHyprState) << "Using the KDE (PlasmaWindows) bridge for Hyprland state.";
         auto* pw = PlasmaWindows::instance();
         connect(pw, &PlasmaWindows::windowAdded, this, &HyprlandState::onKWinWindowListChanged);
         connect(pw, &PlasmaWindows::handleLost, this, &HyprlandState::onKWinWindowListChanged);

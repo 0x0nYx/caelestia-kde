@@ -198,23 +198,23 @@ Item {
         finalized = false;
         pendingMeta = 0;
 
-        let configHome = Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config");
         // The plugin helper ships with the shell, so it is found wherever the
         // shell is installed instead of only under ~/.config.
         let script = Quickshell.shellPath("scripts/list-plugins.sh");
+        // The bundled plugins live in the same tree, whose location the helper
+        // cannot guess (it defaults to the checkout path), so it is passed in.
+        let bundledPlugins = Quickshell.shellPath("modules/plugins");
 
         let proc = Qt.createQmlObject(`
             import Quickshell.Io
             Process {
-                command: ["bash", "${script}"]
+                command: ["bash", "${script}", "${bundledPlugins}"]
                 stdout: StdioCollector { id: out }
                 stderr: StdioCollector { id: err }
                 onExited: (code) => {
-                    console.log("listPluginsProc exited with code:", code, "stdout:", out.text, "stderr:", err.text);
                     if (code === 0) {
                         try {
                             let list = JSON.parse(out.text);
-                            console.log("Parsed plugin list, length:", list.length);
                             if (list.length === 0) {
                                 pluginLoader.checkAndFinalize();
                             }
@@ -226,6 +226,7 @@ Item {
                             pluginLoader.checkAndFinalize();
                         }
                     } else {
+                        console.log("listPluginsProc exited with code:", code, "stderr:", err.text);
                         pluginLoader.checkAndFinalize();
                     }
                     destroy();
