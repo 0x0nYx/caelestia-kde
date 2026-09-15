@@ -16,6 +16,19 @@ ColumnLayout {
     property real fontScale: 1.0
     property bool _isSidebarOpen: false
 
+    // PowerProfiles.degradationReason is an enum; printing it directly showed the
+    // enum member name ("HighTemperature") rather than something a user reads.
+    function perfDegradationToString(p: int): string {
+        switch (p) {
+        case PerformanceDegradationReason.HighTemperature:
+            return qsTr("The device is too hot");
+        case PerformanceDegradationReason.LapDetected:
+            return qsTr("The device is on a lap");
+        default:
+            return qsTr("Unknown reason");
+        }
+    }
+
     width: Math.max(300 * scaleOffset, _isSidebarOpen ? (Tokens.sizes.sidebar.width * scaleOffset) - Tokens.padding.extraLargeIncreased : 0)
     spacing: Tokens.spacing.medium * scaleOffset
 
@@ -179,7 +192,7 @@ ColumnLayout {
                     StyledText {
                         function formatSeconds(s: int, fallback: string): string {
                             const day = Math.floor(s / 86400);
-                            const hr = Math.floor(s / 3600) % 60;
+                            const hr = Math.floor(s / 3600) % 24;
                             const min = Math.floor(s / 60) % 60;
 
                             let comps = [];
@@ -238,7 +251,7 @@ ColumnLayout {
 
                             StyledText {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: qsTr("Degraded: %1").arg(PerformanceDegradationReason.toString(PowerProfiles.degradationReason))
+                                text: qsTr("Performance degraded: %1").arg(root.perfDegradationToString(PowerProfiles.degradationReason))
                                 color: Colours.palette.m3onError
                                 font.pointSize: Tokens.font.mono.medium.pointSize * root.fontScale
                             }
