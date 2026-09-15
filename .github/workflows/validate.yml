@@ -251,6 +251,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Two commits, so a push can diff against its parent.
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v5
