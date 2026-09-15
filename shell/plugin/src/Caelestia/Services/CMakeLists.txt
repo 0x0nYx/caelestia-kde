@@ -90,6 +90,7 @@ qml_module(caelestia-services
         NmQt.cpp
         NmQt.hpp
     LIBRARIES
+        Qt::Concurrent
         Qt::DBus
         Qt::Network
         Qt::Gui
