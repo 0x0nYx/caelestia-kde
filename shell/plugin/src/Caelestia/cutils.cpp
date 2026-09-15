@@ -16,6 +16,8 @@
 #include <KModifierKeyInfo>
 #include <QCursor>
 
+#include "util/metaenum.hpp"
+
 Q_LOGGING_CATEGORY(lcCUtils, "caelestia.cutils", QtInfoMsg)
 
 namespace caelestia {
@@ -97,6 +99,12 @@ void CUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
     }
 
     const QSharedPointer<const QQuickItemGrabResult> grabResult = target->grabToImage();
+    if (!grabResult) {
+        // grabToImage() returns null when the item's window is hidden or otherwise
+        // not renderable; connecting to a null result would warn and never fire.
+        qCWarning(lcCUtils) << "saveItem: failed to grab" << target;
+        return;
+    }
 
     QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, this,
         [grabResult, scaledRect, path, onSaved, onFailed, this]() {
@@ -189,7 +197,7 @@ QString CUtils::sha256(const QString& path) {
     hash.addData(&file);
     file.close();
 
-    return hash.result().toHex();
+    return QString::fromLatin1(hash.result().toHex());
 }
 
 void CUtils::enableBlurBehind(QQuickWindow* window, bool enable) {
@@ -204,6 +212,22 @@ qreal CUtils::clamp(qreal value, qreal min, qreal max) {
 
 void CUtils::setCursorPos(int x, int y) {
     QCursor::setPos(x, y);
+}
+
+QString CUtils::enumToString(const QVariant& value) {
+    const auto type = value.metaType();
+    if (!util::isSupportedEnum(type)) {
+        qCWarning(lcCUtils, "enumToString: %s is not a supported enum", type.isValid() ? type.name() : "the value");
+        return {};
+    }
+
+    const auto* key = util::enumKeyFor(util::metaEnumFor(type), value);
+    if (!key) {
+        qCWarning(lcCUtils, "enumToString: no enumerator of %s has the value %lld", type.name(), value.toLongLong());
+        return {};
+    }
+
+    return QString::fromUtf8(key);
 }
 
 #ifndef CAELESTIA_VERSION

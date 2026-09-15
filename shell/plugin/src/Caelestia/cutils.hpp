@@ -42,6 +42,10 @@ public:
     Q_INVOKABLE static qreal clamp(qreal value, qreal min, qreal max);
     Q_INVOKABLE static void setCursorPos(int x, int y);
 
+    // Renders an enum value as its enumerator name; empty when the value has no
+    // readable name, so callers can fall back to their own text.
+    Q_INVOKABLE static QString enumToString(const QVariant& value);
+
     Q_INVOKABLE bool isKeyPressed(int key) const;
     Q_INVOKABLE bool isAltPressed() const;
     Q_INVOKABLE bool isMetaPressed() const;
