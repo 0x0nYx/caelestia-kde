@@ -30,33 +30,9 @@ PageBase {
     }
 
     function refreshIdleSuspendState(): void {
-        root.idleSuspendEnabledState = root.suspendTimeoutEnabled();
-        root.idleSuspendMinutesState = root.suspendTimeoutMinutes();
-    }
-
-    function suspendTimeoutMinutes(): int {
-        const entries = GlobalConfig.general.idle.timeouts ?? [];
-
-        for (const entry of entries) {
-            if (IdleActions.isSuspendIdleAction(entry.idleAction)) {
-                const seconds = Number(entry.timeout);
-                if (isFinite(seconds) && seconds > 0)
-                    return Math.max(1, Math.round(seconds / 60));
-            }
-        }
-
-        return 10;
-    }
-
-    function suspendTimeoutEnabled(): bool {
-        const entries = GlobalConfig.general.idle.timeouts ?? [];
-
-        for (const entry of entries) {
-            if (IdleActions.isSuspendIdleAction(entry.idleAction))
-                return entry.enabled ?? false;
-        }
-
-        return false;
+        const seconds = IdleActions.suspendSeconds;
+        root.idleSuspendEnabledState = seconds > 0;
+        root.idleSuspendMinutesState = seconds > 0 ? Math.round(seconds / 60) : 10;
     }
 
     function setSuspendTimeoutMinutes(minutes: int): void {
