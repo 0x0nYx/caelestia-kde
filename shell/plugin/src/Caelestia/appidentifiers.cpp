@@ -36,15 +36,13 @@ void registerDefaultFonts() {
 
     const QString shellConfig = qEnvironmentVariable("CAELESTIA_SHELL_CONFIG");
     const QString shellFonts = shellConfig.isEmpty()
-        ? QString()
-        : QFileInfo(shellConfig).absoluteDir().filePath(QStringLiteral("assets/fonts"));
+                                   ? QString()
+                                   : QFileInfo(shellConfig).absoluteDir().filePath(QStringLiteral("assets/fonts"));
     const QString dataHome = qEnvironmentVariable("XDG_DATA_HOME", QDir::homePath() + QStringLiteral("/.local/share"));
     const QString dataFonts = QDir(dataHome).filePath(QStringLiteral("caelestia/assets/fonts"));
     const QStringList roots = { shellFonts, dataFonts };
-    const QStringList relativePaths = {
-        QStringLiteral("SF-Pro/SF-Pro.ttf"),
-        QStringLiteral("SF-Mono/SF-Mono-Regular.otf")
-    };
+    const QStringList relativePaths = { QStringLiteral("SF-Pro/SF-Pro.ttf"),
+        QStringLiteral("SF-Mono/SF-Mono-Regular.otf") };
 
     // QML FontLoader registers these families after the first shell objects can
     // already paint. Register the two defaults while the Caelestia module is

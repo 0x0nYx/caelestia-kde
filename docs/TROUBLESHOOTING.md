@@ -15,6 +15,7 @@ This document catalogs known failure modes, error conditions, and edge cases dis
 5. [Configuration Issues](#5-configuration-issues)
 6. [Network & Proxy Issues](#6-network--proxy-issues)
 7. [KDE & Plasma Specific Issues](#7-kde--plasma-specific-issues)
+   1. [Installer Window Rules](#77-installer-window-rules)
 8. [Post-Install Issues](#8-post-install-issues)
 9. [Uninstall Issues](#9-uninstall-issues)
 10. [Update Issues](#10-update-issues)
@@ -525,6 +526,62 @@ sudo /usr/share/sddm/themes/caelestia/scripts/sync.sh   # SDDM
 
 Both greeters read their configuration when they start, so a change is visible at
 the next logout rather than immediately.
+
+### 7.7 Installer Window Rules
+
+The installer writes three groups into `~/.config/kwinrulesrc`. `caelestia-opacity`
+gives normal windows and dialogs an inactive opacity of 95 percent,
+`caelestia-dialogs` forces centered placement on dialogs, and `caelestia-pip` keeps
+windows whose title matches `Picture(-| )in(-| )[Pp]icture` above others. Opacity is
+a per-activation-state key, so a window is dimmed only while it is not focused, and
+the dialog rule is the one that can disagree with a placement policy chosen in
+System Settings.
+
+A group only takes effect if the index names it. `[General] rules=` is the list KWin
+loads its rule groups from, and a group that is present in the file but missing from
+that list is never loaded, and is removed the next time KWin saves the file. The
+installer writes the list as the union of the entries that were already in it, every
+group the file holds and its own three names, with `count` set to the number of
+entries, so the user's own rules are named alongside ours and keep their order.
+
+To read a value back:
+
+```bash
+kreadconfig6 --file kwinrulesrc --group caelestia-opacity --key opacityinactive
+kreadconfig6 --file kwinrulesrc --group caelestia-dialogs --key placement
+kreadconfig6 --file kwinrulesrc --group caelestia-pip --key above
+kreadconfig6 --file kwinrulesrc --group General --key rules
+```
+
+To remove the rules, delete the three `[caelestia-...]` sections out of the file, or
+delete the key that switches each group on. A group that is deleted has to leave the
+index with it, or the list keeps a name whose group is gone and `count` no longer
+matches it. `uninstall.sh` removes the keys, strips the three names out of the list,
+rewrites `count`, and deletes both index keys once no name is left. KWin does not
+watch kwinrulesrc, so the reload is not optional:
+
+```bash
+kwriteconfig6 --file kwinrulesrc --group caelestia-opacity \
+    --key opacityinactiverule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-dialogs \
+    --key placementrule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-pip --key aboverule --delete
+qdbus6 org.kde.KWin /KWin reconfigure
+```
+
+Those commands delete each group's `*rule` key, which is the action. The match keys
+are left behind, and a group that matches but carries no action is empty as far as
+KWin is concerned: it discards such a rule once a window it matches has been
+withdrawn, so the residue is harmless.
+
+A window that is already open keeps what a rule forced on it. Opacity and keep-above
+are set on the window itself, so an open window stays dimmed or pinned after the rules
+are gone, until it is closed and reopened or another rule forces the value back. Only
+windows created after the removal start clean.
+
+The installer always applies the rules; `APPLY_WINDOW_RULES=false` is an override
+for running the step by hand (`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`).
+`WINDOW_OPACITY` changes the percentage the opacity rule writes.
 
 ---
 

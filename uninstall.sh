@@ -363,7 +363,11 @@ if [[ -z "$SELECTED_KNSV" ]]; then
     MANUAL_KDE_RESTORE_COUNT=0
     if [[ -n "$SELECTED_BACKUP" ]]; then
         info "Restoring core KDE configuration files from backup..."
-        for kde_cfg in kdeglobals ksplashrc plasmarc kwinrc kcminputrc plasma-org.kde.plasma.desktop-appletsrc; do
+        # kwinrulesrc belongs in this list because 00-backup-themes.sh saves it with
+        # the other KDE configuration files, so the fallback has to put it back.
+        for kde_cfg in \
+            kdeglobals ksplashrc plasmarc kwinrc kwinrulesrc kcminputrc \
+            plasma-org.kde.plasma.desktop-appletsrc; do
             if [[ -f "$SELECTED_BACKUP/.config/$kde_cfg" ]]; then
                 if cp "$SELECTED_BACKUP/.config/$kde_cfg" "$HOME/.config/$kde_cfg"; then
                     ((MANUAL_KDE_RESTORE_COUNT++))
@@ -394,6 +398,55 @@ kwriteconfig6 --file kwinrc --group "Plugins" --key "quickshell-kde-bridgeEnable
 kwriteconfig6 --file kwinrc --group "Plugins" --key "krohnkiteEnabled"             "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "kwin_workspace_trackerEnabled" "false" 2>/dev/null || true
 ok "Disabled KWin plugins: quickshell-kde-bridge, krohnkite, kwin_workspace_tracker"
+
+# The three rule groups the installer writes are removed one key at a time. The
+# list is explicit rather than a file-wide reset because kwinrulesrc also holds the
+# user's own rules, and kwriteconfig6 can only delete a key, never a whole group.
+# A group leaves the file once no keys are left in it. scripts/04a-window-rules.sh
+# owns this key list: changing one means changing the other.
+kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "Description"         --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "types"               --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "opacityinactive"     --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "opacityinactiverule" --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-dialogs" --key "Description"         --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-dialogs" --key "types"               --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-dialogs" --key "placement"           --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-dialogs" --key "placementrule"       --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "Description"         --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "title"               --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "titlematch"          --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "above"               --delete 2>/dev/null || true
+kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "aboverule"           --delete 2>/dev/null || true
+
+# [General] rules= is the index of the rule groups: KWin loads the groups that list
+# names and nothing else, so our names have to leave it as well, or the file keeps
+# an index entry for three groups that are no longer there. The user's own names are
+# kept, in their order, and count= is rewritten to the number that is left. Both
+# keys go only once no name is left, which is the shape the file had before the
+# install. scripts/04a-window-rules.sh owns this index: changing one means changing
+# the other.
+KEPT_RULE_NAMES=()
+KEPT_RULE_COUNT=0
+while IFS= read -r rule_name; do
+    rule_name="${rule_name#"${rule_name%%[![:space:]]*}"}"
+    rule_name="${rule_name%"${rule_name##*[![:space:]]}"}"
+    [[ -n "$rule_name" ]] || continue
+    case "$rule_name" in
+        caelestia-opacity|caelestia-dialogs|caelestia-pip) continue ;;
+    esac
+    KEPT_RULE_NAMES+=("$rule_name")
+    KEPT_RULE_COUNT=$((KEPT_RULE_COUNT + 1))
+done <<< "$(kreadconfig6 --file kwinrulesrc --group General --key rules 2>/dev/null | tr ',' '\n' || true)"
+
+if (( KEPT_RULE_COUNT > 0 )); then
+    KEPT_RULE_LIST="$(IFS=,; printf '%s' "${KEPT_RULE_NAMES[*]}")"
+    kwriteconfig6 --file kwinrulesrc --group General --key rules "$KEPT_RULE_LIST" 2>/dev/null || true
+    kwriteconfig6 --file kwinrulesrc --group General --key count "$KEPT_RULE_COUNT" 2>/dev/null || true
+else
+    kwriteconfig6 --file kwinrulesrc --group General --key rules --delete 2>/dev/null || true
+    kwriteconfig6 --file kwinrulesrc --group General --key count --delete 2>/dev/null || true
+fi
+ok "Removed the Caelestia window rules from kwinrulesrc"
 
 kwriteconfig6 --file plasmashellrc --group "Shell" --key "ShellPackage" --delete 2>/dev/null || true
 kwriteconfig6 --file kscreenlockerrc --group "Greeter" --key "Theme" "org.kde.breeze.desktop" 2>/dev/null || true
@@ -846,6 +899,8 @@ fi
 
 section "Step 11 - Reload KDE"
 
+# KWin does not watch kwinrulesrc, so this reload is what applies the rule deletions
+# made in Step 6. The call needs the exact bus name KWin owns, org.kde.KWin.
 qdbus6 org.kde.KWin /KWin reconfigure                    2>/dev/null || true
 systemctl --user restart plasma-kglobalaccel.service      2>/dev/null || true
 kbuildsycoca6 --noincremental                             2>/dev/null || true

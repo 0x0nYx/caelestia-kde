@@ -259,6 +259,7 @@ EOF
         03-deploy-configs.sh
         03a-wallpapers.sh
         04-deploy-kde.sh
+        04a-window-rules.sh
         05-sddm-theme.sh
         06-services.sh
         08-build-shell.sh

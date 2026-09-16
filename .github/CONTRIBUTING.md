@@ -93,6 +93,14 @@ you pass one as the first argument. That is why the run above passes `$PWD`;
 `setup.sh` copies the binary to the repo root instead, where no argument is
 needed.
 
+Adding, removing or reordering a step means bumping `installer/data/tui.version`.
+The step table is compiled into the TUI binary, and `scripts/setup.sh` keys on that
+number alone: it downloads the prebuilt binary published for the version, and
+otherwise reuses a local binary whose stamp matches it. Both paths can hand you a
+binary built before your change, and then the new step silently never runs on a
+fresh install. Bumping makes the prebuilt lookup miss, so the installer compiles
+the tree instead, and the next release publishes the matching binary.
+
 ### For translation changes
 
 ```bash
