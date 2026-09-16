@@ -7,29 +7,48 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 RULES_FILE="kwinrulesrc"
 WINDOW_OPACITY="${WINDOW_OPACITY:-95}"
 RULE_WRITES=0
+RULE_FAILURES=0
 
 # Read every key before writing it, so a second run reports the rules that were
-# already in place instead of claiming a fresh write.
+# already in place instead of claiming a fresh write. The outcome goes back to the
+# caller through an out parameter - written, unchanged or failed - because
+# kwriteconfig6 can reject a write, and a rejected write must not look like one that
+# took effect. The error stream stays on 2>/dev/null, as in 04-deploy-kde.sh, but
+# the exit status is no longer discarded.
 set_rule_key() {
-    local group="$1" key="$2" value="$3" current
+    local group="$1" key="$2" value="$3" outcome_var="$4" current
     current="$(kreadconfig6 --file "$RULES_FILE" --group "$group" --key "$key" 2>/dev/null || true)"
     if [[ "$current" == "$value" ]]; then
-        return 0
+        printf -v "$outcome_var" '%s' "unchanged"
+    elif kwriteconfig6 --file "$RULES_FILE" --group "$group" --key "$key" "$value" 2>/dev/null; then
+        printf -v "$outcome_var" '%s' "written"
+    else
+        printf -v "$outcome_var" '%s' "failed"
     fi
-    kwriteconfig6 --file "$RULES_FILE" --group "$group" --key "$key" "$value" 2>/dev/null || true
-    RULE_WRITES=$((RULE_WRITES + 1))
 }
 
 # Only the keys of our own named groups are written. kwinrulesrc is the user's
 # file: it is never truncated, [General] is never touched, and unknown groups stay.
+# A rejected write is warned about rather than fatal: the rules are cosmetic and the
+# repo's convention for non-critical work is warn, not die.
 apply_rule_group() {
-    local group="$1" label="$2" before="$RULE_WRITES"
+    local group="$1" label="$2"
     shift 2
+    local outcome="" written=0 failed=0
     while [[ $# -ge 2 ]]; do
-        set_rule_key "$group" "$1" "$2"
+        set_rule_key "$group" "$1" "$2" outcome
+        case "$outcome" in
+            written) written=$((written + 1)) ;;
+            failed) failed=$((failed + 1)) ;;
+        esac
         shift 2
     done
-    if (( RULE_WRITES > before )); then
+    RULE_WRITES=$((RULE_WRITES + written))
+    RULE_FAILURES=$((RULE_FAILURES + failed))
+
+    if (( failed > 0 )); then
+        warn "$failed of $((written + failed)) key(s) for $label could not be written."
+    elif (( written > 0 )); then
         ok "Applied $label."
     else
         skip "$label already in place."
@@ -82,7 +101,9 @@ if [[ "${APPLY_WINDOW_RULES:-true}" == "true" ]]; then
         warn "qdbus6 not found - KWin picks the rules up on its next restart."
     fi
 
-    if (( RULE_WRITES > 0 )); then
+    if (( RULE_FAILURES > 0 )); then
+        warn "Window rules not fully applied: $RULE_FAILURES key(s) rejected, $RULE_WRITES written."
+    elif (( RULE_WRITES > 0 )); then
         ok "Window rules applied."
     else
         skip "Window rules already in place."

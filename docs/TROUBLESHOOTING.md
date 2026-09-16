@@ -558,12 +558,14 @@ kwriteconfig6 --file kwinrulesrc --group caelestia-pip --key aboverule --delete
 qdbus6 org.kde.KWin /KWin reconfigure
 ```
 
-A group left with no keys applies nothing, so leaving the empty section behind is
-harmless. To not have the rules written at all, run the installer with
-`APPLY_WINDOW_RULES=false` in the environment
-(`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`), which is what the installer's
-configuration menu toggle sets; `WINDOW_OPACITY` changes the percentage the opacity
-rule writes.
+Those commands delete each group's `*rule` key, which is the action. The match keys
+are left behind, and a group that matches but carries no action is empty as far as
+KWin is concerned: it discards such a rule once a window it matches has been
+withdrawn, so the residue is harmless.
+
+The installer always applies the rules; `APPLY_WINDOW_RULES=false` is an override
+for running the step by hand (`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`).
+`WINDOW_OPACITY` changes the percentage the opacity rule writes.
 
 ---
 

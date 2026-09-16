@@ -2,10 +2,10 @@
 
 # Window classes Krohnkite leaves untiled. Krohnkite compares an entry against the
 # window class and the resource name exactly, ignoring case, so an app that can
-# report either the bare name or the reverse-DNS class gets both spellings. An
-# entry that is a prefix of a longer one goes first, because the membership probe
-# below is a word-boundary grep. The entries from org.pulseaudio.pavucontrol on
-# are the dialog and settings classes upstream Hyprland floats.
+# report either the bare name or the reverse-DNS class gets both spellings. The
+# entries from org.pulseaudio.pavucontrol on are the dialog and settings classes
+# upstream Hyprland floats. The order is upstream's and is kept: a run only ever
+# appends the entries the list does not already hold.
 IGNORE_CLASSES=(
     krunner
     yakuake
@@ -36,12 +36,25 @@ IGNORE_CLASSES=(
     swappy
 )
 
+# Membership is an exact comparison of one comma-separated entry, the way Krohnkite
+# compares a class. A substring or word-boundary match is looser than that: it would
+# count my-wev-app as wev, and it would let org.quickshell stand in for the bare
+# quickshell the list needs.
 has_ignore_class() {
-    grep -q "\b${2}\b" <<< "$1"
+    local entry
+    while IFS= read -r entry; do
+        # Spaces are dropped first: a hand-edited list may carry them around a comma,
+        # and no window class contains one.
+        if [[ "${entry//[[:space:]]/}" == "$2" ]]; then
+            return 0
+        fi
+    done < <(printf '%s\n' "$1" | tr ',' '\n')
+    return 1
 }
 
-# The default, and any list the user already customised, gain only the entries
-# they are missing. The write stays unconditional so a shell start re-asserts it.
+# The default, and any list the user already customized, gain only the entries they
+# are missing. The comparison is exact, so a list holding org.quickshell still gains
+# the bare quickshell. The write stays unconditional so a shell start re-asserts it.
 IGNORE_CLASS=$(kreadconfig6 --file kwinrc --group Script-krohnkite --key ignoreClass 2>/dev/null)
 NEW_IGNORE="$IGNORE_CLASS"
 for class in "${IGNORE_CLASSES[@]}"; do
