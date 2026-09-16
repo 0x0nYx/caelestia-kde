@@ -86,6 +86,7 @@ save:
             - plasmarc
             - kdeglobals
             - kwinrc
+            - kwinrulesrc
             - kcminputrc
             - plasmanotifyrc
             - powerdevilrc
