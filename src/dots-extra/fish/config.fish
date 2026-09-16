@@ -34,7 +34,7 @@ if status is-interactive
 
     # Custom colors
     if isatty stdout
-        cat ~/.local/state/caelestia/sequences.txt 2> /dev/null
+        cat ~/.cache/caelestia/terminal-sequences 2> /dev/null
     end
 
     # For jumping between prompts in foot terminal
