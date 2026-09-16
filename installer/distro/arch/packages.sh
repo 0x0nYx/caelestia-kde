@@ -30,7 +30,7 @@ fi
 PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
 
 CORE_PACKAGES=(
-    cmake ninja ccache qt6-tools extra-cmake-modules gcc-libs glibc
+    cmake ninja ccache qt6-tools extra-cmake-modules gcc-libs glibc rsync
 
     wl-clipboard cliphist wl-clip-persist inotify-tools app2unit wireplumber trash-cli jq
 
