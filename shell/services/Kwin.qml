@@ -189,6 +189,10 @@ Singleton {
         KWinWorkspaceState.previousDesktop();
     }
 
+    function setShowingDesktop(showing: bool): void {
+        KWinWorkspaceState.setShowingDesktop(showing);
+    }
+
     function createMonitorMock(name: string, index: int): var {
         const m = Qt.createQmlObject(`
             import QtQuick

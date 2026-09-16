@@ -1,11 +1,11 @@
 #pragma once
 
+#include <QDBusArgument>
 #include <QObject>
+#include <QQmlEngine>
 #include <QStringList>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QQmlEngine>
-#include <QDBusArgument>
 
 class QLocalServer;
 
@@ -17,11 +17,10 @@ struct KWinDesktopData {
     QString name;
 };
 
-QDBusArgument &operator<<(QDBusArgument &argument, const KWinDesktopData &data);
-const QDBusArgument &operator>>(const QDBusArgument &argument, KWinDesktopData &data);
+QDBusArgument& operator<<(QDBusArgument& argument, const KWinDesktopData& data);
+const QDBusArgument& operator>>(const QDBusArgument& argument, KWinDesktopData& data);
 
-class KWinWorkspaceState : public QObject
-{
+class KWinWorkspaceState : public QObject {
     Q_OBJECT
     Q_PROPERTY(int activeId READ activeId NOTIFY activeIdChanged)
     /**
@@ -50,7 +49,7 @@ public:
     int indexForId(const QString& id) const;
     QString uuidForIndex(int index) const;
 
-    explicit KWinWorkspaceState(QObject *parent = nullptr);
+    explicit KWinWorkspaceState(QObject* parent = nullptr);
     ~KWinWorkspaceState() override;
 
     int activeId() const;
@@ -77,6 +76,7 @@ public:
     Q_INVOKABLE void setDesktop(int desktopId);
     Q_INVOKABLE void nextDesktop();
     Q_INVOKABLE void previousDesktop();
+    Q_INVOKABLE void setShowingDesktop(bool showing);
 
 signals:
     void activeIdChanged();
@@ -95,7 +95,8 @@ private slots:
     void onCountChanged(uint count);
     void onRowsChanged(uint rows);
     void onShowingDesktopChanged(bool showing);
-    void onKWinPropertiesChanged(const QString& interface, const QVariantMap& changedProps, const QStringList& invalidatedProps);
+    void onKWinPropertiesChanged(
+        const QString& interface, const QVariantMap& changedProps, const QStringList& invalidatedProps);
 
 private:
     void fetchInitialState();
@@ -122,4 +123,3 @@ private:
 } // namespace caelestia::services
 
 Q_DECLARE_METATYPE(caelestia::services::KWinDesktopData)
-

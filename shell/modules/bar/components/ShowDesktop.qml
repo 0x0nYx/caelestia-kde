@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.services
@@ -21,7 +20,10 @@ Item {
         Accessible.name: qsTr("Show desktop")
         Accessible.role: Accessible.Button
         Accessible.description: qsTr("Minimize all windows to show the desktop")
-        onClicked: Quickshell.execDetached(["qdbus6", "org.kde.kglobalaccel", "/component/kwin", "org.kde.kglobalaccel.Component.invokeShortcut", "Show Desktop"])
+        // KWin's showDesktop() takes the state to end up in; the kglobalaccel
+        // shortcut this used to shell out to is a toggle whose result cannot be
+        // read back, so a second click could leave the desktop showing.
+        onClicked: Kwin.setShowingDesktop(!Kwin.showingDesktop)
     }
 
     MaterialIcon {

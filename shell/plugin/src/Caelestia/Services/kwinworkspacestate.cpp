@@ -394,6 +394,16 @@ void KWinWorkspaceState::previousDesktop() {
     QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
 }
 
+void KWinWorkspaceState::setShowingDesktop(bool showing) {
+    // showDesktop() takes the state to end up in rather than a toggle request,
+    // and it is the same state the showingDesktop property reports back, so the
+    // caller always sends the opposite of what it last read.
+    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/KWin"),
+        QStringLiteral("org.kde.KWin"), QStringLiteral("showDesktop"));
+    msg << showing;
+    QDBusConnection::sessionBus().call(msg, QDBus::NoBlock);
+}
+
 void KWinWorkspaceState::createWorkspace(const QString& name) {
     QDBusMessage msg =
         QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/VirtualDesktopManager"),
