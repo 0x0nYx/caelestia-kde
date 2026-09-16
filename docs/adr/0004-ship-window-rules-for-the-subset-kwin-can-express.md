@@ -10,15 +10,23 @@ the second forces the centered placement policy on dialogs, and the third matche
 upstream's `Picture(-| )in(-| )[Pp]icture` title and keeps that window above others.
 The step is gated by `APPLY_WINDOW_RULES` and the percentage by `WINDOW_OPACITY`,
 both with defaults, so an install that says nothing about window rules still gets
-them.
+them. The groups only take effect because the script also writes the index that
+names them: `[General] rules=`, the list KWin builds its rule book from, with the
+`count` of the entries beside it.
 
 Three costs come with a ruleset that lives in the user's own file. `kwinrulesrc`
 holds the user's rules, so the script owns three groups and nothing else: it adds
-and rewrites only their keys, it never truncates the file, it never deletes a group
-it did not write, and it never writes the `[General]` keys that let a legacy rule
-list purge the groups it does not name. The dialog rule overrides the user's global
-placement policy for dialogs. KWin already sends dialogs through
-its dialog placement path under the global `[Windows] Placement` policy, which
+and rewrites only their keys, it never truncates the file, and it never deletes a
+group it did not write. The one key outside those groups it touches is the index,
+and that key cannot be left alone. A group the list omits is not loaded at all, and
+the next time KWin saves the rule book it deletes the group, in KWin 6.7 as in
+master, so the group that is written without an index entry is a group that does
+nothing. Naming only our own three would hand KWin a list that drops every rule the
+user has, which is why the list is rebuilt as the union of the entries already in
+it, every group the file holds and our three names, in that order, with the count of
+them. The dialog rule overrides the user's global placement policy for dialogs. KWin
+already sends dialogs through its dialog placement path under the global
+`[Windows] Placement` policy, which
 defaults to centered in a decorations build, so for most installs the rule changes
 nothing; for a user who moved that policy it takes the choice away from dialogs, and
 even centered placement still cascades a window that would cover another. The rule
