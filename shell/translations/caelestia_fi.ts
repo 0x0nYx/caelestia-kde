@@ -1,92 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh-TW" sourcelanguage="en_US">
+<TS version="2.1" language="fi" sourcelanguage="en_US">
   <context>
     <name>AboutPage</name>
     <message>
       <location filename="../modules/nexus/pages/AboutPage.qml" line="+21"/>
       <source>About</source>
-      <translation type="unfinished">About</translation>
+      <translation>Tietoja</translation>
     </message>
     <message>
       <location line="+75"/>
       <source>System</source>
-      <translation type="unfinished">System</translation>
+      <translation>Järjestelmä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Hostname</source>
-      <translation type="unfinished">Hostname</translation>
+      <translation>Hostname</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Device</source>
-      <translation type="unfinished">Device</translation>
+      <translation>Laite</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Distro</source>
-      <translation type="unfinished">Distro</translation>
+      <translation>Distro</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Kernel</source>
-      <translation type="unfinished">Kernel</translation>
+      <translation>Ydin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Firmware</source>
-      <translation type="unfinished">Firmware</translation>
+      <translation>Laiteohjelmisto</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Software</source>
-      <translation type="unfinished">Software</translation>
+      <translation>Ohjelmisto</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Shell</source>
-      <translation type="unfinished">Shell</translation>
+      <translation>Kuori</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>CLI</source>
-      <translation type="unfinished">CLI</translation>
+      <translation>CLI</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Quickshell</source>
-      <translation type="unfinished">Quickshell</translation>
+      <translation>Quickshell</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Qt</source>
-      <translation type="unfinished">Qt</translation>
+      <translation>Qt</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Plugins</source>
-      <translation type="unfinished">Plugins</translation>
+      <translation>Liitännäiset</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Enabled plugins</source>
-      <translation type="unfinished">Enabled plugins</translation>
+      <translation>Käytössä olevat liitännäiset</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Advanced</source>
-      <translation type="unfinished">Advanced</translation>
+      <translation>Lisäasetukset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Debug Mode</source>
-      <translation type="unfinished">Debug Mode</translation>
+      <translation>Vianetsintä Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable verbose debug logging for troubleshooting. Run &apos;caelestia shell -l&apos; to view.</source>
-      <translation type="unfinished">Enable verbose debug logging for troubleshooting. Run &apos;caelestia shell -l&apos; to view.</translation>
+      <translation>Ota käyttöön verbose debug loggaus vianhakuun. Suorita &apos;caelestia shell -l&apos; nähdäksesi</translation>
     </message>
   </context>
   <context>
@@ -94,12 +94,12 @@
     <message>
       <location filename="../modules/launcher/services/Actions.qml" line="+31"/>
       <source>Unnamed</source>
-      <translation type="unfinished">Unnamed</translation>
+      <translation>Nimetön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>No description</source>
-      <translation type="unfinished">No description</translation>
+      <translation>Ei kuvausta</translation>
     </message>
   </context>
   <context>
@@ -107,93 +107,93 @@
     <message>
       <location filename="../modules/nexus/pages/network/AddNetworkPage.qml" line="+78"/>
       <source>Enter password</source>
-      <translation type="unfinished">Enter password</translation>
+      <translation>Syötä salasana</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Add network</source>
-      <translation type="unfinished">Add network</translation>
+      <translation>Lisää verkko</translation>
     </message>
     <message>
       <location line="+42"/>
       <source>Enter the password for &quot;%1&quot;.</source>
-      <translation type="unfinished">Enter the password for &quot;%1&quot;.</translation>
+      <translation>Anna salasana &quot;%1&quot;.</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter the details below to manually connect to a network.</source>
-      <translation type="unfinished">Enter the details below to manually connect to a network.</translation>
+      <translation>Syötä alla olevat tiedot muodostaaksesi yhteyden manuaalisesti verkkoon.</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Network name (SSID)</source>
-      <translation type="unfinished">Network name (SSID)</translation>
+      <translation>Verkon nimi (SSID)</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>e.g. MyHiddenNetwork</source>
-      <translation type="unfinished">e.g. MyHiddenNetwork</translation>
+      <translation>esim. MyHiddenNetwork</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Network name is required</source>
-      <translation type="unfinished">Network name is required</translation>
+      <translation>Verkon nimi vaaditaan</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Hidden network</source>
-      <translation type="unfinished">Hidden network</translation>
+      <translation>Piilotettu verkko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Actively probe for a network that doesn&apos;t broadcast its name</source>
-      <translation type="unfinished">Actively probe for a network that doesn&apos;t broadcast its name</translation>
+      <translation>Aktiivisesti anturi verkossa, joka doesn&apos;t lähettää sen nimi</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Security</source>
-      <translation type="unfinished">Security</translation>
+      <translation>Turvallisuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+6"/>
       <source>WPA/WPA2/WPA3 Personal</source>
-      <translation type="unfinished">WPA/WPA2/WPA3 Personal</translation>
+      <translation>WPA/WPA2/WPA3 Henkilökohtainen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>None (open)</source>
-      <translation type="unfinished">None (open)</translation>
+      <translation>Ei Mitään (avoinna)</translation>
     </message>
     <message>
       <location line="+48"/>
       <source>Password</source>
-      <translation type="unfinished">Password</translation>
+      <translation>Salasana</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>WPA passwords are at least 8 characters</source>
-      <translation type="unfinished">WPA passwords are at least 8 characters</translation>
+      <translation>WPA salasanat ovat vähintään 8 merkkiä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Connection failed — check the password</source>
-      <translation type="unfinished">Connection failed — check the password</translation>
+      <translation>Yhteys epäonnistui — tarkista salasana</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Password must be at least 8 characters</source>
-      <translation type="unfinished">Password must be at least 8 characters</translation>
+      <translation>Salasanan tulee olla vähintään 8 merkkiä pitkä</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+26"/>
       <source>Connect</source>
-      <translation type="unfinished">Connect</translation>
+      <translation>Yhdistä</translation>
     </message>
   </context>
   <context>
@@ -201,32 +201,32 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/AddShortcutDialog.qml" line="+62"/>
       <source>Add Custom Shortcut</source>
-      <translation type="unfinished">Add Custom Shortcut</translation>
+      <translation>Lisää Mukautettu Pikakuvake</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Label (e.g. Firefox)</source>
-      <translation type="unfinished">Label (e.g. Firefox)</translation>
+      <translation>Otsikko (esim. Firefox)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Command (e.g. firefox)</source>
-      <translation type="unfinished">Command (e.g. firefox)</translation>
+      <translation>Komento (esim. firefox)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Icon (e.g. firefox)</source>
-      <translation type="unfinished">Icon (e.g. firefox)</translation>
+      <translation>Kuvake (esim. firefox)</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Save</source>
-      <translation type="unfinished">Save</translation>
+      <translation>Tallenna</translation>
     </message>
   </context>
   <context>
@@ -234,93 +234,93 @@
     <message>
       <location filename="../modules/nexus/pages/network/AddVpnPage.qml" line="+76"/>
       <source>Edit VPN provider</source>
-      <translation type="unfinished">Edit VPN provider</translation>
+      <translation>Muokkaa VPN-tarjoajaa</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Add VPN provider</source>
-      <translation type="unfinished">Add VPN provider</translation>
+      <translation>Lisää VPN-palveluntarjoaja</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Built-in names (wireguard, warp, tailscale, netbird) auto-fill their commands. For others, provide the connect/disconnect commands.</source>
-      <translation type="unfinished">Built-in names (wireguard, warp, tailscale, netbird) auto-fill their commands. For others, provide the connect/disconnect commands.</translation>
+      <translation>Sisäänrakennetut nimet (wireguard, warp, tailscale, netbird) täyttävät komennot automaattisesti. Muille anna yhteys/katkaise komentoja.</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Provider name</source>
-      <translation type="unfinished">Provider name</translation>
+      <translation>Toimittajan nimi</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Built-in id or a custom name</source>
-      <translation type="unfinished">Built-in id or a custom name</translation>
+      <translation>Sisäänrakennettu tunnus tai oma nimi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Provider name is required</source>
-      <translation type="unfinished">Provider name is required</translation>
+      <translation>Toimittajan nimi on pakollinen</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Display name</source>
-      <translation type="unfinished">Display name</translation>
+      <translation>Näytä nimi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Shown in the list</source>
-      <translation type="unfinished">Shown in the list</translation>
+      <translation>Näytetään luettelossa</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Interface</source>
-      <translation type="unfinished">Interface</translation>
+      <translation>Käyttöliittymä</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Network interface (for WireGuard / status checks)</source>
-      <translation type="unfinished">Network interface (for WireGuard / status checks)</translation>
+      <translation>Verkon käyttöliittymä (WireGuard / status checks)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Custom commands (optional)</source>
-      <translation type="unfinished">Custom commands (optional)</translation>
+      <translation>Mukautetut komennot (valinnainen)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Connect command</source>
-      <translation type="unfinished">Connect command</translation>
+      <translation>Yhdistä komento</translation>
     </message>
     <message>
       <location line="+2"/>
       <location line="+12"/>
       <source>Leave empty to use the built-in default</source>
-      <translation type="unfinished">Leave empty to use the built-in default</translation>
+      <translation>Jätä tyhjäksi käyttääksesi sisäänrakennettua oletusarvoa</translation>
     </message>
     <message>
       <location line="-2"/>
       <source>Disconnect command</source>
-      <translation type="unfinished">Disconnect command</translation>
+      <translation>Katkaise komento</translation>
     </message>
     <message>
       <location line="+23"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Poista</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Save</source>
-      <translation type="unfinished">Save</translation>
+      <translation>Tallenna</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Lisää</translation>
     </message>
   </context>
   <context>
@@ -329,52 +329,52 @@
       <location filename="../modules/sidebar/AiAssistant.qml" line="+789"/>
       <location line="+1352"/>
       <source>Rate limited - retrying in %1s…</source>
-      <translation type="unfinished">Rate limited - retrying in %1s…</translation>
+      <translation>Hinta rajoitettu - yrittää uudelleen %1s…</translation>
     </message>
     <message>
       <location line="+292"/>
       <source>Provider</source>
-      <translation type="unfinished">Provider</translation>
+      <translation>Tarjoaja</translation>
     </message>
     <message>
       <location line="+41"/>
       <source>Select Model</source>
-      <translation type="unfinished">Select Model</translation>
+      <translation>Valitse Malli</translation>
     </message>
     <message>
       <location line="+40"/>
       <source>Effort</source>
-      <translation type="unfinished">Effort</translation>
+      <translation>Ponnistelut</translation>
     </message>
     <message>
       <location line="+32"/>
       <source>Account</source>
-      <translation type="unfinished">Account</translation>
+      <translation>Tili</translation>
     </message>
     <message>
       <location line="+358"/>
       <source>Thought Process</source>
-      <translation type="unfinished">Thought Process</translation>
+      <translation>Ajattu Prosessi</translation>
     </message>
     <message>
       <location line="+187"/>
       <source>Suggestions</source>
-      <translation type="unfinished">Suggestions</translation>
+      <translation>Ehdotukset</translation>
     </message>
     <message>
       <location line="+124"/>
       <source>Ask assistant...</source>
-      <translation type="unfinished">Ask assistant...</translation>
+      <translation>Kysy avustaja...</translation>
     </message>
     <message>
       <location line="+244"/>
       <source>Clear All</source>
-      <translation type="unfinished">Clear All</translation>
+      <translation>Tyhjennä Kaikki</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>New Chat</source>
-      <translation type="unfinished">New Chat</translation>
+      <translation>Uusi Keskustelu</translation>
     </message>
   </context>
   <context>
@@ -382,107 +382,107 @@
     <message>
       <location filename="../modules/nexus/pages/AiSettingsPage.qml" line="+18"/>
       <source>AI Assistant</source>
-      <translation type="unfinished">AI Assistant</translation>
+      <translation>Ai Apulainen</translation>
     </message>
     <message>
       <location line="+32"/>
       <source>API key</source>
-      <translation type="unfinished">API key</translation>
+      <translation>API avain</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Stored in your session keyring, not in shell.json. The %1 environment variable overrides it.</source>
-      <translation type="unfinished">Stored in your session keyring, not in shell.json. The %1 environment variable overrides it.</translation>
+      <translation>Tallennettu istunnon näppäimistöön, ei shell.jsoniin. %1 -ympäristömuuttuja ohittaa sen.</translation>
     </message>
     <message>
       <location line="+92"/>
       <source>API key saved</source>
-      <translation type="unfinished">API key saved</translation>
+      <translation>API-avain tallennettu</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>secret-tool exited with code %1</source>
-      <translation type="unfinished">secret-tool exited with code %1</translation>
+      <translation>salainen työkalu päättyi koodilla %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Couldn&apos;t remove API key</source>
-      <translation type="unfinished">Couldn&apos;t remove API key</translation>
+      <translation>Couldn&apos;t Poista API-avain</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Couldn&apos;t save API key</source>
-      <translation type="unfinished">Couldn&apos;t save API key</translation>
+      <translation>Couldn&apos;t tallenna API-avain</translation>
     </message>
     <message>
       <location line="+31"/>
       <location line="+525"/>
       <source>Checking…</source>
-      <translation type="unfinished">Checking…</translation>
+      <translation>Tarkistetaan…</translation>
     </message>
     <message>
       <location line="-523"/>
       <location line="+500"/>
       <source>Not installed</source>
-      <translation type="unfinished">Not installed</translation>
+      <translation>Ei asennettu</translation>
     </message>
     <message>
       <location line="-491"/>
       <source>Daemon not running - start it with: sudo systemctl start ollama</source>
-      <translation type="unfinished">Daemon not running - start it with: sudo systemctl start ollama</translation>
+      <translation>Daemon ei ole käynnissä - käynnistä se kanssa: sudo systemctl start ollama</translation>
     </message>
     <message>
       <location line="+80"/>
       <source>Default</source>
-      <translation type="unfinished">Default</translation>
+      <translation>Oletus</translation>
     </message>
     <message>
       <location line="+37"/>
       <source>Account</source>
-      <translation type="unfinished">Account</translation>
+      <translation>Tili</translation>
     </message>
     <message>
       <location line="+58"/>
       <source>Login done? You can close this window.</source>
-      <translation type="unfinished">Login done? You can close this window.</translation>
+      <translation>Kirjautuminen valmis? Voit sulkea tämän ikkunan.</translation>
     </message>
     <message>
       <location line="+69"/>
       <location line="+40"/>
       <source>Installed.</source>
-      <translation type="unfinished">Installed.</translation>
+      <translation>Asennettu.</translation>
     </message>
     <message>
       <location line="-40"/>
       <location line="+44"/>
       <source>Failed</source>
-      <translation type="unfinished">Failed</translation>
+      <translation>Epäonnistui</translation>
     </message>
     <message>
       <location line="-2"/>
       <source>Cancelled.</source>
-      <translation type="unfinished">Cancelled.</translation>
+      <translation>Peruutettu.</translation>
     </message>
     <message>
       <location line="+50"/>
       <source>Local provider</source>
-      <translation type="unfinished">Local provider</translation>
+      <translation>Paikallinen tarjoaja</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Ollama</source>
-      <translation type="unfinished">Ollama</translation>
+      <translation>Ollama</translation>
     </message>
     <message>
       <location line="+8"/>
       <location line="+138"/>
       <source>Status</source>
-      <translation type="unfinished">Status</translation>
+      <translation>Tila</translation>
     </message>
     <message>
       <location line="-129"/>
       <source>Download Ollama</source>
-      <translation type="unfinished">Download Ollama</translation>
+      <translation>Lataa Ollama</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -490,149 +490,149 @@
       <location line="+147"/>
       <location line="+19"/>
       <source>Installing…</source>
-      <translation type="unfinished">Installing…</translation>
+      <translation>Asennetaan…</translation>
     </message>
     <message>
       <location line="-160"/>
       <source>Claude</source>
-      <translation type="unfinished">Claude</translation>
+      <translation>Claude</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+106"/>
       <source>Claude Code</source>
-      <translation type="unfinished">Claude Code</translation>
+      <translation>Claude Koodi</translation>
     </message>
     <message>
       <location line="-105"/>
       <source>Uses the Claude CLI and your Claude login</source>
-      <translation type="unfinished">Uses the Claude CLI and your Claude login</translation>
+      <translation>Käyttää Claude CLI:tä ja Claude kirjautumisesi</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Claude API</source>
-      <translation type="unfinished">Claude API</translation>
+      <translation>Claude API</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pay-per-token API with an Anthropic key</source>
-      <translation type="unfinished">Pay-per-token API with an Anthropic key</translation>
+      <translation>Maksa per-token API antrooppisella avaimella</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Other providers</source>
-      <translation type="unfinished">Other providers</translation>
+      <translation>Muut palveluntarjoajat</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>OpenAI (ChatGPT)</source>
-      <translation type="unfinished">OpenAI (ChatGPT)</translation>
+      <translation>OpenAI (ChatGPT)</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pay-per-token API with an OpenAI key</source>
-      <translation type="unfinished">Pay-per-token API with an OpenAI key</translation>
+      <translation>Pay-per-token API jossa OpenAI avain</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Gemini</source>
-      <translation type="unfinished">Gemini</translation>
+      <translation>Gemini</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Google&apos;s OpenAI-compatible endpoint</source>
-      <translation type="unfinished">Google&apos;s OpenAI-compatible endpoint</translation>
+      <translation>Google&apos;s OpenAI-yhteensopiva päätetapahtuma</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>OpenRouter</source>
-      <translation type="unfinished">OpenRouter</translation>
+      <translation>OpenRouter</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>One key for models from multiple vendors</source>
-      <translation type="unfinished">One key for models from multiple vendors</translation>
+      <translation>Yksi avain malleille useista myyjistä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>opencode Zen</source>
-      <translation type="unfinished">opencode Zen</translation>
+      <translation>opencode Zen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Curated coding models, pay as you go</source>
-      <translation type="unfinished">Curated coding models, pay as you go</translation>
+      <translation>Kuratoidut koodausmallit, maksa kun menet</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>opencode Go</source>
-      <translation type="unfinished">opencode Go</translation>
+      <translation>opencode Go</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Monthly subscription; shares Zen&apos;s key</source>
-      <translation type="unfinished">Monthly subscription; shares Zen&apos;s key</translation>
+      <translation>Kuukausittainen merkintä; osakkeet Zen&apos;s avain</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>API keys</source>
-      <translation type="unfinished">API keys</translation>
+      <translation>API avaimet</translation>
     </message>
     <message>
       <location line="+67"/>
       <source>Download Claude Code</source>
-      <translation type="unfinished">Download Claude Code</translation>
+      <translation>Lataa Claude Koodi</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Update Claude Code</source>
-      <translation type="unfinished">Update Claude Code</translation>
+      <translation>Päivitä Claude Koodi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Check for updates</source>
-      <translation type="unfinished">Check for updates</translation>
+      <translation>Tarkista päivitykset</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Up to date</source>
-      <translation type="unfinished">Up to date</translation>
+      <translation>Ajan tasalla</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Claude accounts</source>
-      <translation type="unfinished">Claude accounts</translation>
+      <translation>Claude tilit</translation>
     </message>
     <message>
       <location line="+49"/>
       <source>Active</source>
-      <translation type="unfinished">Active</translation>
+      <translation>Aktiivinen</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Tap to select</source>
-      <translation type="unfinished">Tap to select</translation>
+      <translation>Napauta valitaksesi</translation>
     </message>
     <message>
       <location line="+33"/>
       <source>Log in to selected account</source>
-      <translation type="unfinished">Log in to selected account</translation>
+      <translation>Kirjaudu valitulle tilille</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+11"/>
       <source>Install Claude Code first</source>
-      <translation type="unfinished">Install Claude Code first</translation>
+      <translation>Asenna Claude koodi ensin</translation>
     </message>
     <message>
       <location line="-1"/>
       <source>Add another account &amp; log in</source>
-      <translation type="unfinished">Add another account &amp; log in</translation>
+      <translation>Lisää toinen tili &amp; kirjaudu sisään</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Log into a different Claude account</source>
-      <translation type="unfinished">Log into a different Claude account</translation>
+      <translation>Kirjaudu toiseen Claude -tiliin</translation>
     </message>
   </context>
   <context>
@@ -640,7 +640,7 @@
     <message>
       <location filename="../modules/nexus/pages/apps/AllApps.qml" line="+16"/>
       <source>All apps</source>
-      <translation type="unfinished">All apps</translation>
+      <translation>Kaikki sovellukset</translation>
     </message>
   </context>
   <context>
@@ -648,32 +648,32 @@
     <message>
       <location filename="../modules/nexus/pages/network/AllNetworksPage.qml" line="+14"/>
       <source>All networks</source>
-      <translation type="unfinished">All networks</translation>
+      <translation>Kaikki verkot</translation>
     </message>
     <message>
       <location line="+36"/>
       <source>Filters</source>
-      <translation type="unfinished">Filters</translation>
+      <translation>Suodattimet</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Saved</source>
-      <translation type="unfinished">Saved</translation>
+      <translation>Tallennettu</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Secured</source>
-      <translation type="unfinished">Secured</translation>
+      <translation>Suojattu</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>5 GHz</source>
-      <translation type="unfinished">5 GHz</translation>
+      <translation>5 GHz</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>2.4 GHz</source>
-      <translation type="unfinished">2.4 GHz</translation>
+      <translation>2,4 GHz</translation>
     </message>
   </context>
   <context>
@@ -681,12 +681,12 @@
     <message>
       <location filename="../modules/launcher/AnimationsList.qml" line="+146"/>
       <source>Use default shell animations</source>
-      <translation type="unfinished">Use default shell animations</translation>
+      <translation>Käytä komentotulkin oletusanimaatioita</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Click to apply animation</source>
-      <translation type="unfinished">Click to apply animation</translation>
+      <translation>Napsauta käyttääksesi animaatiota</translation>
     </message>
   </context>
   <context>
@@ -694,7 +694,7 @@
     <message>
       <location filename="../modules/launcher/AppBrowser.qml" line="+202"/>
       <source>No apps in this category</source>
-      <translation type="unfinished">No apps in this category</translation>
+      <translation>Ei sovelluksia tässä kategoriassa</translation>
     </message>
   </context>
   <context>
@@ -702,57 +702,57 @@
     <message>
       <location filename="../modules/nexus/pages/apps/AppInfo.qml" line="+32"/>
       <source>App info</source>
-      <translation type="unfinished">App info</translation>
+      <translation>Sovelluksen tiedot</translation>
     </message>
     <message>
       <location line="+47"/>
       <source>Launcher</source>
-      <translation type="unfinished">Launcher</translation>
+      <translation>Käynnistin</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Favorite</source>
-      <translation type="unfinished">Favorite</translation>
+      <translation>Suosikki</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Matched by a regex in favouriteApps - edit the config file to change</source>
-      <translation type="unfinished">Matched by a regex in favouriteApps - edit the config file to change</translation>
+      <translation>Täsmennetty regex favouriteAppsissa - muokkaa asetustiedostoa muuttaaksesi</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Pin to the top of the launcher</source>
-      <translation type="unfinished">Pin to the top of the launcher</translation>
+      <translation>Kiinnitä kantorakettien yläosaan</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Hidden</source>
-      <translation type="unfinished">Hidden</translation>
+      <translation>Hidden</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Matched by a regex in hiddenApps - edit the config file to change</source>
-      <translation type="unfinished">Matched by a regex in hiddenApps - edit the config file to change</translation>
+      <translation>Yhdistetty regex piilotettuihin sovelluksiin - muokkaa asetustiedostoa muuttaaksesi</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Hide from the launcher</source>
-      <translation type="unfinished">Hide from the launcher</translation>
+      <translation>Piilota käynnistimestä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Details</source>
-      <translation type="unfinished">Details</translation>
+      <translation>Yksityiskohdat</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>App ID</source>
-      <translation type="unfinished">App ID</translation>
+      <translation>Sovelluksen Tunnus</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Command</source>
-      <translation type="unfinished">Command</translation>
+      <translation>Komento</translation>
     </message>
   </context>
   <context>
@@ -760,7 +760,7 @@
     <message>
       <location filename="../components/controls/AppStreamRow.qml" line="+24"/>
       <source>Muted</source>
-      <translation type="unfinished">Muted</translation>
+      <translation>Mykistetty</translation>
     </message>
   </context>
   <context>
@@ -768,7 +768,7 @@
     <message>
       <location filename="../modules/launcher/items/AppTile.qml" line="+139"/>
       <source>Matched by a regex in favouriteApps - edit the config file to change</source>
-      <translation type="unfinished">Matched by a regex in favouriteApps - edit the config file to change</translation>
+      <translation>Täsmennetty regex favouriteAppsissa - muokkaa asetustiedostoa muuttaaksesi</translation>
     </message>
   </context>
   <context>
@@ -776,17 +776,17 @@
     <message>
       <location filename="../modules/nexus/pages/audio/AppVolumes.qml" line="+17"/>
       <source>App volumes</source>
-      <translation type="unfinished">App volumes</translation>
+      <translation>Sovelluksen äänenvoimakkuudet</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Adjust the volume of individual apps currently playing audio.</source>
-      <translation type="unfinished">Adjust the volume of individual apps currently playing audio.</translation>
+      <translation>Säädä ääntä toistavien yksittäisten sovellusten äänenvoimakkuutta.</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>No apps playing audio</source>
-      <translation type="unfinished">No apps playing audio</translation>
+      <translation>Ääntä toistavia sovelluksia ei ole</translation>
     </message>
   </context>
   <context>
@@ -794,187 +794,187 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/AppearancePage.qml" line="+21"/>
       <source>San Francisco Pro</source>
-      <translation type="unfinished">San Francisco Pro</translation>
+      <translation>San Francisco Pro</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Google Sans Flex</source>
-      <translation type="unfinished">Google Sans Flex</translation>
+      <translation>Google Sans Flex</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>SF Mono</source>
-      <translation type="unfinished">SF Mono</translation>
+      <translation>SF Mono</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>CaskaydiaCove NF</source>
-      <translation type="unfinished">CaskaydiaCove NF</translation>
+      <translation>CaskaydiaCove NF</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Theme &amp; Effects</source>
-      <translation type="unfinished">Theme &amp; Effects</translation>
+      <translation>Teema &amp; Tehosteet</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Restart Shell</source>
-      <translation type="unfinished">Restart Shell</translation>
+      <translation>Käynnistä Tulkki Uudelleen</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Font</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Monospace font</source>
-      <translation type="unfinished">Monospace font</translation>
+      <translation>Monospace font</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Bezel mode (Pitch black)</source>
-      <translation type="unfinished">Bezel mode (Pitch black)</translation>
+      <translation>Bezel-tila (Musta)</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Make the shell pitch black to blend with display bezels</source>
-      <translation type="unfinished">Make the shell pitch black to blend with display bezels</translation>
+      <translation>Tee kuori piki musta sekoittaa näytön kehys</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Islands</source>
-      <translation type="unfinished">Islands</translation>
+      <translation>Saaret</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Everything appears as its own floating widget (Very Experimental)</source>
-      <translation type="unfinished">Everything appears as its own floating widget (Very Experimental)</translation>
+      <translation>Kaikki näkyy omana kelluvana widgettinä (erittäin kokeellinen)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Border thickness</source>
-      <translation type="unfinished">Border thickness</translation>
+      <translation>Reunan paksuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Thickness of the shell border in pixels. Set to 0 for a borderless look</source>
-      <translation type="unfinished">Thickness of the shell border in pixels. Set to 0 for a borderless look</translation>
+      <translation>Kuoren reunan paksuus pikseleinä. Aseta arvoksi 0 rajaton ulkoasu</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Corner radius scale</source>
-      <translation type="unfinished">Corner radius scale</translation>
+      <translation>Kulman säteen skaala</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Multiplies the shell&apos;s corner rounding</source>
-      <translation type="unfinished">Multiplies the shell&apos;s corner rounding</translation>
+      <translation>Kertaa kuori&apos;s kulman pyöristys</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Transparency</source>
-      <translation type="unfinished">Transparency</translation>
+      <translation>Läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable transparency across the shell</source>
-      <translation type="unfinished">Enable transparency across the shell</translation>
+      <translation>Ota läpinäkyvyys käyttöön kuoressa</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Base opacity</source>
-      <translation type="unfinished">Base opacity</translation>
+      <translation>Base läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Layers opacity</source>
-      <translation type="unfinished">Layers opacity</translation>
+      <translation>Kerrosten läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Requires shell restart</source>
-      <translation type="unfinished">Requires shell restart</translation>
+      <translation>Vaatii komentotulkin uudelleenkäynnistyksen</translation>
     </message>
     <message>
       <location line="+55"/>
       <source>Background Blur</source>
-      <translation type="unfinished">Background Blur</translation>
+      <translation>Taustan Sumennus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Disabling has no effect if Better Blur dx is enabled</source>
-      <translation type="unfinished">Disabling has no effect if Better Blur dx is enabled</translation>
+      <translation>Poistamisella ei ole vaikutusta, jos Better Blur dx on käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Enable a frosted glass effect by blurring the background</source>
-      <translation type="unfinished">Enable a frosted glass effect by blurring the background</translation>
+      <translation>Ota himmeä lasinen efekti käyttöön hämärtämällä taustan</translation>
     </message>
     <message>
       <location line="+23"/>
       <source>High Quality Blur Masks</source>
-      <translation type="unfinished">High Quality Blur Masks</translation>
+      <translation>Korkealaatuiset Sumennusmaskit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Disable this to use high performance Wayland/KWin blur</source>
-      <translation type="unfinished">Disable this to use high performance Wayland/KWin blur</translation>
+      <translation>Poista tämä käytöstä käyttääksesi korkean suorituskyvyn reitti/KWin blur</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Blur Corner Quality</source>
-      <translation type="unfinished">Blur Corner Quality</translation>
+      <translation>Sumennuskulman Laatu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Increasing this can cause lags! Requires shell restart</source>
-      <translation type="unfinished">Increasing this can cause lags! Requires shell restart</translation>
+      <translation>Tämän lisääminen voi aiheuttaa viiveitä! Vaatii komentotulkin uudelleenkäynnistyksen</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Scaling</source>
-      <translation type="unfinished">Scaling</translation>
+      <translation>Skaalaus</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Font scale</source>
-      <translation type="unfinished">Font scale</translation>
+      <translation>Kirjasimen skaalaus</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Spacing scale</source>
-      <translation type="unfinished">Spacing scale</translation>
+      <translation>Väli asteikko</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Padding scale</source>
-      <translation type="unfinished">Padding scale</translation>
+      <translation>Padding scale</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Animation speed scale</source>
-      <translation type="unfinished">Animation speed scale</translation>
+      <translation>Animaation nopeuden mittakaava</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Corners &amp; effects</source>
-      <translation type="unfinished">Corners &amp; effects</translation>
+      <translation>Kulmat ja efektit</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Border rounding</source>
-      <translation type="unfinished">Border rounding</translation>
+      <translation>Reunan pyöristys</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Border smoothing</source>
-      <translation type="unfinished">Border smoothing</translation>
+      <translation>Reunan tasoitus</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Blur deform</source>
-      <translation type="unfinished">Blur deform</translation>
+      <translation>Sumennuksen epämuoto</translation>
     </message>
   </context>
   <context>
@@ -982,67 +982,67 @@
     <message>
       <location filename="../modules/nexus/pages/AppsPage.qml" line="+19"/>
       <source>Apps</source>
-      <translation type="unfinished">Apps</translation>
+      <translation>Sovellukset</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Default applications</source>
-      <translation type="unfinished">Default applications</translation>
+      <translation>Oletus sovellukset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Force System Defaults (xdg-open)</source>
-      <translation type="unfinished">Force System Defaults (xdg-open)</translation>
+      <translation>Pakota Järjestelmän Oletukset (xdg-avoinna)</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Override applications to use KDE system defaults</source>
-      <translation type="unfinished">Override applications to use KDE system defaults</translation>
+      <translation>Ohita KDE- järjestelmän oletusasetuksia käyttäviä sovelluksia</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Terminal</source>
-      <translation type="unfinished">Terminal</translation>
+      <translation>Pääte</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Media playback</source>
-      <translation type="unfinished">Media playback</translation>
+      <translation>Median toisto</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>File manager</source>
-      <translation type="unfinished">File manager</translation>
+      <translation>Tiedostojen hallinta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Library</source>
-      <translation type="unfinished">Library</translation>
+      <translation>Kirjasto</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>All apps</source>
-      <translation type="unfinished">All apps</translation>
+      <translation>Kaikki sovellukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Browse installed apps, set favorites and hidden</source>
-      <translation type="unfinished">Browse installed apps, set favorites and hidden</translation>
+      <translation>Selaa asennettuja sovelluksia, aseta suosikkeja ja piilotettu</translation>
     </message>
     <message>
       <location line="+68"/>
       <source>System Default</source>
-      <translation type="unfinished">System Default</translation>
+      <translation>Järjestelmän Oletus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Uses xdg-open (KDE Default)</source>
-      <translation type="unfinished">Uses xdg-open (KDE Default)</translation>
+      <translation>Käyttää xdg-open (KDE: n oletus)</translation>
     </message>
   </context>
   <context>
@@ -1050,22 +1050,22 @@
     <message>
       <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
       <source>Open screenshot tool</source>
-      <translation type="unfinished">Open screenshot tool</translation>
+      <translation>Avaa kuvakaappaustyökalu</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Open screenshot tool (freeze mode)</source>
-      <translation type="unfinished">Open screenshot tool (freeze mode)</translation>
+      <translation>Avaa kuvakaappaustyökalu (jäädytä tila)</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Open screenshot tool (clipboard)</source>
-      <translation type="unfinished">Open screenshot tool (clipboard)</translation>
+      <translation>Avaa kuvakaappaustyökalu (leikepöydällä)</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Open screenshot tool (freeze mode, clipboard)</source>
-      <translation type="unfinished">Open screenshot tool (freeze mode, clipboard)</translation>
+      <translation>Avaa kuvakaappaustyökalu (jäädytystila, leikepöytä)</translation>
     </message>
   </context>
   <context>
@@ -1073,47 +1073,47 @@
     <message>
       <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
       <source>Discord Rich Presence</source>
-      <translation type="unfinished">Discord Rich Presence</translation>
+      <translation>Discord Rich Presence</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>Broadcast settings</source>
-      <translation type="unfinished">Broadcast settings</translation>
+      <translation>Lähetyksen asetukset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enable rich presence</source>
-      <translation type="unfinished">Enable rich presence</translation>
+      <translation>Ota käyttöön rikas läsnäolo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Broadcast custom presence to Vesktop</source>
-      <translation type="unfinished">Broadcast custom presence to Vesktop</translation>
+      <translation>Lähetä mukautettu läsnäolo Vesktop</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Auto-detect Steam games</source>
-      <translation type="unfinished">Auto-detect Steam games</translation>
+      <translation>Tunnista Steam-pelit automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Automatically broadcast running Steam games</source>
-      <translation type="unfinished">Automatically broadcast running Steam games</translation>
+      <translation>Lähetys automaattisesti Steam-pelien suorittamisesta</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Broadcast Caelestia info</source>
-      <translation type="unfinished">Broadcast Caelestia info</translation>
+      <translation>Broadcast Caelestia info</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Broadcast shell uptime and system info</source>
-      <translation type="unfinished">Broadcast shell uptime and system info</translation>
+      <translation>Lähetyksen kuoren käyttöaika ja järjestelmän tiedot</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Clear when idle</source>
-      <translation type="unfinished">Clear when idle</translation>
+      <translation>Tyhjennä kun joutilas</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -1123,42 +1123,42 @@
     <message>
       <location line="+0"/>
       <source>Never hide the presence (minutes)</source>
-      <translation type="unfinished">Never hide the presence (minutes)</translation>
+      <translation>Älä koskaan piilota läsnäoloa (minuuttia)</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>SteamGridDB integration</source>
-      <translation type="unfinished">SteamGridDB integration</translation>
+      <translation>SteamGridDB integrointi</translation>
     </message>
     <message>
       <location line="+30"/>
       <source>SteamGridDB API Key</source>
-      <translation type="unfinished">SteamGridDB API Key</translation>
+      <translation>SteamGridDb API-avain</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Used to fetch game icons for Steam games</source>
-      <translation type="unfinished">Used to fetch game icons for Steam games</translation>
+      <translation>Käytetään pelin kuvakkeiden hakemiseen Steam-pelejä varten</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>API Key...</source>
-      <translation type="unfinished">API Key...</translation>
+      <translation>Api Näppäin...</translation>
     </message>
     <message>
       <location line="+27"/>
       <source>Target windows picker</source>
-      <translation type="unfinished">Target windows picker</translation>
+      <translation>Kohdeikkunoiden valitsin</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Pick from running windows</source>
-      <translation type="unfinished">Pick from running windows</translation>
+      <translation>Valitse juoksevista ikkunoista</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select an open window to add to ARPC</source>
-      <translation type="unfinished">Select an open window to add to ARPC</translation>
+      <translation>Valitse avoin ikkuna, johon lisätään ARPC</translation>
     </message>
     <message>
       <location line="+106"/>
@@ -1168,37 +1168,37 @@
     <message>
       <location line="+39"/>
       <source>Hidden Steam Games</source>
-      <translation type="unfinished">Hidden Steam Games</translation>
+      <translation>Piilotetut Steam-pelit</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Hide a running Steam game</source>
-      <translation type="unfinished">Hide a running Steam game</translation>
+      <translation>Piilota käynnissä oleva Steam-peli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select an open Steam game to prevent it from broadcasting</source>
-      <translation type="unfinished">Select an open Steam game to prevent it from broadcasting</translation>
+      <translation>Valitse avoin Steam-peli, joka estää sitä lähettämästä</translation>
     </message>
     <message>
       <location line="+93"/>
       <source>Manual custom presence</source>
-      <translation type="unfinished">Manual custom presence</translation>
+      <translation>Manuaalinen mukautettu läsnäolo</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enable manual override</source>
-      <translation type="unfinished">Enable manual override</translation>
+      <translation>Ota manuaalinen ohitus käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Force broadcast this custom presence and ignore all other apps</source>
-      <translation type="unfinished">Force broadcast this custom presence and ignore all other apps</translation>
+      <translation>Pakota lähettämään tämä mukautettu läsnäolo ja ohita kaikki muut sovellukset</translation>
     </message>
     <message>
       <location line="+95"/>
       <source>Save presence</source>
-      <translation type="unfinished">Save presence</translation>
+      <translation>Tallenna läsnäolo</translation>
     </message>
   </context>
   <context>
@@ -1206,80 +1206,80 @@
     <message>
       <location filename="../modules/bar/popouts/Audio.qml" line="+76"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+66"/>
       <source>Output device</source>
-      <translation type="unfinished">Output device</translation>
+      <translation>Ulostulon laite</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>No output device</source>
-      <translation type="unfinished">No output device</translation>
+      <translation>Ei tulostuslaitetta</translation>
     </message>
     <message>
       <location line="+160"/>
       <location line="+39"/>
       <source>Muted</source>
-      <translation type="unfinished">Muted</translation>
+      <translation>Mykistetty</translation>
     </message>
     <message>
       <location line="-27"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>No input device</source>
-      <translation type="unfinished">No input device</translation>
+      <translation>Ei syöttölaitetta</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Input volume</source>
-      <translation type="unfinished">Input volume</translation>
+      <translation>Input volume</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Now playing</source>
-      <translation type="unfinished">Now playing</translation>
+      <translation>Nyt soi</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>No apps playing audio</source>
-      <translation type="unfinished">No apps playing audio</translation>
+      <translation>Ääntä toistavia sovelluksia ei ole</translation>
     </message>
     <message>
       <location line="+139"/>
       <location filename="../services/Audio.qml" line="+124"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
     <message>
       <location filename="../services/Audio.qml" line="-35"/>
       <source>Unknown Device</source>
-      <translation type="unfinished">Unknown Device</translation>
+      <translation>Tuntematon Laite</translation>
     </message>
     <message>
       <location line="+37"/>
       <source>Unknown Application</source>
-      <translation type="unfinished">Unknown Application</translation>
+      <translation>Tuntematon Sovellus</translation>
     </message>
     <message>
       <location line="+176"/>
       <source>Audio output changed</source>
-      <translation type="unfinished">Audio output changed</translation>
+      <translation>Äänen ulostulo muutettu</translation>
     </message>
     <message>
       <location line="+0"/>
       <location line="+12"/>
       <source>Now using: %1</source>
-      <translation type="unfinished">Now using: %1</translation>
+      <translation>Nyt käyttäen: %1</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Audio input changed</source>
-      <translation type="unfinished">Audio input changed</translation>
+      <translation>Äänen syöttö vaihdettu</translation>
     </message>
   </context>
   <context>
@@ -1287,7 +1287,7 @@
     <message>
       <location filename="../modules/nexus/common/AudioDeviceList.qml" line="+88"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
   </context>
   <context>
@@ -1295,100 +1295,100 @@
     <message>
       <location filename="../modules/nexus/pages/AudioPage.qml" line="+17"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+10"/>
       <location line="+6"/>
       <source>Output</source>
-      <translation type="unfinished">Output</translation>
+      <translation>Ulostulo</translation>
     </message>
     <message>
       <location line="+9"/>
       <location line="+36"/>
       <source>Muted</source>
-      <translation type="unfinished">Muted</translation>
+      <translation>Mykistetty</translation>
     </message>
     <message>
       <location line="-30"/>
       <source>Show Inactive Devices</source>
-      <translation type="unfinished">Show Inactive Devices</translation>
+      <translation>Näytä Passiiviset Laitteet</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>No output devices</source>
-      <translation type="unfinished">No output devices</translation>
+      <translation>Ei tulostuslaitteita</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+6"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>No input devices</source>
-      <translation type="unfinished">No input devices</translation>
+      <translation>Ei syöttölaitteita</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Device Profiles</source>
-      <translation type="unfinished">Device Profiles</translation>
+      <translation>Laitteen Profiilit</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Unknown Device</source>
-      <translation type="unfinished">Unknown Device</translation>
+      <translation>Tuntematon Laite</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Apps</source>
-      <translation type="unfinished">Apps</translation>
+      <translation>Sovellukset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>App volumes</source>
-      <translation type="unfinished">App volumes</translation>
+      <translation>Sovelluksen äänenvoimakkuudet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>No apps playing audio</source>
-      <translation type="unfinished">No apps playing audio</translation>
+      <translation>Ääntä toistavia sovelluksia ei ole</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>1 app playing audio</source>
-      <translation type="unfinished">1 app playing audio</translation>
+      <translation>1 sovellus soi ääntä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>%1 apps playing audio</source>
-      <translation type="unfinished">%1 apps playing audio</translation>
+      <translation>%1 sovellusta soittaa ääntä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Customization</source>
-      <translation type="unfinished">Customization</translation>
+      <translation>Mukauttaminen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Sound effects</source>
-      <translation type="unfinished">Sound effects</translation>
+      <translation>Ääni efektit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Feedback sounds and volume</source>
-      <translation type="unfinished">Feedback sounds and volume</translation>
+      <translation>Palautteen äänet ja äänenvoimakkuus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Muted notification apps</source>
-      <translation type="unfinished">Muted notification apps</translation>
+      <translation>Mykistetyt ilmoitussovellukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose apps that do not play notification sounds</source>
-      <translation type="unfinished">Choose apps that do not play notification sounds</translation>
+      <translation>Valitse sovellukset, jotka eivät toista ilmoitusääniä</translation>
     </message>
   </context>
   <context>
@@ -1396,33 +1396,33 @@
     <message>
       <location filename="../modules/bar/popouts/AudioPopout.qml" line="+36"/>
       <source>Output device</source>
-      <translation type="unfinished">Output device</translation>
+      <translation>Ulostulon laite</translation>
     </message>
     <message>
       <location line="+15"/>
       <location line="+19"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
     <message>
       <location line="-13"/>
       <source>Input device</source>
-      <translation type="unfinished">Input device</translation>
+      <translation>Syöttölaite</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Volume (%1)</source>
-      <translation type="unfinished">Volume (%1)</translation>
+      <translation>Tilavuus (%1)</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Muted</source>
-      <translation type="unfinished">Muted</translation>
+      <translation>Mykistetty</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>Open settings</source>
-      <translation type="unfinished">Open settings</translation>
+      <translation>Avaa asetukset</translation>
     </message>
   </context>
   <context>
@@ -1430,22 +1430,22 @@
     <message>
       <location filename="../modules/lock/BackgroundCenter.qml" line="+23"/>
       <source>Good morning</source>
-      <translation type="unfinished">Good morning</translation>
+      <translation>Hyvää huomenta</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Good afternoon</source>
-      <translation type="unfinished">Good afternoon</translation>
+      <translation>Hyvää iltapäivää</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Good evening</source>
-      <translation type="unfinished">Good evening</translation>
+      <translation>Hyvää iltaa</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Good night</source>
-      <translation type="unfinished">Good night</translation>
+      <translation>Hyvää yötä</translation>
     </message>
   </context>
   <context>
@@ -1453,32 +1453,32 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarClock.qml" line="+10"/>
       <source>Clock</source>
-      <translation type="unfinished">Clock</translation>
+      <translation>Kello</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Background</source>
-      <translation type="unfinished">Background</translation>
+      <translation>Tausta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Show date</source>
-      <translation type="unfinished">Show date</translation>
+      <translation>Näytä päivämäärä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Show icon</source>
-      <translation type="unfinished">Show icon</translation>
+      <translation>Näytä kuvake</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Show seconds</source>
-      <translation type="unfinished">Show seconds</translation>
+      <translation>Näytä sekuntia</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add a seconds line to the clock</source>
-      <translation type="unfinished">Add a seconds line to the clock</translation>
+      <translation>Lisää sekunnin viiva kellon luo</translation>
     </message>
   </context>
   <context>
@@ -1486,188 +1486,188 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarComponents.qml" line="+20"/>
       <source>Logo</source>
-      <translation type="unfinished">Logo</translation>
+      <translation>Logo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Workspaces</source>
-      <translation type="unfinished">Workspaces</translation>
+      <translation>Työtilat</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>GitHub token not detected</source>
-      <translation type="unfinished">GitHub token not detected</translation>
+      <translation>GitHub-tunnusta ei havaittu</translation>
     </message>
     <message>
       <location line="+2"/>
       <location line="+1"/>
       <source>Greeter</source>
-      <translation type="unfinished">Greeter</translation>
+      <translation>Greeter</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System tray</source>
-      <translation type="unfinished">System tray</translation>
+      <translation>Järjestelmän ilmoitusalue</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Updates</source>
-      <translation type="unfinished">Updates</translation>
+      <translation>Päivitykset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Clock</source>
-      <translation type="unfinished">Clock</translation>
+      <translation>Kello</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Status icons</source>
-      <translation type="unfinished">Status icons</translation>
+      <translation>Tilan kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Keyboard layout</source>
-      <translation type="unfinished">Keyboard layout</translation>
+      <translation>Näppäimistön asettelu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>CPU</source>
-      <translation type="unfinished">CPU</translation>
+      <translation>Suoritin</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>CPU sensor not detected</source>
-      <translation type="unfinished">CPU sensor not detected</translation>
+      <translation>Suorittimen anturia ei havaittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Memory</source>
-      <translation type="unfinished">Memory</translation>
+      <translation>Muisti</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Memory sensor not detected</source>
-      <translation type="unfinished">Memory sensor not detected</translation>
+      <translation>Muistin anturia ei havaittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Storage</source>
-      <translation type="unfinished">Storage</translation>
+      <translation>Tallennustila</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Storage disks not detected</source>
-      <translation type="unfinished">Storage disks not detected</translation>
+      <translation>Tallennuslevyjä ei havaittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>GPU</source>
-      <translation type="unfinished">GPU</translation>
+      <translation>GPU</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>GPU not detected</source>
-      <translation type="unfinished">GPU not detected</translation>
+      <translation>GPU ei havaittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Battery not detected</source>
-      <translation type="unfinished">Battery not detected</translation>
+      <translation>Akkua ei havaittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dock</source>
-      <translation type="unfinished">Dock</translation>
+      <translation>Telakka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show Desktop</source>
-      <translation type="unfinished">Show Desktop</translation>
+      <translation>Näytä Työpöytä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Power menu</source>
-      <translation type="unfinished">Power menu</translation>
+      <translation>Virta valikko</translation>
     </message>
     <message>
       <location line="+185"/>
       <source>Not detected</source>
-      <translation type="unfinished">Not detected</translation>
+      <translation>Ei havaittu</translation>
     </message>
     <message>
       <location line="+133"/>
       <source>Toggle &amp; rearrange</source>
-      <translation type="unfinished">Toggle &amp; rearrange</translation>
+      <translation>Vaihda &amp; järjestä</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Active components</source>
-      <translation type="unfinished">Active components</translation>
+      <translation>Aktiiviset komponentit</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Drag to rearrange or disable</source>
-      <translation type="unfinished">Drag to rearrange or disable</translation>
+      <translation>Vedä järjestääksesi tai poistaaksesi käytöstä</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Left Zone</source>
-      <translation type="unfinished">Left Zone</translation>
+      <translation>Vasen Alue</translation>
     </message>
     <message>
       <location line="+52"/>
       <source>Middle Zone</source>
-      <translation type="unfinished">Middle Zone</translation>
+      <translation>Keski Alue</translation>
     </message>
     <message>
       <location line="+52"/>
       <source>Right Zone</source>
-      <translation type="unfinished">Right Zone</translation>
+      <translation>Oikea Alue</translation>
     </message>
     <message>
       <location line="+57"/>
       <source>Library</source>
-      <translation type="unfinished">Library</translation>
+      <translation>Kirjasto</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disabled components</source>
-      <translation type="unfinished">Disabled components</translation>
+      <translation>Estetyt osat</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>RESET</source>
-      <translation type="unfinished">RESET</translation>
+      <translation>RESET</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Restore the default taskbar component layout</source>
-      <translation type="unfinished">Restore the default taskbar component layout</translation>
+      <translation>Palauta tehtäväpalkin oletusasettelu</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Empty</source>
-      <translation type="unfinished">Empty</translation>
+      <translation>Tyhjä</translation>
     </message>
   </context>
   <context>
@@ -1675,32 +1675,32 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarDock.qml" line="+11"/>
       <source>Dock</source>
-      <translation type="unfinished">Dock</translation>
+      <translation>Telakka</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Enable component</source>
-      <translation type="unfinished">Enable component</translation>
+      <translation>Ota komponentti käyttöön</translation>
     </message>
     <message>
       <location line="+33"/>
       <source>Icon size</source>
-      <translation type="unfinished">Icon size</translation>
+      <translation>Kuvakkeen koko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Size of app icons in the dock</source>
-      <translation type="unfinished">Size of app icons in the dock</translation>
+      <translation>Sovelluksen kuvakkeiden koko telakalla</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Recolor icons</source>
-      <translation type="unfinished">Recolor icons</translation>
+      <translation>Reolor kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Recolor application icons using the system theme</source>
-      <translation type="unfinished">Recolor application icons using the system theme</translation>
+      <translation>Palauta sovelluksen kuvakkeet käyttäen järjestelmän teemaa</translation>
     </message>
   </context>
   <context>
@@ -1708,62 +1708,62 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarGithub.qml" line="+17"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>No token set</source>
-      <translation type="unfinished">No token set</translation>
+      <translation>Tunnistetta ei ole asetettu</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Last fetch failed</source>
-      <translation type="unfinished">Last fetch failed</translation>
+      <translation>Viimeisin haku epäonnistui</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Connected as %1</source>
-      <translation type="unfinished">Connected as %1</translation>
+      <translation>Yhdistetty nimellä %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Connected</source>
-      <translation type="unfinished">Connected</translation>
+      <translation>Yhdistetty</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Not fetched yet</source>
-      <translation type="unfinished">Not fetched yet</translation>
+      <translation>Ei vielä haettu</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Paste a token below and save it to enable the widget</source>
-      <translation type="unfinished">Paste a token below and save it to enable the widget</translation>
+      <translation>Liitä tunniste alapuolelle ja tallenna se salliaksesi widgetin</translation>
     </message>
     <message>
       <location line="+49"/>
       <source>Configuration</source>
-      <translation type="unfinished">Configuration</translation>
+      <translation>Asetukset</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Component background</source>
-      <translation type="unfinished">Component background</translation>
+      <translation>Komponentin tausta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Render a solid background behind the GitHub activity widget</source>
-      <translation type="unfinished">Render a solid background behind the GitHub activity widget</translation>
+      <translation>Renderoi kiinteä tausta GitHubin toimintawidgetin taakse</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>Personal Access Token</source>
-      <translation type="unfinished">Personal Access Token</translation>
+      <translation>Henkilökohtainen Pääsymerkki</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Used to fetch your contribution graph (read:user)</source>
-      <translation type="unfinished">Used to fetch your contribution graph (read:user)</translation>
+      <translation>Käytetään noutamaan oma maksukaavio (read:user)</translation>
     </message>
   </context>
   <context>
@@ -1771,92 +1771,92 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarGreeter.qml" line="+19"/>
       <source>Time of day</source>
-      <translation type="unfinished">Time of day</translation>
+      <translation>Päivän aika</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Slideshow</source>
-      <translation type="unfinished">Slideshow</translation>
+      <translation>Slideshow</translation>
     </message>
     <message>
       <location line="+23"/>
       <source>Greeter</source>
-      <translation type="unfinished">Greeter</translation>
+      <translation>Greeter</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Reset Defaults</source>
-      <translation type="unfinished">Reset Defaults</translation>
+      <translation>Palauta Oletukset</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>General Settings</source>
-      <translation type="unfinished">General Settings</translation>
+      <translation>Yleiset Asetukset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enable component</source>
-      <translation type="unfinished">Enable component</translation>
+      <translation>Ota komponentti käyttöön</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>Compact</source>
-      <translation type="unfinished">Compact</translation>
+      <translation>Kompakti</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Inverted</source>
-      <translation type="unfinished">Inverted</translation>
+      <translation>Käänteinen</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Only show the greeter while hovering</source>
-      <translation type="unfinished">Only show the greeter while hovering</translation>
+      <translation>Näytä vain tervehdys leijuessa</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Popout on hover</source>
-      <translation type="unfinished">Popout on hover</translation>
+      <translation>Popout on hover</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show a greeter popout when hovering</source>
-      <translation type="unfinished">Show a greeter popout when hovering</translation>
+      <translation>Näytä tervehdys ponnahdusikkuna, kun leijuu</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Animation Mechanism</source>
-      <translation type="unfinished">Animation Mechanism</translation>
+      <translation>Animaatio Mekanismi</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Mode</source>
-      <translation type="unfinished">Mode</translation>
+      <translation>Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switch media according to time of day or cycle through a slideshow</source>
-      <translation type="unfinished">Switch media according to time of day or cycle through a slideshow</translation>
+      <translation>Vaihda mediaa päivän tai syklin ajan mukaan diaesityksen kautta</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Time of Day Periods &amp; Media</source>
-      <translation type="unfinished">Time of Day Periods &amp; Media</translation>
+      <translation>Päivän kellonajat ja media</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Morning Media</source>
-      <translation type="unfinished">Morning Media</translation>
+      <translation>Aamu Media</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Select Morning Media</source>
-      <translation type="unfinished">Select Morning Media</translation>
+      <translation>Valitse Aamu Media</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -1865,162 +1865,162 @@
       <location line="+45"/>
       <location line="+191"/>
       <source>Multimedia files (Images, GIFs, Videos)</source>
-      <translation type="unfinished">Multimedia files (Images, GIFs, Videos)</translation>
+      <translation>Multimedia tiedostot (kuvat, GIF, Videot)</translation>
     </message>
     <message>
       <location line="-315"/>
       <source>Morning start time</source>
-      <translation type="unfinished">Morning start time</translation>
+      <translation>Aamun aloitusaika</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Morning Greeting Text</source>
-      <translation type="unfinished">Morning Greeting Text</translation>
+      <translation>Aamu Tervehdys Teksti</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Afternoon Media</source>
-      <translation type="unfinished">Afternoon Media</translation>
+      <translation>Iltapäivällä Media</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Select Afternoon Media</source>
-      <translation type="unfinished">Select Afternoon Media</translation>
+      <translation>Valitse Iltapäivämedia</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Afternoon start time</source>
-      <translation type="unfinished">Afternoon start time</translation>
+      <translation>Iltapäivän aloitusaika</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Afternoon Greeting Text</source>
-      <translation type="unfinished">Afternoon Greeting Text</translation>
+      <translation>Iltapäivällä Tervehdys Teksti</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Evening Media</source>
-      <translation type="unfinished">Evening Media</translation>
+      <translation>Iltainen Media</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Select Evening Media</source>
-      <translation type="unfinished">Select Evening Media</translation>
+      <translation>Valitse Iltamedia</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Evening start time</source>
-      <translation type="unfinished">Evening start time</translation>
+      <translation>Ilta alkamisaika</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Evening Greeting Text</source>
-      <translation type="unfinished">Evening Greeting Text</translation>
+      <translation>Iltatervehdys Teksti</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Night Media</source>
-      <translation type="unfinished">Night Media</translation>
+      <translation>Yö Media</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Select Night Media</source>
-      <translation type="unfinished">Select Night Media</translation>
+      <translation>Valitse Yömedia</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Night start time</source>
-      <translation type="unfinished">Night start time</translation>
+      <translation>Yön alkamisaika</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Night Greeting Text</source>
-      <translation type="unfinished">Night Greeting Text</translation>
+      <translation>Yö Tervehdys Teksti</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Slideshow Timing &amp; Order</source>
-      <translation type="unfinished">Slideshow Timing &amp; Order</translation>
+      <translation>Diaesitys Ajoitus Ja Järjestys</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Slide interval</source>
-      <translation type="unfinished">Slide interval</translation>
+      <translation>Dian aikaväli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 seconds</source>
-      <translation type="unfinished">%1 seconds</translation>
+      <translation>%1 sekuntia</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Random shuffle</source>
-      <translation type="unfinished">Random shuffle</translation>
+      <translation>Satunnainen sekoitus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pick random media instead of cycling sequentially</source>
-      <translation type="unfinished">Pick random media instead of cycling sequentially</translation>
+      <translation>Valitse satunnainen media jaksottaisen sijasta</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Slideshow Greeting Text</source>
-      <translation type="unfinished">Slideshow Greeting Text</translation>
+      <translation>Diaesitys Tervehdys Teksti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Optional custom text on bar, supports {user}</source>
-      <translation type="unfinished">Optional custom text on bar, supports {user}</translation>
+      <translation>Valinnainen mukautettu teksti baarissa, tukee {user}</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Slideshow Greeting Icon</source>
-      <translation type="unfinished">Slideshow Greeting Icon</translation>
+      <translation>Kuvaesitys Tervehdys Kuvakkeelle</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Material icon name for the bar widget</source>
-      <translation type="unfinished">Material icon name for the bar widget</translation>
+      <translation>Materiaalin kuvakkeen nimi palkin widgetille</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Slideshow Folders</source>
-      <translation type="unfinished">Slideshow Folders</translation>
+      <translation>Diaesitys Kansiot</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Add Media Folder</source>
-      <translation type="unfinished">Add Media Folder</translation>
+      <translation>Lisää Mediakansio</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select a folder containing images, GIFs, or videos</source>
-      <translation type="unfinished">Select a folder containing images, GIFs, or videos</translation>
+      <translation>Valitse kansio, joka sisältää kuvia, GIF-tiedostoja tai videoita</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Select Media Folder</source>
-      <translation type="unfinished">Select Media Folder</translation>
+      <translation>Valitse Mediakansio</translation>
     </message>
     <message>
       <location line="+64"/>
       <source>Individual Slideshow Media</source>
-      <translation type="unfinished">Individual Slideshow Media</translation>
+      <translation>Yksittäinen Diaesitys Media</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Add Media File</source>
-      <translation type="unfinished">Add Media File</translation>
+      <translation>Lisää Media Tiedosto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select specific image, GIF, or video file to include</source>
-      <translation type="unfinished">Select specific image, GIF, or video file to include</translation>
+      <translation>Valitse tietty kuva, GIF, tai videotiedosto</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Select a Media File</source>
-      <translation type="unfinished">Select a Media File</translation>
+      <translation>Valitse mediatiedosto</translation>
     </message>
   </context>
   <context>
@@ -2028,97 +2028,97 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarPreviewScales.qml" line="+15"/>
       <source>Per Element Scaling Offset</source>
-      <translation type="unfinished">Per Element Scaling Offset</translation>
+      <translation>Per Elementti Skaalaus Siirtymä</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Enable per-element offsets</source>
-      <translation type="unfinished">Enable per-element offsets</translation>
+      <translation>Ota käyttöön elementtikohtaiset kompensaatiot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Customize preview scale and font for each popout type</source>
-      <translation type="unfinished">Customize preview scale and font for each popout type</translation>
+      <translation>Muokkaa esikatseluasteikkoa ja kirjasinta jokaiselle ponnahdusikkunalle</translation>
     </message>
     <message>
       <location line="+23"/>
       <source>RESET ALL</source>
-      <translation type="unfinished">RESET ALL</translation>
+      <translation>PALAUTA KAIKKI</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Reset all to 0</source>
-      <translation type="unfinished">Reset all to 0</translation>
+      <translation>Palauta kaikki arvoon 0</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>Skaalaa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Font</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Greeter</source>
-      <translation type="unfinished">Greeter</translation>
+      <translation>Greeter</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Dock</source>
-      <translation type="unfinished">Dock</translation>
+      <translation>Telakka</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Lock status</source>
-      <translation type="unfinished">Lock status</translation>
+      <translation>Lukituksen tila</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Peripheral battery</source>
-      <translation type="unfinished">Peripheral battery</translation>
+      <translation>Perifeerinen akku</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Tray menu</source>
-      <translation type="unfinished">Tray menu</translation>
+      <translation>Kaukalon valikko</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Wireless password</source>
-      <translation type="unfinished">Wireless password</translation>
+      <translation>Langaton salasana</translation>
     </message>
   </context>
   <context>
@@ -2126,107 +2126,107 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarStatusIcons.qml" line="+12"/>
       <source>Lock keys</source>
-      <translation type="unfinished">Lock keys</translation>
+      <translation>Lukitse näppäimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Keyboard layout</source>
-      <translation type="unfinished">Keyboard layout</translation>
+      <translation>Näppäimistön asettelu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Speakers</source>
-      <translation type="unfinished">Speakers</translation>
+      <translation>Kaiuttimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Microphone</source>
-      <translation type="unfinished">Microphone</translation>
+      <translation>Mikrofoni</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Ethernet</source>
-      <translation type="unfinished">Ethernet</translation>
+      <translation>Ethernet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Peripheral battery</source>
-      <translation type="unfinished">Peripheral battery</translation>
+      <translation>Perifeerinen akku</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Night light</source>
-      <translation type="unfinished">Night light</translation>
+      <translation>Yö valo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Status icons</source>
-      <translation type="unfinished">Status icons</translation>
+      <translation>Tilan kuvakkeet</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Visible icons</source>
-      <translation type="unfinished">Visible icons</translation>
+      <translation>Näkyvät kuvakkeet</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>Add entry</source>
-      <translation type="unfinished">Add entry</translation>
+      <translation>Lisää merkintä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add new entry</source>
-      <translation type="unfinished">Add new entry</translation>
+      <translation>Lisää uusi merkintä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Lisää</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Wi-Fi</source>
-      <translation type="unfinished">Wi-Fi</translation>
+      <translation>Wi-Fi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Wi-Fi icon alongside the network icon</source>
-      <translation type="unfinished">Show the Wi-Fi icon alongside the network icon</translation>
+      <translation>Näytä Wi-Fi-kuvake verkkokuvakkeen vieressä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Popout on hover</source>
-      <translation type="unfinished">Popout on hover</translation>
+      <translation>Popout on hover</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show a details popout when hovering the status icons</source>
-      <translation type="unfinished">Show a details popout when hovering the status icons</translation>
+      <translation>Näytä yksityiskohdat ponnahdusikkuna, kun leijuu tilan kuvakkeita</translation>
     </message>
   </context>
   <context>
@@ -2234,32 +2234,32 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarTray.qml" line="+11"/>
       <source>Tray</source>
-      <translation type="unfinished">Tray</translation>
+      <translation>Kaukalo</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Background</source>
-      <translation type="unfinished">Background</translation>
+      <translation>Tausta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Recolor icons</source>
-      <translation type="unfinished">Recolor icons</translation>
+      <translation>Reolor kuvakkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Compact</source>
-      <translation type="unfinished">Compact</translation>
+      <translation>Kompakti</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Popout on hover</source>
-      <translation type="unfinished">Popout on hover</translation>
+      <translation>Popout on hover</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the tray menu popout when hovering</source>
-      <translation type="unfinished">Show the tray menu popout when hovering</translation>
+      <translation>Näytä valikko ponnahdusikkuna, kun leijuu</translation>
     </message>
   </context>
   <context>
@@ -2267,27 +2267,27 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarUpdates.qml" line="+19"/>
       <source>Updates</source>
-      <translation type="unfinished">Updates</translation>
+      <translation>Päivitykset</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Show update indicator</source>
-      <translation type="unfinished">Show update indicator</translation>
+      <translation>Näytä päivityksen ilmaisin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Always-visible icon in the taskbar that changes when a Caelestia update is available</source>
-      <translation type="unfinished">Always-visible icon in the taskbar that changes when a Caelestia update is available</translation>
+      <translation>Aina näkyvä kuvake tehtäväpalkissa, joka muuttuu, kun Caelestia päivitys on saatavilla</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Enable update checking</source>
-      <translation type="unfinished">Enable update checking</translation>
+      <translation>Ota päivityksen tarkistus käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enables the update indicator and periodic checks (every 30 minutes)</source>
-      <translation type="unfinished">Enables the update indicator and periodic checks (every 30 minutes)</translation>
+      <translation>Mahdollistaa päivitysindikaattorin ja määräaikaistarkastukset (30 minuutin välein)</translation>
     </message>
   </context>
   <context>
@@ -2295,92 +2295,92 @@
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/BarWorkspaces.qml" line="+16"/>
       <source>Shape</source>
-      <translation type="unfinished">Shape</translation>
+      <translation>Muoto</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Text</source>
-      <translation type="unfinished">Text</translation>
+      <translation>Teksti</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Workspaces</source>
-      <translation type="unfinished">Workspaces</translation>
+      <translation>Työtilat</translation>
     </message>
     <message>
       <location line="+30"/>
       <source>Shown</source>
-      <translation type="unfinished">Shown</translation>
+      <translation>Näkyy</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Number of workspaces displayed</source>
-      <translation type="unfinished">Number of workspaces displayed</translation>
+      <translation>Näytettyjen työtilojen määrä</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Active indicator</source>
-      <translation type="unfinished">Active indicator</translation>
+      <translation>Aktiivinen indikaattori</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Active trail</source>
-      <translation type="unfinished">Active trail</translation>
+      <translation>Aktiivinen polku</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Occupied background</source>
-      <translation type="unfinished">Occupied background</translation>
+      <translation>Ammattimainen tausta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Indicator style</source>
-      <translation type="unfinished">Indicator style</translation>
+      <translation>Indikaattorin tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Draw each workspace as a material shape or as its number</source>
-      <translation type="unfinished">Draw each workspace as a material shape or as its number</translation>
+      <translation>Piirrä jokainen työtila materiaalimuodossa tai sen numerona</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Show windows</source>
-      <translation type="unfinished">Show windows</translation>
+      <translation>Näytä ikkunat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show icons of open windows on each workspace</source>
-      <translation type="unfinished">Show icons of open windows on each workspace</translation>
+      <translation>Näytä avattujen ikkunoiden kuvakkeet jokaisessa työtilassa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Show unoccupied</source>
-      <translation type="unfinished">Show unoccupied</translation>
+      <translation>Näytä käyttämättömät</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show workspaces that are inactive and empty</source>
-      <translation type="unfinished">Show workspaces that are inactive and empty</translation>
+      <translation>Näytä epäaktiiviset ja tyhjät työtilat</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Windows on special workspaces</source>
-      <translation type="unfinished">Windows on special workspaces</translation>
+      <translation>Ikkunat erityisillä työtiloilla</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Max window icons</source>
-      <translation type="unfinished">Max window icons</translation>
+      <translation>Ikkunan kuvakkeiden enimmäismäärä</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Per-monitor workspaces</source>
-      <translation type="unfinished">Per-monitor workspaces</translation>
+      <translation>Näytön työtilat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show each monitor&apos;s workspaces independently</source>
-      <translation type="unfinished">Show each monitor&apos;s workspaces independently</translation>
+      <translation>Näytä jokainen näyttö&apos;s työtilat itsenäisesti</translation>
     </message>
   </context>
   <context>
@@ -2388,53 +2388,53 @@
     <message>
       <location filename="../modules/bar/popouts/Battery.qml" line="+24"/>
       <source>The device is too hot</source>
-      <translation type="unfinished">The device is too hot</translation>
+      <translation>Laite on liian kuuma</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>The device is on a lap</source>
-      <translation type="unfinished">The device is on a lap</translation>
+      <translation>Laite on kierrosnopeudella</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Unknown reason</source>
-      <translation type="unfinished">Unknown reason</translation>
+      <translation>Tuntematon syy</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+149"/>
       <source>%1%</source>
-      <translation type="unfinished">%1%</translation>
+      <translation>%1%</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>N/A</source>
-      <translation type="unfinished">N/A</translation>
+      <translation>E/A</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>No battery detected</source>
-      <translation type="unfinished">No battery detected</translation>
+      <translation>Akkua ei havaittu</translation>
     </message>
     <message>
       <location line="+3"/>
       <location line="+5"/>
       <source>~ %1</source>
-      <translation type="unfinished">~ %1</translation>
+      <translation>~ %1</translation>
     </message>
     <message>
       <location line="-2"/>
       <source>Fully charged!</source>
-      <translation type="unfinished">Fully charged!</translation>
+      <translation>Täydellisesti ladattu!</translation>
     </message>
     <message>
       <location line="+40"/>
       <source>Performance degraded: %1</source>
-      <translation type="unfinished">Performance degraded: %1</translation>
+      <translation>Suorituskyky heikentynyt: %1</translation>
     </message>
   </context>
   <context>
@@ -2442,42 +2442,42 @@
     <message>
       <location filename="../modules/BatteryMonitor.qml" line="+17"/>
       <source>Charger unplugged</source>
-      <translation type="unfinished">Charger unplugged</translation>
+      <translation>Laturi irrotettu</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Battery is discharging</source>
-      <translation type="unfinished">Battery is discharging</translation>
+      <translation>Akku ladataan</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Charger plugged in</source>
-      <translation type="unfinished">Charger plugged in</translation>
+      <translation>Laturi kytketty sisään</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Battery is charging</source>
-      <translation type="unfinished">Battery is charging</translation>
+      <translation>Akku latautuu</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Battery warning</source>
-      <translation type="unfinished">Battery warning</translation>
+      <translation>Akun varoitus</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Battery level is low</source>
-      <translation type="unfinished">Battery level is low</translation>
+      <translation>Akun taso on alhainen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Hibernating in 5 seconds</source>
-      <translation type="unfinished">Hibernating in 5 seconds</translation>
+      <translation>Hibernating 5 sekunnissa</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Hibernating to prevent data loss</source>
-      <translation type="unfinished">Hibernating to prevent data loss</translation>
+      <translation>Hibernating estää tietojen häviämisen</translation>
     </message>
   </context>
   <context>
@@ -2485,22 +2485,22 @@
     <message>
       <location filename="../modules/dashboard/performance/BatteryTank.qml" line="+77"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Full</source>
-      <translation type="unfinished">Full</translation>
+      <translation>Täysi</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Charging</source>
-      <translation type="unfinished">Charging</translation>
+      <translation>Ladataan</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
   </context>
   <context>
@@ -2508,37 +2508,37 @@
     <message>
       <location filename="../modules/bar/popouts/Bluetooth.qml" line="+29"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Discovering</source>
-      <translation type="unfinished">Discovering</translation>
+      <translation>Löytää</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>%1 device%2 available</source>
-      <translation type="unfinished">%1 device%2 available</translation>
+      <translation>%1 laite%2 saatavilla</translation>
     </message>
     <message>
       <location line="+3"/>
       <source> (%1 connected)</source>
-      <translation type="unfinished"> (%1 connected)</translation>
+      <translation> (%1 yhdistetty)</translation>
     </message>
     <message>
       <location line="+54"/>
       <source>%1%</source>
-      <translation type="unfinished">%1%</translation>
+      <translation>%1%</translation>
     </message>
     <message>
       <location line="+59"/>
       <source>Open settings</source>
-      <translation type="unfinished">Open settings</translation>
+      <translation>Avaa asetukset</translation>
     </message>
   </context>
   <context>
@@ -2546,62 +2546,62 @@
     <message>
       <location filename="../modules/nexus/pages/BluetoothPage.qml" line="+20"/>
       <source>Connected devices</source>
-      <translation type="unfinished">Connected devices</translation>
+      <translation>Yhdistetyt laitteet</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>No saved devices</source>
-      <translation type="unfinished">No saved devices</translation>
+      <translation>Ei tallennettuja laitteita</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Bluetooth disabled</source>
-      <translation type="unfinished">Bluetooth disabled</translation>
+      <translation>Bluetooth pois käytöstä</translation>
     </message>
     <message>
       <location line="+73"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Connected%1</source>
-      <translation type="unfinished">Connected%1</translation>
+      <translation>Yhdistetty%1</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Saved</source>
-      <translation type="unfinished">Saved</translation>
+      <translation>Tallennettu</translation>
     </message>
     <message>
       <location line="+77"/>
       <source>Pair new device</source>
-      <translation type="unfinished">Pair new device</translation>
+      <translation>Parita uusi laite</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Discoverable</source>
-      <translation type="unfinished">Discoverable</translation>
+      <translation>Löydettävissä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow nearby devices to find this one</source>
-      <translation type="unfinished">Allow nearby devices to find this one</translation>
+      <translation>Salli lähistöllä olevien laitteiden löytää tämä</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Pairable</source>
-      <translation type="unfinished">Pairable</translation>
+      <translation>Käytettävissä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow nearby devices to pair with this one</source>
-      <translation type="unfinished">Allow nearby devices to pair with this one</translation>
+      <translation>Salli lähistöllä olevien laitteiden muodostaa pari tämän laitteen kanssa</translation>
     </message>
   </context>
   <context>
@@ -2609,27 +2609,27 @@
     <message>
       <location filename="../modules/nexus/pages/bluetooth/BluetoothPairing.qml" line="+24"/>
       <source>Pair new device</source>
-      <translation type="unfinished">Pair new device</translation>
+      <translation>Parita uusi laite</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>Available devices</source>
-      <translation type="unfinished">Available devices</translation>
+      <translation>Saatavilla olevat laitteet</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Searching for devices…</source>
-      <translation type="unfinished">Searching for devices…</translation>
+      <translation>Etsitään laitteita…</translation>
     </message>
     <message>
       <location line="+69"/>
       <source>Unknown device</source>
-      <translation type="unfinished">Unknown device</translation>
+      <translation>Tuntematon laite</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Pairing...</source>
-      <translation type="unfinished">Pairing...</translation>
+      <translation>Pairing...</translation>
     </message>
   </context>
   <context>
@@ -2637,12 +2637,12 @@
     <message>
       <location filename="../modules/lock/weather/BriefInfo.qml" line="+47"/>
       <source>Feels like %1</source>
-      <translation type="unfinished">Feels like %1</translation>
+      <translation>Tuntuu siltä, kuin %1</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>High %1 • Low %2</source>
-      <translation type="unfinished">High %1 • Low %2</translation>
+      <translation>Korkea %1 • Matala %2</translation>
     </message>
   </context>
   <context>
@@ -2650,12 +2650,12 @@
     <message>
       <location filename="../services/Brightness.qml" line="+113"/>
       <source>Increase brightness</source>
-      <translation type="unfinished">Increase brightness</translation>
+      <translation>Lisää kirkkautta</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Decrease brightness</source>
-      <translation type="unfinished">Decrease brightness</translation>
+      <translation>Vähennä kirkkautta</translation>
     </message>
   </context>
   <context>
@@ -2663,92 +2663,92 @@
     <message>
       <location filename="../modules/nexus/pages/bluetooth/BtDeviceInfo.qml" line="+23"/>
       <source>Connected</source>
-      <translation type="unfinished">Connected</translation>
+      <translation>Yhdistetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Paired</source>
-      <translation type="unfinished">Paired</translation>
+      <translation>Paired</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Not paired</source>
-      <translation type="unfinished">Not paired</translation>
+      <translation>Ei pariksi</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Device</source>
-      <translation type="unfinished">Device</translation>
+      <translation>Laite</translation>
     </message>
     <message>
       <location line="+49"/>
       <source>Forget</source>
-      <translation type="unfinished">Forget</translation>
+      <translation>Unohda</translation>
     </message>
     <message>
       <location line="+55"/>
       <source>Disconnect</source>
-      <translation type="unfinished">Disconnect</translation>
+      <translation>Katkaise</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Connect</source>
-      <translation type="unfinished">Connect</translation>
+      <translation>Yhdistä</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Trusted</source>
-      <translation type="unfinished">Trusted</translation>
+      <translation>Luotettu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow this device to connect automatically</source>
-      <translation type="unfinished">Allow this device to connect automatically</translation>
+      <translation>Salli tämän laitteen kytkeytyä automaattisesti</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Reconnect on startup</source>
-      <translation type="unfinished">Reconnect on startup</translation>
+      <translation>Yhdistä uudelleen käynnistettäessä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Attempt to connect this device when the shell starts</source>
-      <translation type="unfinished">Attempt to connect this device when the shell starts</translation>
+      <translation>Yritetään yhdistää tämä laite kun tulkki käynnistyy</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Blocked</source>
-      <translation type="unfinished">Blocked</translation>
+      <translation>Estetty</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Prevent this device from connecting</source>
-      <translation type="unfinished">Prevent this device from connecting</translation>
+      <translation>Estä tämä laite yhdistämästä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Wake allowed</source>
-      <translation type="unfinished">Wake allowed</translation>
+      <translation>Herätys sallittu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow this device to wake the system</source>
-      <translation type="unfinished">Allow this device to wake the system</translation>
+      <translation>Salli tämän laitteen herättää järjestelmä</translation>
     </message>
     <message>
       <location line="+30"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Unavailable</source>
-      <translation type="unfinished">Unavailable</translation>
+      <translation>Unavailable</translation>
     </message>
     <message>
       <location line="+36"/>
       <source>Address</source>
-      <translation type="unfinished">Address</translation>
+      <translation>Osoite</translation>
     </message>
   </context>
   <context>
@@ -2756,32 +2756,32 @@
     <message>
       <location filename="../modules/windowinfo/Buttons.qml" line="+22"/>
       <source>Move to workspace</source>
-      <translation type="unfinished">Move to workspace</translation>
+      <translation>Siirrä työtilaan</translation>
     </message>
     <message>
       <location line="+46"/>
       <source>Restore</source>
-      <translation type="unfinished">Restore</translation>
+      <translation>Palauta</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Maximize</source>
-      <translation type="unfinished">Maximize</translation>
+      <translation>Maximize</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Unminimize</source>
-      <translation type="unfinished">Unminimize</translation>
+      <translation>Unminimize</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Minimize</source>
-      <translation type="unfinished">Minimize</translation>
+      <translation>Minimize</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Kill</source>
-      <translation type="unfinished">Kill</translation>
+      <translation>Tapa</translation>
     </message>
   </context>
   <context>
@@ -2789,17 +2789,17 @@
     <message>
       <location filename="../modules/launcher/items/CalcItem.qml" line="+60"/>
       <source>Calculating...</source>
-      <translation type="unfinished">Calculating...</translation>
+      <translation>Lasketaan...</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Type an expression to calculate</source>
-      <translation type="unfinished">Type an expression to calculate</translation>
+      <translation>Kirjoita lauseke laskettavaksi</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>Open in calculator</source>
-      <translation type="unfinished">Open in calculator</translation>
+      <translation>Avaa laskurissa</translation>
     </message>
   </context>
   <context>
@@ -2807,82 +2807,82 @@
     <message>
       <location filename="../modules/launcher/services/Categories.qml" line="+15"/>
       <source>Favorites</source>
-      <translation type="unfinished">Favorites</translation>
+      <translation>Suosikit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>All Applications</source>
-      <translation type="unfinished">All Applications</translation>
+      <translation>Kaikki Sovellukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Audio &amp; Video</source>
-      <translation type="unfinished">Audio &amp; Video</translation>
+      <translation>Ääni Ja Video</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Video</source>
-      <translation type="unfinished">Video</translation>
+      <translation>Video</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Development</source>
-      <translation type="unfinished">Development</translation>
+      <translation>Kehitys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Education</source>
-      <translation type="unfinished">Education</translation>
+      <translation>Koulutus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Games</source>
-      <translation type="unfinished">Games</translation>
+      <translation>Pelit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Graphics</source>
-      <translation type="unfinished">Graphics</translation>
+      <translation>Grafiikka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Office</source>
-      <translation type="unfinished">Office</translation>
+      <translation>Toimisto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Science</source>
-      <translation type="unfinished">Science</translation>
+      <translation>Tiede</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Settings</source>
-      <translation type="unfinished">Settings</translation>
+      <translation>Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System</source>
-      <translation type="unfinished">System</translation>
+      <translation>Järjestelmä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Utilities</source>
-      <translation type="unfinished">Utilities</translation>
+      <translation>Työkalut</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Other</source>
-      <translation type="unfinished">Other</translation>
+      <translation>Muu</translation>
     </message>
   </context>
   <context>
@@ -2890,7 +2890,7 @@
     <message>
       <location filename="../modules/launcher/items/ClipItem.qml" line="+33"/>
       <source>Copied to clipboard</source>
-      <translation type="unfinished">Copied to clipboard</translation>
+      <translation>Kopioitu leikepöydälle</translation>
     </message>
   </context>
   <context>
@@ -2898,22 +2898,22 @@
     <message>
       <location filename="../modules/nexus/pages/utilities/ClipboardPage.qml" line="+9"/>
       <source>Clipboard</source>
-      <translation type="unfinished">Clipboard</translation>
+      <translation>Leikepöytä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>History</source>
-      <translation type="unfinished">History</translation>
+      <translation>Historia</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Maximum entries</source>
-      <translation type="unfinished">Maximum entries</translation>
+      <translation>Tietueiden enimmäismäärä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Number of entries available in the launcher</source>
-      <translation type="unfinished">Number of entries available in the launcher</translation>
+      <translation>Käynnistäjän käytettävissä olevien tietueiden määrä</translation>
     </message>
   </context>
   <context>
@@ -2921,32 +2921,32 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/ColourSelect.qml" line="+40"/>
       <source>Colors</source>
-      <translation type="unfinished">Colors</translation>
+      <translation>Värit</translation>
     </message>
     <message>
       <location line="+84"/>
       <source>Dynamic</source>
-      <translation type="unfinished">Dynamic</translation>
+      <translation>Dynaaminen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Colors that follow your wallpaper</source>
-      <translation type="unfinished">Colors that follow your wallpaper</translation>
+      <translation>Värit, jotka seuraavat taustakuvaa</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Light</source>
-      <translation type="unfinished">Light</translation>
+      <translation>Vaalea</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Dark</source>
-      <translation type="unfinished">Dark</translation>
+      <translation>Tumma</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Variants</source>
-      <translation type="unfinished">Variants</translation>
+      <translation>Variantit</translation>
     </message>
   </context>
   <context>
@@ -2954,7 +2954,7 @@
     <message>
       <location filename="../modules/nexus/common/CommitRow.qml" line="+50"/>
       <source>%1 • %2</source>
-      <translation type="unfinished">%1 • %2</translation>
+      <translation>%1 • %2</translation>
     </message>
   </context>
   <context>
@@ -2962,7 +2962,7 @@
     <message>
       <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
       <source>IP Address</source>
-      <translation type="unfinished">IP Address</translation>
+      <translation>Ip Osoite</translation>
     </message>
     <message>
       <location line="+4"/>
@@ -2970,22 +2970,22 @@
       <location line="+11"/>
       <location line="+11"/>
       <source>Not available</source>
-      <translation type="unfinished">Not available</translation>
+      <translation>Ei saatavilla</translation>
     </message>
     <message>
       <location line="-26"/>
       <source>Subnet Mask</source>
-      <translation type="unfinished">Subnet Mask</translation>
+      <translation>Subnet Mask</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Gateway</source>
-      <translation type="unfinished">Gateway</translation>
+      <translation>Yhdyskäytävä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>DNS Servers</source>
-      <translation type="unfinished">DNS Servers</translation>
+      <translation>DNS Palvelimet</translation>
     </message>
   </context>
   <context>
@@ -2993,97 +2993,97 @@
     <message>
       <location filename="../modules/dashboard/Content.qml" line="+25"/>
       <source>Dashboard</source>
-      <translation type="unfinished">Dashboard</translation>
+      <translation>Hallintapaneeli</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Media</source>
-      <translation type="unfinished">Media</translation>
+      <translation>Media</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Performance</source>
-      <translation type="unfinished">Performance</translation>
+      <translation>Suorituskyky</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Weather</source>
-      <translation type="unfinished">Weather</translation>
+      <translation>Sää</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Terminal</source>
-      <translation type="unfinished">Terminal</translation>
+      <translation>Pääte</translation>
     </message>
     <message>
       <location filename="../modules/launcher/Content.qml" line="+45"/>
       <source>Clipboard history cleared</source>
-      <translation type="unfinished">Clipboard history cleared</translation>
+      <translation>Leikepöydän historia tyhjennetty</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Failed to clear clipboard history</source>
-      <translation type="unfinished">Failed to clear clipboard history</translation>
+      <translation>Leikepöydän historian tyhjentäminen epäonnistui</translation>
     </message>
     <message>
       <location line="+70"/>
       <source>Log Out</source>
-      <translation type="unfinished">Log Out</translation>
+      <translation>Kirjaudu Ulos</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Sleep</source>
-      <translation type="unfinished">Sleep</translation>
+      <translation>Lepotila</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Restart</source>
-      <translation type="unfinished">Restart</translation>
+      <translation>Käynnistä Uudelleen</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Shut Down</source>
-      <translation type="unfinished">Shut Down</translation>
+      <translation>Sammuta Alas</translation>
     </message>
     <message>
       <location line="+45"/>
       <source>Type &quot;%1&quot; for commands</source>
-      <translation type="unfinished">Type &quot;%1&quot; for commands</translation>
+      <translation>Kirjoita &quot;%1&quot; komennoille</translation>
     </message>
     <message>
       <location line="+317"/>
       <source>Clear clipboard history?</source>
-      <translation type="unfinished">Clear clipboard history?</translation>
+      <translation>Tyhjennetäänkö leikepöydän historia?</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>This removes all clipboard entries.</source>
-      <translation type="unfinished">This removes all clipboard entries.</translation>
+      <translation>Tämä poistaa kaikki leikepöydän merkinnät.</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Clear</source>
-      <translation type="unfinished">Clear</translation>
+      <translation>Tyhjennä</translation>
     </message>
     <message>
       <location filename="../modules/sidebar/Content.qml" line="+100"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>AI Assistant</source>
-      <translation type="unfinished">AI Assistant</translation>
+      <translation>Ai Apulainen</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>News</source>
-      <translation type="unfinished">News</translation>
+      <translation>Uutiset</translation>
     </message>
   </context>
   <context>
@@ -3091,69 +3091,69 @@
     <message>
       <location filename="../modules/launcher/ContentList.qml" line="+215"/>
       <source>Images</source>
-      <translation type="unfinished">Images</translation>
+      <translation>Kuvat</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Animated</source>
-      <translation type="unfinished">Animated</translation>
+      <translation>Animoitu</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Videos</source>
-      <translation type="unfinished">Videos</translation>
+      <translation>Videot</translation>
     </message>
     <message>
       <location line="+238"/>
       <source>cliphist not found</source>
-      <translation type="unfinished">cliphist not found</translation>
+      <translation>cliphistia ei löydy</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>No wallpapers found</source>
-      <translation type="unfinished">No wallpapers found</translation>
+      <translation>Taustakuvia ei löytynyt</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>No keybinds found</source>
-      <translation type="unfinished">No keybinds found</translation>
+      <translation>Näppäimiä ei löytynyt</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>No animations found</source>
-      <translation type="unfinished">No animations found</translation>
+      <translation>Animaatioita ei löytynyt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>No results</source>
-      <translation type="unfinished">No results</translation>
+      <translation>Ei tuloksia</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Install cliphist to enable clipboard history</source>
-      <translation type="unfinished">Install cliphist to enable clipboard history</translation>
+      <translation>Asenna cliphist ottaaksesi leikepöydän historian käyttöön</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Try putting some wallpapers in %1</source>
-      <translation type="unfinished">Try putting some wallpapers in %1</translation>
+      <translation>Yritä asettaa joitakin taustakuvia %1</translation>
     </message>
     <message>
       <location line="+0"/>
       <location line="+5"/>
       <source>Try searching for something else</source>
-      <translation type="unfinished">Try searching for something else</translation>
+      <translation>Yritä etsiä jotain muuta</translation>
     </message>
     <message>
       <location line="-3"/>
       <source>No keybinds match your search</source>
-      <translation type="unfinished">No keybinds match your search</translation>
+      <translation>Hakuasi vastaavia näppäimiä ei löytynyt</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Try adding .lua files to
 ~/.config/caelestia/animations/</source>
-      <translation type="unfinished">Try adding .lua files to
+      <translation>Yritä lisätä .lua-tiedostoja
 ~/.config/caelestia/animations/</translation>
     </message>
   </context>
@@ -3162,78 +3162,78 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/ContextMenuPage.qml" line="+17"/>
       <source>Right Click Menu</source>
-      <translation type="unfinished">Right Click Menu</translation>
+      <translation>Oikean Napsautuksen Valikko</translation>
     </message>
     <message>
       <location line="+23"/>
       <source>Desktop Icons</source>
-      <translation type="unfinished">Desktop Icons</translation>
+      <translation>Työpöydän Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper &amp; style</source>
-      <translation type="unfinished">Wallpaper &amp; style</translation>
+      <translation>Taustakuva &amp; tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Next Wallpaper</source>
-      <translation type="unfinished">Next Wallpaper</translation>
+      <translation>Seuraava Taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System Settings</source>
-      <translation type="unfinished">System Settings</translation>
+      <translation>Järjestelmän Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Open Terminal</source>
-      <translation type="unfinished">Open Terminal</translation>
+      <translation>Avaa Pääte</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+233"/>
       <source>Add Shortcut...</source>
-      <translation type="unfinished">Add Shortcut...</translation>
+      <translation>Lisää Pikakuvake...</translation>
     </message>
     <message>
       <location line="-95"/>
       <source>Active menu items</source>
-      <translation type="unfinished">Active menu items</translation>
+      <translation>Aktiiviset valikon nimikkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Drag to rearrange or disable</source>
-      <translation type="unfinished">Drag to rearrange or disable</translation>
+      <translation>Vedä järjestääksesi tai poistaaksesi käytöstä</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Empty Menu</source>
-      <translation type="unfinished">Empty Menu</translation>
+      <translation>Tyhjä Valikko</translation>
     </message>
     <message>
       <location line="+60"/>
       <source>Library</source>
-      <translation type="unfinished">Library</translation>
+      <translation>Kirjasto</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disabled items</source>
-      <translation type="unfinished">Disabled items</translation>
+      <translation>Estetyt kohteet</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Create a custom shortcut entry</source>
-      <translation type="unfinished">Create a custom shortcut entry</translation>
+      <translation>Luo mukautettu pikakuvake</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Empty</source>
-      <translation type="unfinished">Empty</translation>
+      <translation>Tyhjä</translation>
     </message>
     <message>
       <location line="+191"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Poista</translation>
     </message>
   </context>
   <context>
@@ -3241,32 +3241,32 @@
     <message>
       <location filename="../services/ContextMenuStore.qml" line="+26"/>
       <source>Desktop Icons</source>
-      <translation type="unfinished">Desktop Icons</translation>
+      <translation>Työpöydän Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Next Wallpaper</source>
-      <translation type="unfinished">Next Wallpaper</translation>
+      <translation>Seuraava Taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper &amp; style</source>
-      <translation type="unfinished">Wallpaper &amp; style</translation>
+      <translation>Taustakuva &amp; tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System Settings</source>
-      <translation type="unfinished">System Settings</translation>
+      <translation>Järjestelmän Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Open Terminal</source>
-      <translation type="unfinished">Open Terminal</translation>
+      <translation>Avaa Pääte</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add Shortcut...</source>
-      <translation type="unfinished">Add Shortcut...</translation>
+      <translation>Lisää Pikakuvake...</translation>
     </message>
   </context>
   <context>
@@ -3274,22 +3274,22 @@
     <message>
       <location filename="../modules/screenshot/regionSelector/CursorGuide.qml" line="+27"/>
       <source>Copy region (LMB) or annotate (RMB)</source>
-      <translation type="unfinished">Copy region (LMB) or annotate (RMB)</translation>
+      <translation>Kopioi alue (LMB) tai huomautus (RMB)</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Search with Google Lens</source>
-      <translation type="unfinished">Search with Google Lens</translation>
+      <translation>Etsi Google Lens -laitteella</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Recognize text</source>
-      <translation type="unfinished">Recognize text</translation>
+      <translation>Tunnista teksti</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Record region</source>
-      <translation type="unfinished">Record region</translation>
+      <translation>Tallenna alue</translation>
     </message>
   </context>
   <context>
@@ -3297,12 +3297,12 @@
     <message>
       <location filename="../modules/lock/weather/DailyForecast.qml" line="+16"/>
       <source>7-Day Forecast</source>
-      <translation type="unfinished">7-Day Forecast</translation>
+      <translation>7 Päivän Ennuste</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>Today</source>
-      <translation type="unfinished">Today</translation>
+      <translation>Tänään</translation>
     </message>
   </context>
   <context>
@@ -3310,234 +3310,234 @@
     <message>
       <location filename="../modules/nexus/pages/panels/DashboardPanel.qml" line="+20"/>
       <source>Circle</source>
-      <translation type="unfinished">Circle</translation>
+      <translation>Ympyrä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Square</source>
-      <translation type="unfinished">Square</translation>
+      <translation>Neliö</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+85"/>
       <source>Pill</source>
-      <translation type="unfinished">Pill</translation>
+      <translation>Pill</translation>
     </message>
     <message>
       <location line="-80"/>
       <source>Diamond</source>
-      <translation type="unfinished">Diamond</translation>
+      <translation>Timantti</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Clam Shell</source>
-      <translation type="unfinished">Clam Shell</translation>
+      <translation>Simpukka</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Pentagon</source>
-      <translation type="unfinished">Pentagon</translation>
+      <translation>Pentagon</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Gem</source>
-      <translation type="unfinished">Gem</translation>
+      <translation>Jalokivi</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 4-Sided</source>
-      <translation type="unfinished">Cookie 4-Sided</translation>
+      <translation>Eväste 4-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 6-Sided</source>
-      <translation type="unfinished">Cookie 6-Sided</translation>
+      <translation>Eväste 6-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 7-Sided</source>
-      <translation type="unfinished">Cookie 7-Sided</translation>
+      <translation>Eväste 7-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 9-Sided</source>
-      <translation type="unfinished">Cookie 9-Sided</translation>
+      <translation>Eväste 9-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 12-Sided</source>
-      <translation type="unfinished">Cookie 12-Sided</translation>
+      <translation>Eväste 12-puolinen</translation>
     </message>
     <message>
       <location line="+4"/>
       <location line="+64"/>
       <source>Dashboard</source>
-      <translation type="unfinished">Dashboard</translation>
+      <translation>Hallintapaneeli</translation>
     </message>
     <message>
       <location line="-52"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reveal when the cursor reaches the screen edge</source>
-      <translation type="unfinished">Reveal when the cursor reaches the screen edge</translation>
+      <translation>Paljasta kun kohdistin saavuttaa näytön reunan</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Dashboard profile picture shape</source>
-      <translation type="unfinished">Dashboard profile picture shape</translation>
+      <translation>Kojelaudan profiilin kuvan muoto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the shape of the profile picture on the dashboard</source>
-      <translation type="unfinished">Choose the shape of the profile picture on the dashboard</translation>
+      <translation>Valitse profiilikuvan muoto kojelaudan päällä</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Show clock seconds</source>
-      <translation type="unfinished">Show clock seconds</translation>
+      <translation>Näytä kellon sekuntia</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Display seconds below the clock in the dashboard</source>
-      <translation type="unfinished">Display seconds below the clock in the dashboard</translation>
+      <translation>Näytä sekunnit kellon alapuolella hallintapaneelissa</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Tabs</source>
-      <translation type="unfinished">Tabs</translation>
+      <translation>Tabs</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Media</source>
-      <translation type="unfinished">Media</translation>
+      <translation>Media</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Performance</source>
-      <translation type="unfinished">Performance</translation>
+      <translation>Suorituskyky</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Weather</source>
-      <translation type="unfinished">Weather</translation>
+      <translation>Sää</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Terminal</source>
-      <translation type="unfinished">Terminal</translation>
+      <translation>Pääte</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Recolor media GIF</source>
-      <translation type="unfinished">Recolor media GIF</translation>
+      <translation>Reolor media GIF</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Apply system theme colors to the media GIF</source>
-      <translation type="unfinished">Apply system theme colors to the media GIF</translation>
+      <translation>Käytä järjestelmän teemojen värejä medialle GIF</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Use material shapes</source>
-      <translation type="unfinished">Use material shapes</translation>
+      <translation>Käytä materiaalimuotoja</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Replace the media GIF with audio-reactive material shapes</source>
-      <translation type="unfinished">Replace the media GIF with audio-reactive material shapes</translation>
+      <translation>Korvaa media GIF audio-reaktiivisilla materiaalimuodoilla</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Welcome splash</source>
-      <translation type="unfinished">Welcome splash</translation>
+      <translation>Tervetuloa splash</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Show a welcome message on the dashboard</source>
-      <translation type="unfinished">Show a welcome message on the dashboard</translation>
+      <translation>Näytä tervetuliaisviesti kojelaudalla</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Performance widgets</source>
-      <translation type="unfinished">Performance widgets</translation>
+      <translation>Suorituskyvyn widgetit</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Battery</source>
-      <translation type="unfinished">Battery</translation>
+      <translation>Akku</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>GPU</source>
-      <translation type="unfinished">GPU</translation>
+      <translation>GPU</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>CPU</source>
-      <translation type="unfinished">CPU</translation>
+      <translation>Suoritin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Memory</source>
-      <translation type="unfinished">Memory</translation>
+      <translation>Muisti</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Storage</source>
-      <translation type="unfinished">Storage</translation>
+      <translation>Tallennustila</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Hover trigger depth</source>
-      <translation type="unfinished">Hover trigger depth</translation>
+      <translation>Hover trigger depth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance in from the screen edge that opens the dashboard</source>
-      <translation type="unfinished">Distance in from the screen edge that opens the dashboard</translation>
+      <translation>Etäisyys näytön reunasta, joka avaa kojelaudan</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Hover trigger width</source>
-      <translation type="unfinished">Hover trigger width</translation>
+      <translation>Hover trigger width</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How much of the top edge opens the dashboard, as a percentage of its width</source>
-      <translation type="unfinished">How much of the top edge opens the dashboard, as a percentage of its width</translation>
+      <translation>Kuinka paljon ylhäältä reunalta avautuu kojelauta, kuten prosenttiosuus sen leveydestä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels dragged before the dashboard opens</source>
-      <translation type="unfinished">Pixels dragged before the dashboard opens</translation>
+      <translation>Pikselit vedettiin ennen kojelaudan avaamista</translation>
     </message>
   </context>
   <context>
@@ -3545,166 +3545,166 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/DesktopAddonsPage.qml" line="+19"/>
       <source>Top left</source>
-      <translation type="unfinished">Top left</translation>
+      <translation>Vasen yläreuna</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Top center</source>
-      <translation type="unfinished">Top center</translation>
+      <translation>Ylhäällä keskellä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Top right</source>
-      <translation type="unfinished">Top right</translation>
+      <translation>Oikea yläreuna</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+28"/>
       <source>Center</source>
-      <translation type="unfinished">Center</translation>
+      <translation>Keskitetty</translation>
     </message>
     <message>
       <location line="-23"/>
       <source>Bottom left</source>
-      <translation type="unfinished">Bottom left</translation>
+      <translation>Vasen alareuna</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bottom center</source>
-      <translation type="unfinished">Bottom center</translation>
+      <translation>Alhaalla keskellä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bottom right</source>
-      <translation type="unfinished">Bottom right</translation>
+      <translation>Oikea alareuna</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Left</source>
-      <translation type="unfinished">Left</translation>
+      <translation>Vasen</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Right</source>
-      <translation type="unfinished">Right</translation>
+      <translation>Oikea</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Desktop Addons</source>
-      <translation type="unfinished">Desktop Addons</translation>
+      <translation>Työpöydän Lisäosat</translation>
     </message>
     <message>
       <location line="+20"/>
       <location line="+87"/>
       <source>Desktop clock</source>
-      <translation type="unfinished">Desktop clock</translation>
+      <translation>Työpöydän kello</translation>
     </message>
     <message>
       <location line="-79"/>
       <location line="+123"/>
       <source>Desktop media shapes</source>
-      <translation type="unfinished">Desktop media shapes</translation>
+      <translation>Työpöydän median muodot</translation>
     </message>
     <message>
       <location line="-110"/>
       <source>Auto-hide media shapes</source>
-      <translation type="unfinished">Auto-hide media shapes</translation>
+      <translation>Piilota median muodot automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hide media shapes when a window is open</source>
-      <translation type="unfinished">Hide media shapes when a window is open</translation>
+      <translation>Piilota median muodot, kun ikkuna on auki</translation>
     </message>
     <message>
       <location line="+8"/>
       <location line="+138"/>
       <source>Desktop lyrics</source>
-      <translation type="unfinished">Desktop lyrics</translation>
+      <translation>Työpöydän sanoitukset</translation>
     </message>
     <message>
       <location line="-125"/>
       <source>Auto-hide lyrics</source>
-      <translation type="unfinished">Auto-hide lyrics</translation>
+      <translation>Piilota sanoitukset automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hide lyrics when a window is open</source>
-      <translation type="unfinished">Hide lyrics when a window is open</translation>
+      <translation>Piilota sanoitukset kun ikkuna on auki</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Background visualiser</source>
-      <translation type="unfinished">Background visualiser</translation>
+      <translation>Taustan visualisoija</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show music visualiser on wallpaper (May consume more power)</source>
-      <translation type="unfinished">Show music visualiser on wallpaper (May consume more power)</translation>
+      <translation>Näytä musiikin visualisoija taustakuva (Saattaa kuluttaa enemmän tehoa)</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Auto-hide visualiser</source>
-      <translation type="unfinished">Auto-hide visualiser</translation>
+      <translation>Piilota visualisoija automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hide visualiser when a window is fullscreen</source>
-      <translation type="unfinished">Hide visualiser when a window is fullscreen</translation>
+      <translation>Piilota visualisoija, kun ikkuna on kokoruututilassa</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Hide on all monitors</source>
-      <translation type="unfinished">Hide on all monitors</translation>
+      <translation>Piilota kaikilla näytöillä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Also hide on all other monitors if disabled by a window</source>
-      <translation type="unfinished">Also hide on all other monitors if disabled by a window</translation>
+      <translation>Piilota myös kaikki muut näytöt, jos ikkuna poistaa käytöstä</translation>
     </message>
     <message>
       <location line="+18"/>
       <location line="+44"/>
       <location line="+37"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>Skaalaa</translation>
     </message>
     <message>
       <location line="-71"/>
       <location line="+45"/>
       <location line="+36"/>
       <source>Position</source>
-      <translation type="unfinished">Position</translation>
+      <translation>Sijainti</translation>
     </message>
     <message>
       <location line="-64"/>
       <location line="+95"/>
       <source>Invert colors</source>
-      <translation type="unfinished">Invert colors</translation>
+      <translation>Käännä värit</translation>
     </message>
     <message>
       <location line="-15"/>
       <source>Alignment</source>
-      <translation type="unfinished">Alignment</translation>
+      <translation>Tasaus</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Visualiser</source>
-      <translation type="unfinished">Visualiser</translation>
+      <translation>Visualisoija</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Blur</source>
-      <translation type="unfinished">Blur</translation>
+      <translation>Blur</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Rounding</source>
-      <translation type="unfinished">Rounding</translation>
+      <translation>Pyöristys</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Spacing</source>
-      <translation type="unfinished">Spacing</translation>
+      <translation>Väli</translation>
     </message>
   </context>
   <context>
@@ -3712,32 +3712,32 @@
     <message>
       <location filename="../modules/background/DesktopContextMenu.qml" line="+25"/>
       <source>Desktop Icons</source>
-      <translation type="unfinished">Desktop Icons</translation>
+      <translation>Työpöydän Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Next Wallpaper</source>
-      <translation type="unfinished">Next Wallpaper</translation>
+      <translation>Seuraava Taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper &amp; style</source>
-      <translation type="unfinished">Wallpaper &amp; style</translation>
+      <translation>Taustakuva &amp; tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System Settings</source>
-      <translation type="unfinished">System Settings</translation>
+      <translation>Järjestelmän Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Open Terminal</source>
-      <translation type="unfinished">Open Terminal</translation>
+      <translation>Avaa Pääte</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add Shortcut...</source>
-      <translation type="unfinished">Add Shortcut...</translation>
+      <translation>Lisää Pikakuvake...</translation>
     </message>
   </context>
   <context>
@@ -3745,7 +3745,7 @@
     <message>
       <location filename="../modules/background/DesktopLyrics.qml" line="+315"/>
       <source>Loading lyrics...</source>
-      <translation type="unfinished">Loading lyrics...</translation>
+      <translation>Ladataan sanoituksia...</translation>
     </message>
   </context>
   <context>
@@ -3753,92 +3753,92 @@
     <message>
       <location filename="../modules/nexus/pages/DesktopPage.qml" line="+13"/>
       <source>Desktop &amp; Tiling</source>
-      <translation type="unfinished">Desktop &amp; Tiling</translation>
+      <translation>Työpöytä Ja Lataus</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Show KDE Desktop</source>
-      <translation type="unfinished">Show KDE Desktop</translation>
+      <translation>Show KDE Desktop</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Disable Caelestia desktop and use native Plasma 6 desktop instead</source>
-      <translation type="unfinished">Disable Caelestia desktop and use native Plasma 6 desktop instead</translation>
+      <translation>Poista Caelestia käytöstä ja käytä Plasma 6 -työpöytää sen sijaan</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Show Desktop Icons</source>
-      <translation type="unfinished">Show Desktop Icons</translation>
+      <translation>Näytä Työpöydän Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable icons for Caelestia desktop</source>
-      <translation type="unfinished">Enable icons for Caelestia desktop</translation>
+      <translation>Ota kuvakkeet käyttöön Caelestian työpöydälle</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Material You Icons</source>
-      <translation type="unfinished">Material You Icons</translation>
+      <translation>Materiaali Sinä Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Override the KDE icon theme for desktop icons only</source>
-      <translation type="unfinished">Override the KDE icon theme for desktop icons only</translation>
+      <translation>Ohita KDE: n kuvaketeema vain työpöydän kuvakkeille</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Vibrant Icons</source>
-      <translation type="unfinished">Vibrant Icons</translation>
+      <translation>Voimakkaat Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Boost saturation of Material You icons for extra vibrancy</source>
-      <translation type="unfinished">Boost saturation of Material You icons for extra vibrancy</translation>
+      <translation>Boost värikylläisyys Materiaali You kuvakkeet ylimääräistä elinvoimaa</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Magic Lamp Minimize</source>
-      <translation type="unfinished">Magic Lamp Minimize</translation>
+      <translation>Magic Lamppu Pienennä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable the magic lamp effect when minimizing windows</source>
-      <translation type="unfinished">Enable the magic lamp effect when minimizing windows</translation>
+      <translation>Ota taikuus käyttöön pienennettäessä ikkunoita</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Window Tiling</source>
-      <translation type="unfinished">Window Tiling</translation>
+      <translation>Ikkunan Lataus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enabled (Krohnkite)</source>
-      <translation type="unfinished">Enabled (Krohnkite)</translation>
+      <translation>Käytössä (Krohnkite)</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Disabled</source>
-      <translation type="unfinished">Disabled</translation>
+      <translation>Pois Käytöstä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Desktop Addons</source>
-      <translation type="unfinished">Desktop Addons</translation>
+      <translation>Työpöydän Lisäosat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Clock, Shapes, Lyrics, Visualiser</source>
-      <translation type="unfinished">Clock, Shapes, Lyrics, Visualiser</translation>
+      <translation>Kello, Muodot, Lyrics, Visualisoija</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Right Click Menu</source>
-      <translation type="unfinished">Right Click Menu</translation>
+      <translation>Oikean Napsautuksen Valikko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Configure desktop right click menu</source>
-      <translation type="unfinished">Configure desktop right click menu</translation>
+      <translation>Määritä oikea painikkeen työpöydän valikko</translation>
     </message>
   </context>
   <context>
@@ -3846,53 +3846,53 @@
     <message>
       <location filename="../modules/dashboard/media/Details.qml" line="+46"/>
       <source>Unknown artist</source>
-      <translation type="unfinished">Unknown artist</translation>
+      <translation>Tuntematon esittäjä</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Unknown album</source>
-      <translation type="unfinished">Unknown album</translation>
+      <translation>Tuntematon albumi</translation>
     </message>
     <message>
       <location filename="../modules/windowinfo/Details.qml" line="+16"/>
       <location line="+7"/>
       <source>No active client</source>
-      <translation type="unfinished">No active client</translation>
+      <translation>Ei aktiivista asiakasta</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Address: %1</source>
-      <translation type="unfinished">Address: %1</translation>
+      <translation>Osoite: %1</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Position: %1, %2</source>
-      <translation type="unfinished">Position: %1, %2</translation>
+      <translation>Sijainti: %1, %2</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Size: %1 x %2</source>
-      <translation type="unfinished">Size: %1 x %2</translation>
+      <translation>Koko: %1 x %2</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Workspace: %1</source>
-      <translation type="unfinished">Workspace: %1</translation>
+      <translation>Työtila: %1</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Floating: %1</source>
-      <translation type="unfinished">Floating: %1</translation>
+      <translation>Kelluva: %1</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Fullscreen state: %1</source>
-      <translation type="unfinished">Fullscreen state: %1</translation>
+      <translation>Koko näytön tila: %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fullscreen state: unknown</source>
-      <translation type="unfinished">Fullscreen state: unknown</translation>
+      <translation>Koko näytön tila: tuntematon</translation>
     </message>
   </context>
   <context>
@@ -3900,27 +3900,27 @@
     <message>
       <location filename="../components/filedialog/DialogButtons.qml" line="+26"/>
       <source>Filter:</source>
-      <translation type="unfinished">Filter:</translation>
+      <translation>Suodatin:</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Folders</source>
-      <translation type="unfinished">Folders</translation>
+      <translation>Kansiot</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>Select Folder</source>
-      <translation type="unfinished">Select Folder</translation>
+      <translation>Valitse Kansio</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Select</source>
-      <translation type="unfinished">Select</translation>
+      <translation>Valitse</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
   </context>
   <context>
@@ -3928,7 +3928,7 @@
     <message>
       <location filename="../modules/nexus/common/DialogRowButton.qml" line="+224"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
   </context>
   <context>
@@ -3936,7 +3936,7 @@
     <message>
       <location filename="../modules/sidebar/DinoGame.qml" line="+256"/>
       <source>All up to date!</source>
-      <translation type="unfinished">All up to date!</translation>
+      <translation>Kaikki ajan tasalla!</translation>
     </message>
   </context>
   <context>
@@ -3944,22 +3944,22 @@
     <message>
       <location filename="../modules/bar/popouts/DockContext.qml" line="+100"/>
       <source>Unpin from dock</source>
-      <translation type="unfinished">Unpin from dock</translation>
+      <translation>Irrota telakasta</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Pin to dock</source>
-      <translation type="unfinished">Pin to dock</translation>
+      <translation>Kiinnitä telakkaan</translation>
     </message>
     <message>
       <location line="+40"/>
       <source>Open new window</source>
-      <translation type="unfinished">Open new window</translation>
+      <translation>Avaa uusi ikkuna</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>End task</source>
-      <translation type="unfinished">End task</translation>
+      <translation>Lopeta tehtävä</translation>
     </message>
   </context>
   <context>
@@ -3967,7 +3967,7 @@
     <message>
       <location filename="../modules/launcher/items/EmojiItem.qml" line="+22"/>
       <source>Copied to clipboard</source>
-      <translation type="unfinished">Copied to clipboard</translation>
+      <translation>Kopioitu leikepöydälle</translation>
     </message>
   </context>
   <context>
@@ -3975,72 +3975,72 @@
     <message>
       <location filename="../modules/whatsnew/Entries.qml" line="+23"/>
       <source>Window Switcher Add-ons</source>
-      <translation type="unfinished">Window Switcher Add-ons</translation>
+      <translation>Ikkunan Vaihtajan Lisäosat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The window switcher now runs on a KWin-native backend, and window previews are cached so they appear instantly. Its own page under Settings -&gt; Panels -&gt; Window Switcher adds filtering by current desktop, minimized windows, windows from all screens, a live preview on the workspace, and a switch to turn it off entirely.</source>
-      <translation type="unfinished">The window switcher now runs on a KWin-native backend, and window previews are cached so they appear instantly. Its own page under Settings -&gt; Panels -&gt; Window Switcher adds filtering by current desktop, minimized windows, windows from all screens, a live preview on the workspace, and a switch to turn it off entirely.</translation>
+      <translation>Ikkunan vaihtaja toimii nyt KWin-natiivin taustaosalla, ja ikkunan esikatselut välimuistiin niin, että ne näkyvät välittömästi. Sen oma sivu kohdassa Asetukset -&gt; Panels -&gt; Window Switcher lisää suodatuksen nykyisen työpöydällä, pienennetyt ikkunat, ikkunat kaikista ruuduista, live esikatselu työtilassa, ja kytkin sammuttaa sen kokonaan.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Notifications on Any Screen</source>
-      <translation type="unfinished">Notifications on Any Screen</translation>
+      <translation>Ilmoitukset millä tahansa näytöllä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Notification popups can now follow the screen they belong to instead of always using the focused one, and the shell can stay quiet while a fullscreen app is focused. Both live in Settings -&gt; Services -&gt; Notifications, as &apos;Display on screen&apos; and &apos;Show in fullscreen&apos;.</source>
-      <translation type="unfinished">Notification popups can now follow the screen they belong to instead of always using the focused one, and the shell can stay quiet while a fullscreen app is focused. Both live in Settings -&gt; Services -&gt; Notifications, as &apos;Display on screen&apos; and &apos;Show in fullscreen&apos;.</translation>
+      <translation>Ilmoitusponnahdusikkunat voivat nyt seurata näyttöä, johon ne kuuluvat, sen sijaan että käyttäisivät aina kohdistettua ponnahdusikkunaa, ja kuori voi pysyä hiljaisena kun koko näytön sovellus on keskitetty. Molemmat elävät Asetuksissa -&gt; Palvelut -&gt; Ilmoitukset, kuten &apos;Näyttö näytöllä&apos; ja &apos;Näytä koko näytössä&apos;.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>GIF Recording</source>
-      <translation type="unfinished">GIF Recording</translation>
+      <translation>GIF Tallennus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The screen recorder can capture a region straight to an animated GIF. Choose Record GIF from the recorder menu - it is enabled by default and can be switched off under Settings -&gt; Utilities -&gt; Utilities panel.</source>
-      <translation type="unfinished">The screen recorder can capture a region straight to an animated GIF. Choose Record GIF from the recorder menu - it is enabled by default and can be switched off under Settings -&gt; Utilities -&gt; Utilities panel.</translation>
+      <translation>Näytöntallennin voi tallentaa alueen suoraan animoituun GIF:iin. Valitse Record GIF tallenninvalikosta - se on oletusarvoisesti käytössä ja voidaan kytkeä pois päältä Asetukset -&gt; Utilities -&gt; Utilities paneeli.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>SDDM Theme Out of the Box</source>
-      <translation type="unfinished">SDDM Theme Out of the Box</translation>
+      <translation>SDDM teema ulos laatikosta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The Material You login screen, with wallpaper and color sync, is now installed by default, so the greeter matches your desktop from the first boot. It remains optional in the installer for anyone who prefers the stock theme.</source>
-      <translation type="unfinished">The Material You login screen, with wallpaper and color sync, is now installed by default, so the greeter matches your desktop from the first boot. It remains optional in the installer for anyone who prefers the stock theme.</translation>
+      <translation>The Material You login näyttö, jossa taustakuva ja värin synkronointi, on nyt asennettu oletusarvoisesti, joten greeter vastaa työpöytäsi ensimmäisestä käynnistyksestä. Se on edelleen valinnainen asentaja kaikille, jotka suosivat varastossa teema.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Audio-Reactive Desktop Shapes</source>
-      <translation type="unfinished">Audio-Reactive Desktop Shapes</translation>
+      <translation>Audio-Reaktiiviset Työpöytämuodot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The media visualiser is now a set of audio-reactive material shapes, and it can live on the wallpaper as well as in the dashboard. Turn on &apos;Desktop media shapes&apos; under Settings -&gt; Desktop -&gt; Desktop Addons and let it auto-hide while a window is open.</source>
-      <translation type="unfinished">The media visualiser is now a set of audio-reactive material shapes, and it can live on the wallpaper as well as in the dashboard. Turn on &apos;Desktop media shapes&apos; under Settings -&gt; Desktop -&gt; Desktop Addons and let it auto-hide while a window is open.</translation>
+      <translation>Median visualisoija on nyt joukko audio-reaktiivisia materiaalimuotoja, ja se voi elää sekä taustakuvan että kojelautaan. Ota käyttöön &apos;Työpöydän muodot&apos; Asetukset -&gt; Työpöytä -&gt; Työpöydän lisäosat ja anna sen automaattisesti piilottaa kun ikkuna on auki.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Chinese Translations</source>
-      <translation type="unfinished">Chinese Translations</translation>
+      <translation>Kiinalaiset Käännökset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The shell now ships Simplified and Traditional Chinese catalogues, so the interface follows your language instead of staying English. Pick one from Settings -&gt; Language &amp; region.</source>
-      <translation type="unfinished">The shell now ships Simplified and Traditional Chinese catalogues, so the interface follows your language instead of staying English. Pick one from Settings -&gt; Language &amp; region.</translation>
+      <translation>The shell now ships Yksinkertaistettu ja perinteinen kiinalainen luetteloita, joten käyttöliittymä seuraa kieltäsi sen sijaan, että pysyisi Englanti. Valitse yksi asetuksista -&gt; Kieli &amp; alueella.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>A New Name and Look</source>
-      <translation type="unfinished">A New Name and Look</translation>
+      <translation>Uusi nimi ja katso</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.</source>
-      <translation type="unfinished">The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.</translation>
+      <translation>Projekti on nyt caelestia-kde. Repository, sen viittaukset ja taideteos on nimetty uudelleen ja tuotu yhteen palettiin ja yhteen logoon. Asetuksesi ja asetuksesi ovat koskemattomat.</translation>
     </message>
   </context>
   <context>
@@ -4048,42 +4048,42 @@
     <message>
       <location filename="../modules/nexus/pages/network/EthernetDetailPage.qml" line="+98"/>
       <source>Ethernet</source>
-      <translation type="unfinished">Ethernet</translation>
+      <translation>Ethernet</translation>
     </message>
     <message>
       <location line="+56"/>
       <source>Disconnect</source>
-      <translation type="unfinished">Disconnect</translation>
+      <translation>Katkaise</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Connect</source>
-      <translation type="unfinished">Connect</translation>
+      <translation>Yhdistä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Connection</source>
-      <translation type="unfinished">Connection</translation>
+      <translation>Yhteys</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Status</source>
-      <translation type="unfinished">Status</translation>
+      <translation>Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Connected</source>
-      <translation type="unfinished">Connected</translation>
+      <translation>Yhdistetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Not connected</source>
-      <translation type="unfinished">Not connected</translation>
+      <translation>Ei yhdistetty</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Interface</source>
-      <translation type="unfinished">Interface</translation>
+      <translation>Käyttöliittymä</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -4091,94 +4091,94 @@
       <location line="+6"/>
       <location line="+7"/>
       <source>—</source>
-      <translation type="unfinished">—</translation>
+      <translation>—</translation>
     </message>
     <message>
       <location line="-21"/>
       <source>Speed</source>
-      <translation type="unfinished">Speed</translation>
+      <translation>Nopeus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>IP address</source>
-      <translation type="unfinished">IP address</translation>
+      <translation>IP-osoite</translation>
     </message>
     <message>
       <location line="+6"/>
       <location line="+76"/>
       <source>Gateway</source>
-      <translation type="unfinished">Gateway</translation>
+      <translation>Yhdyskäytävä</translation>
     </message>
     <message>
       <location line="-69"/>
       <source>MAC address</source>
-      <translation type="unfinished">MAC address</translation>
+      <translation>MAC osoite</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>IPv4</source>
-      <translation type="unfinished">IPv4</translation>
+      <translation>IPv4</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>IP assignment</source>
-      <translation type="unfinished">IP assignment</translation>
+      <translation>IP-osoitteen tehtävä</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+11"/>
       <source>Automatic (DHCP)</source>
-      <translation type="unfinished">Automatic (DHCP)</translation>
+      <translation>Automaattinen (DHCP)</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Automatic, DNS only</source>
-      <translation type="unfinished">Automatic, DNS only</translation>
+      <translation>Vain automaattinen, DNS</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Manual</source>
-      <translation type="unfinished">Manual</translation>
+      <translation>Manuaalinen</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Address (CIDR)</source>
-      <translation type="unfinished">Address (CIDR)</translation>
+      <translation>Osoite (CIDR)</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>IP and prefix, e.g. 192.168.1.50/24</source>
-      <translation type="unfinished">IP and prefix, e.g. 192.168.1.50/24</translation>
+      <translation>IP ja etuliite, esim. 192.168.1.50/24</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter a valid address in CIDR notation</source>
-      <translation type="unfinished">Enter a valid address in CIDR notation</translation>
+      <translation>Anna kelvollinen osoite CIDR notaatiossa</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Enter a valid gateway address</source>
-      <translation type="unfinished">Enter a valid gateway address</translation>
+      <translation>Anna kelvollinen yhdyskäytävän osoite</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>DNS servers</source>
-      <translation type="unfinished">DNS servers</translation>
+      <translation>DNS palvelimet</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Comma-separated</source>
-      <translation type="unfinished">Comma-separated</translation>
+      <translation>Pilkulla erotettu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter valid DNS server addresses</source>
-      <translation type="unfinished">Enter valid DNS server addresses</translation>
+      <translation>Anna kelvolliset DNS-palvelimen osoitteet</translation>
     </message>
     <message>
       <location line="+55"/>
       <source>Apply</source>
-      <translation type="unfinished">Apply</translation>
+      <translation>Käytä</translation>
     </message>
   </context>
   <context>
@@ -4186,42 +4186,42 @@
     <message>
       <location filename="../modules/nexus/common/EthernetSection.qml" line="+53"/>
       <source>Ethernet</source>
-      <translation type="unfinished">Ethernet</translation>
+      <translation>Ethernet</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Connected</source>
-      <translation type="unfinished">Connected</translation>
+      <translation>Yhdistetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Not connected</source>
-      <translation type="unfinished">Not connected</translation>
+      <translation>Ei yhdistetty</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Data usage: %1</source>
-      <translation type="unfinished">Data usage: %1</translation>
+      <translation>Datan käyttö: %1</translation>
     </message>
     <message>
       <location line="+72"/>
       <source>Wired connection</source>
-      <translation type="unfinished">Wired connection</translation>
+      <translation>Langallinen yhteys</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Not connected • %1</source>
-      <translation type="unfinished">Not connected • %1</translation>
+      <translation>Ei yhdistetty • %1</translation>
     </message>
     <message>
       <location line="+44"/>
       <source>Local IP Address</source>
-      <translation type="unfinished">Local IP Address</translation>
+      <translation>Paikallinen Ip- Osoite</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Primary DNS</source>
-      <translation type="unfinished">Primary DNS</translation>
+      <translation>Ensisijainen DNS</translation>
     </message>
   </context>
   <context>
@@ -4229,7 +4229,7 @@
     <message>
       <location filename="../components/widgets/ExtraIndicator.qml" line="+35"/>
       <source>+%1</source>
-      <translation type="unfinished">+%1</translation>
+      <translation>+%1</translation>
     </message>
   </context>
   <context>
@@ -4237,12 +4237,12 @@
     <message>
       <location filename="../components/filedialog/FileDialog.qml" line="+16"/>
       <source>Select a folder</source>
-      <translation type="unfinished">Select a folder</translation>
+      <translation>Valitse kansio</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Select a file</source>
-      <translation type="unfinished">Select a file</translation>
+      <translation>Valitse tiedosto</translation>
     </message>
   </context>
   <context>
@@ -4250,7 +4250,7 @@
     <message>
       <location filename="../components/filedialog/FolderContents.qml" line="+63"/>
       <source>This folder is empty</source>
-      <translation type="unfinished">This folder is empty</translation>
+      <translation>Tämä kansio on tyhjä</translation>
     </message>
   </context>
   <context>
@@ -4258,12 +4258,12 @@
     <message>
       <location filename="../modules/lock/weather/Forecast.qml" line="+34"/>
       <source>Hourly forecast</source>
-      <translation type="unfinished">Hourly forecast</translation>
+      <translation>Tunnin säätö</translation>
     </message>
     <message>
       <location line="+64"/>
       <source>Now</source>
-      <translation type="unfinished">Now</translation>
+      <translation>Nyt</translation>
     </message>
   </context>
   <context>
@@ -4271,32 +4271,32 @@
     <message>
       <location filename="../services/GameMode.qml" line="+169"/>
       <source>Game mode enabled</source>
-      <translation type="unfinished">Game mode enabled</translation>
+      <translation>Pelitila käytössä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Disabled Hyprland animations, blur, gaps and shadows</source>
-      <translation type="unfinished">Disabled Hyprland animations, blur, gaps and shadows</translation>
+      <translation>Hyprland-animaatiot, hämärtyminen, aukot ja varjot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Paused video wallpaper, disabled blur and animations</source>
-      <translation type="unfinished">Paused video wallpaper, disabled blur and animations</translation>
+      <translation>Pysäytetty videon taustakuva, estetty sumennus ja animaatiot</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Game mode disabled</source>
-      <translation type="unfinished">Game mode disabled</translation>
+      <translation>Pelitila pois käytöstä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hyprland settings restored</source>
-      <translation type="unfinished">Hyprland settings restored</translation>
+      <translation>Hyprlandin asetukset palautettu</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Desktop effects restored</source>
-      <translation type="unfinished">Desktop effects restored</translation>
+      <translation>Työpöytätehosteet palautettu</translation>
     </message>
   </context>
   <context>
@@ -4304,87 +4304,87 @@
     <message>
       <location filename="../modules/nexus/pages/services/GameModePage.qml" line="+19"/>
       <source>Game mode</source>
-      <translation type="unfinished">Game mode</translation>
+      <translation>Pelin tila</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Auto-enable rules</source>
-      <translation type="unfinished">Auto-enable rules</translation>
+      <translation>Ota säännöt käyttöön automaattisesti</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enable automatically</source>
-      <translation type="unfinished">Enable automatically</translation>
+      <translation>Ota käyttöön automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Turn on game mode when a target window is focused or running</source>
-      <translation type="unfinished">Turn on game mode when a target window is focused or running</translation>
+      <translation>Ota pelitila käyttöön, kun kohdeikkuna on keskittynyt tai käynnissä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Target windows</source>
-      <translation type="unfinished">Target windows</translation>
+      <translation>Kohde- ikkunat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add or remove auto-enable targets</source>
-      <translation type="unfinished">Add or remove auto-enable targets</translation>
+      <translation>Lisää tai poista automaattisen käyttöönoton kohteita</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Hyprland overrides</source>
-      <translation type="unfinished">Hyprland overrides</translation>
+      <translation>Hyprland overrides</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disable animations</source>
-      <translation type="unfinished">Disable animations</translation>
+      <translation>Poista animaatiot käytöstä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disable blur</source>
-      <translation type="unfinished">Disable blur</translation>
+      <translation>Poista sumennus käytöstä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disable gaps and rounding</source>
-      <translation type="unfinished">Disable gaps and rounding</translation>
+      <translation>Poista aukot ja pyöristys käytöstä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disable shadows</source>
-      <translation type="unfinished">Disable shadows</translation>
+      <translation>Poista varjot käytöstä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Disable window transparency</source>
-      <translation type="unfinished">Disable window transparency</translation>
+      <translation>Poista ikkunan läpinäkyvyys käytöstä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Caelestia feature overrides</source>
-      <translation type="unfinished">Caelestia feature overrides</translation>
+      <translation>Caelestia ominaisuus ohittaa</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Disable shell transparency</source>
-      <translation type="unfinished">Disable shell transparency</translation>
+      <translation>Poista shell läpinäkyvyys käytöstä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Disable toast notifications transparency</source>
-      <translation type="unfinished">Disable toast notifications transparency</translation>
+      <translation>Poista toast ilmoitusten läpinäkyvyys käytöstä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Disable desktop lyrics</source>
-      <translation type="unfinished">Disable desktop lyrics</translation>
+      <translation>Poista työpöydän sanoitukset käytöstä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Disable visualizer</source>
-      <translation type="unfinished">Disable visualizer</translation>
+      <translation>Poista visualisointi käytöstä</translation>
     </message>
   </context>
   <context>
@@ -4392,37 +4392,37 @@
     <message>
       <location filename="../modules/nexus/pages/services/GameModeTargetsPage.qml" line="+19"/>
       <source>Target windows</source>
-      <translation type="unfinished">Target windows</translation>
+      <translation>Kohde- ikkunat</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Add target window</source>
-      <translation type="unfinished">Add target window</translation>
+      <translation>Lisää kohdeikkuna</translation>
     </message>
     <message>
       <location line="+28"/>
       <source>Custom regex</source>
-      <translation type="unfinished">Custom regex</translation>
+      <translation>Mukautettu regex</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Add a custom class or regex pattern</source>
-      <translation type="unfinished">Add a custom class or regex pattern</translation>
+      <translation>Lisää mukautettu luokka tai regex kuvio</translation>
     </message>
     <message>
       <location line="+58"/>
       <source>Pick from running windows</source>
-      <translation type="unfinished">Pick from running windows</translation>
+      <translation>Valitse juoksevista ikkunoista</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select an open window to add it automatically</source>
-      <translation type="unfinished">Select an open window to add it automatically</translation>
+      <translation>Valitse avoin ikkuna lisätäksesi sen automaattisesti</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Target window list</source>
-      <translation type="unfinished">Target window list</translation>
+      <translation>Kohde- ikkunalista</translation>
     </message>
   </context>
   <context>
@@ -4430,27 +4430,27 @@
     <message>
       <location filename="../modules/bar/popouts/Github.qml" line="+32"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+33"/>
       <source>Not authenticated</source>
-      <translation type="unfinished">Not authenticated</translation>
+      <translation>Ei todennettu</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Last 7 days</source>
-      <translation type="unfinished">Last 7 days</translation>
+      <translation>Viimeiset 7 päivää</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>%1 commits</source>
-      <translation type="unfinished">%1 commits</translation>
+      <translation>%1 commitit</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>Open profile</source>
-      <translation type="unfinished">Open profile</translation>
+      <translation>Avaa profiili</translation>
     </message>
   </context>
   <context>
@@ -4458,12 +4458,12 @@
     <message>
       <location filename="../modules/bar/components/GithubActivity.qml" line="+85"/>
       <source>GitHub widget needs a token</source>
-      <translation type="unfinished">GitHub widget needs a token</translation>
+      <translation>GitHub widget tarvitsee tokenin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add a personal access token in Settings → Panels → Taskbar → GitHub.</source>
-      <translation type="unfinished">Add a personal access token in Settings → Panels → Taskbar → GitHub.</translation>
+      <translation>Lisää henkilökohtainen pääsymerkki Asetukset → Panels → Tehtäväpalkki → GitHub.</translation>
     </message>
   </context>
   <context>
@@ -4471,7 +4471,7 @@
     <message>
       <location filename="../modules/bar/popouts/GreeterContext.qml" line="+81"/>
       <source>Greeter settings</source>
-      <translation type="unfinished">Greeter settings</translation>
+      <translation>Greeter asetukset</translation>
     </message>
   </context>
   <context>
@@ -4479,7 +4479,7 @@
     <message>
       <location filename="../modules/dashboard/performance/HeroCard.qml" line="+136"/>
       <source>Usage</source>
-      <translation type="unfinished">Usage</translation>
+      <translation>Käyttö</translation>
     </message>
   </context>
   <context>
@@ -4487,7 +4487,7 @@
     <message>
       <location filename="../services/HyprSunset.qml" line="+20"/>
       <source>Night Light</source>
-      <translation type="unfinished">Night Light</translation>
+      <translation>Yö Vaalea</translation>
     </message>
   </context>
   <context>
@@ -4495,22 +4495,22 @@
     <message>
       <location filename="../modules/utilities/cards/IdleInhibit.qml" line="+52"/>
       <source>Keep Awake</source>
-      <translation type="unfinished">Keep Awake</translation>
+      <translation>Pidä Herätys</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Preventing sleep mode</source>
-      <translation type="unfinished">Preventing sleep mode</translation>
+      <translation>Lepotilan estäminen</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Normal power management</source>
-      <translation type="unfinished">Normal power management</translation>
+      <translation>Normaali virranhallinta</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Active since %1</source>
-      <translation type="unfinished">Active since %1</translation>
+      <translation>Aktiivinen %1 jälkeen</translation>
     </message>
   </context>
   <context>
@@ -4518,32 +4518,32 @@
     <message>
       <location filename="../modules/lock/center/InputField.qml" line="+18"/>
       <source>Password entry</source>
-      <translation type="unfinished">Password entry</translation>
+      <translation>Salasanan merkintä</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Type your password to unlock the screen</source>
-      <translation type="unfinished">Type your password to unlock the screen</translation>
+      <translation>Poista näytön lukitus antamalla salasanasi</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Loading...</source>
-      <translation type="unfinished">Loading...</translation>
+      <translation>Ladataan...</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Scanning face...</source>
-      <translation type="unfinished">Scanning face...</translation>
+      <translation>Skannataan kasvoja...</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Max tries reached</source>
-      <translation type="unfinished">Max tries reached</translation>
+      <translation>Yrityksien enimmäismäärä saavutettu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter your password</source>
-      <translation type="unfinished">Enter your password</translation>
+      <translation>Syötä salasanasi</translation>
     </message>
   </context>
   <context>
@@ -4551,7 +4551,7 @@
     <message>
       <location filename="../modules/bar/popouts/kblayout/KbLayout.qml" line="+38"/>
       <source>Keyboard Layouts</source>
-      <translation type="unfinished">Keyboard Layouts</translation>
+      <translation>Näppäimistön Asettelut</translation>
     </message>
   </context>
   <context>
@@ -4559,12 +4559,12 @@
     <message>
       <location filename="../modules/bar/popouts/kblayout/KbLayoutModel.qml" line="+107"/>
       <source>Keyboard layout limit</source>
-      <translation type="unfinished">Keyboard layout limit</translation>
+      <translation>Näppäimistön asettelun raja</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>XKB supports only 4 layouts at a time</source>
-      <translation type="unfinished">XKB supports only 4 layouts at a time</translation>
+      <translation>XKB tukee vain 4 asettelua kerrallaan</translation>
     </message>
   </context>
   <context>
@@ -4572,22 +4572,22 @@
     <message>
       <location filename="../modules/nexus/common/KeyCaptureDialog.qml" line="+85"/>
       <source>Record Keybind</source>
-      <translation type="unfinished">Record Keybind</translation>
+      <translation>Tallenna Näppäinbind</translation>
     </message>
     <message>
       <location line="+69"/>
       <source>Press keys now...</source>
-      <translation type="unfinished">Press keys now...</translation>
+      <translation>Paina avaimia nyt...</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Confirm</source>
-      <translation type="unfinished">Confirm</translation>
+      <translation>Vahvista</translation>
     </message>
   </context>
   <context>
@@ -4595,7 +4595,7 @@
     <message>
       <location filename="../modules/launcher/items/KeybindItem.qml" line="+68"/>
       <source>No keybinds</source>
-      <translation type="unfinished">No keybinds</translation>
+      <translation>Ei näppäimistöjä</translation>
     </message>
   </context>
   <context>
@@ -4604,247 +4604,247 @@
       <location filename="../modules/nexus/pages/desktop/KrohnkitePage.qml" line="+20"/>
       <location line="+58"/>
       <source>Window Tiling</source>
-      <translation type="unfinished">Window Tiling</translation>
+      <translation>Ikkunan Lataus</translation>
     </message>
     <message>
       <location line="-53"/>
       <source>BTree</source>
-      <translation type="unfinished">BTree</translation>
+      <translation>BTree</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+272"/>
       <source>Monocle</source>
-      <translation type="unfinished">Monocle</translation>
+      <translation>Monocle</translation>
     </message>
     <message>
       <location line="-271"/>
       <location line="+264"/>
       <source>Floating</source>
-      <translation type="unfinished">Floating</translation>
+      <translation>Kelluva</translation>
     </message>
     <message>
       <location line="-263"/>
       <location line="+277"/>
       <source>Quarter</source>
-      <translation type="unfinished">Quarter</translation>
+      <translation>Neljännesvuosi</translation>
     </message>
     <message>
       <location line="-276"/>
       <location line="+290"/>
       <source>Spread</source>
-      <translation type="unfinished">Spread</translation>
+      <translation>Levitä</translation>
     </message>
     <message>
       <location line="-289"/>
       <location line="+296"/>
       <source>Stacked</source>
-      <translation type="unfinished">Stacked</translation>
+      <translation>Pinottu</translation>
     </message>
     <message>
       <location line="-295"/>
       <location line="+302"/>
       <source>Stair</source>
-      <translation type="unfinished">Stair</translation>
+      <translation>Stair</translation>
     </message>
     <message>
       <location line="-301"/>
       <location line="+330"/>
       <source>Columns</source>
-      <translation type="unfinished">Columns</translation>
+      <translation>Sarakkeet</translation>
     </message>
     <message>
       <location line="-329"/>
       <location line="+307"/>
       <source>Three Column</source>
-      <translation type="unfinished">Three Column</translation>
+      <translation>Kolme Saraketta</translation>
     </message>
     <message>
       <location line="-306"/>
       <location line="+278"/>
       <source>Spiral</source>
-      <translation type="unfinished">Spiral</translation>
+      <translation>Spiraali</translation>
     </message>
     <message>
       <location line="-277"/>
       <location line="+312"/>
       <source>Tile</source>
-      <translation type="unfinished">Tile</translation>
+      <translation>Teltta</translation>
     </message>
     <message>
       <location line="-302"/>
       <source>Save Changes</source>
-      <translation type="unfinished">Save Changes</translation>
+      <translation>Tallenna Muutokset</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Logout to Apply Changes</source>
-      <translation type="unfinished">Logout to Apply Changes</translation>
+      <translation>Kirjaudu ulos ottaaksesi muutokset käyttöön</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Automatically tile windows using Krohnkite</source>
-      <translation type="unfinished">Automatically tile windows using Krohnkite</translation>
+      <translation>Automaattisesti tiilet ikkunat Krohnkiten avulla</translation>
     </message>
     <message>
       <location line="+38"/>
       <source>Switch Layout</source>
-      <translation type="unfinished">Switch Layout</translation>
+      <translation>Vaihda Asettelua</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Triggers the KWin shortcut to switch layout</source>
-      <translation type="unfinished">Triggers the KWin shortcut to switch layout</translation>
+      <translation>Käynnistää KWinin pikakuvakkeen vaihtaaksesi asettelua</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Select Layout...</source>
-      <translation type="unfinished">Select Layout...</translation>
+      <translation>Valitse Asettelu...</translation>
     </message>
     <message>
       <location line="+27"/>
       <source>Gaps</source>
-      <translation type="unfinished">Gaps</translation>
+      <translation>Välit</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Gap Between Windows</source>
-      <translation type="unfinished">Gap Between Windows</translation>
+      <translation>Gap Ikkunoiden Välillä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Space between tiled windows</source>
-      <translation type="unfinished">Space between tiled windows</translation>
+      <translation>Tila kaakeliikkunoiden välillä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Top Gap</source>
-      <translation type="unfinished">Top Gap</translation>
+      <translation>Top Etikka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance from the top screen edge</source>
-      <translation type="unfinished">Distance from the top screen edge</translation>
+      <translation>Etäisyys näytön yläreunasta</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Bottom Gap</source>
-      <translation type="unfinished">Bottom Gap</translation>
+      <translation>Alhaalla Oleva Ero</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance from the bottom screen edge</source>
-      <translation type="unfinished">Distance from the bottom screen edge</translation>
+      <translation>Etäisyys näytön alareunasta</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Left Gap</source>
-      <translation type="unfinished">Left Gap</translation>
+      <translation>Vasen Ero</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance from the left screen edge</source>
-      <translation type="unfinished">Distance from the left screen edge</translation>
+      <translation>Etäisyys näytön vasemmasta reunasta</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Right Gap</source>
-      <translation type="unfinished">Right Gap</translation>
+      <translation>Oikea Ero</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance from the right screen edge</source>
-      <translation type="unfinished">Distance from the right screen edge</translation>
+      <translation>Etäisyys näytön oikeasta reunasta</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Ignored Window Classes</source>
-      <translation type="unfinished">Ignored Window Classes</translation>
+      <translation>Ohitetut Ikkunaluokat</translation>
     </message>
     <message>
       <location line="+24"/>
       <source>Window Classes</source>
-      <translation type="unfinished">Window Classes</translation>
+      <translation>Ikkunan Luokat</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Comma separated list of classes to not tile (e.g. quickshell,krunner)</source>
-      <translation type="unfinished">Comma separated list of classes to not tile (e.g. quickshell,krunner)</translation>
+      <translation>Pilkulla erotettu luettelo luokista, jotka eivät ole laattoja (esim. quickshell,krunner)</translation>
     </message>
     <message>
       <location line="+30"/>
       <source>Enabled Layouts</source>
-      <translation type="unfinished">Enabled Layouts</translation>
+      <translation>Käytössä Olevat Asettelut</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Binary Tree</source>
-      <translation type="unfinished">Binary Tree</translation>
+      <translation>Binäärinen Puu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Splits the screen in half recursively</source>
-      <translation type="unfinished">Splits the screen in half recursively</translation>
+      <translation>Jakaa näytön puoleen rekursiivisesti</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Windows are placed freely, without tiling</source>
-      <translation type="unfinished">Windows are placed freely, without tiling</translation>
+      <translation>Ikkunat sijoitetaan vapaasti, ilman laatoitusta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Displays one window maximized at a time</source>
-      <translation type="unfinished">Displays one window maximized at a time</translation>
+      <translation>Näyttää yhden ikkunan kerrallaan</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Tiles windows into four equal quarters</source>
-      <translation type="unfinished">Tiles windows into four equal quarters</translation>
+      <translation>Laatat ikkunoita neljään yhtä suureen neljännekseen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Tiles windows in an inward-spiraling pattern</source>
-      <translation type="unfinished">Tiles windows in an inward-spiraling pattern</translation>
+      <translation>Laatat ikkunoita sisäänpäin vievässä kuviossa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Evenly spreads all windows across the screen</source>
-      <translation type="unfinished">Evenly spreads all windows across the screen</translation>
+      <translation>Kaikki ikkunat jakautuvat tasaisesti näytön poikki</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>One main window with the rest stacked below or beside</source>
-      <translation type="unfinished">One main window with the rest stacked below or beside</translation>
+      <translation>Yksi pääikkuna, jonka loput on pinottu alapuolelle tai viereen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Tiles windows descending like a staircase</source>
-      <translation type="unfinished">Tiles windows descending like a staircase</translation>
+      <translation>Laatat ikkunat laskevasti kuin portaikko</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Splits the screen into three vertical columns</source>
-      <translation type="unfinished">Splits the screen into three vertical columns</translation>
+      <translation>Jakaa näytön kolmeen pystysarakkeeseen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Standard master and stack tiling layout</source>
-      <translation type="unfinished">Standard master and stack tiling layout</translation>
+      <translation>Standardi master ja pino laatoitus layout</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Cascade</source>
-      <translation type="unfinished">Cascade</translation>
+      <translation>Cascade</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Windows overlap sequentially like a waterfall</source>
-      <translation type="unfinished">Windows overlap sequentially like a waterfall</translation>
+      <translation>Ikkunat päällekkäin peräkkäin kuin vesiputous</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Splits the screen into equal vertical columns</source>
-      <translation type="unfinished">Splits the screen into equal vertical columns</translation>
+      <translation>Jakaa näytön yhtä suuriin pystysarakkeisiin</translation>
     </message>
   </context>
   <context>
@@ -4852,12 +4852,12 @@
     <message>
       <location filename="../modules/nexus/pages/desktop/KrohnkitePreview.qml" line="+268"/>
       <source>Layout Preview</source>
-      <translation type="unfinished">Layout Preview</translation>
+      <translation>Asettelun Esikatselu</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Windows:</source>
-      <translation type="unfinished">Windows:</translation>
+      <translation>Ikkunat:</translation>
     </message>
   </context>
   <context>
@@ -4865,57 +4865,57 @@
     <message>
       <location filename="../services/Kwin.qml" line="+405"/>
       <source>Caps lock enabled</source>
-      <translation type="unfinished">Caps lock enabled</translation>
+      <translation>Caps lukitus käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Caps lock disabled</source>
-      <translation type="unfinished">Caps lock disabled</translation>
+      <translation>Caps lock pois käytöstä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Caps lock is currently enabled</source>
-      <translation type="unfinished">Caps lock is currently enabled</translation>
+      <translation>Caps lock on tällä hetkellä käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Caps lock is currently disabled</source>
-      <translation type="unfinished">Caps lock is currently disabled</translation>
+      <translation>Caps lock on tällä hetkellä pois käytöstä</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Num lock enabled</source>
-      <translation type="unfinished">Num lock enabled</translation>
+      <translation>Num lock käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Num lock disabled</source>
-      <translation type="unfinished">Num lock disabled</translation>
+      <translation>Num lock pois käytöstä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Num lock is currently enabled</source>
-      <translation type="unfinished">Num lock is currently enabled</translation>
+      <translation>Num lock on tällä hetkellä käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Num lock is currently disabled</source>
-      <translation type="unfinished">Num lock is currently disabled</translation>
+      <translation>Num lock on tällä hetkellä pois käytöstä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Keyboard layout changed</source>
-      <translation type="unfinished">Keyboard layout changed</translation>
+      <translation>Näppäimistön asettelu muutettu</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Layout changed to: %1</source>
-      <translation type="unfinished">Layout changed to: %1</translation>
+      <translation>Asettelu vaihdettu: %1</translation>
     </message>
     <message>
       <location line="+60"/>
       <source>Reload devices</source>
-      <translation type="unfinished">Reload devices</translation>
+      <translation>Lataa laitteet uudelleen</translation>
     </message>
   </context>
   <context>
@@ -4923,163 +4923,163 @@
     <message>
       <location filename="../modules/nexus/pages/LanguageAndRegion.qml" line="+45"/>
       <source>°C</source>
-      <translation type="unfinished">°C</translation>
+      <translation>°C</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>°F</source>
-      <translation type="unfinished">°F</translation>
+      <translation>°F</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>K</source>
-      <translation type="unfinished">K</translation>
+      <translation>K</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Binary (KiB, MiB)</source>
-      <translation type="unfinished">Binary (KiB, MiB)</translation>
+      <translation>Binääri (Kib, MiB)</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Decimal (KB, MB)</source>
-      <translation type="unfinished">Decimal (KB, MB)</translation>
+      <translation>Decimal (KB, MB)</translation>
     </message>
     <message>
       <location line="+9"/>
       <location line="+56"/>
       <source>System language</source>
-      <translation type="unfinished">System language</translation>
+      <translation>Järjestelmän kieli</translation>
     </message>
     <message>
       <location line="-45"/>
       <source>24-hour</source>
-      <translation type="unfinished">24-hour</translation>
+      <translation>24-tuntinen</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>12-hour</source>
-      <translation type="unfinished">12-hour</translation>
+      <translation>12-tuntinen</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Language &amp; region</source>
-      <translation type="unfinished">Language &amp; region</translation>
+      <translation>Kieli &amp; alue</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Language</source>
-      <translation type="unfinished">Language</translation>
+      <translation>Kieli</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Shell language</source>
-      <translation type="unfinished">Shell language</translation>
+      <translation>Kuoren kieli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Follows your system locale (%1)</source>
-      <translation type="unfinished">Follows your system locale (%1)</translation>
+      <translation>Seuraa järjestelmäsi lokaatiota (%1)</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Untranslated text falls back to English</source>
-      <translation type="unfinished">Untranslated text falls back to English</translation>
+      <translation>Kääntämätön teksti putoaa takaisin Englanti</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Weather</source>
-      <translation type="unfinished">Weather</translation>
+      <translation>Sää</translation>
     </message>
     <message>
       <location line="+32"/>
       <source>Using auto-detected location</source>
-      <translation type="unfinished">Using auto-detected location</translation>
+      <translation>Automaattisesti tunnistettua sijaintia käytetään</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Saved weather coordinates: %1</source>
-      <translation type="unfinished">Saved weather coordinates: %1</translation>
+      <translation>Tallennetut sääkoordinaatit: %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>No fixed location saved</source>
-      <translation type="unfinished">No fixed location saved</translation>
+      <translation>Kiinteää sijaintia ei tallennettu</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Search city or region</source>
-      <translation type="unfinished">Search city or region</translation>
+      <translation>Etsi kaupunkia tai aluetta</translation>
     </message>
     <message>
       <location line="+73"/>
       <source>No matching locations</source>
-      <translation type="unfinished">No matching locations</translation>
+      <translation>Ei vastaavia sijainteja</translation>
     </message>
     <message>
       <location line="+68"/>
       <source>Apply location</source>
-      <translation type="unfinished">Apply location</translation>
+      <translation>Käytä sijaintia</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Use auto-detect</source>
-      <translation type="unfinished">Use auto-detect</translation>
+      <translation>Käytä automaattista tunnistusta</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>No location selected</source>
-      <translation type="unfinished">No location selected</translation>
+      <translation>Sijaintia ei ole valittu</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Units</source>
-      <translation type="unfinished">Units</translation>
+      <translation>Yksiköt</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Temperature</source>
-      <translation type="unfinished">Temperature</translation>
+      <translation>Lämpötila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Units for weather temperatures</source>
-      <translation type="unfinished">Units for weather temperatures</translation>
+      <translation>Säätilojen yksiköt</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>System temperatures</source>
-      <translation type="unfinished">System temperatures</translation>
+      <translation>Järjestelmän lämpötilat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Units for CPU and GPU temperatures</source>
-      <translation type="unfinished">Units for CPU and GPU temperatures</translation>
+      <translation>Yksiköt suorittimen ja grafiikan lämpötiloihin</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Data sizes</source>
-      <translation type="unfinished">Data sizes</translation>
+      <translation>Tietojen koot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Units for data sizes and network speeds</source>
-      <translation type="unfinished">Units for data sizes and network speeds</translation>
+      <translation>Tietokokoja ja verkon nopeuksia koskevat yksiköt</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Time &amp; date</source>
-      <translation type="unfinished">Time &amp; date</translation>
+      <translation>Aika ja päivämäärä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Clock format</source>
-      <translation type="unfinished">Clock format</translation>
+      <translation>Kellon muoto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How times are shown across the shell</source>
-      <translation type="unfinished">How times are shown across the shell</translation>
+      <translation>Kuinka ajat näytetään koko kuoren</translation>
     </message>
   </context>
   <context>
@@ -5087,227 +5087,227 @@
     <message>
       <location filename="../modules/nexus/pages/panels/LauncherPanel.qml" line="+15"/>
       <source>Launcher</source>
-      <translation type="unfinished">Launcher</translation>
+      <translation>Käynnistin</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Use alternative logo</source>
-      <translation type="unfinished">Use alternative logo</translation>
+      <translation>Käytä vaihtoehtoista logoa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Use the Caelestia logo or a custom image instead of your distribution&apos;s logo</source>
-      <translation type="unfinished">Use the Caelestia logo or a custom image instead of your distribution&apos;s logo</translation>
+      <translation>Käytä Caelestia logoa tai mukautettua kuvaa jakelusi&apos;s logon sijaan</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Pick custom logo</source>
-      <translation type="unfinished">Pick custom logo</translation>
+      <translation>Valitse oma logo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select an image from your local files</source>
-      <translation type="unfinished">Select an image from your local files</translation>
+      <translation>Valitse kuva paikallisista tiedostoistasi</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Select a custom logo</source>
-      <translation type="unfinished">Select a custom logo</translation>
+      <translation>Valitse oma logo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Image files</source>
-      <translation type="unfinished">Image files</translation>
+      <translation>Levykuvan tiedostot</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Select KDE icon</source>
-      <translation type="unfinished">Select KDE icon</translation>
+      <translation>Valitse KDE- kuvake</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pick an icon from your system theme</source>
-      <translation type="unfinished">Pick an icon from your system theme</translation>
+      <translation>Valitse kuvake järjestelmäsi teemasta</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Tint custom logo</source>
-      <translation type="unfinished">Tint custom logo</translation>
+      <translation>Tint custom logo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Apply the Material You accent color to your custom logo</source>
-      <translation type="unfinished">Apply the Material You accent color to your custom logo</translation>
+      <translation>Käytä muokattua logoasi korostamaasi materiaalia</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Logo size (%)</source>
-      <translation type="unfinished">Logo size (%)</translation>
+      <translation>Logon koko (%)</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reveal when the cursor reaches the screen edge</source>
-      <translation type="unfinished">Reveal when the cursor reaches the screen edge</translation>
+      <translation>Paljasta kun kohdistin saavuttaa näytön reunan</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Display</source>
-      <translation type="unfinished">Display</translation>
+      <translation>Näyttö</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Browse apps when search is empty</source>
-      <translation type="unfinished">Browse apps when search is empty</translation>
+      <translation>Selaa sovelluksia, kun haku on tyhjä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the categorized app grid in the launcher when the search field is empty</source>
-      <translation type="unfinished">Show the categorized app grid in the launcher when the search field is empty</translation>
+      <translation>Näytä luokiteltu sovellusruudukko käynnistimessä, kun hakukenttä on tyhjä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Show power menu</source>
-      <translation type="unfinished">Show power menu</translation>
+      <translation>Näytä tehovalikko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the quick session controls (shutdown, sleep, logout) at the bottom</source>
-      <translation type="unfinished">Show the quick session controls (shutdown, sleep, logout) at the bottom</translation>
+      <translation>Näytä pikaistunnon säätimet (sammutus, lepotila, uloskirjautuminen) alhaalla</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Max items shown</source>
-      <translation type="unfinished">Max items shown</translation>
+      <translation>Enimmäismäärä näytetään</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Max wallpapers</source>
-      <translation type="unfinished">Max wallpapers</translation>
+      <translation>Maksimi taustakuvat</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Hover trigger depth</source>
-      <translation type="unfinished">Hover trigger depth</translation>
+      <translation>Hover trigger depth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance in from the screen edge that opens the launcher</source>
-      <translation type="unfinished">Distance in from the screen edge that opens the launcher</translation>
+      <translation>Etäisyys näytön reunasta, joka avaa käynnistimen</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Hover trigger width</source>
-      <translation type="unfinished">Hover trigger width</translation>
+      <translation>Hover trigger width</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How much of the bottom edge opens the launcher, as a percentage of its width</source>
-      <translation type="unfinished">How much of the bottom edge opens the launcher, as a percentage of its width</translation>
+      <translation>Kuinka suuri osa alareunasta avaa kantoraketin, kuten prosenttiosuus sen leveydestä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels dragged before the launcher opens</source>
-      <translation type="unfinished">Pixels dragged before the launcher opens</translation>
+      <translation>Pikselit vedettiin ennen käynnistimen avaamista</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Clipboard</source>
-      <translation type="unfinished">Clipboard</translation>
+      <translation>Leikepöytä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Max clipboard entries</source>
-      <translation type="unfinished">Max clipboard entries</translation>
+      <translation>Leikepöydän maksimimäärä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Number of copied items kept in history</source>
-      <translation type="unfinished">Number of copied items kept in history</translation>
+      <translation>Historiassa säilytettyjen kopioitavien esineiden määrä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Confirm clear</source>
-      <translation type="unfinished">Confirm clear</translation>
+      <translation>Vahvista tyhjennys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Ask before clearing the clipboard history</source>
-      <translation type="unfinished">Ask before clearing the clipboard history</translation>
+      <translation>Kysy ennen leikepöydän historian poistamista</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Vim keybinds</source>
-      <translation type="unfinished">Vim keybinds</translation>
+      <translation>Vim näppäimistöt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Navigate results with Ctrl+hjkl</source>
-      <translation type="unfinished">Navigate results with Ctrl+hjkl</translation>
+      <translation>Siirry tuloksiin Ctrl+hjkl -sovelluksella</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Enable dangerous actions</source>
-      <translation type="unfinished">Enable dangerous actions</translation>
+      <translation>Ota vaaralliset toiminnot käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow actions that shut down or log out</source>
-      <translation type="unfinished">Allow actions that shut down or log out</translation>
+      <translation>Salli toiminnot, jotka sulkevat tai kirjautuvat ulos</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Fuzzy search</source>
-      <translation type="unfinished">Fuzzy search</translation>
+      <translation>Sumea haku</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Apps</source>
-      <translation type="unfinished">Apps</translation>
+      <translation>Sovellukset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Actions</source>
-      <translation type="unfinished">Actions</translation>
+      <translation>Toiminnot</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Schemes</source>
-      <translation type="unfinished">Schemes</translation>
+      <translation>Järjestelmät</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Variants</source>
-      <translation type="unfinished">Variants</translation>
+      <translation>Variantit</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Wallpapers</source>
-      <translation type="unfinished">Wallpapers</translation>
+      <translation>Taustakuvat</translation>
     </message>
   </context>
   <context>
@@ -5315,7 +5315,7 @@
     <message>
       <location filename="../modules/lock/Lock.qml" line="+78"/>
       <source>Unlock the current session</source>
-      <translation type="unfinished">Unlock the current session</translation>
+      <translation>Avaa nykyinen istunto</translation>
     </message>
   </context>
   <context>
@@ -5323,288 +5323,288 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/LockScreenPage.qml" line="+25"/>
       <source>1 attempt</source>
-      <translation type="unfinished">1 attempt</translation>
+      <translation>1 yritys</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>2 attempts</source>
-      <translation type="unfinished">2 attempts</translation>
+      <translation>2 yritystä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>3 attempts</source>
-      <translation type="unfinished">3 attempts</translation>
+      <translation>3 yritystä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>4 attempts</source>
-      <translation type="unfinished">4 attempts</translation>
+      <translation>4 yritystä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>5 attempts</source>
-      <translation type="unfinished">5 attempts</translation>
+      <translation>5 yritystä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Random</source>
-      <translation type="unfinished">Random</translation>
+      <translation>Satunnainen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Circle</source>
-      <translation type="unfinished">Circle</translation>
+      <translation>Ympyrä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Square</source>
-      <translation type="unfinished">Square</translation>
+      <translation>Neliö</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Pill</source>
-      <translation type="unfinished">Pill</translation>
+      <translation>Pill</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Diamond</source>
-      <translation type="unfinished">Diamond</translation>
+      <translation>Timantti</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Clam Shell</source>
-      <translation type="unfinished">Clam Shell</translation>
+      <translation>Simpukka</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+160"/>
       <source>Pentagon</source>
-      <translation type="unfinished">Pentagon</translation>
+      <translation>Pentagon</translation>
     </message>
     <message>
       <location line="-155"/>
       <source>Gem</source>
-      <translation type="unfinished">Gem</translation>
+      <translation>Jalokivi</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 4-Sided</source>
-      <translation type="unfinished">Cookie 4-Sided</translation>
+      <translation>Eväste 4-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 6-Sided</source>
-      <translation type="unfinished">Cookie 6-Sided</translation>
+      <translation>Eväste 6-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 7-Sided</source>
-      <translation type="unfinished">Cookie 7-Sided</translation>
+      <translation>Eväste 7-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 9-Sided</source>
-      <translation type="unfinished">Cookie 9-Sided</translation>
+      <translation>Eväste 9-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cookie 12-Sided</source>
-      <translation type="unfinished">Cookie 12-Sided</translation>
+      <translation>Eväste 12-puolinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Lock Screen</source>
-      <translation type="unfinished">Lock Screen</translation>
+      <translation>Lukitse Näyttö</translation>
     </message>
     <message>
       <location line="+26"/>
       <source>Wallpaper</source>
-      <translation type="unfinished">Wallpaper</translation>
+      <translation>Taustakuva</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Sync with desktop wallpaper</source>
-      <translation type="unfinished">Sync with desktop wallpaper</translation>
+      <translation>Synkronoi taustakuvan kanssa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Keep the lock screen wallpaper in sync with the desktop wallpaper</source>
-      <translation type="unfinished">Keep the lock screen wallpaper in sync with the desktop wallpaper</translation>
+      <translation>Pidä lukitusnäytön taustakuva synkronoituna työpöydän taustakuvan kanssa</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Lock screen wallpaper</source>
-      <translation type="unfinished">Lock screen wallpaper</translation>
+      <translation>Lukitusnäytön taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Select an image...</source>
-      <translation type="unfinished">Select an image...</translation>
+      <translation>Valitse kuva...</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Select lock screen wallpaper</source>
-      <translation type="unfinished">Select lock screen wallpaper</translation>
+      <translation>Valitse lukitusnäytön taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Image files</source>
-      <translation type="unfinished">Image files</translation>
+      <translation>Levykuvan tiedostot</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Blur wallpaper</source>
-      <translation type="unfinished">Blur wallpaper</translation>
+      <translation>Sumenna taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Blur the entire wallpaper, not just behind the widgets</source>
-      <translation type="unfinished">Blur the entire wallpaper, not just behind the widgets</translation>
+      <translation>Sumenna koko taustakuva, ei vain takana widgetit</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Authentication</source>
-      <translation type="unfinished">Authentication</translation>
+      <translation>Todennus</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Fingerprint unlock</source>
-      <translation type="unfinished">Fingerprint unlock</translation>
+      <translation>Sormenjäljen lukituksen avaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow fingerprint authentication on the lock screen</source>
-      <translation type="unfinished">Allow fingerprint authentication on the lock screen</translation>
+      <translation>Salli sormenjälkitunnistus lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Fingerprint attempts</source>
-      <translation type="unfinished">Fingerprint attempts</translation>
+      <translation>Sormenjälkitunnistukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Tries before falling back to password</source>
-      <translation type="unfinished">Tries before falling back to password</translation>
+      <translation>Yritykset ennen kuin palataan salasanaan</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Profile picture shape</source>
-      <translation type="unfinished">Profile picture shape</translation>
+      <translation>Profiilin kuvan muoto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the shape of the profile picture on the lock screen</source>
-      <translation type="unfinished">Choose the shape of the profile picture on the lock screen</translation>
+      <translation>Valitse profiilikuvan muoto, joka on lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Rotate profile picture shape</source>
-      <translation type="unfinished">Rotate profile picture shape</translation>
+      <translation>Kierrä profiilikuvan muotoa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Continuously rotate the profile picture shape</source>
-      <translation type="unfinished">Continuously rotate the profile picture shape</translation>
+      <translation>Kierrä profiilin kuvan muotoa jatkuvasti</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Lock on startup</source>
-      <translation type="unfinished">Lock on startup</translation>
+      <translation>Lukitse käynnistettäessä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Lock the session shortly after logging in</source>
-      <translation type="unfinished">Lock the session shortly after logging in</translation>
+      <translation>Lukitse istunto pian kirjautumisen jälkeen</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Hide notifications</source>
-      <translation type="unfinished">Hide notifications</translation>
+      <translation>Piilota ilmoitukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hide notification previews until you unlock</source>
-      <translation type="unfinished">Hide notification previews until you unlock</translation>
+      <translation>Piilota ilmoitusten esikatselut ennen lukituksen avaamista</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Recolor logo</source>
-      <translation type="unfinished">Recolor logo</translation>
+      <translation>Recolor logo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Tint the lock screen artwork to match the palette</source>
-      <translation type="unfinished">Tint the lock screen artwork to match the palette</translation>
+      <translation>Tint lukitusnäytön kuvat, jotka sopivat paletin</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Session icons</source>
-      <translation type="unfinished">Session icons</translation>
+      <translation>Istunnon kuvakkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Sleep</source>
-      <translation type="unfinished">Sleep</translation>
+      <translation>Lepotila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show sleep action on the lock screen</source>
-      <translation type="unfinished">Show sleep action on the lock screen</translation>
+      <translation>Näytä nukkumistoiminto lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Hibernate</source>
-      <translation type="unfinished">Hibernate</translation>
+      <translation>Hibernate</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show hibernate action on the lock screen</source>
-      <translation type="unfinished">Show hibernate action on the lock screen</translation>
+      <translation>Näytä hibernate toiminto lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Switch user</source>
-      <translation type="unfinished">Switch user</translation>
+      <translation>Vaihda käyttäjää</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show switch user action on the lock screen</source>
-      <translation type="unfinished">Show switch user action on the lock screen</translation>
+      <translation>Näytä kytkin käyttäjän toiminta lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Log out</source>
-      <translation type="unfinished">Log out</translation>
+      <translation>Kirjaudu ulos</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show log out action on the lock screen</source>
-      <translation type="unfinished">Show log out action on the lock screen</translation>
+      <translation>Näytä kirjautuminen ulos toiminto lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Restart</source>
-      <translation type="unfinished">Restart</translation>
+      <translation>Käynnistä Uudelleen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show restart action on the lock screen</source>
-      <translation type="unfinished">Show restart action on the lock screen</translation>
+      <translation>Näytä uudelleenkäynnistys toiminto lukitusnäytöllä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Shut down</source>
-      <translation type="unfinished">Shut down</translation>
+      <translation>Sammuta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show shut down action on the lock screen</source>
-      <translation type="unfinished">Show shut down action on the lock screen</translation>
+      <translation>Näytä suljettava toiminto lukitusnäytöllä</translation>
     </message>
   </context>
   <context>
@@ -5612,27 +5612,27 @@
     <message>
       <location filename="../modules/bar/popouts/LockStatus.qml" line="+22"/>
       <source>Keyboard Locks</source>
-      <translation type="unfinished">Keyboard Locks</translation>
+      <translation>Näppäimistön Lukot</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Caps Lock enabled</source>
-      <translation type="unfinished">Caps Lock enabled</translation>
+      <translation>Caps Lock käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Caps Lock disabled</source>
-      <translation type="unfinished">Caps Lock disabled</translation>
+      <translation>Caps Lock pois käytöstä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Num Lock enabled</source>
-      <translation type="unfinished">Num Lock enabled</translation>
+      <translation>Num Lock käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Num Lock disabled</source>
-      <translation type="unfinished">Num Lock disabled</translation>
+      <translation>Num Lock pois käytöstä</translation>
     </message>
   </context>
   <context>
@@ -5640,12 +5640,12 @@
     <message>
       <location filename="../modules/dashboard/media/LyricList.qml" line="+213"/>
       <source>Loading lyrics...</source>
-      <translation type="unfinished">Loading lyrics...</translation>
+      <translation>Ladataan sanoituksia...</translation>
     </message>
     <message>
       <location line="+32"/>
       <source>No lyrics found</source>
-      <translation type="unfinished">No lyrics found</translation>
+      <translation>Sanoituksia ei löytynyt</translation>
     </message>
   </context>
   <context>
@@ -5653,12 +5653,12 @@
     <message>
       <location filename="../modules/dashboard/media/LyricsAndSelector.qml" line="+31"/>
       <source>Lyrics</source>
-      <translation type="unfinished">Lyrics</translation>
+      <translation>Sanoitukset</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>No players</source>
-      <translation type="unfinished">No players</translation>
+      <translation>Ei pelaajia</translation>
     </message>
   </context>
   <context>
@@ -5666,27 +5666,27 @@
     <message>
       <location filename="../modules/dashboard/media/LyricsInfo.qml" line="+152"/>
       <source>Backend: %1</source>
-      <translation type="unfinished">Backend: %1</translation>
+      <translation>Ylläpito: %1</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Selected candidate: %1 | %2 | %3</source>
-      <translation type="unfinished">Selected candidate: %1 | %2 | %3</translation>
+      <translation>Valittu ehdokkaa: %1 ¶ %2 , %3</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Offset: %1 ms</source>
-      <translation type="unfinished">Offset: %1 ms</translation>
+      <translation>Siirto: %1 ms</translation>
     </message>
     <message>
       <location line="+29"/>
       <source>Loading...</source>
-      <translation type="unfinished">Loading...</translation>
+      <translation>Ladataan...</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>No lyrics found</source>
-      <translation type="unfinished">No lyrics found</translation>
+      <translation>Sanoituksia ei löytynyt</translation>
     </message>
   </context>
   <context>
@@ -5694,88 +5694,88 @@
     <message>
       <location filename="../modules/launcher/services/M3Variants.qml" line="+41"/>
       <source>Vibrant</source>
-      <translation type="unfinished">Vibrant</translation>
+      <translation>Elinvoimainen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>A high chroma palette. The primary palette&apos;s chroma is at maximum.</source>
-      <translation type="unfinished">A high chroma palette. The primary palette&apos;s chroma is at maximum.</translation>
+      <translation>Korkea kromapaletti. Ensisijainen paletti&apos;s kroma on maksimissa.</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Tonal Spot</source>
-      <translation type="unfinished">Tonal Spot</translation>
+      <translation>Tonaalinen Spot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Default for Material theme colors. A pastel palette with a low chroma.</source>
-      <translation type="unfinished">Default for Material theme colors. A pastel palette with a low chroma.</translation>
+      <translation>Oletus Materiaali teema värejä. Pastelli paletti alhainen kroma.</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Expressive</source>
-      <translation type="unfinished">Expressive</translation>
+      <translation>Ilmeinen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>A medium chroma palette. The primary palette&apos;s hue is different from the seed color, for variety.</source>
-      <translation type="unfinished">A medium chroma palette. The primary palette&apos;s hue is different from the seed color, for variety.</translation>
+      <translation>Keskikokoinen kromapaletti. Ensisijainen paletti&apos;s värisävy on erilainen kuin siementen väri, lajike.</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Fidelity</source>
-      <translation type="unfinished">Fidelity</translation>
+      <translation>Uskottomuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Matches the seed color, even if the seed color is very bright (high chroma).</source>
-      <translation type="unfinished">Matches the seed color, even if the seed color is very bright (high chroma).</translation>
+      <translation>Täsmää siementen väriin, vaikka siementen väri on erittäin kirkas (korkea kroma).</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Content</source>
-      <translation type="unfinished">Content</translation>
+      <translation>Sisältö</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Almost identical to fidelity.</source>
-      <translation type="unfinished">Almost identical to fidelity.</translation>
+      <translation>Lähes identtinen uskottomuuden kanssa.</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Fruit Salad</source>
-      <translation type="unfinished">Fruit Salad</translation>
+      <translation>Hedelmäsalaatti</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+6"/>
       <source>A playful theme - the seed color&apos;s hue does not appear in the theme.</source>
-      <translation type="unfinished">A playful theme - the seed color&apos;s hue does not appear in the theme.</translation>
+      <translation>Leikikäs teema - siemen väri&apos;s värisävy ei näy teemassa.</translation>
     </message>
     <message>
       <location line="-1"/>
       <source>Rainbow</source>
-      <translation type="unfinished">Rainbow</translation>
+      <translation>Sateenkaari</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Neutral</source>
-      <translation type="unfinished">Neutral</translation>
+      <translation>Neutraali</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Close to grayscale, a hint of chroma.</source>
-      <translation type="unfinished">Close to grayscale, a hint of chroma.</translation>
+      <translation>Lähellä harmaasävyä, vihje kromaa.</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Monochrome</source>
-      <translation type="unfinished">Monochrome</translation>
+      <translation>Yksivärinen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>All colors are grayscale, no chroma.</source>
-      <translation type="unfinished">All colors are grayscale, no chroma.</translation>
+      <translation>Kaikki värit ovat harmaasävyisiä, ei kromaa.</translation>
     </message>
   </context>
   <context>
@@ -5785,44 +5785,44 @@
       <location line="+17"/>
       <location line="+17"/>
       <source>No media</source>
-      <translation type="unfinished">No media</translation>
+      <translation>Ei mediaa</translation>
     </message>
     <message>
       <location line="-34"/>
       <source>Unknown title</source>
-      <translation type="unfinished">Unknown title</translation>
+      <translation>Tuntematon otsikko</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Unknown album</source>
-      <translation type="unfinished">Unknown album</translation>
+      <translation>Tuntematon albumi</translation>
     </message>
     <message>
       <location line="+17"/>
       <location filename="../modules/lock/Media.qml" line="+69"/>
       <source>Unknown artist</source>
-      <translation type="unfinished">Unknown artist</translation>
+      <translation>Tuntematon esittäjä</translation>
     </message>
     <message>
       <location filename="../modules/dashboard/Media.qml" line="+117"/>
       <location filename="../modules/lock/Media.qml" line="-10"/>
       <source>Nothing playing</source>
-      <translation type="unfinished">Nothing playing</translation>
+      <translation>Ei soita</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Play something for it to show up here!</source>
-      <translation type="unfinished">Play something for it to show up here!</translation>
+      <translation>Pelaa jotain jotta se näy täällä!</translation>
     </message>
     <message>
       <location filename="../modules/lock/Media.qml" line="+0"/>
       <source>Unknown track</source>
-      <translation type="unfinished">Unknown track</translation>
+      <translation>Tuntematon raita</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Try playing some music!</source>
-      <translation type="unfinished">Try playing some music!</translation>
+      <translation>Kokeile soittaa vähän musiikkia!</translation>
     </message>
   </context>
   <context>
@@ -5830,12 +5830,12 @@
     <message>
       <location filename="../modules/dashboard/performance/MemoryCard.qml" line="+42"/>
       <source>Memory</source>
-      <translation type="unfinished">Memory</translation>
+      <translation>Muisti</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>Used</source>
-      <translation type="unfinished">Used</translation>
+      <translation>Käytetty</translation>
     </message>
   </context>
   <context>
@@ -5843,7 +5843,7 @@
     <message>
       <location filename="../modules/nexus/NavPane.qml" line="+37"/>
       <source>Search settings</source>
-      <translation type="unfinished">Search settings</translation>
+      <translation>Hae asetuksia</translation>
     </message>
   </context>
   <context>
@@ -5851,87 +5851,87 @@
     <message>
       <location filename="../modules/bar/popouts/Network.qml" line="+32"/>
       <source>IP address</source>
-      <translation type="unfinished">IP address</translation>
+      <translation>IP-osoite</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Subnet mask</source>
-      <translation type="unfinished">Subnet mask</translation>
+      <translation>Aliverkon maski</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Gateway</source>
-      <translation type="unfinished">Gateway</translation>
+      <translation>Yhdyskäytävä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>DNS</source>
-      <translation type="unfinished">DNS</translation>
+      <translation>DNS</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>MAC address</source>
-      <translation type="unfinished">MAC address</translation>
+      <translation>MAC osoite</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+38"/>
       <source>Wireless</source>
-      <translation type="unfinished">Wireless</translation>
+      <translation>Langaton</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>%1 networks available</source>
-      <translation type="unfinished">%1 networks available</translation>
+      <translation>%1 verkot käytettävissä</translation>
     </message>
     <message>
       <location line="+141"/>
       <source>Rescan networks</source>
-      <translation type="unfinished">Rescan networks</translation>
+      <translation>Uudelleenskannaa verkot</translation>
     </message>
     <message>
       <location line="+27"/>
       <source>VPN</source>
-      <translation type="unfinished">VPN</translation>
+      <translation>VPN</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>%1 profiles available</source>
-      <translation type="unfinished">%1 profiles available</translation>
+      <translation>%1 profiileja saatavilla</translation>
     </message>
     <message>
       <location line="+81"/>
       <source>No VPN profiles found</source>
-      <translation type="unfinished">No VPN profiles found</translation>
+      <translation>VPN-profiileja ei löytynyt</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Ethernet</source>
-      <translation type="unfinished">Ethernet</translation>
+      <translation>Ethernet</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>%1 devices available</source>
-      <translation type="unfinished">%1 devices available</translation>
+      <translation>%1 laitetta saatavilla</translation>
     </message>
     <message>
       <location line="+55"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>Connection details</source>
-      <translation type="unfinished">Connection details</translation>
+      <translation>Yhteyden tiedot</translation>
     </message>
   </context>
   <context>
@@ -5939,27 +5939,27 @@
     <message>
       <location filename="../modules/dashboard/performance/NetworkCard.qml" line="+40"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+56"/>
       <source>Collecting data...</source>
-      <translation type="unfinished">Collecting data...</translation>
+      <translation>Kerää tietoja...</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Download</source>
-      <translation type="unfinished">Download</translation>
+      <translation>Lataa</translation>
     </message>
     <message>
       <location line="+28"/>
       <source>Upload</source>
-      <translation type="unfinished">Upload</translation>
+      <translation>Lähetä</translation>
     </message>
     <message>
       <location line="+28"/>
       <source>Total</source>
-      <translation type="unfinished">Total</translation>
+      <translation>Yhteensä</translation>
     </message>
   </context>
   <context>
@@ -5967,32 +5967,32 @@
     <message>
       <location filename="../modules/nexus/pages/network/NetworkDetailPage.qml" line="+90"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+53"/>
       <source>Forget</source>
-      <translation type="unfinished">Forget</translation>
+      <translation>Unohda</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Disconnect</source>
-      <translation type="unfinished">Disconnect</translation>
+      <translation>Katkaise</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Connection</source>
-      <translation type="unfinished">Connection</translation>
+      <translation>Yhteys</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Signal</source>
-      <translation type="unfinished">Signal</translation>
+      <translation>Signaali</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1%</source>
-      <translation type="unfinished">%1%</translation>
+      <translation>%1%</translation>
     </message>
     <message>
       <location line="+0"/>
@@ -6001,53 +6001,53 @@
       <location line="+7"/>
       <location line="+8"/>
       <source>—</source>
-      <translation type="unfinished">—</translation>
+      <translation>—</translation>
     </message>
     <message>
       <location line="-30"/>
       <source>Security</source>
-      <translation type="unfinished">Security</translation>
+      <translation>Turvallisuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Open</source>
-      <translation type="unfinished">Open</translation>
+      <translation>Avaa</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Frequency</source>
-      <translation type="unfinished">Frequency</translation>
+      <translation>Taajuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 MHz</source>
-      <translation type="unfinished">%1 MHz</translation>
+      <translation>%1 MHz</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>IP address</source>
-      <translation type="unfinished">IP address</translation>
+      <translation>IP-osoite</translation>
     </message>
     <message>
       <location line="+7"/>
       <location line="+161"/>
       <source>Gateway</source>
-      <translation type="unfinished">Gateway</translation>
+      <translation>Yhdyskäytävä</translation>
     </message>
     <message>
       <location line="-153"/>
       <source>MAC address</source>
-      <translation type="unfinished">MAC address</translation>
+      <translation>MAC osoite</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Behaviour</source>
-      <translation type="unfinished">Behaviour</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Connect automatically</source>
-      <translation type="unfinished">Connect automatically</translation>
+      <translation>Yhdistä automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -6057,68 +6057,68 @@
     <message>
       <location line="+11"/>
       <source>IPv4</source>
-      <translation type="unfinished">IPv4</translation>
+      <translation>IPv4</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>IP assignment</source>
-      <translation type="unfinished">IP assignment</translation>
+      <translation>IP-osoitteen tehtävä</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+10"/>
       <source>Automatic (DHCP)</source>
-      <translation type="unfinished">Automatic (DHCP)</translation>
+      <translation>Automaattinen (DHCP)</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Automatic, DNS only</source>
-      <translation type="unfinished">Automatic, DNS only</translation>
+      <translation>Vain automaattinen, DNS</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Manual</source>
-      <translation type="unfinished">Manual</translation>
+      <translation>Manuaalinen</translation>
     </message>
     <message>
       <location line="+83"/>
       <source>Address (CIDR)</source>
-      <translation type="unfinished">Address (CIDR)</translation>
+      <translation>Osoite (CIDR)</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>IP and prefix, e.g. 192.168.1.50/24</source>
-      <translation type="unfinished">IP and prefix, e.g. 192.168.1.50/24</translation>
+      <translation>IP ja etuliite, esim. 192.168.1.50/24</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter a valid address in CIDR notation</source>
-      <translation type="unfinished">Enter a valid address in CIDR notation</translation>
+      <translation>Anna kelvollinen osoite CIDR notaatiossa</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Enter a valid gateway address</source>
-      <translation type="unfinished">Enter a valid gateway address</translation>
+      <translation>Anna kelvollinen yhdyskäytävän osoite</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>DNS servers</source>
-      <translation type="unfinished">DNS servers</translation>
+      <translation>DNS palvelimet</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Comma-separated</source>
-      <translation type="unfinished">Comma-separated</translation>
+      <translation>Pilkulla erotettu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter valid DNS server addresses</source>
-      <translation type="unfinished">Enter valid DNS server addresses</translation>
+      <translation>Anna kelvolliset DNS-palvelimen osoitteet</translation>
     </message>
     <message>
       <location line="+48"/>
       <source>Apply</source>
-      <translation type="unfinished">Apply</translation>
+      <translation>Käytä</translation>
     </message>
   </context>
   <context>
@@ -6126,27 +6126,27 @@
     <message>
       <location filename="../modules/nexus/common/NetworkList.qml" line="+28"/>
       <source>No networks found</source>
-      <translation type="unfinished">No networks found</translation>
+      <translation>Verkkoja ei löytynyt</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Wi-Fi disabled</source>
-      <translation type="unfinished">Wi-Fi disabled</translation>
+      <translation>Wi-Fi pois käytöstä</translation>
     </message>
     <message>
       <location line="+126"/>
       <source>Security: %1%2</source>
-      <translation type="unfinished">Security: %1%2</translation>
+      <translation>Turvallisuus: %1%2</translation>
     </message>
     <message>
       <location line="+0"/>
       <source> • Connected</source>
-      <translation type="unfinished"> • Connected</translation>
+      <translation> • Yhdistetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source> • Saved</source>
-      <translation type="unfinished"> • Saved</translation>
+      <translation> • Tallennettu</translation>
     </message>
   </context>
   <context>
@@ -6154,113 +6154,113 @@
     <message>
       <location filename="../modules/nexus/pages/NetworkPage.qml" line="+15"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+47"/>
       <source>Wi-Fi</source>
-      <translation type="unfinished">Wi-Fi</translation>
+      <translation>Wi-Fi</translation>
     </message>
     <message>
       <location line="+51"/>
       <source>Show all networks (%1)</source>
-      <translation type="unfinished">Show all networks (%1)</translation>
+      <translation>Näytä kaikki verkot (%1)</translation>
     </message>
     <message>
       <location line="+40"/>
       <source>Saved networks</source>
-      <translation type="unfinished">Saved networks</translation>
+      <translation>Tallennetut verkot</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Add network</source>
-      <translation type="unfinished">Add network</translation>
+      <translation>Lisää verkko</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>VPN connections</source>
-      <translation type="unfinished">VPN connections</translation>
+      <translation>VPN-yhteydet</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>No VPN profiles found</source>
-      <translation type="unfinished">No VPN profiles found</translation>
+      <translation>VPN-profiileja ei löytynyt</translation>
     </message>
     <message>
       <location line="+80"/>
       <location line="+145"/>
       <source>Connected</source>
-      <translation type="unfinished">Connected</translation>
+      <translation>Yhdistetty</translation>
     </message>
     <message>
       <location line="-145"/>
       <source>Available</source>
-      <translation type="unfinished">Available</translation>
+      <translation>Saatavilla</translation>
     </message>
     <message>
       <location line="+44"/>
       <source>VPN providers</source>
-      <translation type="unfinished">VPN providers</translation>
+      <translation>VPN tarjoajat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>WireGuard, WARP, NetBird, and Tailscale</source>
-      <translation type="unfinished">WireGuard, WARP, NetBird, and Tailscale</translation>
+      <translation>WireGuard, WARP, NetBird ja Tailscale</translation>
     </message>
     <message>
       <location line="+25"/>
       <source>No VPN providers configured</source>
-      <translation type="unfinished">No VPN providers configured</translation>
+      <translation>VPN-tarjoajia ei ole määritetty</translation>
     </message>
     <message>
       <location line="+68"/>
       <source>Tap to select</source>
-      <translation type="unfinished">Tap to select</translation>
+      <translation>Napauta valitaksesi</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Connecting...</source>
-      <translation type="unfinished">Connecting...</translation>
+      <translation>Yhdistetään...</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Disconnecting...</source>
-      <translation type="unfinished">Disconnecting...</translation>
+      <translation>Katkaistaan...</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Authentication required</source>
-      <translation type="unfinished">Authentication required</translation>
+      <translation>Tunnistautuminen vaaditaan</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>An error occurred</source>
-      <translation type="unfinished">An error occurred</translation>
+      <translation>Tapahtui virhe</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Selected</source>
-      <translation type="unfinished">Selected</translation>
+      <translation>Valittu</translation>
     </message>
     <message>
       <location line="+47"/>
       <source>Interface</source>
-      <translation type="unfinished">Interface</translation>
+      <translation>Käyttöliittymä</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Current Ping</source>
-      <translation type="unfinished">Current Ping</translation>
+      <translation>Nykyinen Ping</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>%1 ms</source>
-      <translation type="unfinished">%1 ms</translation>
+      <translation>%1 ms</translation>
     </message>
     <message>
       <location line="+28"/>
       <source>Add provider</source>
-      <translation type="unfinished">Add provider</translation>
+      <translation>Lisää tarjoaja</translation>
     </message>
   </context>
   <context>
@@ -6268,22 +6268,22 @@
     <message>
       <location filename="../modules/sidebar/News.qml" line="+94"/>
       <source>Failed to fetch news (Status: %1)</source>
-      <translation type="unfinished">Failed to fetch news (Status: %1)</translation>
+      <translation>Uutisten noutaminen epäonnistui (Tila: %1)</translation>
     </message>
     <message>
       <location line="+42"/>
       <source>No news articles found.</source>
-      <translation type="unfinished">No news articles found.</translation>
+      <translation>Uutisartikkeleita ei löytynyt.</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Arch Linux News</source>
-      <translation type="unfinished">Arch Linux News</translation>
+      <translation>Arch Linux News</translation>
     </message>
     <message>
       <location line="+28"/>
       <source>Fetching latest news...</source>
-      <translation type="unfinished">Fetching latest news...</translation>
+      <translation>Haetaan viimeisimpiä uutisia...</translation>
     </message>
   </context>
   <context>
@@ -6291,22 +6291,22 @@
     <message>
       <location filename="../modules/nexus/Nexus.qml" line="+170"/>
       <source>Update in progress</source>
-      <translation type="unfinished">Update in progress</translation>
+      <translation>Päivitys käynnissä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Closing now will let the update keep running in the background, or you can cancel it first.</source>
-      <translation type="unfinished">Closing now will let the update keep running in the background, or you can cancel it first.</translation>
+      <translation>Sulkeminen antaa päivityksen jatkua taustalla, tai voit peruuttaa sen ensin.</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Cancel Update</source>
-      <translation type="unfinished">Cancel Update</translation>
+      <translation>Peruuta Päivitys</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Keep Running</source>
-      <translation type="unfinished">Keep Running</translation>
+      <translation>Jatka Käynnissä</translation>
     </message>
   </context>
   <context>
@@ -6314,32 +6314,32 @@
     <message>
       <location filename="../modules/bar/popouts/NightLight.qml" line="+27"/>
       <source>Night Light</source>
-      <translation type="unfinished">Night Light</translation>
+      <translation>Yö Vaalea</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Auto</source>
-      <translation type="unfinished">Auto</translation>
+      <translation>Automaattinen</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Manual</source>
-      <translation type="unfinished">Manual</translation>
+      <translation>Manuaalinen</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Daylight Temperature (%1K)</source>
-      <translation type="unfinished">Daylight Temperature (%1K)</translation>
+      <translation>Päivänvalon Lämpötila (%1K)</translation>
     </message>
     <message>
       <location line="+38"/>
       <source>Nightlight Temperature (%1K)</source>
-      <translation type="unfinished">Nightlight Temperature (%1K)</translation>
+      <translation>Yövalon Lämpötila (%1K)</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Temperature (%1K)</source>
-      <translation type="unfinished">Temperature (%1K)</translation>
+      <translation>Lämpötila (%1K)</translation>
     </message>
   </context>
   <context>
@@ -6347,17 +6347,17 @@
     <message>
       <location filename="../services/Nmcli.qml" line="+426"/>
       <source>Open</source>
-      <translation type="unfinished">Open</translation>
+      <translation>Avaa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Enterprise</source>
-      <translation type="unfinished">Enterprise</translation>
+      <translation>Yritys</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Enhanced Open</source>
-      <translation type="unfinished">Enhanced Open</translation>
+      <translation>Parannettu Avoin</translation>
     </message>
   </context>
   <context>
@@ -6365,7 +6365,7 @@
     <message>
       <location filename="../modules/sidebar/Notif.qml" line="+138"/>
       <source>No body here! :/</source>
-      <translation type="unfinished">No body here! :/</translation>
+      <translation>Ei vartaloa täällä! :/</translation>
     </message>
   </context>
   <context>
@@ -6374,7 +6374,7 @@
       <location filename="../services/NotifData.qml" line="+19"/>
       <location line="+150"/>
       <source>now</source>
-      <translation type="unfinished">now</translation>
+      <translation>nyt</translation>
     </message>
   </context>
   <context>
@@ -6382,33 +6382,33 @@
     <message>
       <location filename="../modules/lock/NotifDock.qml" line="+26"/>
       <source>%1 notification%2</source>
-      <translation type="unfinished">%1 notification%2</translation>
+      <translation>%1 ilmoitus%2</translation>
     </message>
     <message>
       <location line="+0"/>
       <location filename="../modules/sidebar/NotifDock.qml" line="+68"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Unlock for Notifications</source>
-      <translation type="unfinished">Unlock for Notifications</translation>
+      <translation>Avaa ilmoituksia varten</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>No Notifications</source>
-      <translation type="unfinished">No Notifications</translation>
+      <translation>Ei Ilmoituksia</translation>
     </message>
     <message>
       <location filename="../modules/sidebar/NotifDock.qml" line="+0"/>
       <source>notification%1</source>
-      <translation type="unfinished">notification%1</translation>
+      <translation>Ilmoitus%1</translation>
     </message>
     <message>
       <location line="+112"/>
       <source>Caelestia Mode</source>
-      <translation type="unfinished">Caelestia Mode</translation>
+      <translation>Caelestia Mode</translation>
     </message>
   </context>
   <context>
@@ -6416,202 +6416,202 @@
     <message>
       <location filename="../modules/nexus/pages/services/NotificationPreferencesPage.qml" line="+12"/>
       <source>Off</source>
-      <translation type="unfinished">Off</translation>
+      <translation>Pois</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>On</source>
-      <translation type="unfinished">On</translation>
+      <translation>Päällä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>All screens</source>
-      <translation type="unfinished">All screens</translation>
+      <translation>Kaikki ruudut</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Focused screen</source>
-      <translation type="unfinished">Focused screen</translation>
+      <translation>Kohdistettu näyttö</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Auto</source>
-      <translation type="unfinished">Auto</translation>
+      <translation>Automaattinen</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Top Left</source>
-      <translation type="unfinished">Top Left</translation>
+      <translation>Vasen Yläreuna</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Top Center</source>
-      <translation type="unfinished">Top Center</translation>
+      <translation>Ylhäällä Keskellä</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Top Right</source>
-      <translation type="unfinished">Top Right</translation>
+      <translation>Oikea Yläreuna</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Bottom Left</source>
-      <translation type="unfinished">Bottom Left</translation>
+      <translation>Vasemmalla Alhaalla</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Bottom Center</source>
-      <translation type="unfinished">Bottom Center</translation>
+      <translation>Alhaalla Keskellä</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Bottom Right</source>
-      <translation type="unfinished">Bottom Right</translation>
+      <translation>Oikea Alareuna</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Display</source>
-      <translation type="unfinished">Display</translation>
+      <translation>Näyttö</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Show in fullscreen</source>
-      <translation type="unfinished">Show in fullscreen</translation>
+      <translation>Näytä kokoruututilassa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow notifications over fullscreen apps</source>
-      <translation type="unfinished">Allow notifications over fullscreen apps</translation>
+      <translation>Salli ilmoitukset koko näytön sovellusten päällä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Display on screen</source>
-      <translation type="unfinished">Display on screen</translation>
+      <translation>Näytä näytöllä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Which screens show notification popups</source>
-      <translation type="unfinished">Which screens show notification popups</translation>
+      <translation>Mitkä näytöt näyttävät ilmoitusponnahdusikkunat</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Position</source>
-      <translation type="unfinished">Position</translation>
+      <translation>Sijainti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Where notification popups appear</source>
-      <translation type="unfinished">Where notification popups appear</translation>
+      <translation>Jos ilmoitusponnahdusikkunat näkyvät</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Expire automatically</source>
-      <translation type="unfinished">Expire automatically</translation>
+      <translation>Vanhenna automaattisesti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dismiss notifications after their timeout</source>
-      <translation type="unfinished">Dismiss notifications after their timeout</translation>
+      <translation>Hylkää ilmoitukset aikakatkaisun jälkeen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Open expanded</source>
-      <translation type="unfinished">Open expanded</translation>
+      <translation>Avaa laajennettu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show notifications expanded by default</source>
-      <translation type="unfinished">Show notifications expanded by default</translation>
+      <translation>Näytä ilmoitukset laajennettu oletuksena</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Default timeout</source>
-      <translation type="unfinished">Default timeout</translation>
+      <translation>Oletus aikakatkaisu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Seconds before a notification dismisses</source>
-      <translation type="unfinished">Seconds before a notification dismisses</translation>
+      <translation>Sekuntia ennen ilmoituksen hylkäämistä</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Group preview count</source>
-      <translation type="unfinished">Group preview count</translation>
+      <translation>Ryhmien esikatselujen määrä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Notifications shown before a group collapses</source>
-      <translation type="unfinished">Notifications shown before a group collapses</translation>
+      <translation>Ilmoitukset näkyvät ennen ryhmän romahdusta</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Max popup notifications</source>
-      <translation type="unfinished">Max popup notifications</translation>
+      <translation>Maksimi ponnahdusikkunan ilmoitukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Only the newest popups are shown; the rest stay in the sidebar</source>
-      <translation type="unfinished">Only the newest popups are shown; the rest stay in the sidebar</translation>
+      <translation>Vain uusin ponnahdusikkunoita näytetään; loput pysyvät sivupalkissa</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Max stored notifications</source>
-      <translation type="unfinished">Max stored notifications</translation>
+      <translation>Tallennetut ilmoitukset enintään</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Older notifications are dropped when the limit is reached</source>
-      <translation type="unfinished">Older notifications are dropped when the limit is reached</translation>
+      <translation>Vanhemmat ilmoitukset hylätään, kun raja on saavutettu</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Interaction</source>
-      <translation type="unfinished">Interaction</translation>
+      <translation>Yhteisvaikutukset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Click to activate</source>
-      <translation type="unfinished">Click to activate</translation>
+      <translation>Klikkaa aktivoidaksesi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Activate the notification action on click</source>
-      <translation type="unfinished">Activate the notification action on click</translation>
+      <translation>Aktivoi ilmoitustoiminto klikkaamalla</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Expand threshold</source>
-      <translation type="unfinished">Expand threshold</translation>
+      <translation>Laajenna kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Hover pixels before a docked notification expands</source>
-      <translation type="unfinished">Hover pixels before a docked notification expands</translation>
+      <translation>Aseta pikseliä ennen telakatun ilmoituksen laajentamista</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Fullscreen timeout</source>
-      <translation type="unfinished">Fullscreen timeout</translation>
+      <translation>Koko näytön aikakatkaisu</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Milliseconds a notification stays over a fullscreen app</source>
-      <translation type="unfinished">Milliseconds a notification stays over a fullscreen app</translation>
+      <translation>Millisetuu ilmoitus pysyy koko näytön päällä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Clear threshold</source>
-      <translation type="unfinished">Clear threshold</translation>
+      <translation>Tyhjennä kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Swipe distance before a notification is dismissed</source>
-      <translation type="unfinished">Swipe distance before a notification is dismissed</translation>
+      <translation>Pyyhkäise etäisyys ennen ilmoituksen hylkäämistä</translation>
     </message>
   </context>
   <context>
@@ -6619,17 +6619,17 @@
     <message>
       <location filename="../modules/nexus/pages/audio/NotificationSilencingPage.qml" line="+28"/>
       <source>Muted notification apps</source>
-      <translation type="unfinished">Muted notification apps</translation>
+      <translation>Mykistetyt ilmoitussovellukset</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Muted apps</source>
-      <translation type="unfinished">Muted apps</translation>
+      <translation>Mykistyneet sovellukset</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Add</source>
-      <translation type="unfinished">Add</translation>
+      <translation>Lisää</translation>
     </message>
   </context>
   <context>
@@ -6637,27 +6637,27 @@
     <message>
       <location filename="../modules/bar/popouts/Notifications.qml" line="+27"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Do not disturb</source>
-      <translation type="unfinished">Do not disturb</translation>
+      <translation>Älä häiritse</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Notifications off</source>
-      <translation type="unfinished">Notifications off</translation>
+      <translation>Ilmoitukset pois</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>%1 unread</source>
-      <translation type="unfinished">%1 unread</translation>
+      <translation>%1 lukematon</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Clear all</source>
-      <translation type="unfinished">Clear all</translation>
+      <translation>Tyhjennä kaikki</translation>
     </message>
   </context>
   <context>
@@ -6665,12 +6665,12 @@
     <message>
       <location filename="../modules/bar/components/NotificationsIndicator.qml" line="+38"/>
       <source>Notifications and sidebar toggle</source>
-      <translation type="unfinished">Notifications and sidebar toggle</translation>
+      <translation>Ilmoitukset ja sivupalkin vaihto</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Left-click to open the sidebar. Right-click to toggle Do Not Disturb</source>
-      <translation type="unfinished">Left-click to open the sidebar. Right-click to toggle Do Not Disturb</translation>
+      <translation>Klikkaa vasemmalla painikkeella avataksesi sivupalkin. Napsauta hiiren kakkospainikkeella vaihtaaksesi Älä häiritse -tilan</translation>
     </message>
   </context>
   <context>
@@ -6679,42 +6679,42 @@
       <location filename="../modules/nexus/pages/services/NotificationsPage.qml" line="+8"/>
       <location line="+16"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="-6"/>
       <source>Delivery</source>
-      <translation type="unfinished">Delivery</translation>
+      <translation>Toimitus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Position, timeout, and display behavior</source>
-      <translation type="unfinished">Position, timeout, and display behavior</translation>
+      <translation>Asema, aikakatkaisu ja näytön käyttäytyminen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toasts</source>
-      <translation type="unfinished">Toasts</translation>
+      <translation>Paahtimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fullscreen behavior, appearance, and sound</source>
-      <translation type="unfinished">Fullscreen behavior, appearance, and sound</translation>
+      <translation>Koko näytön käyttäytyminen, ulkonäkö ja ääni</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Automation</source>
-      <translation type="unfinished">Automation</translation>
+      <translation>Automaatio</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toast events</source>
-      <translation type="unfinished">Toast events</translation>
+      <translation>Toast-tapahtumat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose which system changes show a toast</source>
-      <translation type="unfinished">Choose which system changes show a toast</translation>
+      <translation>Valitse mitkä järjestelmän muutokset näyttävät paahtoleivän</translation>
     </message>
   </context>
   <context>
@@ -6722,27 +6722,27 @@
     <message>
       <location filename="../services/Notifs.qml" line="+144"/>
       <source>Do not disturb enabled</source>
-      <translation type="unfinished">Do not disturb enabled</translation>
+      <translation>Älä häiritse -tila käytössä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Popup notifications are now disabled</source>
-      <translation type="unfinished">Popup notifications are now disabled</translation>
+      <translation>Ponnahdusilmoitukset ovat nyt pois käytöstä</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Do not disturb disabled</source>
-      <translation type="unfinished">Do not disturb disabled</translation>
+      <translation>Älä häiritse -tila pois käytöstä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Popup notifications are now enabled</source>
-      <translation type="unfinished">Popup notifications are now enabled</translation>
+      <translation>Ponnahdusilmoitukset ovat nyt käytössä</translation>
     </message>
     <message>
       <location line="+103"/>
       <source>Clear all notifications</source>
-      <translation type="unfinished">Clear all notifications</translation>
+      <translation>Tyhjennä kaikki ilmoitukset</translation>
     </message>
   </context>
   <context>
@@ -6750,22 +6750,22 @@
     <message>
       <location filename="../modules/screenshot/regionSelector/OptionsToolbar.qml" line="+43"/>
       <source>Window Selector</source>
-      <translation type="unfinished">Window Selector</translation>
+      <translation>Ikkunan Valitsin</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Screenshot</source>
-      <translation type="unfinished">Screenshot</translation>
+      <translation>Kuvakaappaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Google Lens</source>
-      <translation type="unfinished">Google Lens</translation>
+      <translation>Google Lens</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Text Recognition</source>
-      <translation type="unfinished">Text Recognition</translation>
+      <translation>Tekstin Tunnustaminen</translation>
     </message>
   </context>
   <context>
@@ -6773,92 +6773,92 @@
     <message>
       <location filename="../modules/nexus/pages/utilities/OsdPage.qml" line="+9"/>
       <source>On-screen sliders</source>
-      <translation type="unfinished">On-screen sliders</translation>
+      <translation>Näytön liukusäätimet</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Sliders</source>
-      <translation type="unfinished">Sliders</translation>
+      <translation>Liukusäätimet</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the on-screen sliders</source>
-      <translation type="unfinished">Show the on-screen sliders</translation>
+      <translation>Näytä näytön liukusäätimet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Volume</source>
-      <translation type="unfinished">Volume</translation>
+      <translation>Tilavuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the volume slider</source>
-      <translation type="unfinished">Show the volume slider</translation>
+      <translation>Näytä äänenvoimakkuuden säädin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Microphone</source>
-      <translation type="unfinished">Microphone</translation>
+      <translation>Mikrofoni</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the microphone slider</source>
-      <translation type="unfinished">Show the microphone slider</translation>
+      <translation>Näytä mikrofonin liukusäädin</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Brightness</source>
-      <translation type="unfinished">Brightness</translation>
+      <translation>Kirkkaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the brightness slider</source>
-      <translation type="unfinished">Show the brightness slider</translation>
+      <translation>Näytä kirkkauden säädin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Edge trigger</source>
-      <translation type="unfinished">Edge trigger</translation>
+      <translation>Reunan liipaisin</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Depth</source>
-      <translation type="unfinished">Depth</translation>
+      <translation>Syvyys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance from the screen edge</source>
-      <translation type="unfinished">Distance from the screen edge</translation>
+      <translation>Etäisyys näytön reunasta</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Height</source>
-      <translation type="unfinished">Height</translation>
+      <translation>Korkeus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Portion of the edge that responds</source>
-      <translation type="unfinished">Portion of the edge that responds</translation>
+      <translation>Reunan osa, joka vastaa</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Hide delay</source>
-      <translation type="unfinished">Hide delay</translation>
+      <translation>Piilota viive</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Seconds before the slider hides</source>
-      <translation type="unfinished">Seconds before the slider hides</translation>
+      <translation>Sekuntia ennen liukusäätimen piilotusta</translation>
     </message>
   </context>
   <context>
@@ -6866,239 +6866,239 @@
     <message>
       <location filename="../modules/nexus/pages/panels/OverviewPanel.qml" line="+18"/>
       <source>KDE Grid</source>
-      <translation type="unfinished">KDE Grid</translation>
+      <translation>KDE Grid</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+155"/>
       <source>GNOME Grid</source>
-      <translation type="unfinished">GNOME Grid</translation>
+      <translation>Gnomen Ruudukko</translation>
     </message>
     <message>
       <location line="-147"/>
       <source>Linear</source>
-      <translation type="unfinished">Linear</translation>
+      <translation>Lineaarinen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Quadratic Out</source>
-      <translation type="unfinished">Quadratic Out</translation>
+      <translation>Quadratic Out</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Quadratic In-Out</source>
-      <translation type="unfinished">Quadratic In-Out</translation>
+      <translation>Quadratic In-Out</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Cubic Out</source>
-      <translation type="unfinished">Cubic Out</translation>
+      <translation>Kuutio Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Quartic Out</source>
-      <translation type="unfinished">Quartic Out</translation>
+      <translation>Quartic Out</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Quintic Out</source>
-      <translation type="unfinished">Quintic Out</translation>
+      <translation>Quintic Out</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Sine Out</source>
-      <translation type="unfinished">Sine Out</translation>
+      <translation>Sine Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Exponential Out</source>
-      <translation type="unfinished">Exponential Out</translation>
+      <translation>Eksponentiaalinen Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Circular Out</source>
-      <translation type="unfinished">Circular Out</translation>
+      <translation>Pyöreä Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Elastic Out</source>
-      <translation type="unfinished">Elastic Out</translation>
+      <translation>Elastinen Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+131"/>
       <source>Back In</source>
-      <translation type="unfinished">Back In</translation>
+      <translation>Takaisin Sisään</translation>
     </message>
     <message>
       <location line="-126"/>
       <source>Back Out</source>
-      <translation type="unfinished">Back Out</translation>
+      <translation>Takaisin Ulos</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bounce Out</source>
-      <translation type="unfinished">Bounce Out</translation>
+      <translation>Pomppu Ulos</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Overview</source>
-      <translation type="unfinished">Overview</translation>
+      <translation>Yleiskatsaus</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Activation</source>
-      <translation type="unfinished">Activation</translation>
+      <translation>Aktivointi</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Enable overview</source>
-      <translation type="unfinished">Enable overview</translation>
+      <translation>Ota yleiskatsaus käyttöön</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Open overview by hovering a corner instead of dragging</source>
-      <translation type="unfinished">Open overview by hovering a corner instead of dragging</translation>
+      <translation>Avaa yleiskatsaus leimaamalla kulmaa vetämisen sijaan</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Trigger area size</source>
-      <translation type="unfinished">Trigger area size</translation>
+      <translation>Kynnysalueen koko</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Size of the corner activation areas in pixels</source>
-      <translation type="unfinished">Size of the corner activation areas in pixels</translation>
+      <translation>Kulman aktivointialueiden koko pikseleinä</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance to drag from corner to open overview</source>
-      <translation type="unfinished">Distance to drag from corner to open overview</translation>
+      <translation>Etäisyys vedä kulmasta avoimeen yleiskatsaukseen</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Corners</source>
-      <translation type="unfinished">Corners</translation>
+      <translation>Kulmat</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Top-Left corner</source>
-      <translation type="unfinished">Top-Left corner</translation>
+      <translation>Ylävasen kulma</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Top-Right corner</source>
-      <translation type="unfinished">Top-Right corner</translation>
+      <translation>Yläoikea kulma</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bottom-Left corner</source>
-      <translation type="unfinished">Bottom-Left corner</translation>
+      <translation>Alavasen kulma</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Bottom-Right corner</source>
-      <translation type="unfinished">Bottom-Right corner</translation>
+      <translation>Ala-oikea kulma</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Window layout style</source>
-      <translation type="unfinished">Window layout style</translation>
+      <translation>Ikkunan asettelun tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the layout algorithm used in the overview</source>
-      <translation type="unfinished">Choose the layout algorithm used in the overview</translation>
+      <translation>Valitse asettelun algoritmi, jota käytetään yleiskatsauksessa</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Disable wallpaper blur</source>
-      <translation type="unfinished">Disable wallpaper blur</translation>
+      <translation>Poista taustakuvan sumennus käytöstä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Do not blur the background wallpaper when opening overview</source>
-      <translation type="unfinished">Do not blur the background wallpaper when opening overview</translation>
+      <translation>Älä sumenna taustakuvaa, kun avaat yleiskatsauksen</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enable overview blur</source>
-      <translation type="unfinished">Enable overview blur</translation>
+      <translation>Ota näkymän sumennus käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable QuickShell-based blur effect on overview wallpaper</source>
-      <translation type="unfinished">Enable QuickShell-based blur effect on overview wallpaper</translation>
+      <translation>Ota käyttöön QuickShell-pohjainen sumennusvaikutus yleiskuvan taustakuvalle</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Animations</source>
-      <translation type="unfinished">Animations</translation>
+      <translation>Animaatiot</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Animation easing type</source>
-      <translation type="unfinished">Animation easing type</translation>
+      <translation>Animaation vaimennus tyyppi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the easing curve for overview animations</source>
-      <translation type="unfinished">Choose the easing curve for overview animations</translation>
+      <translation>Valitse helpottava käyrä yleiskatsausten animaatioille</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Base duration</source>
-      <translation type="unfinished">Base duration</translation>
+      <translation>Base kesto</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Base duration for overview opening/closing in milliseconds</source>
-      <translation type="unfinished">Base duration for overview opening/closing in milliseconds</translation>
+      <translation>Peruskesto yleiskatsauksen avaamisessa/sulkemisessa millisekunteina</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Blob scale speed</source>
-      <translation type="unfinished">Blob scale speed</translation>
+      <translation>Blob skaalaus nopeus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scaling speed modifier for background blobs</source>
-      <translation type="unfinished">Scaling speed modifier for background blobs</translation>
+      <translation>Skaalaus nopeus modifier taustan blobs</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Wallpaper fade speed</source>
-      <translation type="unfinished">Wallpaper fade speed</translation>
+      <translation>Taustakuvan häivytys nopeus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fade speed modifier for the wallpaper</source>
-      <translation type="unfinished">Fade speed modifier for the wallpaper</translation>
+      <translation>Häivytä nopeus muokkaus taustakuvan</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Grid fade speed</source>
-      <translation type="unfinished">Grid fade speed</translation>
+      <translation>Ruudukon häivytyksen nopeus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fade speed modifier for the window grid</source>
-      <translation type="unfinished">Fade speed modifier for the window grid</translation>
+      <translation>Häivytä nopeussäädin ikkunaruudukkoa varten</translation>
     </message>
   </context>
   <context>
@@ -7106,12 +7106,12 @@
     <message>
       <location filename="../modules/nexus/PageCompRegistry.qml" line="+351"/>
       <source>Page under construction</source>
-      <translation type="unfinished">Page under construction</translation>
+      <translation>Sivu rakenteilla</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>This page will be available in a future update.</source>
-      <translation type="unfinished">This page will be available in a future update.</translation>
+      <translation>Tämä sivu on saatavilla tulevassa päivityksessä.</translation>
     </message>
   </context>
   <context>
@@ -7119,663 +7119,663 @@
     <message>
       <location filename="../modules/nexus/PageDictionary.qml" line="+10"/>
       <source>Appearance</source>
-      <translation type="unfinished">Appearance</translation>
+      <translation>Ulkoasu</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Wallpapers, fonts, colors</source>
-      <translation type="unfinished">Wallpapers, fonts, colors</translation>
+      <translation>Taustakuvat, fontit, värit</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Theme &amp; Effects</source>
-      <translation type="unfinished">Theme &amp; Effects</translation>
+      <translation>Teema &amp; Tehosteet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Font</source>
-      <translation type="unfinished">Font</translation>
+      <translation>Font</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Monospace font</source>
-      <translation type="unfinished">Monospace font</translation>
+      <translation>Monospace font</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Font scale</source>
-      <translation type="unfinished">Font scale</translation>
+      <translation>Kirjasimen skaalaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Colors</source>
-      <translation type="unfinished">Colors</translation>
+      <translation>Värit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Blur &amp; Opacity</source>
-      <translation type="unfinished">Blur &amp; Opacity</translation>
+      <translation>Sumennus Ja Läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Corner Radius</source>
-      <translation type="unfinished">Corner Radius</translation>
+      <translation>Corner Radius</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpapers</source>
-      <translation type="unfinished">Wallpapers</translation>
+      <translation>Taustakuvat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallhaven</source>
-      <translation type="unfinished">Wallhaven</translation>
+      <translation>Wallhaven</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper settings</source>
-      <translation type="unfinished">Wallpaper settings</translation>
+      <translation>Taustakuvan asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Slideshow &amp; Order</source>
-      <translation type="unfinished">Slideshow &amp; Order</translation>
+      <translation>Slideshow &amp; Order</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Video wallpapers</source>
-      <translation type="unfinished">Video wallpapers</translation>
+      <translation>Videon taustakuvat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Lock Screen</source>
-      <translation type="unfinished">Lock Screen</translation>
+      <translation>Lukitse Näyttö</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fingerprint</source>
-      <translation type="unfinished">Fingerprint</translation>
+      <translation>Sormenjälki</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Bezel mode</source>
-      <translation type="unfinished">Bezel mode</translation>
+      <translation>Bezel tila</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Desktop &amp; Tiling</source>
-      <translation type="unfinished">Desktop &amp; Tiling</translation>
+      <translation>Työpöytä Ja Lataus</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>KDE Desktop, addons, right click menu</source>
-      <translation type="unfinished">KDE Desktop, addons, right click menu</translation>
+      <translation>KDE: n työpöytä-, lisäosat, hiiren oikealla painikkeella -valikko</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>KDE Desktop Integration</source>
-      <translation type="unfinished">KDE Desktop Integration</translation>
+      <translation>Kde: N Työpöytäintegrointi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Right Click Menu</source>
-      <translation type="unfinished">Right Click Menu</translation>
+      <translation>Oikean Napsautuksen Valikko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Desktop Addons</source>
-      <translation type="unfinished">Desktop Addons</translation>
+      <translation>Työpöydän Lisäosat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Window Tiling</source>
-      <translation type="unfinished">Window Tiling</translation>
+      <translation>Ikkunan Lataus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Floating windows</source>
-      <translation type="unfinished">Floating windows</translation>
+      <translation>Kelluvat ikkunat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Virtual Workspaces</source>
-      <translation type="unfinished">Virtual Workspaces</translation>
+      <translation>Virtuaaliset Työtilat</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Panels</source>
-      <translation type="unfinished">Panels</translation>
+      <translation>Paneelit</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Dashboard, taskbar, launcher, sidebar</source>
-      <translation type="unfinished">Dashboard, taskbar, launcher, sidebar</translation>
+      <translation>Dashboard, tehtäväpalkki, launcher, sivupalkki</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Taskbar</source>
-      <translation type="unfinished">Taskbar</translation>
+      <translation>Tehtäväpalkki</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dashboard</source>
-      <translation type="unfinished">Dashboard</translation>
+      <translation>Hallintapaneeli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Launcher</source>
-      <translation type="unfinished">Launcher</translation>
+      <translation>Käynnistin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Sidebar</source>
-      <translation type="unfinished">Sidebar</translation>
+      <translation>Sidebar</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Quick Toggles Panel</source>
-      <translation type="unfinished">Quick Toggles Panel</translation>
+      <translation>Pikavaihto Paneeli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Overview</source>
-      <translation type="unfinished">Overview</translation>
+      <translation>Yleiskatsaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Toggle &amp; Rearrange</source>
-      <translation type="unfinished">Toggle &amp; Rearrange</translation>
+      <translation>Vaihda &amp; Järjestä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Workspaces indicator</source>
-      <translation type="unfinished">Workspaces indicator</translation>
+      <translation>Työtilojen osoitin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Unoccupied workspaces</source>
-      <translation type="unfinished">Unoccupied workspaces</translation>
+      <translation>Unccupied työtilat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Greeter</source>
-      <translation type="unfinished">Greeter</translation>
+      <translation>Greeter</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Greeter slideshow</source>
-      <translation type="unfinished">Greeter slideshow</translation>
+      <translation>Greeter diaesitys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Tray</source>
-      <translation type="unfinished">Tray</translation>
+      <translation>Kaukalo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Status icons</source>
-      <translation type="unfinished">Status icons</translation>
+      <translation>Tilan kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Clock</source>
-      <translation type="unfinished">Clock</translation>
+      <translation>Kello</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Clock seconds</source>
-      <translation type="unfinished">Clock seconds</translation>
+      <translation>Kello sekuntia</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dock</source>
-      <translation type="unfinished">Dock</translation>
+      <translation>Telakka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Per-element scaling offsets</source>
-      <translation type="unfinished">Per-element scaling offsets</translation>
+      <translation>Per-elementin skaalauksen siirtymät</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Elements &amp; Modules</source>
-      <translation type="unfinished">Elements &amp; Modules</translation>
+      <translation>Osat Ja Moduulit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Update indicator</source>
-      <translation type="unfinished">Update indicator</translation>
+      <translation>Päivitä osoitin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Preview scale</source>
-      <translation type="unfinished">Preview scale</translation>
+      <translation>Esikatsele skaalaa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Performance</source>
-      <translation type="unfinished">Performance</translation>
+      <translation>Suorituskyky</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dashboard clock seconds</source>
-      <translation type="unfinished">Dashboard clock seconds</translation>
+      <translation>Kojelaudan kello sekuntia</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fuzzy search</source>
-      <translation type="unfinished">Fuzzy search</translation>
+      <translation>Sumea haku</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Activation</source>
-      <translation type="unfinished">Activation</translation>
+      <translation>Aktivointi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Window Switcher</source>
-      <translation type="unfinished">Window Switcher</translation>
+      <translation>Ikkunan Vaihtaja</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Network</source>
-      <translation type="unfinished">Network</translation>
+      <translation>Verkko</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Wi-Fi and VPN connections</source>
-      <translation type="unfinished">Wi-Fi and VPN connections</translation>
+      <translation>Wi-Fi- ja VPN-yhteydet</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Wi-Fi</source>
-      <translation type="unfinished">Wi-Fi</translation>
+      <translation>Wi-Fi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>VPN</source>
-      <translation type="unfinished">VPN</translation>
+      <translation>VPN</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>IPv4</source>
-      <translation type="unfinished">IPv4</translation>
+      <translation>IPv4</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>All networks</source>
-      <translation type="unfinished">All networks</translation>
+      <translation>Kaikki verkot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Saved networks</source>
-      <translation type="unfinished">Saved networks</translation>
+      <translation>Tallennetut verkot</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Connected devices</source>
-      <translation type="unfinished">Connected devices</translation>
+      <translation>Yhdistetyt laitteet</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Bluetooth, pairing, drivers</source>
-      <translation type="unfinished">Bluetooth, pairing, drivers</translation>
+      <translation>Bluetooth, pari, ajurit</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Discoverable</source>
-      <translation type="unfinished">Discoverable</translation>
+      <translation>Löydettävissä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pairable</source>
-      <translation type="unfinished">Pairable</translation>
+      <translation>Käytettävissä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pairing</source>
-      <translation type="unfinished">Pairing</translation>
+      <translation>Pairing</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Audio &amp; Sound</source>
-      <translation type="unfinished">Audio &amp; Sound</translation>
+      <translation>Ääni Ja Ääni</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Output, input, app volume, sound effects</source>
-      <translation type="unfinished">Output, input, app volume, sound effects</translation>
+      <translation>Teho, syöte, sovelluksen äänenvoimakkuus, äänitehosteet</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Speakers &amp; Output</source>
-      <translation type="unfinished">Speakers &amp; Output</translation>
+      <translation>Kaiuttimet Ja Ulostulo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Microphones</source>
-      <translation type="unfinished">Microphones</translation>
+      <translation>Microphones</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>App Volumes</source>
-      <translation type="unfinished">App Volumes</translation>
+      <translation>Sovelluksen Äänenvoimakkuudet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Sound Effects</source>
-      <translation type="unfinished">Sound Effects</translation>
+      <translation>Ääni Tehosteet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Muted Notification Apps</source>
-      <translation type="unfinished">Muted Notification Apps</translation>
+      <translation>Mykistetyt Ilmoitussovellukset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Notifications</source>
-      <translation type="unfinished">Notifications</translation>
+      <translation>Ilmoitukset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Alerts, toasts, and delivery behavior</source>
-      <translation type="unfinished">Alerts, toasts, and delivery behavior</translation>
+      <translation>Hälytykset, paahtoleivät ja toimituskäyttäytyminen</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Notification behavior</source>
-      <translation type="unfinished">Notification behavior</translation>
+      <translation>Ilmoituksen käyttäytyminen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Toasts</source>
-      <translation type="unfinished">Toasts</translation>
+      <translation>Paahtimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Toast events</source>
-      <translation type="unfinished">Toast events</translation>
+      <translation>Toast-tapahtumat</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Utilities</source>
-      <translation type="unfinished">Utilities</translation>
+      <translation>Työkalut</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Quick controls, clipboard, game mode</source>
-      <translation type="unfinished">Quick controls, clipboard, game mode</translation>
+      <translation>Nopea ohjaus, leikepöydällä, pelitila</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>On-screen Sliders</source>
-      <translation type="unfinished">On-screen Sliders</translation>
+      <translation>Näytön Liukusäätimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Clipboard</source>
-      <translation type="unfinished">Clipboard</translation>
+      <translation>Leikepöytä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Utilities Panel</source>
-      <translation type="unfinished">Utilities Panel</translation>
+      <translation>Työkalujen Paneeli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Quick Toggles</source>
-      <translation type="unfinished">Quick Toggles</translation>
+      <translation>Quick Toggles</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Game Mode</source>
-      <translation type="unfinished">Game Mode</translation>
+      <translation>Pelin Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Auto-enable rules</source>
-      <translation type="unfinished">Auto-enable rules</translation>
+      <translation>Ota säännöt käyttöön automaattisesti</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Power</source>
-      <translation type="unfinished">Power</translation>
+      <translation>Virta</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Battery indicators, idle suspend</source>
-      <translation type="unfinished">Battery indicators, idle suspend</translation>
+      <translation>Akun osoittimet, joutokäynnillä keskeytetty</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Battery Status</source>
-      <translation type="unfinished">Battery Status</translation>
+      <translation>Akun Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Power Saving</source>
-      <translation type="unfinished">Power Saving</translation>
+      <translation>Virransäästö</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Screen Timeout</source>
-      <translation type="unfinished">Screen Timeout</translation>
+      <translation>Näytön Aikakatkaisu</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Session</source>
-      <translation type="unfinished">Session</translation>
+      <translation>Istunto</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Shutdown, logout, and reboot menu</source>
-      <translation type="unfinished">Shutdown, logout, and reboot menu</translation>
+      <translation>Sammuta, kirjaudu ulos ja käynnistä valikko</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Session Menu</source>
-      <translation type="unfinished">Session Menu</translation>
+      <translation>Istunnon Valikko</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Session Icons</source>
-      <translation type="unfinished">Session Icons</translation>
+      <translation>Istunnon Kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Session Commands</source>
-      <translation type="unfinished">Session Commands</translation>
+      <translation>Istunnon Komennot</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Shortcuts</source>
-      <translation type="unfinished">Shortcuts</translation>
+      <translation>Pikanäppäimet</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Keyboard shortcuts, custom keybinds</source>
-      <translation type="unfinished">Keyboard shortcuts, custom keybinds</translation>
+      <translation>Näppäimistön pikakuvakkeet, mukautetut näppäimistöt</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>System Shortcuts</source>
-      <translation type="unfinished">System Shortcuts</translation>
+      <translation>Järjestelmän Pikakuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>App Shortcuts</source>
-      <translation type="unfinished">App Shortcuts</translation>
+      <translation>Sovelluksen Pikanäppäimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Custom Keybinds</source>
-      <translation type="unfinished">Custom Keybinds</translation>
+      <translation>Mukautetut Näppäimistöt</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Apps</source>
-      <translation type="unfinished">Apps</translation>
+      <translation>Sovellukset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Default apps, file types, app details</source>
-      <translation type="unfinished">Default apps, file types, app details</translation>
+      <translation>Oletussovellukset, tiedostotyypit, sovelluksen tiedot</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Default Apps</source>
-      <translation type="unfinished">Default Apps</translation>
+      <translation>Oletus Sovellukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>File Types</source>
-      <translation type="unfinished">File Types</translation>
+      <translation>Tiedostotyypit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>All Apps</source>
-      <translation type="unfinished">All Apps</translation>
+      <translation>Kaikki Sovellukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Favorites &amp; Hidden</source>
-      <translation type="unfinished">Favorites &amp; Hidden</translation>
+      <translation>Suosikit &amp; Piilotettu</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Services</source>
-      <translation type="unfinished">Services</translation>
+      <translation>Palvelut</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Background services, daemon control</source>
-      <translation type="unfinished">Background services, daemon control</translation>
+      <translation>Taustapalvelut, taustatietojen hallinta</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Background Services</source>
-      <translation type="unfinished">Background Services</translation>
+      <translation>Tausta Palvelut</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Rich Presence</source>
-      <translation type="unfinished">Rich Presence</translation>
+      <translation>Rich Presence</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Language &amp; region</source>
-      <translation type="unfinished">Language &amp; region</translation>
+      <translation>Kieli &amp; alue</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Locale, timezone, formats</source>
-      <translation type="unfinished">Locale, timezone, formats</translation>
+      <translation>Locale, timezone, formats</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Language</source>
-      <translation type="unfinished">Language</translation>
+      <translation>Kieli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Time &amp; Date</source>
-      <translation type="unfinished">Time &amp; Date</translation>
+      <translation>Aika Ja Päivämäärä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Weather Location</source>
-      <translation type="unfinished">Weather Location</translation>
+      <translation>Säätietojen Sijainti</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Updates</source>
-      <translation type="unfinished">Updates</translation>
+      <translation>Päivitykset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>System updates</source>
-      <translation type="unfinished">System updates</translation>
+      <translation>Järjestelmän päivitykset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Software Updates</source>
-      <translation type="unfinished">Software Updates</translation>
+      <translation>Ohjelmiston Päivitykset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Firmware Updates</source>
-      <translation type="unfinished">Firmware Updates</translation>
+      <translation>Laiteohjelmistopäivitykset</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Plugins</source>
-      <translation type="unfinished">Plugins</translation>
+      <translation>Liitännäiset</translation>
     </message>
     <message>
       <location line="+3"/>
       <location line="+3"/>
       <source>Personalized desktop experience</source>
-      <translation type="unfinished">Personalized desktop experience</translation>
+      <translation>Personoitu työpöytäkokemus</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Plugin system</source>
-      <translation type="unfinished">Plugin system</translation>
+      <translation>Liitännäisen järjestelmä</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>About System</source>
-      <translation type="unfinished">About System</translation>
+      <translation>Tietoja Järjestelmästä</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Specs, version, system information</source>
-      <translation type="unfinished">Specs, version, system information</translation>
+      <translation>Tekniset tiedot, versio, järjestelmän tiedot</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Device Info</source>
-      <translation type="unfinished">Device Info</translation>
+      <translation>Laitteen Tiedot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>OS Version</source>
-      <translation type="unfinished">OS Version</translation>
+      <translation>Os Versio</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>AI Assistant</source>
-      <translation type="unfinished">AI Assistant</translation>
+      <translation>Ai Apulainen</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Claude Code, accounts, providers</source>
-      <translation type="unfinished">Claude Code, accounts, providers</translation>
+      <translation>Claude Code, tilit, palveluntarjoajat</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Claude Code</source>
-      <translation type="unfinished">Claude Code</translation>
+      <translation>Claude Koodi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Accounts</source>
-      <translation type="unfinished">Accounts</translation>
+      <translation>Tilit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Providers</source>
-      <translation type="unfinished">Providers</translation>
+      <translation>Palveluntarjoajat</translation>
     </message>
   </context>
   <context>
@@ -7783,7 +7783,7 @@
     <message>
       <location filename="../modules/nexus/PageRegistry.qml" line="+23"/>
       <source>Main Page</source>
-      <translation type="unfinished">Main Page</translation>
+      <translation>Pääsivu</translation>
     </message>
   </context>
   <context>
@@ -7791,12 +7791,12 @@
     <message>
       <location filename="../modules/nexus/pages/PanelsPage.qml" line="+8"/>
       <source>Panels</source>
-      <translation type="unfinished">Panels</translation>
+      <translation>Paneelit</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Dashboard</source>
-      <translation type="unfinished">Dashboard</translation>
+      <translation>Hallintapaneeli</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -7805,7 +7805,7 @@
       <location line="+6"/>
       <location line="+6"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="-30"/>
@@ -7815,62 +7815,62 @@
       <location line="+6"/>
       <location line="+7"/>
       <source>Disabled</source>
-      <translation type="unfinished">Disabled</translation>
+      <translation>Pois Käytöstä</translation>
     </message>
     <message>
       <location line="-32"/>
       <source>Taskbar</source>
-      <translation type="unfinished">Taskbar</translation>
+      <translation>Tehtäväpalkki</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Always visible</source>
-      <translation type="unfinished">Always visible</translation>
+      <translation>Aina näkyvissä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Reveal on hover</source>
-      <translation type="unfinished">Reveal on hover</translation>
+      <translation>Paljasta haudatessa</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Reveal on drag</source>
-      <translation type="unfinished">Reveal on drag</translation>
+      <translation>Paljasta vedettäessä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Launcher</source>
-      <translation type="unfinished">Launcher</translation>
+      <translation>Käynnistin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Sidebar</source>
-      <translation type="unfinished">Sidebar</translation>
+      <translation>Sidebar</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Quick toggle</source>
-      <translation type="unfinished">Quick toggle</translation>
+      <translation>Nopea vaihto</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Overview</source>
-      <translation type="unfinished">Overview</translation>
+      <translation>Yleiskatsaus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Window Switcher</source>
-      <translation type="unfinished">Window Switcher</translation>
+      <translation>Ikkunan Vaihtaja</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Current desktop only</source>
-      <translation type="unfinished">Current desktop only</translation>
+      <translation>Vain nykyinen työpöytä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>All desktops</source>
-      <translation type="unfinished">All desktops</translation>
+      <translation>Kaikki työpöydät</translation>
     </message>
   </context>
   <context>
@@ -7878,17 +7878,17 @@
     <message>
       <location filename="../modules/lock/center/PasswordInput.qml" line="+101"/>
       <source>Hide password</source>
-      <translation type="unfinished">Hide password</translation>
+      <translation>Piilota salasana</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Show password</source>
-      <translation type="unfinished">Show password</translation>
+      <translation>Näytä salasana</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reveal what has been typed into the password field</source>
-      <translation type="unfinished">Reveal what has been typed into the password field</translation>
+      <translation>Paljasta mitä on kirjoitettu salasanakenttään</translation>
     </message>
   </context>
   <context>
@@ -7896,7 +7896,7 @@
     <message>
       <location filename="../modules/bar/components/performance/PerfBattery.qml" line="+12"/>
       <source>N/A</source>
-      <translation type="unfinished">N/A</translation>
+      <translation>E/A</translation>
     </message>
   </context>
   <context>
@@ -7904,22 +7904,22 @@
     <message>
       <location filename="../modules/dashboard/Performance.qml" line="+36"/>
       <source>No widgets enabled</source>
-      <translation type="unfinished">No widgets enabled</translation>
+      <translation>Ei widgetejä käytössä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Enable widgets in the dashboard settings</source>
-      <translation type="unfinished">Enable widgets in the dashboard settings</translation>
+      <translation>Ota widgetit käyttöön hallintapaneelin asetuksissa</translation>
     </message>
     <message>
       <location line="+32"/>
       <source>CPU</source>
-      <translation type="unfinished">CPU</translation>
+      <translation>Suoritin</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>GPU</source>
-      <translation type="unfinished">GPU</translation>
+      <translation>GPU</translation>
     </message>
   </context>
   <context>
@@ -7927,32 +7927,32 @@
     <message>
       <location filename="../services/Players.qml" line="+64"/>
       <source>Now Playing</source>
-      <translation type="unfinished">Now Playing</translation>
+      <translation>Nyt Soi</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>%1 - %2</source>
-      <translation type="unfinished">%1 - %2</translation>
+      <translation>%1 - %2</translation>
     </message>
     <message>
       <location line="+33"/>
       <source>Toggle media playback</source>
-      <translation type="unfinished">Toggle media playback</translation>
+      <translation>Vaihda median soiton tilaa</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Previous track</source>
-      <translation type="unfinished">Previous track</translation>
+      <translation>Edellinen raita</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Next track</source>
-      <translation type="unfinished">Next track</translation>
+      <translation>Seuraava raita</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Stop media playback</source>
-      <translation type="unfinished">Stop media playback</translation>
+      <translation>Lopeta median toisto</translation>
     </message>
   </context>
   <context>
@@ -7960,12 +7960,12 @@
     <message>
       <location filename="../modules/nexus/pages/PluginSettingsPopup.qml" line="+44"/>
       <source>Settings</source>
-      <translation type="unfinished">Settings</translation>
+      <translation>Asetukset</translation>
     </message>
     <message>
       <location line="+52"/>
       <source>Done</source>
-      <translation type="unfinished">Done</translation>
+      <translation>Valmis</translation>
     </message>
   </context>
   <context>
@@ -7973,68 +7973,68 @@
     <message>
       <location filename="../modules/nexus/pages/PluginsPage.qml" line="+60"/>
       <source>Plugins</source>
-      <translation type="unfinished">Plugins</translation>
+      <translation>Liitännäiset</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Refresh</source>
-      <translation type="unfinished">Refresh</translation>
+      <translation>Päivitä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Restart Shell</source>
-      <translation type="unfinished">Restart Shell</translation>
+      <translation>Käynnistä Tulkki Uudelleen</translation>
     </message>
     <message>
       <location line="+34"/>
       <location line="+335"/>
       <source>Installed</source>
-      <translation type="unfinished">Installed</translation>
+      <translation>Asennettu</translation>
     </message>
     <message>
       <location line="-326"/>
       <source>Store</source>
-      <translation type="unfinished">Store</translation>
+      <translation>Kauppa</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>A shell restart is required for changes to take effect</source>
-      <translation type="unfinished">A shell restart is required for changes to take effect</translation>
+      <translation>Komennon uudelleenkäynnistys on tarpeen, jotta muutokset tulevat voimaan</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Shell Plugins</source>
-      <translation type="unfinished">Shell Plugins</translation>
+      <translation>Kuoren Liitännäiset</translation>
     </message>
     <message>
       <location line="+68"/>
       <source>User Installed</source>
-      <translation type="unfinished">User Installed</translation>
+      <translation>Käyttäjä Asennettu</translation>
     </message>
     <message>
       <location line="+101"/>
       <source>No plugins installed</source>
-      <translation type="unfinished">No plugins installed</translation>
+      <translation>Liitännäisiä ei ole asennettu</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Loading store...</source>
-      <translation type="unfinished">Loading store...</translation>
+      <translation>Ladataan kauppaa...</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Available Plugins</source>
-      <translation type="unfinished">Available Plugins</translation>
+      <translation>Saatavilla Olevat Liitännäiset</translation>
     </message>
     <message>
       <location line="+60"/>
       <source>Update</source>
-      <translation type="unfinished">Update</translation>
+      <translation>Päivitä</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Install</source>
-      <translation type="unfinished">Install</translation>
+      <translation>Asenna</translation>
     </message>
   </context>
   <context>
@@ -8042,12 +8042,12 @@
     <message>
       <location filename="../components/PolkitDialog.qml" line="+115"/>
       <source>Enter your password</source>
-      <translation type="unfinished">Enter your password</translation>
+      <translation>Syötä salasanasi</translation>
     </message>
     <message>
       <location line="+99"/>
       <source>Authentication Required</source>
-      <translation type="unfinished">Authentication Required</translation>
+      <translation>Tunnistautuminen Vaaditaan</translation>
     </message>
   </context>
   <context>
@@ -8055,12 +8055,12 @@
     <message>
       <location filename="../modules/bar/components/Power.qml" line="+22"/>
       <source>Power and session menu</source>
-      <translation type="unfinished">Power and session menu</translation>
+      <translation>Virta ja istunto valikko</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Opens the power, restart, and logout menu</source>
-      <translation type="unfinished">Opens the power, restart, and logout menu</translation>
+      <translation>Avaa tehon, uudelleenkäynnistyksen ja uloskirjautumisen valikon</translation>
     </message>
   </context>
   <context>
@@ -8081,82 +8081,82 @@
     <message>
       <location filename="../modules/nexus/pages/PowerPage.qml" line="+94"/>
       <source>Power</source>
-      <translation type="unfinished">Power</translation>
+      <translation>Virta</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Idle &amp; sleep</source>
-      <translation type="unfinished">Idle &amp; sleep</translation>
+      <translation>Jouten &amp; uni</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Idle suspend</source>
-      <translation type="unfinished">Idle suspend</translation>
+      <translation>Jouten keskeytys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Suspend the system after inactivity</source>
-      <translation type="unfinished">Suspend the system after inactivity</translation>
+      <translation>Keskeytä järjestelmä käyttämättömyyden jälkeen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Idle suspend timer</source>
-      <translation type="unfinished">Idle suspend timer</translation>
+      <translation>Jouten keskeyttäminen ajastin</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Suspend after %1 minute(s) of inactivity</source>
-      <translation type="unfinished">Suspend after %1 minute(s) of inactivity</translation>
+      <translation>Keskeytä %1 minuutin käyttämättömyyden jälkeen</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enable idle suspend to apply a timer</source>
-      <translation type="unfinished">Enable idle suspend to apply a timer</translation>
+      <translation>Ota käyttöön joutilas keskeytys käyttääksesi ajastinta</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Lock before sleep</source>
-      <translation type="unfinished">Lock before sleep</translation>
+      <translation>Lukitse ennen nukkumista</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Lock the session before suspending</source>
-      <translation type="unfinished">Lock the session before suspending</translation>
+      <translation>Lukitse istunto ennen keskeyttämistä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Inhibit while audio</source>
-      <translation type="unfinished">Inhibit while audio</translation>
+      <translation>Estä äänen aikana</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Prevent idle actions while audio is playing</source>
-      <translation type="unfinished">Prevent idle actions while audio is playing</translation>
+      <translation>Estä käyttämättömät toiminnot äänen toiston aikana</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Inhibit while charging</source>
-      <translation type="unfinished">Inhibit while charging</translation>
+      <translation>Estää latauksen aikana</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Prevent idle actions while charging</source>
-      <translation type="unfinished">Prevent idle actions while charging</translation>
+      <translation>Estä joutilaat toiminnot ladattaessa</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Battery warnings</source>
-      <translation type="unfinished">Battery warnings</translation>
+      <translation>Akun varoitukset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Critical battery level</source>
-      <translation type="unfinished">Critical battery level</translation>
+      <translation>Kriittinen akun taso</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Percentage at which the critical warning fires</source>
-      <translation type="unfinished">Percentage at which the critical warning fires</translation>
+      <translation>Osuus, jossa kriittiset varoituspalot</translation>
     </message>
   </context>
   <context>
@@ -8164,12 +8164,12 @@
     <message>
       <location filename="../modules/windowinfo/Preview.qml" line="+72"/>
       <source>No active client</source>
-      <translation type="unfinished">No active client</translation>
+      <translation>Ei aktiivista asiakasta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Try switching to a window</source>
-      <translation type="unfinished">Try switching to a window</translation>
+      <translation>Yritä vaihtaa ikkunaan</translation>
     </message>
   </context>
   <context>
@@ -8177,92 +8177,92 @@
     <message>
       <location filename="../modules/nexus/pages/utilities/QuickTogglesPage.qml" line="+13"/>
       <source>Wi-Fi</source>
-      <translation type="unfinished">Wi-Fi</translation>
+      <translation>Wi-Fi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Bluetooth</source>
-      <translation type="unfinished">Bluetooth</translation>
+      <translation>Bluetooth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>VPN</source>
-      <translation type="unfinished">VPN</translation>
+      <translation>VPN</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Settings</source>
-      <translation type="unfinished">Settings</translation>
+      <translation>Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Color Picker</source>
-      <translation type="unfinished">Color Picker</translation>
+      <translation>Värin Valitsin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper</source>
-      <translation type="unfinished">Wallpaper</translation>
+      <translation>Taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Bad Apple</source>
-      <translation type="unfinished">Bad Apple</translation>
+      <translation>Huono Omena</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Microphone</source>
-      <translation type="unfinished">Microphone</translation>
+      <translation>Mikrofoni</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Do Not Disturb</source>
-      <translation type="unfinished">Do Not Disturb</translation>
+      <translation>Älä Häiritse</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Game Mode</source>
-      <translation type="unfinished">Game Mode</translation>
+      <translation>Pelin Tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pause Wallpaper</source>
-      <translation type="unfinished">Pause Wallpaper</translation>
+      <translation>Keskeytä Taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Night Light</source>
-      <translation type="unfinished">Night Light</translation>
+      <translation>Yö Vaalea</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>EasyEffects</source>
-      <translation type="unfinished">EasyEffects</translation>
+      <translation>EasyEffects</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Restart Shell</source>
-      <translation type="unfinished">Restart Shell</translation>
+      <translation>Käynnistä Tulkki Uudelleen</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Quick toggles</source>
-      <translation type="unfinished">Quick toggles</translation>
+      <translation>Quick toggles</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Connectivity</source>
-      <translation type="unfinished">Connectivity</translation>
+      <translation>Yhteys</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Tools</source>
-      <translation type="unfinished">Tools</translation>
+      <translation>Työkalut</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>System</source>
-      <translation type="unfinished">System</translation>
+      <translation>Järjestelmä</translation>
     </message>
   </context>
   <context>
@@ -8270,27 +8270,27 @@
     <message>
       <location filename="../modules/utilities/cards/Record.qml" line="+61"/>
       <source>Screen Recorder</source>
-      <translation type="unfinished">Screen Recorder</translation>
+      <translation>Näytön Tallennin</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Paused</source>
-      <translation type="unfinished">Paused</translation>
+      <translation>Keskeytetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Running...</source>
-      <translation type="unfinished">Running...</translation>
+      <translation>Käynnissä...</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Ready</source>
-      <translation type="unfinished">Ready</translation>
+      <translation>Valmis</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Record</source>
-      <translation type="unfinished">Record</translation>
+      <translation>Nauhoita</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -8299,42 +8299,42 @@
       <location line="+9"/>
       <location line="+10"/>
       <source>Start</source>
-      <translation type="unfinished">Start</translation>
+      <translation>Aloita</translation>
     </message>
     <message>
       <location line="-29"/>
       <source>Record with Sound</source>
-      <translation type="unfinished">Record with Sound</translation>
+      <translation>Nauhoita äänellä</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Record with Microphone</source>
-      <translation type="unfinished">Record with Microphone</translation>
+      <translation>Nauhoita mikrofonilla</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Both Sound &amp; Microphone</source>
-      <translation type="unfinished">Both Sound &amp; Microphone</translation>
+      <translation>Sekä Ääni Ja Mikrofoni</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Record GIF</source>
-      <translation type="unfinished">Record GIF</translation>
+      <translation>Tallenna GIF</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Use Spectacle</source>
-      <translation type="unfinished">Use Spectacle</translation>
+      <translation>Käytä Spectacle</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Spectacle</source>
-      <translation type="unfinished">Spectacle</translation>
+      <translation>Spectacle</translation>
     </message>
     <message>
       <location line="+137"/>
       <source>Recording %1</source>
-      <translation type="unfinished">Recording %1</translation>
+      <translation>Tallennetaan %1</translation>
     </message>
   </context>
   <context>
@@ -8342,27 +8342,27 @@
     <message>
       <location filename="../modules/screenshot/recorder/Recorder.qml" line="+114"/>
       <source>Screenshot region</source>
-      <translation type="unfinished">Screenshot region</translation>
+      <translation>Kuvakaappauksen alue</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Screenshot</source>
-      <translation type="unfinished">Screenshot</translation>
+      <translation>Kuvakaappaus</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Record region</source>
-      <translation type="unfinished">Record region</translation>
+      <translation>Tallenna alue</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Record screen</source>
-      <translation type="unfinished">Record screen</translation>
+      <translation>Nauhoita näyttöä</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Open recordings folder</source>
-      <translation type="unfinished">Open recordings folder</translation>
+      <translation>Avaa nauhoituskansio</translation>
     </message>
   </context>
   <context>
@@ -8370,22 +8370,22 @@
     <message>
       <location filename="../modules/utilities/RecordingDeleteModal.qml" line="+170"/>
       <source>Delete recording?</source>
-      <translation type="unfinished">Delete recording?</translation>
+      <translation>Poistetaanko nauhoitus?</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Recording &apos;%1&apos; will be permanently deleted.</source>
-      <translation type="unfinished">Recording &apos;%1&apos; will be permanently deleted.</translation>
+      <translation>Tallennus &apos;%1&apos; poistetaan pysyvästi.</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Poista</translation>
     </message>
   </context>
   <context>
@@ -8393,17 +8393,17 @@
     <message>
       <location filename="../modules/utilities/cards/RecordingList.qml" line="+42"/>
       <source>Recordings</source>
-      <translation type="unfinished">Recordings</translation>
+      <translation>Tallenteet</translation>
     </message>
     <message>
       <location line="+56"/>
       <source>Recording at %1</source>
-      <translation type="unfinished">Recording at %1</translation>
+      <translation>Nauhoitetaan %1</translation>
     </message>
     <message>
       <location line="+126"/>
       <source>No recordings found</source>
-      <translation type="unfinished">No recordings found</translation>
+      <translation>Tallenteita ei löytynyt</translation>
     </message>
   </context>
   <context>
@@ -8411,22 +8411,22 @@
     <message>
       <location filename="../modules/screenshot/regionSelector/RegionSelection.qml" line="+581"/>
       <source>Full Screen Screenshot</source>
-      <translation type="unfinished">Full Screen Screenshot</translation>
+      <translation>Koko Näytön Kuvakaappaus</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Snip selected region (Enter)</source>
-      <translation type="unfinished">Snip selected region (Enter)</translation>
+      <translation>Katkaise valittu alue (Enter)</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Clear selection</source>
-      <translation type="unfinished">Clear selection</translation>
+      <translation>Tyhjennä valinta</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Close</source>
-      <translation type="unfinished">Close</translation>
+      <translation>Sulje</translation>
     </message>
   </context>
   <context>
@@ -8434,27 +8434,27 @@
     <message>
       <location filename="../modules/screenshot/regionSelector/RegionSelector.qml" line="+90"/>
       <source>Takes a screenshot of the selected region</source>
-      <translation type="unfinished">Takes a screenshot of the selected region</translation>
+      <translation>Ottaa kuvakaappauksen valitusta alueesta</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Searches the selected region</source>
-      <translation type="unfinished">Searches the selected region</translation>
+      <translation>Etsii valittua aluetta</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Recognizes text in the selected region</source>
-      <translation type="unfinished">Recognizes text in the selected region</translation>
+      <translation>Tunnistaa tekstin valitulla alueella</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Records the selected region</source>
-      <translation type="unfinished">Records the selected region</translation>
+      <translation>Tallentaa valitun alueen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Records the selected region with sound</source>
-      <translation type="unfinished">Records the selected region with sound</translation>
+      <translation>Tallentaa valitun alueen äänillä</translation>
     </message>
   </context>
   <context>
@@ -8462,27 +8462,27 @@
     <message>
       <location filename="../modules/nexus/pages/network/SavedNetworksPage.qml" line="+15"/>
       <source>Saved networks</source>
-      <translation type="unfinished">Saved networks</translation>
+      <translation>Tallennetut verkot</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>No saved networks</source>
-      <translation type="unfinished">No saved networks</translation>
+      <translation>Ei tallennettuja verkkoja</translation>
     </message>
     <message>
       <location line="+61"/>
       <source>Open</source>
-      <translation type="unfinished">Open</translation>
+      <translation>Avaa</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Unknown</source>
-      <translation type="unfinished">Unknown</translation>
+      <translation>Tuntematon</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Connected • %1</source>
-      <translation type="unfinished">Connected • %1</translation>
+      <translation>Yhdistetty • %1</translation>
     </message>
   </context>
   <context>
@@ -8490,7 +8490,7 @@
     <message>
       <location filename="../modules/nexus/navpane/SearchResults.qml" line="+149"/>
       <source>in </source>
-      <translation type="unfinished">in </translation>
+      <translation>sisään </translation>
     </message>
   </context>
   <context>
@@ -8500,157 +8500,157 @@
       <location line="+16"/>
       <location line="+108"/>
       <source>Auto</source>
-      <translation type="unfinished">Auto</translation>
+      <translation>Automaattinen</translation>
     </message>
     <message>
       <location line="-102"/>
       <source>Generic</source>
-      <translation type="unfinished">Generic</translation>
+      <translation>Generic</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>None</source>
-      <translation type="unfinished">None</translation>
+      <translation>Ei Mitään</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Services</source>
-      <translation type="unfinished">Services</translation>
+      <translation>Palvelut</translation>
     </message>
     <message>
       <location line="+26"/>
       <source>Polling</source>
-      <translation type="unfinished">Polling</translation>
+      <translation>Äänestys</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Media refresh</source>
-      <translation type="unfinished">Media refresh</translation>
+      <translation>Median päivitys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How often the media position updates (ms)</source>
-      <translation type="unfinished">How often the media position updates (ms)</translation>
+      <translation>Kuinka usein median sijaintipäivitykset (ms)</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>System stats refresh</source>
-      <translation type="unfinished">System stats refresh</translation>
+      <translation>Järjestelmän tilastojen päivitys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>CPU, memory and GPU update interval (seconds)</source>
-      <translation type="unfinished">CPU, memory and GPU update interval (seconds)</translation>
+      <translation>CPU, muisti ja GPU päivitysväli (sekuntia)</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Wi-Fi rescan</source>
-      <translation type="unfinished">Wi-Fi rescan</translation>
+      <translation>Wi-Fi-yhteyden uudelleenvalinta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How often available networks are rescanned (seconds)</source>
-      <translation type="unfinished">How often available networks are rescanned (seconds)</translation>
+      <translation>Kuinka usein käytettävissä olevat verkot on rescanned (sekuntia)</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Media &amp; lyrics</source>
-      <translation type="unfinished">Media &amp; lyrics</translation>
+      <translation>Media ja sanoitukset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Lyrics backend</source>
-      <translation type="unfinished">Lyrics backend</translation>
+      <translation>Sanoitusten taustaosa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Source used to fetch synced lyrics</source>
-      <translation type="unfinished">Source used to fetch synced lyrics</translation>
+      <translation>Synkronoitujen sanoitusten hakemiseen käytetty lähde</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Default player</source>
-      <translation type="unfinished">Default player</translation>
+      <translation>Oletusarvoinen pelaaja</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Preferred media player when several are open</source>
-      <translation type="unfinished">Preferred media player when several are open</translation>
+      <translation>Ensisijainen mediasoitin, kun useita on auki</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Input increments</source>
-      <translation type="unfinished">Input increments</translation>
+      <translation>Syötteen lisäykset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Volume step</source>
-      <translation type="unfinished">Volume step</translation>
+      <translation>Äänenvoimakkuuden vaihe</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Amount the volume changes per scroll (%)</source>
-      <translation type="unfinished">Amount the volume changes per scroll (%)</translation>
+      <translation>Määritä volyymin muutokset vierityskerralla (%)</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Brightness step</source>
-      <translation type="unfinished">Brightness step</translation>
+      <translation>Kirkkauden vaihe</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Amount the brightness changes per scroll (%)</source>
-      <translation type="unfinished">Amount the brightness changes per scroll (%)</translation>
+      <translation>Määrä kirkkauden muutokset vierityskerralla (%)</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Max volume</source>
-      <translation type="unfinished">Max volume</translation>
+      <translation>Maksimi äänenvoimakkuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Upper limit for output volume (%)</source>
-      <translation type="unfinished">Upper limit for output volume (%)</translation>
+      <translation>Tuotantomäärän yläraja (%)</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Service tuning</source>
-      <translation type="unfinished">Service tuning</translation>
+      <translation>Palvelun viritys</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Discord Rich Presence</source>
-      <translation type="unfinished">Discord Rich Presence</translation>
+      <translation>Discord Rich Presence</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Broadcast your status to Vesktop</source>
-      <translation type="unfinished">Broadcast your status to Vesktop</translation>
+      <translation>Lähetä tilasi Vesktop -palvelimelle</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Visualiser bars</source>
-      <translation type="unfinished">Visualiser bars</translation>
+      <translation>Visualisoijan palkit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Number of bars in the audio visualisers</source>
-      <translation type="unfinished">Number of bars in the audio visualisers</translation>
+      <translation>Audiovisualisoijien palkkien määrä</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>GPU</source>
-      <translation type="unfinished">GPU</translation>
+      <translation>GPU</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Monitoring: %1</source>
-      <translation type="unfinished">Monitoring: %1</translation>
+      <translation>Seuranta: %1</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Override for GPU type</source>
-      <translation type="unfinished">Override for GPU type</translation>
+      <translation>Ohita GPU tyyppi</translation>
     </message>
   </context>
   <context>
@@ -8658,76 +8658,76 @@
     <message>
       <location filename="../modules/nexus/pages/SessionPage.qml" line="+22"/>
       <source>Session</source>
-      <translation type="unfinished">Session</translation>
+      <translation>Istunto</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the session (power) menu</source>
-      <translation type="unfinished">Show the session (power) menu</translation>
+      <translation>Näytä istunnon (power) valikko</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Vim keybinds</source>
-      <translation type="unfinished">Vim keybinds</translation>
+      <translation>Vim näppäimistöt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Navigate the session menu with hjkl</source>
-      <translation type="unfinished">Navigate the session menu with hjkl</translation>
+      <translation>Siirry istuntovalikkoon hjkl</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels to drag before the menu moves</source>
-      <translation type="unfinished">Pixels to drag before the menu moves</translation>
+      <translation>Pikselit vetämällä ennen kuin valikko liikkuu</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Icons</source>
-      <translation type="unfinished">Icons</translation>
+      <translation>Kuvakkeet</translation>
     </message>
     <message>
       <location line="+5"/>
       <location line="+31"/>
       <source>Logout</source>
-      <translation type="unfinished">Logout</translation>
+      <translation>Kirjaudu Ulos</translation>
     </message>
     <message>
       <location line="-25"/>
       <location line="+31"/>
       <source>Shutdown</source>
-      <translation type="unfinished">Shutdown</translation>
+      <translation>Sammuta</translation>
     </message>
     <message>
       <location line="-25"/>
       <location line="+31"/>
       <source>Hibernate</source>
-      <translation type="unfinished">Hibernate</translation>
+      <translation>Hibernate</translation>
     </message>
     <message>
       <location line="-24"/>
       <location line="+31"/>
       <source>Reboot</source>
-      <translation type="unfinished">Reboot</translation>
+      <translation>Reboot</translation>
     </message>
     <message>
       <location line="-24"/>
       <source>Commands</source>
-      <translation type="unfinished">Commands</translation>
+      <translation>Komennot</translation>
     </message>
   </context>
   <context>
@@ -8735,37 +8735,37 @@
     <message>
       <location filename="../modules/nexus/pages/ShortcutManagerPage.qml" line="+82"/>
       <source>Shortcuts</source>
-      <translation type="unfinished">Shortcuts</translation>
+      <translation>Pikanäppäimet</translation>
     </message>
     <message>
       <location line="+40"/>
       <source>Search shortcuts</source>
-      <translation type="unfinished">Search shortcuts</translation>
+      <translation>Hae pikakuvakkeita</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Shell UI</source>
-      <translation type="unfinished">Shell UI</translation>
+      <translation>Kuoren UI</translation>
     </message>
     <message>
       <location line="+26"/>
       <source>Applications</source>
-      <translation type="unfinished">Applications</translation>
+      <translation>Sovellukset</translation>
     </message>
     <message>
       <location line="+25"/>
       <source>Workspaces</source>
-      <translation type="unfinished">Workspaces</translation>
+      <translation>Työtilat</translation>
     </message>
     <message>
       <location line="+25"/>
       <source>Window Tiling (Krohnkite)</source>
-      <translation type="unfinished">Window Tiling (Krohnkite)</translation>
+      <translation>Ikkunan Kallistus (Krohnkite)</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>No shortcuts found</source>
-      <translation type="unfinished">No shortcuts found</translation>
+      <translation>Pikakuvakkeita ei löytynyt</translation>
     </message>
   </context>
   <context>
@@ -8773,7 +8773,7 @@
     <message>
       <location filename="../modules/nexus/common/ShortcutRow.qml" line="+124"/>
       <source>Collides with: </source>
-      <translation type="unfinished">Collides with: </translation>
+      <translation>Yhteistyökumppanit: </translation>
     </message>
   </context>
   <context>
@@ -8781,362 +8781,362 @@
     <message>
       <location filename="../modules/Shortcuts.qml" line="+29"/>
       <source>Open nexus</source>
-      <translation type="unfinished">Open nexus</translation>
+      <translation>Avaa nexus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toggle launcher, dashboard and osd</source>
-      <translation type="unfinished">Toggle launcher, dashboard and osd</translation>
+      <translation>Valitse kantoraketti, dashboard ja osd</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Toggle dashboard</source>
-      <translation type="unfinished">Toggle dashboard</translation>
+      <translation>Vaihda dashboard</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Toggle overview</source>
-      <translation type="unfinished">Toggle overview</translation>
+      <translation>Vaihda yleiskatsaus</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Toggle screenshot overlay</source>
-      <translation type="unfinished">Toggle screenshot overlay</translation>
+      <translation>Näytetäänkö kuvankaappauksen peitto</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Toggle Google Lens search</source>
-      <translation type="unfinished">Toggle Google Lens search</translation>
+      <translation>Vaihda Google Lens -hakua</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Recognize text on screen</source>
-      <translation type="unfinished">Recognize text on screen</translation>
+      <translation>Tunnista teksti näytöllä</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Toggle screen recording</source>
-      <translation type="unfinished">Toggle screen recording</translation>
+      <translation>Vaihda näytön nauhoituksen tilaa</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>Toggle session menu</source>
-      <translation type="unfinished">Toggle session menu</translation>
+      <translation>Vaihda istunnon valikkoa</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Toggle launcher</source>
-      <translation type="unfinished">Toggle launcher</translation>
+      <translation>Vaihda käynnistysohjelmaa</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Interrupt launcher keybind</source>
-      <translation type="unfinished">Interrupt launcher keybind</translation>
+      <translation>Keskeytä käynnistysavaimen sidonta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toggle sidebar</source>
-      <translation type="unfinished">Toggle sidebar</translation>
+      <translation>Vaihda sivupalkkia</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Toggle AI Assistant</source>
-      <translation type="unfinished">Toggle AI Assistant</translation>
+      <translation>Vaihda Ai Avustaja</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Toggle utilities</source>
-      <translation type="unfinished">Toggle utilities</translation>
+      <translation>Vaihda apuohjelmia</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Open emoji picker</source>
-      <translation type="unfinished">Open emoji picker</translation>
+      <translation>Avaa emoji valitsin</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Open clipboard history</source>
-      <translation type="unfinished">Open clipboard history</translation>
+      <translation>Avaa leikepöydän historia</translation>
     </message>
     <message>
       <location line="+29"/>
       <source>Open window switcher</source>
-      <translation type="unfinished">Open window switcher</translation>
+      <translation>Avaa ikkunan vaihto</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Open window switcher (reverse)</source>
-      <translation type="unfinished">Open window switcher (reverse)</translation>
+      <translation>Avaa ikkunan vaihto (käänteinen)</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Open wallpaper picker</source>
-      <translation type="unfinished">Open wallpaper picker</translation>
+      <translation>Avaa taustakuvan valitsin</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Open keybinds list</source>
-      <translation type="unfinished">Open keybinds list</translation>
+      <translation>Avaa näppäimistöluettelo</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Launch Terminal</source>
-      <translation type="unfinished">Launch Terminal</translation>
+      <translation>Käynnistä Pääte</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Launch Browser</source>
-      <translation type="unfinished">Launch Browser</translation>
+      <translation>Käynnistä Selain</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Launch Editor</source>
-      <translation type="unfinished">Launch Editor</translation>
+      <translation>Käynnistä Muokkain</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Launch GitHub Desktop</source>
-      <translation type="unfinished">Launch GitHub Desktop</translation>
+      <translation>Käynnistä GitHubin Työpöytä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Launch File Manager</source>
-      <translation type="unfinished">Launch File Manager</translation>
+      <translation>Käynnistä Tiedostonhallinta</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Color Picker</source>
-      <translation type="unfinished">Color Picker</translation>
+      <translation>Värin Valitsin</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 1</source>
-      <translation type="unfinished">Switch to workspace 1</translation>
+      <translation>Vaihda työtilaan 1</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 2</source>
-      <translation type="unfinished">Switch to workspace 2</translation>
+      <translation>Vaihda työtilaan 2</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 3</source>
-      <translation type="unfinished">Switch to workspace 3</translation>
+      <translation>Vaihda työtilaan 3</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 4</source>
-      <translation type="unfinished">Switch to workspace 4</translation>
+      <translation>Vaihda työtilaan 4</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 5</source>
-      <translation type="unfinished">Switch to workspace 5</translation>
+      <translation>Vaihda työtilaan 5</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 6</source>
-      <translation type="unfinished">Switch to workspace 6</translation>
+      <translation>Vaihda työtilaan 6</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 7</source>
-      <translation type="unfinished">Switch to workspace 7</translation>
+      <translation>Vaihda työtilaan 7</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 8</source>
-      <translation type="unfinished">Switch to workspace 8</translation>
+      <translation>Vaihda työtilaan 8</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 9</source>
-      <translation type="unfinished">Switch to workspace 9</translation>
+      <translation>Vaihda työtilaan 9</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to workspace 10</source>
-      <translation type="unfinished">Switch to workspace 10</translation>
+      <translation>Vaihda työtilaan 10</translation>
     </message>
     <message>
       <location line="+90"/>
       <source>Focus the window above</source>
-      <translation type="unfinished">Focus the window above</translation>
+      <translation>Kohdista yllä oleva ikkuna</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Focus the window below</source>
-      <translation type="unfinished">Focus the window below</translation>
+      <translation>Kohdista alla olevaan ikkunaan</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Focus the window to the left</source>
-      <translation type="unfinished">Focus the window to the left</translation>
+      <translation>Kohdista ikkuna vasemmalle</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Focus the window to the right</source>
-      <translation type="unfinished">Focus the window to the right</translation>
+      <translation>Kohdista ikkuna oikealle</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Move window up</source>
-      <translation type="unfinished">Move window up</translation>
+      <translation>Siirrä ikkuna ylös</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Move window down</source>
-      <translation type="unfinished">Move window down</translation>
+      <translation>Siirrä ikkuna alaspäin</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Move window left</source>
-      <translation type="unfinished">Move window left</translation>
+      <translation>Siirrä ikkuna vasemmalle</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Move window right</source>
-      <translation type="unfinished">Move window right</translation>
+      <translation>Siirrä ikkuna oikealle</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Close current window</source>
-      <translation type="unfinished">Close current window</translation>
+      <translation>Sulje nykyinen ikkuna</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Focus next window</source>
-      <translation type="unfinished">Focus next window</translation>
+      <translation>Kohdista seuraavaan ikkunaan</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Focus previous window</source>
-      <translation type="unfinished">Focus previous window</translation>
+      <translation>Tarkenna edelliseen ikkunaan</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Set active window as Master</source>
-      <translation type="unfinished">Set active window as Master</translation>
+      <translation>Aseta aktiivinen ikkuna mestariksi</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to next layout</source>
-      <translation type="unfinished">Switch to next layout</translation>
+      <translation>Vaihda seuraavaan asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to previous layout</source>
-      <translation type="unfinished">Switch to previous layout</translation>
+      <translation>Siirry edelliseen asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to BTree layout</source>
-      <translation type="unfinished">Switch to BTree layout</translation>
+      <translation>Siirry BTree asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Monocle layout</source>
-      <translation type="unfinished">Switch to Monocle layout</translation>
+      <translation>Vaihda Monocle-asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Floating layout</source>
-      <translation type="unfinished">Switch to Floating layout</translation>
+      <translation>Vaihda kelluvaan asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Quarter layout</source>
-      <translation type="unfinished">Switch to Quarter layout</translation>
+      <translation>Vaihda vuosineljänneksen asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Spread layout</source>
-      <translation type="unfinished">Switch to Spread layout</translation>
+      <translation>Vaihda levyn asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Stacked layout</source>
-      <translation type="unfinished">Switch to Stacked layout</translation>
+      <translation>Vaihda pinottuun asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Stair layout</source>
-      <translation type="unfinished">Switch to Stair layout</translation>
+      <translation>Siirry raitajen asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Columns layout</source>
-      <translation type="unfinished">Switch to Columns layout</translation>
+      <translation>Vaihda sarakkeiden asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Three Column layout</source>
-      <translation type="unfinished">Switch to Three Column layout</translation>
+      <translation>Vaihda kolmen sarakkeen asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Spiral layout</source>
-      <translation type="unfinished">Switch to Spiral layout</translation>
+      <translation>Vaihda spiraalin asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Switch to Tile layout</source>
-      <translation type="unfinished">Switch to Tile layout</translation>
+      <translation>Vaihda laudan asetteluun</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Increase window height</source>
-      <translation type="unfinished">Increase window height</translation>
+      <translation>Lisää ikkunan korkeutta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Decrease window height</source>
-      <translation type="unfinished">Decrease window height</translation>
+      <translation>Pienennä ikkunan korkeutta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Increase window width</source>
-      <translation type="unfinished">Increase window width</translation>
+      <translation>Lisää ikkunan leveyttä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Decrease window width</source>
-      <translation type="unfinished">Decrease window width</translation>
+      <translation>Pienennä ikkunan leveyttä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Increase master area size</source>
-      <translation type="unfinished">Increase master area size</translation>
+      <translation>Suurenna perusalueen kokoa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Decrease master area size</source>
-      <translation type="unfinished">Decrease master area size</translation>
+      <translation>Pienennä pääalueen kokoa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toggle floating state</source>
-      <translation type="unfinished">Toggle floating state</translation>
+      <translation>Vaihda kelluvan tilan tilaa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toggle floating state for all</source>
-      <translation type="unfinished">Toggle floating state for all</translation>
+      <translation>Vaihda kelluvan tilan tilaa kaikille</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Rotate the window layout</source>
-      <translation type="unfinished">Rotate the window layout</translation>
+      <translation>Käännä ikkunan asettelua</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Rotate windows within a part</source>
-      <translation type="unfinished">Rotate windows within a part</translation>
+      <translation>Kierrä ikkunoita osan sisällä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Toggle dock support</source>
-      <translation type="unfinished">Toggle dock support</translation>
+      <translation>Vaihda telakan tuki</translation>
     </message>
   </context>
   <context>
@@ -9144,12 +9144,12 @@
     <message>
       <location filename="../modules/bar/components/ShowDesktop.qml" line="+20"/>
       <source>Show desktop</source>
-      <translation type="unfinished">Show desktop</translation>
+      <translation>Näytä työpöytä</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Minimize all windows to show the desktop</source>
-      <translation type="unfinished">Minimize all windows to show the desktop</translation>
+      <translation>Pienennä kaikki ikkunat näyttääksesi työpöydän</translation>
     </message>
   </context>
   <context>
@@ -9157,7 +9157,7 @@
     <message>
       <location filename="../components/filedialog/Sidebar.qml" line="+33"/>
       <source>Files</source>
-      <translation type="unfinished">Files</translation>
+      <translation>Tiedostot</translation>
     </message>
   </context>
   <context>
@@ -9165,62 +9165,62 @@
     <message>
       <location filename="../modules/nexus/pages/panels/SidebarPanel.qml" line="+15"/>
       <source>Sidebar</source>
-      <translation type="unfinished">Sidebar</translation>
+      <translation>Sidebar</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels dragged before the sidebar opens</source>
-      <translation type="unfinished">Pixels dragged before the sidebar opens</translation>
+      <translation>Pikselit vedettiin ennen sivupalkin avaamista</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Grab width</source>
-      <translation type="unfinished">Grab width</translation>
+      <translation>Grab width</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels of screen edge reserved for grabbing the sidebar</source>
-      <translation type="unfinished">Pixels of screen edge reserved for grabbing the sidebar</translation>
+      <translation>Pikselit näytön reunasta varattu tarttumiseen sivupalkin</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Sidebar Tabs</source>
-      <translation type="unfinished">Sidebar Tabs</translation>
+      <translation>Sidebar Tabs</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Show News tab</source>
-      <translation type="unfinished">Show News tab</translation>
+      <translation>Näytä uutisvälilehti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the News tab in the sidebar</source>
-      <translation type="unfinished">Show the News tab in the sidebar</translation>
+      <translation>Näytä uutiset välilehti sivupalkissa</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Show Caelestia Mode</source>
-      <translation type="unfinished">Show Caelestia Mode</translation>
+      <translation>Show Caelestia Mode</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Caelestia Mode toggle at the bottom of notifications</source>
-      <translation type="unfinished">Show the Caelestia Mode toggle at the bottom of notifications</translation>
+      <translation>Näytä Caelestia tila vaihtaa ilmoitusten alareunassa</translation>
     </message>
   </context>
   <context>
@@ -9228,32 +9228,32 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/SlideshowAndOrderPage.qml" line="+16"/>
       <source>Slideshow &amp; Order</source>
-      <translation type="unfinished">Slideshow &amp; Order</translation>
+      <translation>Slideshow &amp; Order</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Wallpaper slideshow</source>
-      <translation type="unfinished">Wallpaper slideshow</translation>
+      <translation>Taustakuvan diaesitys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Automatically change wallpaper on a timer</source>
-      <translation type="unfinished">Automatically change wallpaper on a timer</translation>
+      <translation>Vaihda taustakuva automaattisesti ajastimella</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Slideshow interval</source>
-      <translation type="unfinished">Slideshow interval</translation>
+      <translation>Diaesityksen aikaväli</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Random order</source>
-      <translation type="unfinished">Random order</translation>
+      <translation>Satunnainen järjestys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Affects slideshow and the &apos;Next Wallpaper&apos; right-click menu option</source>
-      <translation type="unfinished">Affects slideshow and the &apos;Next Wallpaper&apos; right-click menu option</translation>
+      <translation>Vaikuttaa diaesitykseen ja &apos;Seuraava taustakuva&apos; hiiren kakkospainikkeella valikko vaihtoehto</translation>
     </message>
   </context>
   <context>
@@ -9261,67 +9261,67 @@
     <message>
       <location filename="../modules/nexus/pages/audio/SoundEffectsPage.qml" line="+10"/>
       <source>Sound effects</source>
-      <translation type="unfinished">Sound effects</translation>
+      <translation>Ääni efektit</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enable sound effects</source>
-      <translation type="unfinished">Enable sound effects</translation>
+      <translation>Ota äänitehosteet käyttöön</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Sound effect volume</source>
-      <translation type="unfinished">Sound effect volume</translation>
+      <translation>Äänitehosteen äänenvoimakkuus</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Feedback</source>
-      <translation type="unfinished">Feedback</translation>
+      <translation>Palaute</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Camera click</source>
-      <translation type="unfinished">Camera click</translation>
+      <translation>Kameran klikkaus</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Volume tick</source>
-      <translation type="unfinished">Volume tick</translation>
+      <translation>Äänenvoimakkuuden rasti</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>System</source>
-      <translation type="unfinished">System</translation>
+      <translation>Järjestelmä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Charging started</source>
-      <translation type="unfinished">Charging started</translation>
+      <translation>Lataus aloitettu</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Screen lock</source>
-      <translation type="unfinished">Screen lock</translation>
+      <translation>Näytön lukitus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Screen unlock</source>
-      <translation type="unfinished">Screen unlock</translation>
+      <translation>Näytön lukituksen poisto</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Low battery</source>
-      <translation type="unfinished">Low battery</translation>
+      <translation>Akku vähissä</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Screen recording</source>
-      <translation type="unfinished">Screen recording</translation>
+      <translation>Näytön nauhoitus</translation>
     </message>
   </context>
   <context>
@@ -9329,99 +9329,99 @@
     <message>
       <location filename="../modules/lock/center/StateMessage.qml" line="+16"/>
       <source>FP ERROR: %1</source>
-      <translation type="unfinished">FP ERROR: %1</translation>
+      <translation>FP VIRHE: %1</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>FACE ERROR: %1</source>
-      <translation type="unfinished">FACE ERROR: %1</translation>
+      <translation>FACE VIRHE: %1</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>PW ERROR: %1</source>
-      <translation type="unfinished">PW ERROR: %1</translation>
+      <translation>PW VIRHE: %1</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Maximum password and fingerprint attempts reached.</source>
-      <translation type="unfinished">Maximum password and fingerprint attempts reached.</translation>
+      <translation>Suurin sallittu salasanan ja sormenjälkitunnistusten määrä.</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Maximum password attempts reached. Please use fingerprint.</source>
-      <translation type="unfinished">Maximum password attempts reached. Please use fingerprint.</translation>
+      <translation>Salasanan enimmäismäärä saavutettu. Käytä sormenjälkeä.</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Maximum password attempts reached.</source>
-      <translation type="unfinished">Maximum password attempts reached.</translation>
+      <translation>Salasanan enimmäismäärä saavutettu.</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Maximum fingerprint attempts reached. Please use password.</source>
-      <translation type="unfinished">Maximum fingerprint attempts reached. Please use password.</translation>
+      <translation>Sormenjälkitunnistukset on saavutettu. Käytä salasanaa.</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Maximum face unlock attempts reached. Please use password.</source>
-      <translation type="unfinished">Maximum face unlock attempts reached. Please use password.</translation>
+      <translation>Enimmäismäärä kasvojen lukituksen poistoyrityksiä saavutettu. Käytä salasanaa.</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Incorrect password. Please try again or use fingerprint.</source>
-      <translation type="unfinished">Incorrect password. Please try again or use fingerprint.</translation>
+      <translation>Virheellinen salasana. Yritä uudelleen tai käytä sormenjälkeä.</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Incorrect password. Please try again.</source>
-      <translation type="unfinished">Incorrect password. Please try again.</translation>
+      <translation>Virheellinen salasana. Yritä uudelleen.</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Fingerprint not recognized (%1/%2). Please try again or use password.</source>
-      <translation type="unfinished">Fingerprint not recognized (%1/%2). Please try again or use password.</translation>
+      <translation>Sormenjälkeä ei tunnistettu (%1/%2). Yritä uudelleen tai käytä salasanaa.</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Face not recognized (%1/%2). Please try again or use password.</source>
-      <translation type="unfinished">Face not recognized (%1/%2). Please try again or use password.</translation>
+      <translation>Kasvoa ei tunnistettu (%1/%2). Yritä uudelleen tai käytä salasanaa.</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Caps Lock and Num Lock are ON.
 Keyboard layout: %1</source>
-      <translation type="unfinished">Caps Lock and Num Lock are ON.
-Keyboard layout: %1</translation>
+      <translation>Caps Lock ja Num Lock ovat PÄÄLLÄ.
+Näppäimistön asettelu: %1</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Caps Lock is ON. Keyboard layout: %1</source>
-      <translation type="unfinished">Caps Lock is ON. Keyboard layout: %1</translation>
+      <translation>Caps Lock on päällä. Näppäimistön asettelu: %1</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Num Lock is ON. Keyboard layout: %1</source>
-      <translation type="unfinished">Num Lock is ON. Keyboard layout: %1</translation>
+      <translation>Num Lock on päällä. Näppäimistön asettelu: %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Keyboard layout: %1</source>
-      <translation type="unfinished">Keyboard layout: %1</translation>
+      <translation>Näppäimistön asettelu: %1</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Caps Lock and Num Lock are ON.</source>
-      <translation type="unfinished">Caps Lock and Num Lock are ON.</translation>
+      <translation>Caps Lock ja Num Lock ovat päällä.</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Caps Lock is ON.</source>
-      <translation type="unfinished">Caps Lock is ON.</translation>
+      <translation>Caps Lock on päällä.</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Num Lock is ON.</source>
-      <translation type="unfinished">Num Lock is ON.</translation>
+      <translation>Num Lock on PÄÄLLÄ</translation>
     </message>
   </context>
   <context>
@@ -9429,22 +9429,22 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/dashboard/performance/StorageCard.qml" line="+74"/>
       <source>Used</source>
-      <translation type="unfinished">Used</translation>
+      <translation>Käytetty</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Storage</source>
-      <translation type="unfinished">Storage</translation>
+      <translation>Tallennustila</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>No disks detected</source>
-      <translation type="unfinished">No disks detected</translation>
+      <translation>Levyjä ei havaittu</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>No disks</source>
-      <translation type="unfinished">No disks</translation>
+      <translation>Ei levyjä</translation>
     </message>
   </context>
   <context>
@@ -9452,82 +9452,82 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/panels/TabSwitcherPanel.qml" line="+31"/>
       <source>Window Switcher</source>
-      <translation type="unfinished">Window Switcher</translation>
+      <translation>Ikkunan Vaihtaja</translation>
     </message>
     <message>
       <location line="+38"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enable Window Switcher</source>
-      <translation type="unfinished">Enable Window Switcher</translation>
+      <translation>Ota Ikkunan Vaihtaja Käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Use Caelestia&apos;s window switcher for Alt+Tab</source>
-      <translation type="unfinished">Use Caelestia&apos;s window switcher for Alt+Tab</translation>
+      <translation>Käytä Caelestia&apos;-ikkunakytkintä Alt+Tab -ikkunaan</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Forward</source>
-      <translation type="unfinished">Forward</translation>
+      <translation>Eteenpäin</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Backward</source>
-      <translation type="unfinished">Backward</translation>
+      <translation>Taakse</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Filter by current desktop</source>
-      <translation type="unfinished">Filter by current desktop</translation>
+      <translation>Suodata nykyisen työpöydän mukaan</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Only show windows belonging to the active virtual desktop</source>
-      <translation type="unfinished">Only show windows belonging to the active virtual desktop</translation>
+      <translation>Näytä vain aktiiviseen virtuaalityöpöytään kuuluvat ikkunat</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Preview window on desktop</source>
-      <translation type="unfinished">Preview window on desktop</translation>
+      <translation>Esikatsele ikkunaa työpöydällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Highlight and show the window itself on the workspace while cycling Alt+Tab</source>
-      <translation type="unfinished">Highlight and show the window itself on the workspace while cycling Alt+Tab</translation>
+      <translation>Korosta ja näytä ikkuna itse työtilassa pyöräillessäsi Alt+- välilehteä</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Display</source>
-      <translation type="unfinished">Display</translation>
+      <translation>Näyttö</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Show minimized windows</source>
-      <translation type="unfinished">Show minimized windows</translation>
+      <translation>Näytä pienennetyt ikkunat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Include minimized windows in the window switcher</source>
-      <translation type="unfinished">Include minimized windows in the window switcher</translation>
+      <translation>Sisällytä pienennetyt ikkunat ikkunakytkimeen</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Show windows from all screens</source>
-      <translation type="unfinished">Show windows from all screens</translation>
+      <translation>Näytä ikkunat kaikista näytöistä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Include windows from all connected monitors</source>
-      <translation type="unfinished">Include windows from all connected monitors</translation>
+      <translation>Sisällytä ikkunat kaikilta liitetyiltä monitoreilta</translation>
     </message>
   </context>
   <context>
@@ -9535,92 +9535,92 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/panels/taskbar/TaskbarElements.qml" line="+12"/>
       <source>Taskbar Elements</source>
-      <translation type="unfinished">Taskbar Elements</translation>
+      <translation>Tehtäväpalkin Elementit</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Main sections</source>
-      <translation type="unfinished">Main sections</translation>
+      <translation>Tärkeimmät kohdat</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Workspaces</source>
-      <translation type="unfinished">Workspaces</translation>
+      <translation>Työtilat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Indicators, window icons</source>
-      <translation type="unfinished">Indicators, window icons</translation>
+      <translation>Indikaattorit, ikkunan kuvakkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Greeter</source>
-      <translation type="unfinished">Greeter</translation>
+      <translation>Greeter</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Greeting display, popout</source>
-      <translation type="unfinished">Greeting display, popout</translation>
+      <translation>Tervehdys näyttö, popout</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Tray</source>
-      <translation type="unfinished">Tray</translation>
+      <translation>Kaukalo</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System tray icons</source>
-      <translation type="unfinished">System tray icons</translation>
+      <translation>Järjestelmän ilmoitusalueen kuvakkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Status icons</source>
-      <translation type="unfinished">Status icons</translation>
+      <translation>Tilan kuvakkeet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Visible indicators</source>
-      <translation type="unfinished">Visible indicators</translation>
+      <translation>Näkyvät indikaattorit</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Clock</source>
-      <translation type="unfinished">Clock</translation>
+      <translation>Kello</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Date, icon, background</source>
-      <translation type="unfinished">Date, icon, background</translation>
+      <translation>Päivämäärä, kuvake, tausta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Dock</source>
-      <translation type="unfinished">Dock</translation>
+      <translation>Telakka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Positioning, recoloring</source>
-      <translation type="unfinished">Positioning, recoloring</translation>
+      <translation>Sijoittelu, uudelleenkelaus</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>GitHub</source>
-      <translation type="unfinished">GitHub</translation>
+      <translation>GitHub</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Contributions, token setup</source>
-      <translation type="unfinished">Contributions, token setup</translation>
+      <translation>Avustukset, token asetukset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Updates</source>
-      <translation type="unfinished">Updates</translation>
+      <translation>Päivitykset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Indicator visibility, automatic checks</source>
-      <translation type="unfinished">Indicator visibility, automatic checks</translation>
+      <translation>Indikaattorin näkyvyys, automaattiset tarkastukset</translation>
     </message>
   </context>
   <context>
@@ -9628,237 +9628,237 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/panels/TaskbarPanel.qml" line="+18"/>
       <source>Top</source>
-      <translation type="unfinished">Top</translation>
+      <translation>Ylhäällä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bottom</source>
-      <translation type="unfinished">Bottom</translation>
+      <translation>Alhaalla</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Left</source>
-      <translation type="unfinished">Left</translation>
+      <translation>Vasen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Right</source>
-      <translation type="unfinished">Right</translation>
+      <translation>Oikea</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Use global position</source>
-      <translation type="unfinished">Use global position</translation>
+      <translation>Käytä globaalia sijaintia</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Taskbar</source>
-      <translation type="unfinished">Taskbar</translation>
+      <translation>Tehtäväpalkki</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Behavior</source>
-      <translation type="unfinished">Behavior</translation>
+      <translation>Käyttäytyminen</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Persistent</source>
-      <translation type="unfinished">Persistent</translation>
+      <translation>Persistent</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Keep the bar visible at all times</source>
-      <translation type="unfinished">Keep the bar visible at all times</translation>
+      <translation>Pidä palkki näkyvissä kaikkina aikoina</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Dodge windows</source>
-      <translation type="unfinished">Dodge windows</translation>
+      <translation>Dodge ikkunat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Retract the bar while a window covers it, and let windows sit underneath</source>
-      <translation type="unfinished">Retract the bar while a window covers it, and let windows sit underneath</translation>
+      <translation>Pysäytä palkki kun ikkuna peittää sen, ja anna ikkunoiden istua alla</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Dodge focused window only</source>
-      <translation type="unfinished">Dodge focused window only</translation>
+      <translation>Vain koodattu ikkuna</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Ignore background windows over the bar, and dodge only what you are using</source>
-      <translation type="unfinished">Ignore background windows over the bar, and dodge only what you are using</translation>
+      <translation>Älä huomioi tausta-ikkunoita baarin yläpuolella ja väistele vain sitä, mitä käytät</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Position</source>
-      <translation type="unfinished">Position</translation>
+      <translation>Sijainti</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Screen edge to place the bar on</source>
-      <translation type="unfinished">Screen edge to place the bar on</translation>
+      <translation>Ruudun reuna laittaaksesi palkin päälle</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reveal the bar when the cursor reaches the screen edge</source>
-      <translation type="unfinished">Reveal the bar when the cursor reaches the screen edge</translation>
+      <translation>Palkki paljastetaan, kun kohdistin saavuttaa näytön reunan</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels dragged before the bar reveals</source>
-      <translation type="unfinished">Pixels dragged before the bar reveals</translation>
+      <translation>Pikselit vedettiin ennen kuin baari paljastaa</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Per-monitor position</source>
-      <translation type="unfinished">Per-monitor position</translation>
+      <translation>Näytön sijainti</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Overridden for this monitor</source>
-      <translation type="unfinished">Overridden for this monitor</translation>
+      <translation>Ohitettu tälle näytölle</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Using global position</source>
-      <translation type="unfinished">Using global position</translation>
+      <translation>Maailmanlaajuisen aseman käyttö</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Scaling</source>
-      <translation type="unfinished">Scaling</translation>
+      <translation>Skaalaus</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Bar scale</source>
-      <translation type="unfinished">Bar scale</translation>
+      <translation>Palkin skaala</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scales taskbar thickness and component sizing</source>
-      <translation type="unfinished">Scales taskbar thickness and component sizing</translation>
+      <translation>Mittavaa'an tehtäväpalkin paksuus ja komponentin mitoitus</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Preview scale</source>
-      <translation type="unfinished">Preview scale</translation>
+      <translation>Esikatsele skaalaa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scales taskbar hover previews</source>
-      <translation type="unfinished">Scales taskbar hover previews</translation>
+      <translation>Mittakaavan tehtäväpalkin korostimen esikatselut</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Live window previews</source>
-      <translation type="unfinished">Live window previews</translation>
+      <translation>Live window esikatselut</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Live thumbnails in hover/overview/alt-tab. Disable if screen sharing or camera in other apps (e.g. Vesktop) freezes</source>
-      <translation type="unfinished">Live thumbnails in hover/overview/alt-tab. Disable if screen sharing or camera in other apps (e.g. Vesktop) freezes</translation>
+      <translation>Live-pikkukuvat leijuessa/yleiskatsauksessa/alt-välilehdessä. Poista käytöstä, jos näytön jakaminen tai kamera muissa sovelluksissa (esim. Vesktop) jäätyy</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Scale with bar size</source>
-      <translation type="unfinished">Scale with bar size</translation>
+      <translation>Skaalaa palkin koon mukaan</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Multiply the preview scale with the bar scale</source>
-      <translation type="unfinished">Multiply the preview scale with the bar scale</translation>
+      <translation>Kerrotaan esikatselun skaalaus palkin skaalauksella</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Font scaling offset</source>
-      <translation type="unfinished">Font scaling offset</translation>
+      <translation>Kirjasimen skaalauksen siirtymä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scales the text size across taskbar popouts</source>
-      <translation type="unfinished">Scales the text size across taskbar popouts</translation>
+      <translation>Muuta tekstin kokoa tehtäväpalkin ponnahdusikkunoiden läpi</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Per-element scaling offsets</source>
-      <translation type="unfinished">Per-element scaling offsets</translation>
+      <translation>Per-elementin skaalauksen siirtymät</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Customize scale and font for each popout type</source>
-      <translation type="unfinished">Customize scale and font for each popout type</translation>
+      <translation>Muokkaa skaalaa ja kirjasinta jokaiselle ponnahdusikkunalle</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Components</source>
-      <translation type="unfinished">Components</translation>
+      <translation>Komponentit</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Toggle &amp; Rearrange</source>
-      <translation type="unfinished">Toggle &amp; Rearrange</translation>
+      <translation>Vaihda &amp; Järjestä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add, remove or reorder components</source>
-      <translation type="unfinished">Add, remove or reorder components</translation>
+      <translation>Lisää, poista tai järjestä osia uudelleen</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Elements &amp; Modules</source>
-      <translation type="unfinished">Elements &amp; Modules</translation>
+      <translation>Osat Ja Moduulit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Workspaces, tray, status icons, clock, dock and more</source>
-      <translation type="unfinished">Workspaces, tray, status icons, clock, dock and more</translation>
+      <translation>Työtilat, lokero, tila kuvakkeet, kello, telakka ja paljon muuta</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Scroll actions</source>
-      <translation type="unfinished">Scroll actions</translation>
+      <translation>Vieritä toimintoja</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Workspaces</source>
-      <translation type="unfinished">Workspaces</translation>
+      <translation>Työtilat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scroll over the workspace indicator to switch workspaces</source>
-      <translation type="unfinished">Scroll over the workspace indicator to switch workspaces</translation>
+      <translation>Vieritä työtilan osoittimen päälle työtilojen vaihtamiseksi</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Volume</source>
-      <translation type="unfinished">Volume</translation>
+      <translation>Tilavuus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scroll on the top half of the bar to adjust volume</source>
-      <translation type="unfinished">Scroll on the top half of the bar to adjust volume</translation>
+      <translation>Vieritä palkin yläpuolella olevaa osaa säätääksesi äänenvoimakkuutta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Brightness</source>
-      <translation type="unfinished">Brightness</translation>
+      <translation>Kirkkaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Scroll on the bottom half of the bar to adjust brightness</source>
-      <translation type="unfinished">Scroll on the bottom half of the bar to adjust brightness</translation>
+      <translation>Vieritä palkin alareunassa olevaa osaa kirkkauden säätämiseksi</translation>
     </message>
   </context>
   <context>
@@ -9866,97 +9866,97 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/services/ToastEventsPage.qml" line="+9"/>
       <source>Toast events</source>
-      <translation type="unfinished">Toast events</translation>
+      <translation>Toast-tapahtumat</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>System</source>
-      <translation type="unfinished">System</translation>
+      <translation>Järjestelmä</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Charging changes</source>
-      <translation type="unfinished">Charging changes</translation>
+      <translation>Ladataan muutoksia</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Game mode changes</source>
-      <translation type="unfinished">Game mode changes</translation>
+      <translation>Pelitilan muutokset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Night light changes</source>
-      <translation type="unfinished">Night light changes</translation>
+      <translation>Yövalon muutokset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Configuration loaded</source>
-      <translation type="unfinished">Configuration loaded</translation>
+      <translation>Asetukset ladattu</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Audio</source>
-      <translation type="unfinished">Audio</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Audio output changes</source>
-      <translation type="unfinished">Audio output changes</translation>
+      <translation>Äänen ulostulon muutokset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Audio input changes</source>
-      <translation type="unfinished">Audio input changes</translation>
+      <translation>Äänen syötön muutokset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Now playing</source>
-      <translation type="unfinished">Now playing</translation>
+      <translation>Nyt soi</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Caps lock changes</source>
-      <translation type="unfinished">Caps lock changes</translation>
+      <translation>Caps lock -muutokset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Num lock changes</source>
-      <translation type="unfinished">Num lock changes</translation>
+      <translation>Num lock -muutokset</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Keyboard layout changes</source>
-      <translation type="unfinished">Keyboard layout changes</translation>
+      <translation>Näppäimistön asettelun muutokset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Keyboard layout limit</source>
-      <translation type="unfinished">Keyboard layout limit</translation>
+      <translation>Näppäimistön asettelun raja</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Other</source>
-      <translation type="unfinished">Other</translation>
+      <translation>Muu</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Do not disturb changes</source>
-      <translation type="unfinished">Do not disturb changes</translation>
+      <translation>Älä häiritse muutoksia</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>VPN changes</source>
-      <translation type="unfinished">VPN changes</translation>
+      <translation>VPN muutokset</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Clipboard changes</source>
-      <translation type="unfinished">Clipboard changes</translation>
+      <translation>Leikepöydän muutokset</translation>
     </message>
   </context>
   <context>
@@ -9964,72 +9964,72 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/services/ToastPreferencesPage.qml" line="+13"/>
       <source>Off</source>
-      <translation type="unfinished">Off</translation>
+      <translation>Pois</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Important</source>
-      <translation type="unfinished">Important</translation>
+      <translation>Tärkeä</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>On</source>
-      <translation type="unfinished">On</translation>
+      <translation>Päällä</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Toasts</source>
-      <translation type="unfinished">Toasts</translation>
+      <translation>Paahtimet</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Appearance</source>
-      <translation type="unfinished">Appearance</translation>
+      <translation>Ulkoasu</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Show in fullscreen</source>
-      <translation type="unfinished">Show in fullscreen</translation>
+      <translation>Näytä kokoruututilassa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Allow toasts over fullscreen apps</source>
-      <translation type="unfinished">Allow toasts over fullscreen apps</translation>
+      <translation>Salli paahtoleivät koko näytön sovellusten päällä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Visible toasts</source>
-      <translation type="unfinished">Visible toasts</translation>
+      <translation>Näkyvät paahtoleivät</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Maximum number shown at once</source>
-      <translation type="unfinished">Maximum number shown at once</translation>
+      <translation>Enimmäismäärä näytetään kerralla</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Transparency</source>
-      <translation type="unfinished">Transparency</translation>
+      <translation>Läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Apply transparency and blur</source>
-      <translation type="unfinished">Apply transparency and blur</translation>
+      <translation>Käytä läpinäkyvyyttä ja sumeutta</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Base transparency</source>
-      <translation type="unfinished">Base transparency</translation>
+      <translation>Perus läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Sound</source>
-      <translation type="unfinished">Sound</translation>
+      <translation>Ääni</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Notification volume</source>
-      <translation type="unfinished">Notification volume</translation>
+      <translation>Ilmoituksen äänenvoimakkuus</translation>
     </message>
   </context>
   <context>
@@ -10037,7 +10037,7 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/utilities/cards/Toggles.qml" line="+97"/>
       <source>Quick Toggles</source>
-      <translation type="unfinished">Quick Toggles</translation>
+      <translation>Quick Toggles</translation>
     </message>
   </context>
   <context>
@@ -10045,12 +10045,12 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/bar/components/TrayItem.qml" line="+46"/>
       <source>Left-click activates, right-click opens the menu, middle-click runs the secondary action.</source>
-      <translation type="unfinished">Left-click activates, right-click opens the menu, middle-click runs the secondary action.</translation>
+      <translation>Vasenpainike aktivoi, hiiren kakkospainikkeella avataan valikko, keskinapsautus suorittaa toissijaisen toiminnon.</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Left-click activates, middle- or right-click runs the secondary action.</source>
-      <translation type="unfinished">Left-click activates, middle- or right-click runs the secondary action.</translation>
+      <translation>Vasenpainike aktivoi, keski- tai hiiren kakkospainikkeella toimii toissijainen toiminto.</translation>
     </message>
   </context>
   <context>
@@ -10058,7 +10058,7 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/bar/popouts/TrayMenu.qml" line="+331"/>
       <source>Back</source>
-      <translation type="unfinished">Back</translation>
+      <translation>Takaisin</translation>
     </message>
   </context>
   <context>
@@ -10067,145 +10067,145 @@ Keyboard layout: %1</translation>
       <location filename="../services/Units.qml" line="+21"/>
       <source>%1°</source>
       <comment>temperature</comment>
-      <translation type="unfinished">%1°</translation>
+      <translation>%1°</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>%1°F</source>
       <comment>temperature</comment>
-      <translation type="unfinished">%1°F</translation>
+      <translation>%1°F</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>%1 K</source>
       <comment>temperature</comment>
-      <translation type="unfinished">%1 K</translation>
+      <translation>%1 K</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1°C</source>
       <comment>temperature</comment>
-      <translation type="unfinished">%1°C</translation>
+      <translation>%1°C</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>%1 B</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 B</translation>
+      <translation>%1 B</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 KB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 KB</translation>
+      <translation>%1 Kt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 MB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 MB</translation>
+      <translation>%1 Mt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 GB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 GB</translation>
+      <translation>%1 Gt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 TB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 TB</translation>
+      <translation>%1 Tt</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 KiB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 KiB</translation>
+      <translation>%1 KiB</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 MiB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 MiB</translation>
+      <translation>%1 MiB</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 GiB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 GiB</translation>
+      <translation>%1 GiB</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 TiB</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 TiB</translation>
+      <translation>%1 TiB</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 B/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 B/s</translation>
+      <translation>%1 B/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 KB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 KB/s</translation>
+      <translation>%1 KB/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 MB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 MB/s</translation>
+      <translation>%1 MB/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 GB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 GB/s</translation>
+      <translation>%1 Gt/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 TB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 TB/s</translation>
+      <translation>%1 Tt/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 KiB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 KiB/s</translation>
+      <translation>%1 KiB/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 MiB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 MiB/s</translation>
+      <translation>%1 Mib/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 GiB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 GiB/s</translation>
+      <translation>%1 GiB/s</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 TiB/s</source>
       <comment>data unit</comment>
-      <translation type="unfinished">%1 TiB/s</translation>
+      <translation>%1 TiB/s</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>%1 %2</source>
       <comment>value and data unit</comment>
-      <translation type="unfinished">%1 %2</translation>
+      <translation>%1 %2</translation>
     </message>
     <message>
       <location line="+36"/>
       <source>%1 / %2</source>
       <comment>used / total amount</comment>
-      <translation type="unfinished">%1 / %2</translation>
+      <translation>%1 / %2</translation>
     </message>
   </context>
   <context>
@@ -10213,64 +10213,64 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../services/UpdateChecker.qml" line="+375"/>
       <source>Done!</source>
-      <translation type="unfinished">Done!</translation>
+      <translation>Valmis!</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Preparing shell build...</source>
-      <translation type="unfinished">Preparing shell build...</translation>
+      <translation>Valmistellaan tulkin rakentamista...</translation>
     </message>
     <message>
       <location line="+31"/>
       <source>Starting…</source>
-      <translation type="unfinished">Starting…</translation>
+      <translation>Aloitetaan…</translation>
     </message>
     <message>
       <location line="+15"/>
       <location line="+397"/>
       <source>Canceled</source>
-      <translation type="unfinished">Canceled</translation>
+      <translation>Peruttu</translation>
     </message>
     <message>
       <location line="-310"/>
       <location line="+22"/>
       <source>Release</source>
-      <translation type="unfinished">Release</translation>
+      <translation>Julkaisu</translation>
     </message>
     <message>
       <location line="-20"/>
       <source>GitHub release</source>
-      <translation type="unfinished">GitHub release</translation>
+      <translation>GitHub julkaisu</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Tag</source>
-      <translation type="unfinished">Tag</translation>
+      <translation>Tunniste</translation>
     </message>
     <message>
       <location line="+290"/>
       <source>Update Successful</source>
-      <translation type="unfinished">Update Successful</translation>
+      <translation>Päivitys Onnistui</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>The update is complete. Please log out to apply changes.</source>
-      <translation type="unfinished">The update is complete. Please log out to apply changes.</translation>
+      <translation>Päivitys on valmis. Kirjaudu ulos ottaaksesi muutokset käyttöön.</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Update failed (exit code %1)</source>
-      <translation type="unfinished">Update failed (exit code %1)</translation>
+      <translation>Päivitys epäonnistui (poistu koodi %1)</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Update Failed</source>
-      <translation type="unfinished">Update Failed</translation>
+      <translation>Päivitys Epäonnistui</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>The update script returned error code %1</source>
-      <translation type="unfinished">The update script returned error code %1</translation>
+      <translation>Päivitysskripti palautti virhekoodin %1</translation>
     </message>
   </context>
   <context>
@@ -10278,12 +10278,12 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/bar/components/UpdateIndicator.qml" line="+49"/>
       <source>Caelestia updates</source>
-      <translation type="unfinished">Caelestia updates</translation>
+      <translation>Caelestia updates</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Left-click to open the Updates page. Right-click to check for updates</source>
-      <translation type="unfinished">Left-click to open the Updates page. Right-click to check for updates</translation>
+      <translation>Klikkaa vasemmalla painikkeella avataksesi päivitysten sivun. Napsauta hiiren kakkospainikkeella tarkistaaksesi päivitykset</translation>
     </message>
   </context>
   <context>
@@ -10291,62 +10291,62 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/common/UpdateTimeline.qml" line="+35"/>
       <source>feat</source>
-      <translation type="unfinished">feat</translation>
+      <translation>tappio</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>fix</source>
-      <translation type="unfinished">fix</translation>
+      <translation>korjaa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>perf</source>
-      <translation type="unfinished">perf</translation>
+      <translation>perf</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>refactor</source>
-      <translation type="unfinished">refactor</translation>
+      <translation>uusintakerroin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>style</source>
-      <translation type="unfinished">style</translation>
+      <translation>tyyli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>docs</source>
-      <translation type="unfinished">docs</translation>
+      <translation>docs</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>test</source>
-      <translation type="unfinished">test</translation>
+      <translation>testi</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>build</source>
-      <translation type="unfinished">build</translation>
+      <translation>koosta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>ci</source>
-      <translation type="unfinished">ci</translation>
+      <translation>ci</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>chore</source>
-      <translation type="unfinished">chore</translation>
+      <translation>urakka</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>revert</source>
-      <translation type="unfinished">revert</translation>
+      <translation>peruuta</translation>
     </message>
     <message>
       <location line="+260"/>
       <source>merge</source>
-      <translation type="unfinished">merge</translation>
+      <translation>yhdistä</translation>
     </message>
   </context>
   <context>
@@ -10354,73 +10354,73 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/bar/popouts/Updates.qml" line="+35"/>
       <source>Updating…</source>
-      <translation type="unfinished">Updating…</translation>
+      <translation>Päivitetään…</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Checking for updates…</source>
-      <translation type="unfinished">Checking for updates…</translation>
+      <translation>Tarkistetaan päivityksiä…</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>New version available on %1</source>
-      <translation type="unfinished">New version available on %1</translation>
+      <translation>Uusi versio saatavilla %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 new commits on %2 branch</source>
-      <translation type="unfinished">%1 new commits on %2 branch</translation>
+      <translation>%1 uutta commitit %2 haarassa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>System is up to date</source>
-      <translation type="unfinished">System is up to date</translation>
+      <translation>Järjestelmä on ajan tasalla</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>%1m %2s</source>
-      <translation type="unfinished">%1m %2s</translation>
+      <translation>%1m %2s</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>%1s</source>
-      <translation type="unfinished">%1s</translation>
+      <translation>%1s</translation>
     </message>
     <message>
       <location line="+69"/>
       <location line="+80"/>
       <source>Checking…</source>
-      <translation type="unfinished">Checking…</translation>
+      <translation>Tarkistetaan…</translation>
     </message>
     <message>
       <location line="-78"/>
       <source>Last check: not yet</source>
-      <translation type="unfinished">Last check: not yet</translation>
+      <translation>Viimeisin tarkistus: ei vielä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Last check %1 ago</source>
-      <translation type="unfinished">Last check %1 ago</translation>
+      <translation>Viimeisin tarkistus %1 sitten</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Next check in %1</source>
-      <translation type="unfinished">Next check in %1</translation>
+      <translation>Seuraava tarkistus %1</translation>
     </message>
     <message>
       <location line="+57"/>
       <source>Check for updates</source>
-      <translation type="unfinished">Check for updates</translation>
+      <translation>Tarkista päivitykset</translation>
     </message>
     <message>
       <location line="+41"/>
       <source>Open Updates</source>
-      <translation type="unfinished">Open Updates</translation>
+      <translation>Avoimet Päivitykset</translation>
     </message>
     <message>
       <location line="+38"/>
       <source>Hide from bar</source>
-      <translation type="unfinished">Hide from bar</translation>
+      <translation>Piilota palkista</translation>
     </message>
   </context>
   <context>
@@ -10428,52 +10428,52 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/UpdatesPage.qml" line="+162"/>
       <source>Updates</source>
-      <translation type="unfinished">Updates</translation>
+      <translation>Päivitykset</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>Help</source>
-      <translation type="unfinished">Help</translation>
+      <translation>Ohje</translation>
     </message>
     <message>
       <location line="+99"/>
       <source>Update complete - log out to apply</source>
-      <translation type="unfinished">Update complete - log out to apply</translation>
+      <translation>Päivitys valmis - kirjaudu ulos käyttöön</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Updating…</source>
-      <translation type="unfinished">Updating…</translation>
+      <translation>Päivitetään…</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Restore to %1?</source>
-      <translation type="unfinished">Restore to %1?</translation>
+      <translation>Palauta %1?</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reinstall %1?</source>
-      <translation type="unfinished">Reinstall %1?</translation>
+      <translation>Reinstall %1?</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Install %1?</source>
-      <translation type="unfinished">Install %1?</translation>
+      <translation>Asenna %1?</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>New version available on %1</source>
-      <translation type="unfinished">New version available on %1</translation>
+      <translation>Uusi versio saatavilla %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>%1 new commits on %2</source>
-      <translation type="unfinished">%1 new commits on %2</translation>
+      <translation>%1 uutta commitia %2</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Installed version unknown</source>
-      <translation type="unfinished">Installed version unknown</translation>
+      <translation>Asennettu versio tuntematon</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -10483,152 +10483,152 @@ Keyboard layout: %1</translation>
     <message>
       <location line="+8"/>
       <source>Installed: %1</source>
-      <translation type="unfinished">Installed: %1</translation>
+      <translation>Asennettu: %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Channel: %1</source>
-      <translation type="unfinished">Channel: %1</translation>
+      <translation>Kanava: %1</translation>
     </message>
     <message>
       <location line="+26"/>
       <source>Log Out</source>
-      <translation type="unfinished">Log Out</translation>
+      <translation>Kirjaudu Ulos</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Restore</source>
-      <translation type="unfinished">Restore</translation>
+      <translation>Palauta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reinstall</source>
-      <translation type="unfinished">Reinstall</translation>
+      <translation>Uudelleenasenna</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Install %1</source>
-      <translation type="unfinished">Install %1</translation>
+      <translation>Asenna %1</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Install Update</source>
-      <translation type="unfinished">Install Update</translation>
+      <translation>Asenna Päivitys</translation>
     </message>
     <message>
       <location line="+44"/>
       <source>Stop</source>
-      <translation type="unfinished">Stop</translation>
+      <translation>Pysäytä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Checking…</source>
-      <translation type="unfinished">Checking…</translation>
+      <translation>Tarkistetaan…</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Check</source>
-      <translation type="unfinished">Check</translation>
+      <translation>Tarkista</translation>
     </message>
     <message>
       <location line="+35"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Update channel</source>
-      <translation type="unfinished">Update channel</translation>
+      <translation>Päivitä kanava</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Stable releases</source>
-      <translation type="unfinished">Stable releases</translation>
+      <translation>Vakaa julkaisut</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Development builds - may be unstable</source>
-      <translation type="unfinished">Development builds - may be unstable</translation>
+      <translation>Kehitysrakenteet - voi olla epävakaa</translation>
     </message>
     <message>
       <location line="+14"/>
       <source>Show Update Indicator</source>
-      <translation type="unfinished">Show Update Indicator</translation>
+      <translation>Näytä Päivitysindikaattori</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show a notification icon in the taskbar when updates are available</source>
-      <translation type="unfinished">Show a notification icon in the taskbar when updates are available</translation>
+      <translation>Näytä ilmoituskuvake tehtäväpalkissa, kun päivitykset ovat käytettävissä</translation>
     </message>
     <message>
       <location line="+67"/>
       <source>Customize Installation</source>
-      <translation type="unfinished">Customize Installation</translation>
+      <translation>Muokkaa Asennusta</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Open Backup Folder</source>
-      <translation type="unfinished">Open Backup Folder</translation>
+      <translation>Avaa Varmuuskopiokansio</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>View your previously backed-up configuration files</source>
-      <translation type="unfinished">View your previously backed-up configuration files</translation>
+      <translation>Näytä aiemmin varmuuskopioidut asetustiedostot</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Deploy Configurations</source>
-      <translation type="unfinished">Deploy Configurations</translation>
+      <translation>Julkaise Konfiguraatiot</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Update your custom dotfiles in ~/.config</source>
-      <translation type="unfinished">Update your custom dotfiles in ~/.config</translation>
+      <translation>Päivitä mukautetut pistetiedostot ~/.config</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Build Shell UI</source>
-      <translation type="unfinished">Build Shell UI</translation>
+      <translation>Rakenna Shell UI</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Compile and install Quickshell UI updates</source>
-      <translation type="unfinished">Compile and install Quickshell UI updates</translation>
+      <translation>Käännä ja asenna Quickshell UI päivityksiä</translation>
     </message>
     <message>
       <location line="+33"/>
       <source>Switching to %1…</source>
-      <translation type="unfinished">Switching to %1…</translation>
+      <translation>Vaihdetaan %1…</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Version History</source>
-      <translation type="unfinished">Version History</translation>
+      <translation>Version Historia</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Commit History</source>
-      <translation type="unfinished">Commit History</translation>
+      <translation>Commitin Historia</translation>
     </message>
     <message>
       <location line="+62"/>
       <source>Loading…</source>
-      <translation type="unfinished">Loading…</translation>
+      <translation>Ladataan…</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Load 10 More</source>
-      <translation type="unfinished">Load 10 More</translation>
+      <translation>Lataa 10 Lisää</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Update Log</source>
-      <translation type="unfinished">Update Log</translation>
+      <translation>Päivitä Loki</translation>
     </message>
   </context>
   <context>
@@ -10636,67 +10636,67 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/UtilitiesPage.qml" line="+11"/>
       <source>Utilities</source>
-      <translation type="unfinished">Utilities</translation>
+      <translation>Työkalut</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Quick controls</source>
-      <translation type="unfinished">Quick controls</translation>
+      <translation>Nopea ohjaus</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>On-screen sliders</source>
-      <translation type="unfinished">On-screen sliders</translation>
+      <translation>Näytön liukusäätimet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Volume, microphone, brightness, and edge triggers</source>
-      <translation type="unfinished">Volume, microphone, brightness, and edge triggers</translation>
+      <translation>Äänenvoimakkuus, mikrofoni, kirkkaus ja reunan laukaisimet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Clipboard</source>
-      <translation type="unfinished">Clipboard</translation>
+      <translation>Leikepöytä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>History size</source>
-      <translation type="unfinished">History size</translation>
+      <translation>Historian koko</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Utilities panel</source>
-      <translation type="unfinished">Utilities panel</translation>
+      <translation>Työkalut paneeli</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the cards shown in the panel</source>
-      <translation type="unfinished">Choose the cards shown in the panel</translation>
+      <translation>Valitse kortit, jotka näytetään paneelissa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Quick toggles</source>
-      <translation type="unfinished">Quick toggles</translation>
+      <translation>Quick toggles</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Choose the controls shown in Quick Toggles</source>
-      <translation type="unfinished">Choose the controls shown in Quick Toggles</translation>
+      <translation>Valitse Quick Togglesissa näytetyt hallintalaitteet</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Performance</source>
-      <translation type="unfinished">Performance</translation>
+      <translation>Suorituskyky</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Game mode</source>
-      <translation type="unfinished">Game mode</translation>
+      <translation>Pelin tila</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Auto-enable rules and performance overrides</source>
-      <translation type="unfinished">Auto-enable rules and performance overrides</translation>
+      <translation>Ota käyttöön säännöt ja suorituskyky automaattisesti</translation>
     </message>
   </context>
   <context>
@@ -10704,57 +10704,57 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/panels/UtilitiesPanel.qml" line="+15"/>
       <source>Quick toggle</source>
-      <translation type="unfinished">Quick toggle</translation>
+      <translation>Nopea vaihto</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>General</source>
-      <translation type="unfinished">General</translation>
+      <translation>Yleiset</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Enabled</source>
-      <translation type="unfinished">Enabled</translation>
+      <translation>Käytössä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Show on hover</source>
-      <translation type="unfinished">Show on hover</translation>
+      <translation>Näytä hiiren päällä</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Reveal when the cursor reaches the screen edge</source>
-      <translation type="unfinished">Reveal when the cursor reaches the screen edge</translation>
+      <translation>Paljasta kun kohdistin saavuttaa näytön reunan</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Hover trigger depth</source>
-      <translation type="unfinished">Hover trigger depth</translation>
+      <translation>Hover trigger depth</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Distance in from the screen edge that opens the quick toggles</source>
-      <translation type="unfinished">Distance in from the screen edge that opens the quick toggles</translation>
+      <translation>Etäisyys näytön reunasta, joka avaa nopeat kytkimet</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Hover trigger width</source>
-      <translation type="unfinished">Hover trigger width</translation>
+      <translation>Hover trigger width</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How much of that edge opens the quick toggles, as a percentage of their width</source>
-      <translation type="unfinished">How much of that edge opens the quick toggles, as a percentage of their width</translation>
+      <translation>Kuinka paljon tuo reuna avaa nopeat toggles, kuten prosenttiosuus niiden leveys</translation>
     </message>
     <message>
       <location line="+12"/>
       <source>Drag threshold</source>
-      <translation type="unfinished">Drag threshold</translation>
+      <translation>Vedon kynnys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Pixels dragged before the quick toggle opens</source>
-      <translation type="unfinished">Pixels dragged before the quick toggle opens</translation>
+      <translation>Pikselit vedettiin ennen kuin pika-asetus avautuu</translation>
     </message>
   </context>
   <context>
@@ -10762,52 +10762,52 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/utilities/UtilitiesPanelPage.qml" line="+9"/>
       <source>Utilities panel</source>
-      <translation type="unfinished">Utilities panel</translation>
+      <translation>Työkalut paneeli</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Visible cards</source>
-      <translation type="unfinished">Visible cards</translation>
+      <translation>Näkyvät kortit</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Keep Awake</source>
-      <translation type="unfinished">Keep Awake</translation>
+      <translation>Pidä Herätys</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Keep Awake card</source>
-      <translation type="unfinished">Show the Keep Awake card</translation>
+      <translation>Näytä Säilytä Awake kortti</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Screen Recorder</source>
-      <translation type="unfinished">Screen Recorder</translation>
+      <translation>Näytön Tallennin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Screen Recorder card</source>
-      <translation type="unfinished">Show the Screen Recorder card</translation>
+      <translation>Näytä näytön tallennus kortti</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>GIF Recorder</source>
-      <translation type="unfinished">GIF Recorder</translation>
+      <translation>GIF-tallennin</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Record GIF option in the recorder menu</source>
-      <translation type="unfinished">Show the Record GIF option in the recorder menu</translation>
+      <translation>Näytä Record GIF -asetus nauhoitusvalikossa</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Quick Toggles</source>
-      <translation type="unfinished">Quick Toggles</translation>
+      <translation>Quick Toggles</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Show the Quick Toggles card</source>
-      <translation type="unfinished">Show the Quick Toggles card</translation>
+      <translation>Näytä pikakytkimen kortti</translation>
     </message>
   </context>
   <context>
@@ -10815,59 +10815,59 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../services/VPN.qml" line="+273"/>
       <source>VPN connection failed</source>
-      <translation type="unfinished">VPN connection failed</translation>
+      <translation>VPN-yhteys epäonnistui</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>VPN disconnection failed</source>
-      <translation type="unfinished">VPN disconnection failed</translation>
+      <translation>VPN-yhteyden katkaisu epäonnistui</translation>
     </message>
     <message>
       <location line="+241"/>
       <source>VPN connected</source>
-      <translation type="unfinished">VPN connected</translation>
+      <translation>VPN yhdistetty</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Connected to %1</source>
-      <translation type="unfinished">Connected to %1</translation>
+      <translation>Yhdistetty kohteeseen %1</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>VPN disconnected</source>
-      <translation type="unfinished">VPN disconnected</translation>
+      <translation>VPN-yhteys katkaistu</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Disconnected from %1</source>
-      <translation type="unfinished">Disconnected from %1</translation>
+      <translation>Yhteys laitteeseen %1 katkaistu</translation>
     </message>
     <message>
       <location line="+4"/>
       <source>VPN authentication required</source>
-      <translation type="unfinished">VPN authentication required</translation>
+      <translation>VPN todennus vaaditaan</translation>
     </message>
     <message>
       <location line="+0"/>
       <location line="+5"/>
       <source>%1: %2</source>
-      <translation type="unfinished">%1: %2</translation>
+      <translation>%1: %2</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>VPN error</source>
-      <translation type="unfinished">VPN error</translation>
+      <translation>VPN virhe</translation>
     </message>
     <message>
       <location line="+225"/>
       <location line="+69"/>
       <source>Could not start %1. Is it installed?</source>
-      <translation type="unfinished">Could not start %1. Is it installed?</translation>
+      <translation>%1ei voitu käynnistää. Onko se asennettu?</translation>
     </message>
     <message>
       <location line="-55"/>
       <source>Could not connect to %1</source>
-      <translation type="unfinished">Could not connect to %1</translation>
+      <translation>%1 ei voitu yhdistää</translation>
     </message>
   </context>
   <context>
@@ -10875,37 +10875,37 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/VideoWallpapersPage.qml" line="+17"/>
       <source>Video Wallpapers</source>
-      <translation type="unfinished">Video Wallpapers</translation>
+      <translation>Videon Taustakuvat</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Pause video wallpapers</source>
-      <translation type="unfinished">Pause video wallpapers</translation>
+      <translation>Keskeytä videon taustakuvat</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Enable video audio</source>
-      <translation type="unfinished">Enable video audio</translation>
+      <translation>Ota videon ääni käyttöön</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Pause video on fullscreen</source>
-      <translation type="unfinished">Pause video on fullscreen</translation>
+      <translation>Keskeytä video koko näytöllä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Pause video on tiled windows</source>
-      <translation type="unfinished">Pause video on tiled windows</translation>
+      <translation>Keskeytä video laatoitetuista ikkunoista</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Pause video on all displays</source>
-      <translation type="unfinished">Pause video on all displays</translation>
+      <translation>Keskeytä video kaikissa näytöissä</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Mute video when media plays</source>
-      <translation type="unfinished">Mute video when media plays</translation>
+      <translation>Mykistä video, kun media soittaa</translation>
     </message>
   </context>
   <context>
@@ -10913,7 +10913,7 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/WallhavenPage.qml" line="+7"/>
       <source>Wallhaven</source>
-      <translation type="unfinished">Wallhaven</translation>
+      <translation>Wallhaven</translation>
     </message>
   </context>
   <context>
@@ -10921,64 +10921,64 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/dashboard/WallhavenTab.qml" line="+132"/>
       <source>Wallhaven</source>
-      <translation type="unfinished">Wallhaven</translation>
+      <translation>Wallhaven</translation>
     </message>
     <message>
       <location line="+5"/>
       <source>Search, preview, and set wallpapers instantly</source>
-      <translation type="unfinished">Search, preview, and set wallpapers instantly</translation>
+      <translation>Etsi, esikatselu ja aseta taustakuvia heti</translation>
     </message>
     <message>
       <location line="+22"/>
       <source>Search wallpapers...</source>
-      <translation type="unfinished">Search wallpapers...</translation>
+      <translation>Etsi taustakuvia...</translation>
     </message>
     <message>
       <location line="+39"/>
       <source>Found %1 wallpapers (page %2 of %3)</source>
-      <translation type="unfinished">Found %1 wallpapers (page %2 of %3)</translation>
+      <translation>Löytyi %1 taustakuvaa (sivu %2 / %3)</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>No results</source>
-      <translation type="unfinished">No results</translation>
+      <translation>Ei tuloksia</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Load more</source>
-      <translation type="unfinished">Load more</translation>
+      <translation>Lataa lisää</translation>
     </message>
     <message>
       <location line="+140"/>
       <source>Downloading...</source>
-      <translation type="unfinished">Downloading...</translation>
+      <translation>Ladataan...</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Download &amp; Set</source>
-      <translation type="unfinished">Download &amp; Set</translation>
+      <translation>Lataa &amp; Aseta</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Connecting...</source>
-      <translation type="unfinished">Connecting...</translation>
+      <translation>Yhdistetään...</translation>
     </message>
     <message>
       <location line="+16"/>
       <location line="+102"/>
       <source>Wallpaper applied</source>
-      <translation type="unfinished">Wallpaper applied</translation>
+      <translation>Taustakuva asetettu</translation>
     </message>
     <message>
       <location line="-100"/>
       <location line="+113"/>
       <source>Download failed</source>
-      <translation type="unfinished">Download failed</translation>
+      <translation>Lataus epäonnistui</translation>
     </message>
     <message>
       <location line="-112"/>
       <source>Downloading... %1%</source>
-      <translation type="unfinished">Downloading... %1%</translation>
+      <translation>Ladataan... %1%</translation>
     </message>
   </context>
   <context>
@@ -10986,22 +10986,22 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/background/Wallpaper.qml" line="+103"/>
       <source>Wallpaper missing?</source>
-      <translation type="unfinished">Wallpaper missing?</translation>
+      <translation>Taustakuva puuttuu?</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Select a wallpaper</source>
-      <translation type="unfinished">Select a wallpaper</translation>
+      <translation>Valitse taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Media files</source>
-      <translation type="unfinished">Media files</translation>
+      <translation>Median tiedostot</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Set it now!</source>
-      <translation type="unfinished">Set it now!</translation>
+      <translation>Aseta se nyt!</translation>
     </message>
   </context>
   <context>
@@ -11009,109 +11009,109 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/WallpaperAndStyle.qml" line="+13"/>
       <source>Appearance</source>
-      <translation type="unfinished">Appearance</translation>
+      <translation>Ulkoasu</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Wallpaper</source>
-      <translation type="unfinished">Wallpaper</translation>
+      <translation>Taustakuva</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Wallpapers</source>
-      <translation type="unfinished">Wallpapers</translation>
+      <translation>Taustakuvat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Browse and select wallpapers</source>
-      <translation type="unfinished">Browse and select wallpapers</translation>
+      <translation>Selaa ja valitse taustakuvat</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Wallhaven</source>
-      <translation type="unfinished">Wallhaven</translation>
+      <translation>Wallhaven</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Download wallpapers from Wallhaven</source>
-      <translation type="unfinished">Download wallpapers from Wallhaven</translation>
+      <translation>Lataa taustakuvia kohteesta Wallhaven</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Open wallpaper folder</source>
-      <translation type="unfinished">Open wallpaper folder</translation>
+      <translation>Avaa taustakuva kansio</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Add your own wallpapers</source>
-      <translation type="unfinished">Add your own wallpapers</translation>
+      <translation>Lisää omia taustakuvia</translation>
     </message>
     <message>
       <location line="+6"/>
       <location line="+11"/>
       <source>Lock screen</source>
-      <translation type="unfinished">Lock screen</translation>
+      <translation>Lukitusnäyttö</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Wallpaper sync and lock screen settings</source>
-      <translation type="unfinished">Wallpaper sync and lock screen settings</translation>
+      <translation>Taustakuvan synkronointi ja lukitusnäytön asetukset</translation>
     </message>
     <message>
       <location line="+6"/>
       <location line="+10"/>
       <source>Colors</source>
-      <translation type="unfinished">Colors</translation>
+      <translation>Värit</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Dynamic, light and dark palettes</source>
-      <translation type="unfinished">Dynamic, light and dark palettes</translation>
+      <translation>Dynaamiset, kevyet ja tummat paletit</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Theme &amp; Effects</source>
-      <translation type="unfinished">Theme &amp; Effects</translation>
+      <translation>Teema &amp; Tehosteet</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Islands, Pitch Black, Transparency</source>
-      <translation type="unfinished">Islands, Pitch Black, Transparency</translation>
+      <translation>Saaret, Piki Musta, Läpinäkyvyys</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Wallpaper options</source>
-      <translation type="unfinished">Wallpaper options</translation>
+      <translation>Taustakuvan asetukset</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Wallpaper Settings</source>
-      <translation type="unfinished">Wallpaper Settings</translation>
+      <translation>Taustakuvan Asetukset</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Display, Recolor, Desktop Icons</source>
-      <translation type="unfinished">Display, Recolor, Desktop Icons</translation>
+      <translation>Näytä, Recolor, Työpöydän Kuvakkeet</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Slideshow &amp; Order</source>
-      <translation type="unfinished">Slideshow &amp; Order</translation>
+      <translation>Slideshow &amp; Order</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Slideshow interval and randomization</source>
-      <translation type="unfinished">Slideshow interval and randomization</translation>
+      <translation>Diaesityksen aikaväli ja satunnaisuus</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Video Wallpapers</source>
-      <translation type="unfinished">Video Wallpapers</translation>
+      <translation>Videon Taustakuvat</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Audio and pausing behavior</source>
-      <translation type="unfinished">Audio and pausing behavior</translation>
+      <translation>Ääni ja keskeytys käyttäytyminen</translation>
     </message>
   </context>
   <context>
@@ -11119,68 +11119,68 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/WallpaperSelect.qml" line="+116"/>
       <source>Select wallpaper</source>
-      <translation type="unfinished">Select wallpaper</translation>
+      <translation>Valitse taustakuva</translation>
     </message>
     <message>
       <location line="+43"/>
       <source>Browse</source>
-      <translation type="unfinished">Browse</translation>
+      <translation>Selaa</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Select an image</source>
-      <translation type="unfinished">Select an image</translation>
+      <translation>Valitse kuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Image files</source>
-      <translation type="unfinished">Image files</translation>
+      <translation>Levykuvan tiedostot</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Random</source>
-      <translation type="unfinished">Random</translation>
+      <translation>Satunnainen</translation>
     </message>
     <message>
       <location line="+15"/>
       <source>Open folder</source>
-      <translation type="unfinished">Open folder</translation>
+      <translation>Avaa kansio</translation>
     </message>
     <message>
       <location line="+20"/>
       <source>Featured wallpaper</source>
-      <translation type="unfinished">Featured wallpaper</translation>
+      <translation>Suositellut taustakuva</translation>
     </message>
     <message>
       <location line="+175"/>
       <location line="+7"/>
       <source>All</source>
-      <translation type="unfinished">All</translation>
+      <translation>Kaikki</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Images</source>
-      <translation type="unfinished">Images</translation>
+      <translation>Kuvat</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>GIFs</source>
-      <translation type="unfinished">GIFs</translation>
+      <translation>GIF:t</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Videos</source>
-      <translation type="unfinished">Videos</translation>
+      <translation>Videot</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Local wallpapers</source>
-      <translation type="unfinished">Local wallpapers</translation>
+      <translation>Paikalliset taustakuvat</translation>
     </message>
     <message>
       <location line="+101"/>
       <source>No local wallpapers found</source>
-      <translation type="unfinished">No local wallpapers found</translation>
+      <translation>Paikallisia taustakuvia ei löytynyt</translation>
     </message>
   </context>
   <context>
@@ -11188,47 +11188,47 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/WallpaperSettingsPage.qml" line="+18"/>
       <source>Wallpaper Settings</source>
-      <translation type="unfinished">Wallpaper Settings</translation>
+      <translation>Taustakuvan Asetukset</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Crop</source>
-      <translation type="unfinished">Crop</translation>
+      <translation>Rajaa</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Fit</source>
-      <translation type="unfinished">Fit</translation>
+      <translation>Sovita</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Stretch</source>
-      <translation type="unfinished">Stretch</translation>
+      <translation>Venytä</translation>
     </message>
     <message>
       <location line="+30"/>
       <source>Wallpaper scaling</source>
-      <translation type="unfinished">Wallpaper scaling</translation>
+      <translation>Taustakuvan skaalaus</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>How the wallpaper image fits the screen</source>
-      <translation type="unfinished">How the wallpaper image fits the screen</translation>
+      <translation>Kuinka taustakuva sopii ruudulle</translation>
     </message>
     <message>
       <location line="+17"/>
       <source>Recolor wallpaper</source>
-      <translation type="unfinished">Recolor wallpaper</translation>
+      <translation>Recolor taustakuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Tint the wallpaper to match static color schemes</source>
-      <translation type="unfinished">Tint the wallpaper to match static color schemes</translation>
+      <translation>Tint taustakuva vastaamaan staattisia värimalleja</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Recolor strength</source>
-      <translation type="unfinished">Recolor strength</translation>
+      <translation>Reolorin vahvuus</translation>
     </message>
   </context>
   <context>
@@ -11236,7 +11236,7 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../services/Weather.qml" line="+127"/>
       <source>Couldn&apos;t parse location results. Check your connection and try again.</source>
-      <translation type="unfinished">Couldn&apos;t parse location results. Check your connection and try again.</translation>
+      <translation>Couldn&apos;t jäsennyssijainnin tulokset. Tarkista yhteytesi ja yritä uudelleen.</translation>
     </message>
     <message>
       <location line="+29"/>
@@ -11249,42 +11249,42 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/dashboard/WeatherTab.qml" line="+31"/>
       <source>Loading...</source>
-      <translation type="unfinished">Loading...</translation>
+      <translation>Ladataan...</translation>
     </message>
     <message>
       <location line="+21"/>
       <source>Sunrise</source>
-      <translation type="unfinished">Sunrise</translation>
+      <translation>Auringonnousu</translation>
     </message>
     <message>
       <location line="+7"/>
       <source>Sunset</source>
-      <translation type="unfinished">Sunset</translation>
+      <translation>Auringonlasku</translation>
     </message>
     <message>
       <location line="+54"/>
       <source>Humidity</source>
-      <translation type="unfinished">Humidity</translation>
+      <translation>Kosteus</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Feels Like</source>
-      <translation type="unfinished">Feels Like</translation>
+      <translation>Tuntuu Kuin</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Wind</source>
-      <translation type="unfinished">Wind</translation>
+      <translation>Tuuli</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>7-Day Forecast</source>
-      <translation type="unfinished">7-Day Forecast</translation>
+      <translation>7 Päivän Ennuste</translation>
     </message>
     <message>
       <location line="+34"/>
       <source>Today</source>
-      <translation type="unfinished">Today</translation>
+      <translation>Tänään</translation>
     </message>
   </context>
   <context>
@@ -11293,12 +11293,12 @@ Keyboard layout: %1</translation>
       <location filename="../modules/whatsnew/WhatsNewWindow.qml" line="+114"/>
       <location line="+152"/>
       <source>What&apos;s New in Caelestia</source>
-      <translation type="unfinished">What&apos;s New in Caelestia</translation>
+      <translation>Mitä&apos;s New Caelestia</translation>
     </message>
     <message>
       <location line="-100"/>
       <source>What&apos;s New</source>
-      <translation type="unfinished">What&apos;s New</translation>
+      <translation>Mikä&apos;S Uusi</translation>
     </message>
   </context>
   <context>
@@ -11312,43 +11312,43 @@ Keyboard layout: %1</translation>
       <location line="+51"/>
       <location line="+44"/>
       <source>Connect</source>
-      <translation type="unfinished">Connect</translation>
+      <translation>Yhdistä</translation>
     </message>
     <message>
       <location line="-454"/>
       <source>Enter password</source>
-      <translation type="unfinished">Enter password</translation>
+      <translation>Syötä salasana</translation>
     </message>
     <message>
       <location line="+13"/>
       <source>Network: %1</source>
-      <translation type="unfinished">Network: %1</translation>
+      <translation>Verkko: %1</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Unknown network</source>
-      <translation type="unfinished">Unknown network</translation>
+      <translation>Tuntematon verkko</translation>
     </message>
     <message>
       <location line="+43"/>
       <source>Connection failed. Please check your password and try again.</source>
-      <translation type="unfinished">Connection failed. Please check your password and try again.</translation>
+      <translation>Yhteys epäonnistui. Tarkista salasanasi ja yritä uudelleen.</translation>
     </message>
     <message>
       <location line="+3"/>
       <location line="+273"/>
       <source>Connecting...</source>
-      <translation type="unfinished">Connecting...</translation>
+      <translation>Yhdistetään...</translation>
     </message>
     <message>
       <location line="-140"/>
       <source>Password</source>
-      <translation type="unfinished">Password</translation>
+      <translation>Salasana</translation>
     </message>
     <message>
       <location line="+105"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Peruuta</translation>
     </message>
   </context>
   <context>
@@ -11369,12 +11369,12 @@ Keyboard layout: %1</translation>
     <message>
       <location filename="../modules/dashboard/Wrapper.qml" line="+20"/>
       <source>Select a profile picture</source>
-      <translation type="unfinished">Select a profile picture</translation>
+      <translation>Valitse profiilikuva</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Image files</source>
-      <translation type="unfinished">Image files</translation>
+      <translation>Levykuvan tiedostot</translation>
     </message>
   </context>
 </TS>
