@@ -182,13 +182,13 @@ Item {
             }
         }
     }
-    onActiveWsIdChanged: Qt.callLater(syncPage)
+    onActiveWsIdChanged: root.syncPage()
     Component.onCompleted: {
-const count = Kwin.workspaces.length;
-for (let i = 0; i < count; ++i) {
-    workspaceModel.append({});
-}
-    
+        const count = Kwin.workspaces.length;
+        for (let i = 0; i < count; ++i) {
+            workspaceModel.append({});
+        }
+
         Qt.callLater(syncPage);
     }
 

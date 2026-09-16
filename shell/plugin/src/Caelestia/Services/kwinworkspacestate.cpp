@@ -175,6 +175,13 @@ void KWinWorkspaceState::setupTrackerServer() {
                                 emit swipeOffsetByOutputChanged();
                             }
                         } else {
+                            if (report.desktop > 0) {
+                                const QString uuid = uuidForIndex(report.desktop);
+                                if (!uuid.isEmpty() && m_currentUuid != uuid) {
+                                    m_currentUuid = uuid;
+                                    updateActiveId();
+                                }
+                            }
                             if (!qFuzzyCompare(m_swipeOffset + 1.0, offset + 1.0)) {
                                 m_swipeOffset = offset;
                                 emit swipeOffsetChanged();
@@ -183,6 +190,13 @@ void KWinWorkspaceState::setupTrackerServer() {
                     } else {
                         LegacyTransition payload;
                         clientSocket->read(reinterpret_cast<char*>(&payload), sizeof(payload));
+                        if (payload.desktop > 0) {
+                            const QString uuid = uuidForIndex(payload.desktop);
+                            if (!uuid.isEmpty() && m_currentUuid != uuid) {
+                                m_currentUuid = uuid;
+                                updateActiveId();
+                            }
+                        }
                         const double offset = static_cast<double>(payload.x);
                         if (!qFuzzyCompare(m_swipeOffset + 1.0, offset + 1.0)) {
                             m_swipeOffset = offset;
