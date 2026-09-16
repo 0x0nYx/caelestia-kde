@@ -1693,7 +1693,7 @@
       <translation>Grootte van app-iconen in het dock</translation>
     </message>
     <message>
-      <location line="+13"/>
+      <location line="+12"/>
       <source>Recolor icons</source>
       <translation>Herhaalde iconen</translation>
     </message>
@@ -1701,6 +1701,26 @@
       <location line="+1"/>
       <source>Recolor application icons using the system theme</source>
       <translation>Herstellen applicatie pictogrammen met behulp van het systeemthema</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Filter by current desktop</source>
+      <translation type="unfinished">Filter by current desktop</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Only show applications and windows belonging to the active virtual desktop</source>
+      <translation type="unfinished">Only show applications and windows belonging to the active virtual desktop</translation>
+    </message>
+    <message>
+      <location line="+8"/>
+      <source>Preview window on desktop</source>
+      <translation type="unfinished">Preview window on desktop</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Highlight and show the window itself on the workspace while hovering over dock previews</source>
+      <translation type="unfinished">Highlight and show the window itself on the workspace while hovering over dock previews</translation>
     </message>
   </context>
   <context>
@@ -3051,7 +3071,7 @@
       <translation>Type &quot;%1&quot; voor commando's</translation>
     </message>
     <message>
-      <location line="+317"/>
+      <location line="+328"/>
       <source>Clear clipboard history?</source>
       <translation>Klembord geschiedenis wissen?</translation>
     </message>
@@ -3089,7 +3109,7 @@
   <context>
     <name>ContentList</name>
     <message>
-      <location filename="../modules/launcher/ContentList.qml" line="+215"/>
+      <location filename="../modules/launcher/ContentList.qml" line="+222"/>
       <source>Images</source>
       <translation>Afbeeldingen</translation>
     </message>
@@ -3743,7 +3763,7 @@
   <context>
     <name>DesktopLyrics</name>
     <message>
-      <location filename="../modules/background/DesktopLyrics.qml" line="+315"/>
+      <location filename="../modules/background/DesktopLyrics.qml" line="+287"/>
       <source>Loading lyrics...</source>
       <translation>Songtekst laden...</translation>
     </message>
@@ -4041,6 +4061,16 @@
       <location line="+1"/>
       <source>The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.</source>
       <translation>Het project is nu caelestia-kde. De repository, de referenties en de bestanden zijn hernoemd en opgenomen in één palet en één logo. Uw configuratie en instellingen zijn niet aangeraakt.</translation>
+    </message>
+    <message>
+      <location line="+6"/>
+      <source>Dock Desktop Filtering &amp; Live Previews</source>
+      <translation type="unfinished">Dock Desktop Filtering &amp; Live Previews</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</source>
+      <translation type="unfinished">The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</translation>
     </message>
   </context>
   <context>
@@ -4863,7 +4893,7 @@
   <context>
     <name>Kwin</name>
     <message>
-      <location filename="../services/Kwin.qml" line="+405"/>
+      <location filename="../services/Kwin.qml" line="+458"/>
       <source>Caps lock enabled</source>
       <translation>Caps lock ingeschakeld</translation>
     </message>
@@ -8864,12 +8894,12 @@
       <translation>Open vensterwisselaar</translation>
     </message>
     <message>
-      <location line="+21"/>
+      <location line="+22"/>
       <source>Open window switcher (reverse)</source>
       <translation>Open vensterschakelaar (omgekeerd)</translation>
     </message>
     <message>
-      <location line="+20"/>
+      <location line="+21"/>
       <source>Open wallpaper picker</source>
       <translation>Open achtergrond kiezer</translation>
     </message>
@@ -11291,12 +11321,12 @@ Keyboard layout: %1</translation>
     <name>WhatsNewWindow</name>
     <message>
       <location filename="../modules/whatsnew/WhatsNewWindow.qml" line="+114"/>
-      <location line="+152"/>
+      <location line="+151"/>
       <source>What&apos;s New in Caelestia</source>
       <translation>Wat&apos;s Nieuw in Caelestia</translation>
     </message>
     <message>
-      <location line="-100"/>
+      <location line="-99"/>
       <source>What&apos;s New</source>
       <translation>Wat&apos;s Nieuw</translation>
     </message>
