@@ -133,7 +133,14 @@ setup_sandbox() {
     write_fake_config_tools
 
     stub_bin "$STUB_DIR" kreadconfig6 'exec python3 "$KW_RULES" get "$@"'
+    # KW_SILENT_REJECT makes the writer report success and change nothing, which is
+    # what the tool did on the VM when kwinrulesrc could not be replaced: the status
+    # says one thing and the file says another, so the read-back is the only check
+    # that can tell the two apart.
     stub_bin "$STUB_DIR" kwriteconfig6 "printf '%s %s\n' 'kwriteconfig6' \"\$*\" >> \"\$KW_CALLS\"
+if [[ -n \"\${KW_SILENT_REJECT:-}\" ]]; then
+    exit 0
+fi
 case \"\$*\" in
     *--delete*) exec python3 \"\$KW_RULES\" delete \"\$@\" ;;
 esac
@@ -163,7 +170,9 @@ run_window_rules_without_kwriteconfig6() {
 }
 
 # The frozen interface: group, key, value, in the order the script writes them. The
-# index pair comes after the three groups and before the single reload.
+# index pair comes after the three groups and before the single reload. Only the
+# writer and the reload are recorded, so the two reads the script makes per changed
+# key - before the write, and back after it - are not part of the sequence below.
 expected_calls() {
     local opacity="$1" index="${2:-$FRESH_INDEX}"
     printf '%s\n' \
@@ -426,6 +435,27 @@ test_a_rejected_write_is_warned_about_rather_than_applied() {
     assert_contains "$OUTPUT" "could not be written" "the warning should say what happened"
     assert_not_contains "$OUTPUT" "Applied " "a rejected write must not be reported as applied"
     assert_not_contains "$OUTPUT" "Window rules applied." "and the rollup must not claim it either"
+}
+
+# The same rejection with no error status at all: the writer exits 0 and the file
+# stays as it was, which is what the VM showed with kwinrulesrc replaced by a
+# directory. The value never changes on disk, so the key has to be counted as failed
+# and the rollup must not claim the rules were applied.
+test_a_silent_rejection_is_reported_as_failed_rather_than_applied() {
+    have_python || return 0
+    setup_sandbox
+    run_window_rules KW_SILENT_REJECT=1
+
+    assert_status 0 "$STATUS" "a silently rejected write should not fail the install"
+    assert_contains "$(calls_to "$CALLS" kwriteconfig6)" "--key aboverule 2" \
+        "every key should still be attempted"
+    assert_contains "$(calls_to "$CALLS" kwriteconfig6)" "--key rules $FRESH_INDEX" \
+        "including the index, so a file that lost its list gets one back"
+    assert_contains "$OUTPUT" "[WARN]" "the silence should be reported as a warning"
+    assert_contains "$OUTPUT" "could not be written" "the warning should say what happened"
+    assert_not_contains "$OUTPUT" "Applied " "a write that did not land must not be reported as applied"
+    assert_not_contains "$OUTPUT" "Window rules applied." "and the rollup must not claim it either"
+    assert_file_missing "$SANDBOX/$RULES_FILE"
 }
 
 test_the_inactive_opacity_comes_from_the_environment() {

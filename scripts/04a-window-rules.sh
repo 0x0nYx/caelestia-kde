@@ -17,20 +17,26 @@ RULE_WRITES=0
 RULE_FAILURES=0
 
 # Read every key before writing it, so a second run reports the rules that were
-# already in place instead of claiming a fresh write. The outcome goes back to the
-# caller through an out parameter - written, unchanged or failed - because
-# kwriteconfig6 can reject a write, and a rejected write must not look like one that
-# took effect. The error stream stays on 2>/dev/null, as in 04-deploy-kde.sh, but
-# the exit status is no longer discarded.
+# already in place instead of claiming a fresh write, and read it back after, so
+# only a write that reached the file counts as one. The outcome goes back to the
+# caller through an out parameter - written, unchanged or failed - because the exit
+# status alone is not evidence that a write landed: asked to write a key of
+# caelestia-opacity into a kwinrulesrc that was a directory, kwriteconfig6 on Plasma
+# 6.7.5 exited 0, wrote nothing, and the key read back empty. Both tools keep their
+# error stream on 2>/dev/null, as in 04-deploy-kde.sh, and the read-back decides.
 set_rule_key() {
-    local group="$1" key="$2" value="$3" outcome_var="$4" current
+    local group="$1" key="$2" value="$3" outcome_var="$4" current confirmed
     current="$(kreadconfig6 --file "$RULES_FILE" --group "$group" --key "$key" 2>/dev/null || true)"
     if [[ "$current" == "$value" ]]; then
         printf -v "$outcome_var" '%s' "unchanged"
-    elif kwriteconfig6 --file "$RULES_FILE" --group "$group" --key "$key" "$value" 2>/dev/null; then
-        printf -v "$outcome_var" '%s' "written"
     else
-        printf -v "$outcome_var" '%s' "failed"
+        kwriteconfig6 --file "$RULES_FILE" --group "$group" --key "$key" "$value" 2>/dev/null || true
+        confirmed="$(kreadconfig6 --file "$RULES_FILE" --group "$group" --key "$key" 2>/dev/null || true)"
+        if [[ "$confirmed" == "$value" ]]; then
+            printf -v "$outcome_var" '%s' "written"
+        else
+            printf -v "$outcome_var" '%s' "failed"
+        fi
     fi
 }
 
