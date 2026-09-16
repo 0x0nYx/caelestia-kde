@@ -1,12 +1,15 @@
 #include "cavaprovider.hpp"
 
-#include "audiocollector.hpp"
-#include "audioprovider.hpp"
+#include <qloggingcategory.h>
+
 #include <cava/cavacore.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <qloggingcategory.h>
+
+#include "audiocollector.hpp"
+#include "audioprovider.hpp"
 
 Q_LOGGING_CATEGORY(lcCava, "caelestia.services.cava", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcCavaProcessor, "caelestia.services.cava.processor", QtInfoMsg)
@@ -41,7 +44,9 @@ void CavaProcessor::process() {
     // the bars to zero once and skip the analysis until there is something to analyse; cava keeps
     // the sensitivity it had, which is what the first audible frame wants.
     if (isSilent(m_in, static_cast<std::size_t>(count))) {
-        if (std::any_of(m_values.cbegin(), m_values.cend(), [](double value) { return value != 0.0; })) {
+        if (std::any_of(m_values.cbegin(), m_values.cend(), [](double value) {
+                return value != 0.0;
+            })) {
             m_frameValues.fill(0.0);
             m_values.fill(0.0);
             emit valuesChanged(m_values);
@@ -129,7 +134,8 @@ void CavaProcessor::initCava() {
     constexpr int highCutoff = 10000;
 
 #ifdef CAVA_SCALING_LINEAR
-    m_plan = cava_init(m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff, CAVA_SCALING_LINEAR);
+    m_plan = cava_init(
+        m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff, CAVA_SCALING_LINEAR);
 #else
     m_plan = cava_init(m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff);
 #endif
