@@ -8,6 +8,11 @@ on:
       - "shell/translations/**"
       - "crowdin.yml"
       - ".github/workflows/crowdin.yml"
+  schedule:
+    # Work done on Crowdin's side -- a translator filling in a language, a
+    # machine translation run -- pushes nothing here, so the schedule is what
+    # turns it into a pull request. Runs every day at 03:00 UTC.
+    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       seed_translations:
@@ -41,6 +46,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
+          # A scheduled run has no branch of its own and would check out the
+          # default branch, uploading sources that are behind dev.
+          ref: dev
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
 
@@ -64,6 +72,10 @@ jobs:
           auto_approve_imported: ${{ inputs.seed_translations == true }}
           download_translations: true
           skip_untranslated_files: true
+          # Without these the action checks out GITHUB_REF itself -- main, on a
+          # scheduled run -- and targets the default branch with the PR.
+          skip_ref_checkout: true
+          pull_request_base_branch_name: dev
           localization_branch_name: i18n/crowdin
           create_pull_request: true
           pull_request_title: "i18n: new translations from Crowdin"

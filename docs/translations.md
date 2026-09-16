@@ -66,8 +66,14 @@ Translators do not need a checkout. The project is synchronized with Crowdin, so
 a language can be worked on in the browser and arrives here as a pull request.
 
 `crowdin.yml` maps the catalogs; `.github/workflows/crowdin.yml` runs the
-synchronization on every push to `dev` that touches the shell sources, and can
-be triggered by hand.
+synchronization on every push to `dev` that touches the shell sources, once a
+day, and on demand.
+
+Work done on Crowdin's own side -- a translator filling in a language, a
+machine translation run -- pushes nothing here, so it is the daily run that
+turns it into a pull request. That is also what to trigger by hand when you do
+not want to wait: Actions -> Crowdin -> Run workflow, with "Also upload the
+committed catalogs" left off.
 
 Two details are worth knowing before touching that setup:
 
@@ -115,9 +121,31 @@ shows English (or English, United States) among the target languages, remove it
 under Settings -> Languages.
 
 Catalogs are named by the two-letter code, so Turkish is `caelestia_tr.ts`.
-Two variants of one language -- `pt-BR` and `pt-PT`, `zh-CN` and `zh-TW` --
-would both want the bare code; give them explicit names through
-`languages_mapping` in `crowdin.yml` if both are ever translated.
+
+`%two_letters_code%` is ISO 639-1, so it ignores the region a Crowdin code
+carries: `pt-PT` and `pt-BR` both collapse to `pt`, and `sr` and `sr-CS` both
+collapse to `sr`. The first variant of a language gets a name the loader
+accepts, and every other one needs an entry of its own. Portuguese and
+Portuguese, Brazilian are both target languages, so they are mapped to `pt_PT`
+and `pt_BR`.
+
+The key is Crowdin's language code and the value is the file name Qt looks for.
+Neither follows from the language name -- `sr` is Serbian (Cyrillic) and `sr-CS`
+is Serbian (Latin) -- so take the key from Crowdin's language code list. A key
+that matches no language on the project is ignored without complaint, which
+makes a wrong one look like it worked. The two Chinese entries are in exactly
+that state: neither language is a target on the project, and both catalogues
+here were contributed by hand rather than downloaded, so nothing uses that
+mapping until a Chinese language is added.
+
+Crowdin checks the pattern against the project and reports "Wrong export
+pattern" on its Files page when two languages resolve to the same name. That
+check reads the project, not `crowdin.yml`, so it stays even when the mapping
+above is right: the CLI resolves names from the mapping when it downloads,
+whereas the warning describes Crowdin's own export. To clear it, mirror the
+mapping in the project under Settings -> Languages -> Add custom language codes
+-> Language Mapping, picking the language and the `two_letters_code`
+placeholder.
 
 `CROWDIN_PROJECT_ID` is the numeric project ID from Crowdin's project settings,
 not the `caelestia-kde` identifier that appears in the URL and the badge.
