@@ -865,6 +865,8 @@ fi
 
 section "Step 11 - Reload KDE"
 
+# KWin does not watch kwinrulesrc, so this reload is what applies the rule deletions
+# made in Step 6. The call needs the exact bus name KWin owns, org.kde.KWin.
 qdbus6 org.kde.KWin /KWin reconfigure                    2>/dev/null || true
 systemctl --user restart plasma-kglobalaccel.service      2>/dev/null || true
 kbuildsycoca6 --noincremental                             2>/dev/null || true
