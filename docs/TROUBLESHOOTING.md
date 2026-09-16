@@ -281,6 +281,33 @@ trigger any of this.
 
 ---
 
+### 3.8 Workspace Tracker Effect Stops Loading After a KDE Update
+
+The workspace pills show the focused screen's desktop on every screen, swiping
+does not track the gesture, and the shell reports that the workspace tracker
+effect is not running.
+
+`kwin_workspace_tracker` is a compiled KWin effect, and KWin makes no promise
+that a binary effect keeps working across releases: it is linked against
+libkwin's internals and has to be relinked when KDE updates them. KWin then
+refuses the stale binary, so per-output desktops and the swipe offset stop
+arriving. A routine `pacman -Syu` is enough to cause it; nothing in Caelestia is
+corrupted.
+
+Rebuild it by re-running the installer or `update.sh`, then log out and back in -
+KWin only loads effects at startup:
+
+```bash
+bash update.sh                     # rebuilds and reinstalls the effect
+qdbus6 org.kde.KWin /Caelestia/Workspaces org.freedesktop.DBus.Introspectable.Introspect
+```
+
+The last command prints the effect's interface once it is loaded again, and
+fails while it is not. `bash shell/scripts/check-workspace-tracker.sh` answers the
+same question with an exit status (3 means enabled but not loaded).
+
+---
+
 ## 4. Runtime Issues — Lock Screen
 
 ### 4.1 Lock Screen Greeter Diagnostic
@@ -586,6 +613,11 @@ download against the `.sha256` published beside it:
 
 A mismatch is not fatal: the installer builds from source instead, which takes longer but cannot
 unpack a damaged tree into `~/.local/lib/qt6/qml`.
+
+The archive is also only used for the revision it was built from: `main` sitting on its remote
+tip, or a checkout that is exactly the released tag (an update pinned to a version). A branch, a
+stale `main`, or a checkout carrying commits of its own builds locally, because the archive would
+replace that tree with the release's.
 
 ---
 

@@ -24,6 +24,7 @@ Scope {
             Players;
             Brightness;
             Weather.reload();
+            WorkspaceTrackerGuard;
 
             if (GlobalConfig.utilities.vpn.enabled)
                 VPN;
