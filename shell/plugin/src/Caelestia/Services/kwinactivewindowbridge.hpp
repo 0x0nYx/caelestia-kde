@@ -16,6 +16,7 @@ class KWinActiveWindowBridge : public QObject {
     Q_PROPERTY(QString activeOutputName READ activeOutputName WRITE setActiveOutputName NOTIFY activeOutputNameChanged)
     Q_PROPERTY(QVariantList windowList READ windowList NOTIFY windowListChanged)
     Q_PROPERTY(QString pendingFocusAddress READ pendingFocusAddress NOTIFY pendingFocusAddressChanged)
+    Q_PROPERTY(QString highlightedAddress READ highlightedAddress NOTIFY highlightedAddressChanged)
     QML_ELEMENT
     QML_SINGLETON
 
@@ -29,6 +30,7 @@ public:
 
     QVariantList windowList() const;
     QString pendingFocusAddress() const;
+    QString highlightedAddress() const;
 
     // Windows on one workspace (1-based desktop id, or desktop UUID), matching
     // the workspace field's only real shape: {id: number, uuid: string}, with
@@ -58,8 +60,6 @@ public:
     Q_INVOKABLE void highlightWindow(const QString& address);
     Q_INVOKABLE void clearHighlight();
 
-
-
     // Kept for backward compatibility, though no longer backed by JS
     Q_INVOKABLE void refreshWindows();
 
@@ -68,6 +68,7 @@ signals:
     void activeOutputNameChanged();
     void windowListChanged();
     void pendingFocusAddressChanged();
+    void highlightedAddressChanged();
 
 private slots:
     void onWindowAdded(const QString& uuid);
@@ -83,6 +84,7 @@ private:
     QVariantList m_windowList;
     QString m_activeOutputName;
     QString m_pendingFocusAddress;
+    QString m_highlightedAddress;
 
     QTimer m_updateTimer;
 };

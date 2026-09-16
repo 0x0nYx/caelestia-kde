@@ -246,6 +246,7 @@ Item {
             }
 
             Keys.onEscapePressed: {
+                Windows.isSwitching = false;
                 Kwin.clearHighlight();
                 root.visibilities.launcher = false;
             }
@@ -289,6 +290,8 @@ Item {
                         return;
                     }
                     if (event.key === Qt.Key_Escape) {
+                        Windows.isSwitching = false;
+                        Kwin.clearHighlight();
                         root.visibilities.launcher = false;
                         event.accepted = true;
                         return;
@@ -321,6 +324,13 @@ Item {
                 }
             }
 
+            onTextChanged: {
+                if (!text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
+                    Windows.isSwitching = false;
+                    Kwin.clearHighlight();
+                }
+            }
+
             Component.onCompleted: {
                 if (Visibilities.launcherInitialSearch) {
                     text = Visibilities.launcherInitialSearch;
@@ -343,6 +353,7 @@ Item {
                         // the switcher would stay open and stop cycling.
                         search.forceActiveFocus();
                     } else {
+                        Windows.isSwitching = false;
                         Kwin.clearHighlight();
                     }
                 }

@@ -45,12 +45,22 @@ Singleton {
         screens.set(Kwin.monitorFor(screen), visibilities);
         screens = new Map(screens); // Force QML property change notification
         visibilities.launcherChanged.connect(() => {
-            if (!visibilities.launcher)
+            if (!visibilities.launcher) {
+                Kwin.clearHighlight();
                 return;
+            }
             for (const other of screens.values()) {
                 if (other !== visibilities)
                     other.launcher = false;
             }
+        });
+        visibilities.overviewChanged.connect(() => {
+            if (visibilities.overview)
+                Kwin.clearHighlight();
+        });
+        visibilities.sessionChanged.connect(() => {
+            if (visibilities.session)
+                Kwin.clearHighlight();
         });
     }
     function registerBar(screen: ShellScreen, barWrapper: var): void {

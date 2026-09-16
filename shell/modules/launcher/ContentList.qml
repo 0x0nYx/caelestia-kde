@@ -49,6 +49,13 @@ Item {
     clip: true
     state: showAnimations ? "animations" : (showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps")))
 
+    onShowWindowSwitcherChanged: {
+        if (!showWindowSwitcher) {
+            Windows.isSwitching = false;
+            Kwin.clearHighlight();
+        }
+    }
+
     states: [
         State {
             name: "apps"

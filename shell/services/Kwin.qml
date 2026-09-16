@@ -18,6 +18,7 @@ Singleton {
     readonly property var windowList: KWinActiveWindowBridge.windowList || []
     readonly property string activeOutputName: KWinActiveWindowBridge.activeOutputName
     readonly property string pendingFocusAddress: KWinActiveWindowBridge.pendingFocusAddress
+    readonly property string highlightedAddress: KWinActiveWindowBridge.highlightedAddress
     readonly property var workspaces: KWinWorkspaceState.workspaces || []
     readonly property int activeWsId: KWinWorkspaceState.activeId
     readonly property var activeByOutput: KWinWorkspaceState.activeByOutput || ({})

@@ -243,6 +243,7 @@ Scope {
                 Windows.triggerCycleNext();
             } else {
                 root.lastAction = "windows";
+                Windows.isSwitching = true;
                 Windows.updateItems();
                 Windows.selectedIndex = (Windows.items.length > 1) ? 1 : 0;
                 Windows.refreshHighlight();
@@ -263,6 +264,7 @@ Scope {
                 Windows.triggerCyclePrev();
             } else {
                 root.lastAction = "windows";
+                Windows.isSwitching = true;
                 Windows.updateItems();
                 Windows.selectedIndex = (Windows.items.length > 1) ? Windows.items.length - 1 : 0;
                 Windows.refreshHighlight();

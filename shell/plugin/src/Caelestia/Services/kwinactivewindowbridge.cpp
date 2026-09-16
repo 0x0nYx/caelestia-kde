@@ -23,9 +23,14 @@ KWinActiveWindowBridge::KWinActiveWindowBridge(QObject* parent)
     auto* plasmaWindows = PlasmaWindows::instance();
     connect(plasmaWindows, &PlasmaWindows::windowAdded, this, &KWinActiveWindowBridge::onWindowAdded);
     connect(plasmaWindows, &PlasmaWindows::handleLost, this, &KWinActiveWindowBridge::onWindowLost);
+
+    // Clear any stale highlight from a previous session or crash on startup
+    clearHighlight();
 }
 
-KWinActiveWindowBridge::~KWinActiveWindowBridge() = default;
+KWinActiveWindowBridge::~KWinActiveWindowBridge() {
+    clearHighlight();
+}
 
 QVariantMap KWinActiveWindowBridge::activeWindow() const {
     return m_activeWindow;
@@ -33,6 +38,10 @@ QVariantMap KWinActiveWindowBridge::activeWindow() const {
 
 QString KWinActiveWindowBridge::activeOutputName() const {
     return m_activeOutputName;
+}
+
+QString KWinActiveWindowBridge::highlightedAddress() const {
+    return m_highlightedAddress;
 }
 
 void KWinActiveWindowBridge::setActiveOutputName(const QString& outputName) {
@@ -104,7 +113,9 @@ void KWinActiveWindowBridge::onWindowAdded(const QString& uuid) {
 }
 
 void KWinActiveWindowBridge::onWindowLost(const QString& uuid) {
-    Q_UNUSED(uuid);
+    if (!m_highlightedAddress.isEmpty() && m_highlightedAddress == uuid) {
+        clearHighlight();
+    }
     scheduleWindowListUpdate();
 }
 
@@ -303,6 +314,9 @@ void KWinActiveWindowBridge::buildWindowList() {
 }
 
 void KWinActiveWindowBridge::focusWindow(const QString& address) {
+    if (!m_highlightedAddress.isEmpty()) {
+        clearHighlight();
+    }
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
         m_pendingFocusAddress = address;
         emit pendingFocusAddressChanged();
@@ -315,6 +329,9 @@ void KWinActiveWindowBridge::focusWindow(const QString& address) {
 }
 
 void KWinActiveWindowBridge::closeWindow(const QString& address) {
+    if (!m_highlightedAddress.isEmpty() && m_highlightedAddress == address) {
+        clearHighlight();
+    }
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
         handle->close();
     }
@@ -390,6 +407,12 @@ void KWinActiveWindowBridge::setMaximized(const QString& address, bool maximized
 }
 
 void KWinActiveWindowBridge::highlightWindow(const QString& address) {
+    if (address == m_highlightedAddress && !address.isEmpty()) {
+        return;
+    }
+    m_highlightedAddress = address;
+    emit highlightedAddressChanged();
+
     auto msg =
         QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/org/kde/KWin/HighlightWindow"),
             QStringLiteral("org.kde.KWin.HighlightWindow"), QStringLiteral("highlightWindows"));
@@ -402,7 +425,15 @@ void KWinActiveWindowBridge::highlightWindow(const QString& address) {
 }
 
 void KWinActiveWindowBridge::clearHighlight() {
-    highlightWindow(QString());
+    if (!m_highlightedAddress.isEmpty()) {
+        highlightWindow(QString());
+    } else {
+        auto msg =
+            QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"), QStringLiteral("/org/kde/KWin/HighlightWindow"),
+                QStringLiteral("org.kde.KWin.HighlightWindow"), QStringLiteral("highlightWindows"));
+        msg << QStringList();
+        QDBusConnection::sessionBus().send(msg);
+    }
 }
 
 void KWinActiveWindowBridge::refreshWindows() {

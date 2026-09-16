@@ -10,6 +10,7 @@ Singleton {
 
     property var items: []
     property int selectedIndex: 0
+    property bool isSwitching: false
 
     function triggerCycleNext(): void {
         if (items.length === 0) return;
@@ -32,8 +33,14 @@ Singleton {
     }
 
     function refreshHighlight(): void {
-        if (GlobalConfig.tabSwitch?.previewOnDesktop && selectedIndex >= 0 && selectedIndex < items.length) {
+        if (!root.isSwitching || !GlobalConfig.tabSwitch?.previewOnDesktop) {
+            Kwin.clearHighlight();
+            return;
+        }
+        if (selectedIndex >= 0 && selectedIndex < items.length) {
             Kwin.highlightWindow(items[selectedIndex].address);
+        } else {
+            Kwin.clearHighlight();
         }
     }
 
@@ -159,6 +166,7 @@ Singleton {
     }
 
     function focusWindow(address: string): void {
+        root.isSwitching = false;
         Kwin.clearHighlight();
         Kwin.focusWindow(address);
     }
@@ -168,7 +176,15 @@ Singleton {
     }
 
     onSelectedIndexChanged: {
-        refreshHighlight();
+        if (root.isSwitching)
+            refreshHighlight();
+    }
+
+    onIsSwitchingChanged: {
+        if (root.isSwitching)
+            refreshHighlight();
+        else
+            Kwin.clearHighlight();
     }
 
     Component.onCompleted: {
@@ -201,7 +217,7 @@ Singleton {
         }
 
         function onPreviewOnDesktopChanged(): void {
-            if (!GlobalConfig.tabSwitch.previewOnDesktop) {
+            if (!GlobalConfig.tabSwitch.previewOnDesktop || !root.isSwitching) {
                 Kwin.clearHighlight();
             } else {
                 root.refreshHighlight();
