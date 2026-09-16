@@ -8,6 +8,16 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT="$REPO_ROOT/scripts/04a-window-rules.sh"
 BASH_BIN="$(command -v bash || printf '/bin/bash')"
 
+# The stubs that stand in for the two config tools are Python, so this file skips
+# rather than fails where python3 is absent. Only bash is required to run the suite.
+have_python() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    skip_test "python3 not installed"
+    return 1
+}
+
 RULES_FILE="kwinrulesrc"
 RULE_GROUPS=(caelestia-opacity caelestia-dialogs caelestia-pip)
 
@@ -149,6 +159,7 @@ expected_calls() {
 }
 
 test_a_fresh_run_writes_every_key_of_the_three_groups() {
+    have_python || return 0
     setup_sandbox
     run_window_rules
 
@@ -158,6 +169,7 @@ test_a_fresh_run_writes_every_key_of_the_three_groups() {
 }
 
 test_the_written_file_carries_the_groups_and_their_values() {
+    have_python || return 0
     setup_sandbox
     run_window_rules
 
@@ -167,6 +179,9 @@ test_the_written_file_carries_the_groups_and_their_values() {
 
     local content
     content="$(cat "$file")"
+    # The pairs below are a second assertion of the same contract the call log
+    # asserts: scripts/04a-window-rules.sh owns the key list, and this file asserts it
+    # in both forms on purpose, so a change has to be made deliberately in both.
     local pair
     for pair in \
         "opacityinactive=95" \
@@ -184,6 +199,7 @@ test_the_written_file_carries_the_groups_and_their_values() {
 }
 
 test_the_reload_is_called_once_and_last() {
+    have_python || return 0
     setup_sandbox
     run_window_rules
 
@@ -194,6 +210,7 @@ test_the_reload_is_called_once_and_last() {
 }
 
 test_only_the_own_groups_are_written() {
+    have_python || return 0
     setup_sandbox
     run_window_rules
 
@@ -218,6 +235,7 @@ test_only_the_own_groups_are_written() {
 }
 
 test_a_second_run_finds_nothing_to_do() {
+    have_python || return 0
     setup_sandbox
     run_window_rules
     assert_status 0 "$STATUS" "the first run should succeed"
@@ -231,6 +249,7 @@ test_a_second_run_finds_nothing_to_do() {
 }
 
 test_the_step_can_be_switched_off() {
+    have_python || return 0
     setup_sandbox
     run_window_rules APPLY_WINDOW_RULES=false
 
@@ -241,6 +260,7 @@ test_the_step_can_be_switched_off() {
 }
 
 test_a_missing_kwriteconfig6_warns_instead_of_failing() {
+    have_python || return 0
     setup_sandbox
     run_window_rules_without_kwriteconfig6
 
@@ -249,7 +269,26 @@ test_a_missing_kwriteconfig6_warns_instead_of_failing() {
     assert_eq "" "$(cat "$CALLS")" "nothing should be written or reloaded"
 }
 
+# A write kwriteconfig6 rejects - a read-only or unwritable kwinrulesrc - is not a
+# write that happened: it has to be warned about, and the rollup must not claim the
+# rules were applied, but it must not fail the install either.
+test_a_rejected_write_is_warned_about_rather_than_applied() {
+    have_python || return 0
+    setup_sandbox
+    recording_stub "$STUB_DIR" kwriteconfig6 "$CALLS" 1
+    run_window_rules
+
+    assert_status 0 "$STATUS" "a rejected write should not fail the install"
+    assert_contains "$(calls_to "$CALLS" kwriteconfig6)" "--key aboverule 2" \
+        "every key should still be attempted"
+    assert_contains "$OUTPUT" "[WARN]" "the rejection should be reported as a warning"
+    assert_contains "$OUTPUT" "could not be written" "the warning should say what happened"
+    assert_not_contains "$OUTPUT" "Applied " "a rejected write must not be reported as applied"
+    assert_not_contains "$OUTPUT" "Window rules applied." "and the rollup must not claim it either"
+}
+
 test_the_inactive_opacity_comes_from_the_environment() {
+    have_python || return 0
     setup_sandbox
     run_window_rules WINDOW_OPACITY=80
 
