@@ -357,17 +357,8 @@ GridLayout {
             Repeater {
                 model: ScriptModel {
                     values: {
-                        const ws = root.ws;
-                        let windows = [];
-                        const wins = Kwin.windowList;
-                        for (let i = 0; i < wins.length; ++i) {
-                            const w = wins[i];
-                            if (w.output !== root.screenName)
-                                continue;
-                            if (w.workspace && w.workspace.id === ws && !Kwin.isIgnoredWindow(w)) {
-                                windows.push(w);
-                            }
-                        }
+                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
+                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
 
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
@@ -419,17 +410,8 @@ GridLayout {
             Repeater {
                 model: ScriptModel {
                     values: {
-                        const ws = root.ws;
-                        let windows = [];
-                        const wins = Kwin.windowList;
-                        for (let i = 0; i < wins.length; ++i) {
-                            const w = wins[i];
-                            if (w.output !== root.screenName)
-                                continue;
-                            if (w.workspace && w.workspace.id === ws && !Kwin.isIgnoredWindow(w)) {
-                                windows.push(w);
-                            }
-                        }
+                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
+                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
 
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;

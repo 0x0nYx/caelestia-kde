@@ -80,7 +80,7 @@ Item {
             return [];
         const wsId = wsList[listView.currentIndex].index;
         const _ = Kwin.windowList;
-        return Kwin.windowsForWorkspace(wsId, false).filter(w => w.output === root.screen.name);
+        return Kwin.filterWindows(Kwin.windowsForWorkspace(wsId, false), null, root.screen.name);
     }
 
     signal requestWindowInfo(var client)
@@ -284,7 +284,7 @@ Item {
             readonly property var _winTrigger: Kwin.windowList
 
             function _updateWsWindows(): void {
-                const arr = Kwin.windowsForWorkspace(wsId, false).filter(w => w.output === root.screen.name);
+                const arr = Kwin.filterWindows(Kwin.windowsForWorkspace(wsId, false), null, root.screen.name);
 
                 let changed = arr.length !== wsWindows.length;
                 if (!changed) {

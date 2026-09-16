@@ -143,6 +143,63 @@ Singleton {
         return KWinActiveWindowBridge.windowsForWorkspace(workspace, includeAll ?? true);
     }
 
+    function activeWorkspaceFor(screenName: string): int {
+        const perOutput = (screenName && root.activeByOutput) ? root.activeByOutput[screenName] : 0;
+        return perOutput > 0 ? perOutput : (root.activeWsId > 0 ? root.activeWsId : 1);
+    }
+
+    function activeWorkspaceUuidFor(screenName: string): string {
+        const wsId = root.activeWorkspaceFor(screenName);
+        return (root.workspaces && wsId > 0 && wsId <= root.workspaces.length)
+            ? (root.workspaces[wsId - 1].id ?? "")
+            : "";
+    }
+
+    function isWindowOnWorkspace(win: var, wsTarget: var, includeAll: bool): bool {
+        if (!win)
+            return false;
+        const incAll = includeAll ?? true;
+        const ws = win.workspace;
+        let wsId = -1;
+        let wsUuid = "";
+        if (ws !== undefined && ws !== null) {
+            if (typeof ws === "object") {
+                wsId = ws.id ?? -1;
+                wsUuid = ws.uuid ?? "";
+            } else if (typeof ws === "number") {
+                wsId = ws;
+            } else if (typeof ws === "string") {
+                wsUuid = ws;
+            }
+        }
+        if (!wsUuid && win.workspaceUuid)
+            wsUuid = win.workspaceUuid;
+
+        if (wsId === -1 || wsId === 0 || (!wsId && !wsUuid))
+            return incAll;
+
+        if (typeof wsTarget === "number" && wsTarget > 0)
+            return wsId === wsTarget;
+        if (typeof wsTarget === "string" && wsTarget.length > 0)
+            return wsUuid === wsTarget;
+        return true;
+    }
+
+    function filterWindows(list: var, wsTarget: var, screenName: string, includeAllWorkspaces: bool): var {
+        const source = list || root.windowList || [];
+        const incAll = includeAllWorkspaces ?? true;
+        return source.filter(w => {
+            if (wsTarget !== undefined && wsTarget !== null && !root.isWindowOnWorkspace(w, wsTarget, incAll))
+                return false;
+            if (screenName) {
+                const out = w.output || w.monitor;
+                if (out && out !== screenName)
+                    return false;
+            }
+            return true;
+        });
+    }
+
     function cursorOutputName(): string {
         return KWinActiveWindowBridge.cursorOutputName();
     }
@@ -268,8 +325,7 @@ Singleton {
         const wins = root.windowList;
         const activeWin = root.activeWindow;
         const activeAddr = activeWin ? String(activeWin.address ?? "") : "";
-        const byOutput = root.activeByOutput;
-        const screenWsId = (byOutput && byOutput[screenName] !== undefined) ? byOutput[screenName] : root.activeWsId;
+        const screenWsId = root.activeWorkspaceFor(screenName);
         const activeWinWsId = activeWin?.workspace?.id ?? -1;
         const activeOnThisWs = activeWinWsId === -1 || screenWsId === -1 || activeWinWsId === screenWsId;
         const isActiveScreen = screenName && activeWin && activeWin.output === screenName && activeOnThisWs;
@@ -292,16 +348,12 @@ Singleton {
 
     function windowHidesDesktopWidgets(screenName: string, hideOnAll: bool): bool {
         const wins = root.windowList;
-        const byOutput = root.activeByOutput;
-        const globalActiveWs = root.activeWsId;
-
-        const getActiveWs = outName => (byOutput && byOutput[outName] !== undefined) ? byOutput[outName] : globalActiveWs;
 
         const isMaximizedOnWs = (win, outName) => {
             if (win.minimized === true || (!win.maximized && !win.fullscreen))
                 return false;
             const winWs = win.workspace?.id ?? -1;
-            const activeWs = getActiveWs(outName);
+            const activeWs = root.activeWorkspaceFor(outName);
             return activeWs === -1 || winWs === -1 || winWs === activeWs;
         };
 

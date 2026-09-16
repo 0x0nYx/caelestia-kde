@@ -122,25 +122,15 @@ Singleton {
         }
 
         // 4. Filter by current desktop if GlobalConfig.tabSwitch.currentDesktopOnly is active (KDE DesktopMode = 0)
-        if (GlobalConfig.tabSwitch?.currentDesktopOnly && true) {
-            const currentWsId = Kwin.activeWsId;
-            const currentWsUuid = (Kwin.workspaces && currentWsId > 0 && currentWsId <= Kwin.workspaces.length) 
-                ? Kwin.workspaces[currentWsId - 1].id 
-                : "";
-            currentItems = currentItems.filter(item => {
-                if (!item.workspace && !item.workspaceUuid) return true;
-                if (item.workspace === -1 || item.workspace === 0) return true;
-                if (item.workspace === currentWsId) return true;
-                if (currentWsUuid && item.workspaceUuid === currentWsUuid) return true;
-                return false;
-            });
+        if (GlobalConfig.tabSwitch?.currentDesktopOnly) {
+            currentItems = Kwin.filterWindows(currentItems, Kwin.activeWsId, "", true);
         }
 
         // 5. Filter by current screen if GlobalConfig.tabSwitch.allScreens is false (KDE MultiScreenMode = 1)
         if (GlobalConfig.tabSwitch && !GlobalConfig.tabSwitch.allScreens) {
             const activeOut = Kwin.activeOutputName || Kwin.cursorOutputName();
             if (activeOut) {
-                currentItems = currentItems.filter(item => !item.monitor || item.monitor === activeOut);
+                currentItems = Kwin.filterWindows(currentItems, null, activeOut, true);
             }
         }
 

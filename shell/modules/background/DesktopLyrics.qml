@@ -31,35 +31,7 @@ Item {
     readonly property string sansFont: GlobalConfig.appearance.font.body.family || "Sans Serif"
     readonly property int alignment: Config.background.desktopLyrics.alignment
     readonly property bool autoHide: Config.background.desktopLyrics.autoHide
-    readonly property bool windowHidesLyrics: {
-const wins = Kwin.windowList || [];
-const hideOnAll = Config.background.visualiser.hideOnAllMonitors;
-const currentScreenName = root.screen ? root.screen.name : "";
-const byOutput = Kwin.activeByOutput;
-const globalActiveWs = Kwin.activeWsId;
-
-const getActiveWs = outName => {
-    if (byOutput && byOutput[outName] !== undefined)
-        return byOutput[outName];
-    return globalActiveWs;
-};
-
-const isWindowMaximizedOnWs = (win, outName) => {
-    if (win.minimized === true)
-        return false;
-    if (!win.maximized && !win.fullscreen)
-        return false;
-    const winWs = win.workspace?.id ?? -1;
-    const activeWs = getActiveWs(outName);
-    return activeWs === -1 || winWs === -1 || winWs === activeWs;
-};
-
-if (hideOnAll) {
-    return wins.some(w => isWindowMaximizedOnWs(w, w.output || currentScreenName));
-} else {
-    return wins.some(w => (currentScreenName === "" || w.output === currentScreenName) && isWindowMaximizedOnWs(w, currentScreenName));
-}
-    }
+    readonly property bool windowHidesLyrics: Kwin.windowHidesDesktopWidgets(root.screen ? root.screen.name : "", Config.background.visualiser.hideOnAllMonitors)
     readonly property bool allWindowsFloating: !windowHidesLyrics
     readonly property bool shouldHide: autoHide && windowHidesLyrics
 
