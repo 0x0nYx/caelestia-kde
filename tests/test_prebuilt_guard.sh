@@ -17,10 +17,10 @@ extract_function() {
     ' "$BUILD_SHELL"
 }
 
-GUARD_SOURCE="$(extract_function shell_release_tag; extract_function checkout_is_release_revision)"
+GUARD_SOURCE="$(extract_function shell_release_tag; extract_function checkout_may_use_prebuilt)"
 
 if [[ -z "$GUARD_SOURCE" ]]; then
-    fail "could not find shell_release_tag/checkout_is_release_revision in scripts/08-build-shell.sh"
+    fail "could not find shell_release_tag/checkout_may_use_prebuilt in scripts/08-build-shell.sh"
     run_tests
     exit 1
 fi
@@ -43,7 +43,7 @@ seed_checkout() {
 allows_prebuilt() {
     local dir="$1" status
     BUNDLE_DIR="$dir" bash -c "$GUARD_SOURCE
-checkout_is_release_revision" >/dev/null 2>&1
+checkout_may_use_prebuilt" >/dev/null 2>&1
     status=$?
     [[ $status -eq 0 ]]
 }

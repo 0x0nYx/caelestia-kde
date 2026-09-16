@@ -617,7 +617,8 @@ unpack a damaged tree into `~/.local/lib/qt6/qml`.
 The archive is also only used for the revision it was built from: `main` sitting on its remote
 tip, or a checkout that is exactly the released tag (an update pinned to a version). A branch, a
 stale `main`, or a checkout carrying commits of its own builds locally, because the archive would
-replace that tree with the release's.
+replace that tree with the release's. `main` that has moved on since its last release cannot be
+told apart from that release, so it is installed as the release its `version.env` names.
 
 ---
 

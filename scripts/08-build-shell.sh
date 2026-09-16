@@ -263,9 +263,12 @@ shell_release_tag() {
 
 # The prebuilt archive holds one released revision, so it may only stand in for a
 # tree that is that revision: the released tag itself (an update pinned to a
-# version) or main sitting on its remote tip. A stale main, or one carrying
-# commits of its own, would silently lose them, so those build locally.
-checkout_is_release_revision() {
+# version) or main sitting on its remote tip. A branch, a stale main, or a
+# checkout carrying commits of its own builds locally instead of letting the
+# archive replace them. Main that has moved on since its last release cannot be
+# told apart from that release here - version.env still names it - so such a tree
+# is replaced by the release the archive was built from.
+checkout_may_use_prebuilt() {
     local head revision
     revision="$(shell_release_tag)"
     [[ -n "$revision" ]] || return 1
@@ -360,7 +363,7 @@ backup_shell_config || exit 1
 
 SHELL_PREBUILT=0
 if [[ -z "${CAELESTIA_FORCE_BUILD_SHELL:-}" ]] \
-    && checkout_is_release_revision \
+    && checkout_may_use_prebuilt \
     && command -v curl >/dev/null 2>&1; then
     if try_download_prebuilt_shell; then
         SHELL_PREBUILT=1
