@@ -107,11 +107,13 @@ Delete the `i18n/crowdin` branch before seeding if one is already there. The
 branch is where the workflow accumulates downloaded translations, and one left
 over from an earlier run carries that run's files into the next pull request.
 
-Only languages someone has actually translated are exported
-(`skip_untranslated_files`). Without it Crowdin writes a file for every target
-language on the project, and a catalog of nothing but untranslated entries
-still compiles and still appears in the language picker as a language that
-renders in English.
+Every language on the project is exported, so a language nobody is translating
+has to be taken off the project rather than filtered at export time. An empty
+catalog still compiles and still appears in the picker, rendering in English.
+`skip_untranslated_files` was on for a while to avoid that, but it omits any
+file that is not fully translated, and machine translation leaves a language a
+few strings short of the end, so it held back everything except the languages
+that happened to reach 100%.
 
 English must not be added as a target language on the project. It is the source,
 so there is nothing to translate into it: Crowdin lists it at 0% forever, and

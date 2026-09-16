@@ -71,7 +71,11 @@ jobs:
           upload_translations: ${{ inputs.seed_translations == true }}
           auto_approve_imported: ${{ inputs.seed_translations == true }}
           download_translations: true
-          skip_untranslated_files: true
+          # Off on purpose. On, it omits any file that is not fully translated,
+          # which held back every language machine translation left a few
+          # strings short. The languages at 0% come off the project instead, so
+          # there is no untranslated catalogue to leak into the picker.
+          skip_untranslated_files: false
           # Without these the action checks out GITHUB_REF itself -- main, on a
           # scheduled run -- and targets the default branch with the PR.
           skip_ref_checkout: true
