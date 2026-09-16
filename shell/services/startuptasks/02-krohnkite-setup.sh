@@ -1,16 +1,54 @@
 #!/usr/bin/env bash
 
+# Window classes Krohnkite leaves untiled. Krohnkite compares an entry against the
+# window class and the resource name exactly, ignoring case, so an app that can
+# report either the bare name or the reverse-DNS class gets both spellings. An
+# entry that is a prefix of a longer one goes first, because the membership probe
+# below is a word-boundary grep. The entries from org.pulseaudio.pavucontrol on
+# are the dialog and settings classes upstream Hyprland floats.
+IGNORE_CLASSES=(
+    krunner
+    yakuake
+    spectacle
+    kded5
+    xwaylandvideobridge
+    plasmashell
+    ksplashqml
+    org.kde.plasmashell
+    org.kde.polkit-kde-authentication-agent-1
+    quickshell
+    org.quickshell
+    org.pulseaudio.pavucontrol
+    com.saivert.pwvucontrol
+    yad
+    yad-icon-browser
+    system-config-printer
+    nwg-look
+    org.gnome.Settings
+    org.gnome.FileRoller
+    file-roller
+    blueman-manager
+    guifetch
+    wev
+    zenity
+    feh
+    imv
+    swappy
+)
+
+has_ignore_class() {
+    grep -q "\b${2}\b" <<< "$1"
+}
+
+# The default, and any list the user already customised, gain only the entries
+# they are missing. The write stays unconditional so a shell start re-asserts it.
 IGNORE_CLASS=$(kreadconfig6 --file kwinrc --group Script-krohnkite --key ignoreClass 2>/dev/null)
-if [[ -z "$IGNORE_CLASS" ]]; then
-    # Default list if missing, plus quickshell
-    NEW_IGNORE="krunner,yakuake,spectacle,kded5,xwaylandvideobridge,plasmashell,ksplashqml,org.kde.plasmashell,org.kde.polkit-kde-authentication-agent-1,quickshell"
-else
-    if ! echo "$IGNORE_CLASS" | grep -q '\bquickshell\b'; then
-        NEW_IGNORE="${IGNORE_CLASS},quickshell"
-    else
-        NEW_IGNORE="$IGNORE_CLASS"
+NEW_IGNORE="$IGNORE_CLASS"
+for class in "${IGNORE_CLASSES[@]}"; do
+    if ! has_ignore_class "$NEW_IGNORE" "$class"; then
+        NEW_IGNORE="${NEW_IGNORE:+$NEW_IGNORE,}$class"
     fi
-fi
+done
 kwriteconfig6 --file kwinrc --group Script-krohnkite --key ignoreClass "$NEW_IGNORE"
 
 # Set default tiling gaps for Krohnkite
@@ -36,7 +74,7 @@ kwriteconfig6 --file kwinrc --group Script-krohnkite --key floatingLayoutOrder 2
 
 
 
-echo "StartupTasks: Added quickshell to Krohnkite exceptions, configured layouts and shortcuts"
+echo "StartupTasks: Updated Krohnkite exceptions, configured layouts and shortcuts"
 
 # Return 1 to indicate KWin reconfigure is needed
 exit 1
