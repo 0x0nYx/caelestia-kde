@@ -363,7 +363,11 @@ if [[ -z "$SELECTED_KNSV" ]]; then
     MANUAL_KDE_RESTORE_COUNT=0
     if [[ -n "$SELECTED_BACKUP" ]]; then
         info "Restoring core KDE configuration files from backup..."
-        for kde_cfg in kdeglobals ksplashrc plasmarc kwinrc kcminputrc plasma-org.kde.plasma.desktop-appletsrc; do
+        # kwinrulesrc belongs in this list because 00-backup-themes.sh saves it with
+        # the other KDE configuration files, so the fallback has to put it back.
+        for kde_cfg in \
+            kdeglobals ksplashrc plasmarc kwinrc kwinrulesrc kcminputrc \
+            plasma-org.kde.plasma.desktop-appletsrc; do
             if [[ -f "$SELECTED_BACKUP/.config/$kde_cfg" ]]; then
                 if cp "$SELECTED_BACKUP/.config/$kde_cfg" "$HOME/.config/$kde_cfg"; then
                     ((MANUAL_KDE_RESTORE_COUNT++))
@@ -398,7 +402,8 @@ ok "Disabled KWin plugins: quickshell-kde-bridge, krohnkite, kwin_workspace_trac
 # The three rule groups the installer writes are removed one key at a time. The
 # list is explicit rather than a file-wide reset because kwinrulesrc also holds the
 # user's own rules, and kwriteconfig6 can only delete a key, never a whole group.
-# A group leaves the file once no keys are left in it.
+# A group leaves the file once no keys are left in it. scripts/04a-window-rules.sh
+# owns this key list: changing one means changing the other.
 kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "Description"         --delete 2>/dev/null || true
 kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "types"               --delete 2>/dev/null || true
 kwriteconfig6 --file kwinrulesrc --group "caelestia-opacity" --key "opacityinactive"     --delete 2>/dev/null || true
