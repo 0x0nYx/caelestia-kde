@@ -64,6 +64,13 @@ QtObject {
             "icon": "auto_awesome",
             "title": qsTr("A New Name and Look"),
             "description": qsTr("The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.")
+        },
+        {
+            "id": "dock_workspace_and_preview",
+            "revision": 16,
+            "icon": "dock_to_bottom",
+            "title": qsTr("Dock Desktop Filtering & Live Previews"),
+            "description": qsTr("The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -> Panels -> Taskbar -> Dock.")
         }
     ]
 

@@ -913,7 +913,28 @@ Item {
         root.modelUpdateTrigger += 1;
     }
 
-    property var _toplevels: Kwin.windowList
+    property var _toplevels: {
+        const wins = Kwin.windowList || [];
+        if (Config.bar.dock.currentDesktopOnly) {
+            const perOutput = (bar?.screen && Kwin.activeByOutput) ? Kwin.activeByOutput[bar.screen.name] : 0;
+            const currentWsId = perOutput > 0 ? perOutput : Kwin.activeWsId;
+            const currentWsUuid = (Kwin.workspaces && currentWsId > 0 && currentWsId <= Kwin.workspaces.length)
+                ? Kwin.workspaces[currentWsId - 1].id
+                : "";
+            return wins.filter(item => {
+                const ws = item.workspace;
+                if (!ws) return true;
+                const wsId = ws.id;
+                const wsUuid = ws.uuid;
+                if (!wsId && !wsUuid) return true;
+                if (wsId === -1 || wsId === 0) return true;
+                if (wsId === currentWsId) return true;
+                if (currentWsUuid && wsUuid === currentWsUuid) return true;
+                return false;
+            });
+        }
+        return wins;
+    }
 
     on_ToplevelsChanged: {
         root.rebuildModel()
@@ -948,6 +969,28 @@ Item {
 
         function onIsHorizontalChanged(): void {
             scrollAnim.stop();
+        }
+    }
+
+    Connections {
+        target: Kwin
+
+        function onActiveWsIdChanged(): void {
+            if (Config.bar.dock.currentDesktopOnly)
+                root.rebuildModel();
+        }
+
+        function onActiveByOutputChanged(): void {
+            if (Config.bar.dock.currentDesktopOnly)
+                root.rebuildModel();
+        }
+    }
+
+    Connections {
+        target: Config.bar.dock
+
+        function onCurrentDesktopOnlyChanged(): void {
+            root.rebuildModel();
         }
     }
 

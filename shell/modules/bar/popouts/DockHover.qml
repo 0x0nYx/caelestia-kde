@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -36,6 +38,7 @@ StyledRect {
     // fallback below is the correct thing to show.
 
     function closeToplevel(address: string): void {
+        Kwin.clearHighlight();
         if (Kwin.windowList.length > 0) {
             Kwin.closeWindow(address);
         } else {
@@ -55,6 +58,10 @@ StyledRect {
         }
 
         root.popouts.dockModel = Object.assign({}, root.model, { toplevels: remaining });
+    }
+
+    Component.onDestruction: {
+        Kwin.clearHighlight();
     }
     radius: Tokens.rounding.medium
     color: Colours.tPalette.m3surfaceContainer
@@ -158,11 +165,22 @@ StyledRect {
 
                     HoverHandler {
                         id: cardHover
+
+                        onHoveredChanged: {
+                            if (hovered && card.modelData?.address) {
+                                if (Config.bar.dock.previewOnDesktop)
+                                    Kwin.highlightWindow(card.modelData.address);
+                            } else {
+                                Kwin.clearHighlight();
+                            }
+                        }
                     }
+
                     StateLayer {
                         anchors.fill: parent
                         radius: parent.radius
                         onClicked: {
+                            Kwin.clearHighlight();
                             if (card.modelData.address) {
                                 if (Kwin.windowList.length > 0) {
                                     Kwin.focusWindow(card.modelData.address);
@@ -311,5 +329,14 @@ StyledRect {
             }
             Layout.alignment: Qt.AlignHCenter
         }
+    }
+
+    Connections {
+        function onHasCurrentChanged(): void {
+            if (!root.popouts.hasCurrent)
+                Kwin.clearHighlight();
+        }
+
+        target: root.popouts
     }
 }

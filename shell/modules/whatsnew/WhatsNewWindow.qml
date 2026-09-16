@@ -229,7 +229,6 @@ FloatingWindow {
                         root.openEntry(entry);
                 }
 
-                anchors.fill: parent
                 state: root.hasAnimated ? "loaded" : "startup"
 
                 Keys.onEscapePressed: root.dismiss()
@@ -490,7 +489,7 @@ FloatingWindow {
 
                         IconButton {
                             icon: "arrow_back"
-                            type: IconButton.Standard
+                            type: IconButton.Tonal
                             onClicked: stackView.pop()
                         }
 
