@@ -15,6 +15,7 @@ This document catalogs known failure modes, error conditions, and edge cases dis
 5. [Configuration Issues](#5-configuration-issues)
 6. [Network & Proxy Issues](#6-network--proxy-issues)
 7. [KDE & Plasma Specific Issues](#7-kde--plasma-specific-issues)
+   1. [Installer Window Rules](#77-installer-window-rules)
 8. [Post-Install Issues](#8-post-install-issues)
 9. [Uninstall Issues](#9-uninstall-issues)
 10. [Update Issues](#10-update-issues)
@@ -525,6 +526,44 @@ sudo /usr/share/sddm/themes/caelestia/scripts/sync.sh   # SDDM
 
 Both greeters read their configuration when they start, so a change is visible at
 the next logout rather than immediately.
+
+### 7.7 Installer Window Rules
+
+The installer writes three groups into `~/.config/kwinrulesrc`. `caelestia-opacity`
+gives normal windows and dialogs an inactive opacity of 95 percent,
+`caelestia-dialogs` forces centered placement on dialogs, and `caelestia-pip` keeps
+windows whose title matches `Picture(-| )in(-| )[Pp]icture` above others. Opacity is
+a per-activation-state key, so a window is dimmed only while it is not focused, and
+the dialog rule is the one that can disagree with a placement policy chosen in
+System Settings.
+
+To read a value back:
+
+```bash
+kreadconfig6 --file kwinrulesrc --group caelestia-opacity --key opacityinactive
+kreadconfig6 --file kwinrulesrc --group caelestia-dialogs --key placement
+kreadconfig6 --file kwinrulesrc --group caelestia-pip --key above
+```
+
+To remove the rules, delete the three `[caelestia-...]` sections out of the file, or
+delete the key that switches each group on. KWin does not watch kwinrulesrc, so the
+reload is not optional:
+
+```bash
+kwriteconfig6 --file kwinrulesrc --group caelestia-opacity \
+    --key opacityinactiverule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-dialogs \
+    --key placementrule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-pip --key aboverule --delete
+qdbus6 org.kde.KWin /KWin reconfigure
+```
+
+A group left with no keys applies nothing, so leaving the empty section behind is
+harmless. To not have the rules written at all, run the installer with
+`APPLY_WINDOW_RULES=false` in the environment
+(`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`), which is what the installer's
+configuration menu toggle sets; `WINDOW_OPACITY` changes the percentage the opacity
+rule writes.
 
 ---
 
