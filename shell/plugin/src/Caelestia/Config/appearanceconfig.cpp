@@ -1,7 +1,8 @@
 #include "appearanceconfig.hpp"
-#include "tokens.hpp"
 
 #include <qmetaobject.h>
+
+#include "tokens.hpp"
 
 namespace caelestia::config {
 
@@ -162,7 +163,7 @@ void AppearanceFont::bindFont() {
     const auto sans = QStringLiteral("SF Pro");
     const auto mono = QStringLiteral("SF Mono");
     const auto icons = QStringLiteral("Material Symbols Rounded");
-    const QVariantMap vaxes = { { "ROND", 25 } };
+    const QVariantMap vaxes = { { QStringLiteral("ROND"), 25 } };
 
     m_headline->setDefaultFamily(sans);
     m_headline->large()->setDefaults(32, QFont::Medium, vaxes);

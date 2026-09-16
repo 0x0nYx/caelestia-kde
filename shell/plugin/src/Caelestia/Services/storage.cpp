@@ -6,6 +6,7 @@
 #include <qhash.h>
 #include <qloggingcategory.h>
 #include <qstorageinfo.h>
+#include <qtconcurrentrun.h>
 
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
@@ -18,12 +19,6 @@ Q_LOGGING_CATEGORY(lcStorage, "caelestia.services.storage", QtInfoMsg)
 namespace caelestia::services {
 
 namespace {
-
-struct Accum {
-    quint64 usedBytes = 0;
-    quint64 totalBytes = 0;
-    bool hasRoot = false;
-};
 
 [[nodiscard]] QString sysfsRealPath(uint major, uint minor) {
     const QString link = QStringLiteral("/sys/dev/block/%1:%2").arg(major).arg(minor);
@@ -100,7 +95,12 @@ QStringList resolveByDevt(uint major, uint minor, int depth) {
 } // namespace
 
 Storage::Storage(QObject* parent)
-    : TickingService(parent) {}
+    : TickingService(parent)
+    , m_futureWatcher(new QFutureWatcher<AccumHash>(this)) {
+    QObject::connect(m_futureWatcher, &QFutureWatcher<AccumHash>::finished, this, [this] {
+        applyDisks(m_futureWatcher->result());
+    });
+}
 
 qreal Storage::percentage() const {
     qreal totalUsed = 0.0;
@@ -206,20 +206,16 @@ QStringList Storage::resolveToPhysicalDisks(const QString& devicePath) {
 }
 
 void Storage::tick() {
-    const qreal prevPercentage = percentage();
-    QHash<QString, Accum> byDisk;
+    if (m_futureWatcher->isRunning()) {
+        return;
+    }
 
-    // Multiple mounts can share a single backing filesystem (btrfs subvolumes,
-    // bind mounts, etc.) and each one reports identical bytesTotal/bytesAvailable.
-    // Dedupe by source device so the filesystem only contributes once per disk.
-    struct DeviceEntry {
-        quint64 totalBytes = 0;
-        quint64 usedBytes = 0;
-        bool hasRoot = false;
-        QByteArray device;
-        QByteArray fsType;
-    };
+    m_futureWatcher->setFuture(QtConcurrent::run([] {
+        return foldToDisks(collectDevices());
+    }));
+}
 
+QHash<QByteArray, Storage::DeviceEntry> Storage::collectDevices() {
     QHash<QByteArray, DeviceEntry> byDevice;
 
     const auto mountedVols = QStorageInfo::mountedVolumes();
@@ -244,6 +240,12 @@ void Storage::tick() {
         e.usedBytes = usedBytes;
         e.hasRoot = e.hasRoot || isRoot;
     }
+
+    return byDevice;
+}
+
+Storage::AccumHash Storage::foldToDisks(const QHash<QByteArray, DeviceEntry>& byDevice) {
+    QHash<QString, Accum> byDisk;
 
     for (auto it = byDevice.constBegin(); it != byDevice.constEnd(); ++it) {
         const DeviceEntry& e = it.value();
@@ -277,6 +279,12 @@ void Storage::tick() {
             a.hasRoot = a.hasRoot || e.hasRoot;
         }
     }
+
+    return byDisk;
+}
+
+void Storage::applyDisks(const AccumHash& byDisk) {
+    const qreal prevPercentage = percentage();
 
     QHash<QString, DiskInfo*> existing;
     existing.reserve(m_disks.size());

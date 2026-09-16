@@ -75,6 +75,8 @@ StyledRect {
                 MaterialIcon {
                     animate: true
                     text: {
+                        if (inputField.showPassword)
+                            return "visibility";
                         if (root.lock.pam.fprint.tries >= GlobalConfig.lock.maxFprintTries)
                             return "fingerprint_off";
                         if (root.lock.pam.fprint.active)
@@ -83,6 +85,30 @@ StyledRect {
                     }
                     color: root.lock.pam.fprint.tries >= GlobalConfig.lock.maxFprintTries ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
                     fontStyle: Tokens.font.icon.builders.medium.scale(root.centerScale).build()
+                    fill: text === "visibility"
+
+                    StateLayer {
+                        anchors.fill: undefined
+                        anchors.centerIn: parent
+                        implicitWidth: {
+                            const w = parent.implicitHeight + Tokens.padding.small * 2;
+                            return w + (w % 2);
+                        }
+                        implicitHeight: implicitWidth
+                        radius: Tokens.rounding.full
+
+                        Accessible.role: Accessible.Button
+                        Accessible.name: inputField.showPassword ? qsTr("Hide password") : qsTr("Show password")
+                        Accessible.description: qsTr("Reveal what has been typed into the password field")
+
+                        onClicked: {
+                            // The icon swaps to a different glyph, and animating that
+                            // reads as a glitch, so it is turned off for the swap.
+                            parent.animate = false;
+                            inputField.showPassword = !inputField.showPassword;
+                            parent.animate = true;
+                        }
+                    }
                 }
             }
 

@@ -30,10 +30,17 @@ PageBase {
         }
 
         ToggleRow {
-            last: true
             text: qsTr("Show icon")
             checked: Config.bar.clock.showIcon
             onToggled: GlobalConfig.bar.clock.showIcon = checked
+        }
+
+        ToggleRow {
+            last: true
+            text: qsTr("Show seconds")
+            subtext: qsTr("Add a seconds line to the clock")
+            checked: Config.bar.clock.showSeconds
+            onToggled: GlobalConfig.bar.clock.showSeconds = checked
         }
     }
 }

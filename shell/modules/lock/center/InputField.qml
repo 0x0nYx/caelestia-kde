@@ -21,6 +21,7 @@ Item {
     readonly property alias placeholder: placeholder
     readonly property alias placeholderWidth: nonAnimPlaceholder.width
     property string buffer
+    property bool showPassword
     readonly property list<int> shapeQueue: {
         const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Fan, MaterialShape.Arrow, MaterialShape.SemiCircle, MaterialShape.Triangle, MaterialShape.Diamond, MaterialShape.ClamShell, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.Sunny, MaterialShape.VerySunny, MaterialShape.Cookie4Sided, MaterialShape.Ghostish, MaterialShape.SoftBurst];
         for (let i = shapes.length - 1; i > 0; i--) {
@@ -39,6 +40,9 @@ Item {
             } else if (root.pam.buffer.length === 0) {
                 charList.implicitWidth = charList.implicitWidth;
                 placeholder.animate = true;
+                // An empty field starts hidden again: revealing the last password
+                // must not carry over to the next attempt.
+                root.showPassword = false;
             }
 
             root.buffer = root.pam.buffer;
@@ -143,6 +147,15 @@ Item {
             shape: root.shapeQueue[ch.index % root.shapeQueue.length] ?? MaterialShape.Circle
             color: Colours.palette.m3onSurface
 
+            // The mask hides while the real character is shown, so the two cannot
+            // be on screen at once.
+            opacity: root.showPassword ? 0 : 1
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
+                }
+            }
             Behavior on color {
                 CAnim {}
             }
@@ -154,14 +167,14 @@ Item {
 
                 ParallelAnimation {
                     Anim {
-                        target: charShape
+                        target: ch
                         property: "opacity"
                         from: 0
                         to: 1
                         type: Anim.DefaultEffects
                     }
                     Anim {
-                        target: charShape
+                        target: ch
                         property: "scale"
                         from: 0
                         to: 1
@@ -220,12 +233,12 @@ Item {
                 ParallelAnimation {
                     Anim {
                         type: Anim.DefaultEffects
-                        target: charShape
+                        target: ch
                         property: "opacity"
                         to: 0
                     }
                     Anim {
-                        target: charShape
+                        target: ch
                         property: "scale"
                         to: 0.5
                     }
@@ -234,6 +247,26 @@ Item {
                     target: ch
                     property: "ListView.delayRemove"
                     value: false
+                }
+            }
+        }
+
+        Loader {
+            id: textLoader
+
+            anchors.centerIn: parent
+
+            opacity: root.showPassword ? 1 : 0
+            active: opacity > 0
+            asynchronous: true
+
+            sourceComponent: StyledText {
+                text: root.buffer[ch.index]
+            }
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.DefaultEffects
                 }
             }
         }

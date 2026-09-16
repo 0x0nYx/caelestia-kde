@@ -26,8 +26,19 @@ GridLayout {
     readonly property real scaleFactor: rawScale < 1.0 ? Math.sqrt(Math.max(0.1, rawScale)) : rawScale
     readonly property int barThickness: Math.round(Tokens.sizes.bar.innerWidth * scaleFactor)
 
+    readonly property bool isActive: activeWsId === ws
+    // An inactive, empty workspace keeps its pill only when the user wants the
+    // full strip; otherwise it collapses to nothing.
+    readonly property bool shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || isActive
+    // Animated rather than a plain flag so the pills after a collapsed workspace
+    // close the gap instead of jumping. Everything that measures this item
+    // (OccupiedBg, ActiveIndicator) goes through `size`, so that has to shrink
+    // with the animation as well.
+    property real reveal: shouldShow ? 1 : 0
+    readonly property real revealProgress: Math.max(0, Math.min(1, reveal))
+
     // Unanimated prop for others to use as reference
-    readonly property int size: isHorizontal ? (implicitWidth + (hasWindows ? Tokens.padding.extraSmall : 0)) : (implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0))
+    readonly property real size: ((isHorizontal ? implicitWidth : implicitHeight) + (hasWindows ? Tokens.padding.extraSmall : 0)) * revealProgress
 
     readonly property int ws: groupOffset + index + 1
     readonly property int maxIcons: Config.bar.workspaces.maxWindowIcons
@@ -50,6 +61,15 @@ GridLayout {
 
     columnSpacing: 0
     rowSpacing: 0
+
+    visible: shouldShow || revealProgress > 0
+    opacity: revealProgress
+
+    Behavior on reveal {
+        Anim {
+            type: Anim.DefaultEffects
+        }
+    }
 
     Loader {
         id: indicator
@@ -130,7 +150,7 @@ GridLayout {
 
             readonly property real swipeWeight: {
                 if (!isSwiping || rawSwipeOffset === 0.0) return active ? 1.0 : 0.0;
-                
+
                 // Use swipeStartWsId to prevent KWin desyncs when activeWsId changes before rawSwipeOffset resets
                 const startId = swipeStartWsId !== -1 ? swipeStartWsId : root.activeWsId;
                 const activeIdx = startId - 1;
@@ -348,7 +368,7 @@ GridLayout {
                                 windows.push(w);
                             }
                         }
-                   
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");
@@ -410,7 +430,7 @@ GridLayout {
                                 windows.push(w);
                             }
                         }
-                   
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");

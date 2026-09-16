@@ -101,9 +101,7 @@ int Requests::registerReply(QNetworkReply* reply, QJSValue callback, QJSValue on
         const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         const bool httpError = status > 0 && (status < 200 || status >= 300);
         const bool isError = reply->error() != QNetworkReply::NoError || httpError;
-        const QString error = httpError
-            ? QStringLiteral("HTTP status %1").arg(status)
-            : reply->errorString();
+        const QString error = httpError ? QStringLiteral("HTTP status %1").arg(status) : reply->errorString();
 
         if (isError && !it->isDownload) {
             // Standard GET/POST error path
@@ -143,7 +141,7 @@ int Requests::registerReply(QNetworkReply* reply, QJSValue callback, QJSValue on
 
         // Success path for GET/POST
         if (it->onComplete.isCallable()) {
-            it->onComplete.call({ QString(reply->readAll()), status });
+            it->onComplete.call({ QString::fromUtf8(reply->readAll()), status });
         }
 
         cleanupRequest(reqId);
@@ -224,8 +222,8 @@ int Requests::get(const QUrl& url, QJSValue callback, QJSValue onError, QJSValue
     return registerReply(reply, callback, onError, timeoutMs);
 }
 
-int Requests::post(const QUrl& url, const QByteArray& body, const QString& contentType,
-                   QJSValue callback, QJSValue onError, QJSValue headers, int timeoutMs) {
+int Requests::post(const QUrl& url, const QByteArray& body, const QString& contentType, QJSValue callback,
+    QJSValue onError, QJSValue headers, int timeoutMs) {
     if (!callback.isCallable()) {
         qCWarning(lcRequests) << "post: callback is not callable";
         return -1;
@@ -237,8 +235,8 @@ int Requests::post(const QUrl& url, const QByteArray& body, const QString& conte
     return registerReply(reply, callback, onError, timeoutMs);
 }
 
-int Requests::download(const QUrl& url, const QString& destPath, QJSValue onComplete,
-                       QJSValue onProgress, QJSValue onError, QJSValue headers, int timeoutMs) {
+int Requests::download(const QUrl& url, const QString& destPath, QJSValue onComplete, QJSValue onProgress,
+    QJSValue onError, QJSValue headers, int timeoutMs) {
     if (!onComplete.isCallable()) {
         qCWarning(lcRequests) << "download: onComplete callback is not callable";
         return -1;
@@ -254,12 +252,11 @@ int Requests::download(const QUrl& url, const QString& destPath, QJSValue onComp
 
     const QFileInfo destination(destPath);
     if (!QDir().mkpath(destination.absolutePath())) {
-        const QString error = QStringLiteral("Cannot create destination directory: ")
-            + destination.absolutePath();
+        const QString error = QStringLiteral("Cannot create destination directory: ") + destination.absolutePath();
         reply->abort();
         reply->deleteLater();
         if (onError.isCallable()) {
-            onError.call({error, 0});
+            onError.call({ error, 0 });
         }
         return -1;
     }
@@ -312,7 +309,6 @@ int Requests::download(const QUrl& url, const QString& destPath, QJSValue onComp
         }
     });
 
-
     // ── progress ──────────────────────────────────────────────
     QObject::connect(reply, &QNetworkReply::downloadProgress, this, [this, reqId](qint64 received, qint64 total) {
         emit downloadProgress(reqId, received, total);
@@ -334,9 +330,7 @@ int Requests::download(const QUrl& url, const QString& destPath, QJSValue onComp
         const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         const bool httpError = status > 0 && (status < 200 || status >= 300);
         bool isError = reply->error() != QNetworkReply::NoError || httpError;
-        QString error = httpError
-            ? QStringLiteral("HTTP status %1").arg(status)
-            : reply->errorString();
+        QString error = httpError ? QStringLiteral("HTTP status %1").arg(status) : reply->errorString();
 
         // Flush any remaining bytes not yet delivered via readyRead.
         if (it->destFile && it->destFile->isOpen()) {

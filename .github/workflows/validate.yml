@@ -243,6 +243,33 @@ jobs:
       - name: Run shell quality checks
         run: bash .github/scripts/check_shell_quality.sh
 
+  # Job 15: C++ formatting - the files this change touches, against shell/.clang-format.
+  # The plugin has a backlog of files that predate the formatter, so the check is
+  # scoped to changed files rather than the whole tree.
+  cpp-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Two commits, so a push can diff against its parent.
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Fetch the base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+
+      - name: Install clang-format
+        run: pip install clang-format==22.1.8
+
+      - name: Check C++ formatting
+        run: python3 .github/scripts/check_cpp_format.py
+
   validate-gate:
     needs:
       - python-quality
@@ -258,6 +285,7 @@ jobs:
       - qml-imports
       - qml-template-interp
       - shell-quality
+      - cpp-format
     runs-on: ubuntu-latest
     if: always()
     steps:

@@ -9,7 +9,7 @@ import qs.utils
 Singleton {
     id: root
 
-    // Three settings changed shape in this release rather than value, and none of them
+    // Four settings changed shape in this release rather than value, and none of them
     // can be fixed by a different default: a key the user has written wins over the
     // default, and an array they have written replaces the default whole. So the
     // retired keys are read here, their meaning is carried into whatever succeeded
@@ -134,9 +134,29 @@ Singleton {
         utilities.quickToggles = next;
     }
 
+    // The two temperature switches became TemperatureUnit enums, so that Kelvin is
+    // reachable and so that one enum describes both places temperatures are shown. A
+    // boolean still in the config decides its enum, otherwise a config that asked for
+    // Fahrenheit would come back to Celsius, which is what the enum defaults to once
+    // the key it was written under is gone.
+    function migrateTemperatureUnits(): void {
+        const services = GlobalConfig.services;
+
+        if (services.isOverride("useFahrenheit")) {
+            services.weatherUnits = services.useFahrenheit ? TemperatureUnit.Fahrenheit : TemperatureUnit.Celsius;
+            services.resetOption("useFahrenheit");
+        }
+
+        if (services.isOverride("useFahrenheitPerformance")) {
+            services.sensorUnits = services.useFahrenheitPerformance ? TemperatureUnit.Fahrenheit : TemperatureUnit.Celsius;
+            services.resetOption("useFahrenheitPerformance");
+        }
+    }
+
     Component.onCompleted: {
         root.migrateWorkspaceDisplay();
         root.migrateQuickToggles();
+        root.migrateTemperatureUnits();
         orderReader.running = true;
     }
 

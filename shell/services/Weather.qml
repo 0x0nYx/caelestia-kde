@@ -6,6 +6,7 @@ import Quickshell.Io
 import Caelestia
 import Caelestia.Config
 import Caelestia.Services as CServices
+import qs.services
 import qs.utils
 
 Singleton {
@@ -48,10 +49,10 @@ Singleton {
     property list<var> locationSearchResults: []
     property int locationSearchToken: 0
 
-    function formatTemp(temp) {
-        if (temp === undefined || temp === null || isNaN(temp))
-            return GlobalConfig.services.useFahrenheit ? "--°F" : "--°C";
-        return CServices.Weather.formatTemp(temp);
+    function formatTemp(temp, compact = false) {
+        const unit = GlobalConfig.services.weatherUnits;
+        const value = temp === undefined || temp === null || isNaN(temp) ? "--" : Math.round(Units.toTemperature(temp, unit));
+        return Units.formatTemp(value, unit, compact);
     }
 
     function reload() {

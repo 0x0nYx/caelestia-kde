@@ -1,11 +1,12 @@
 #include "discordipc.hpp"
-#include <QStandardPaths>
+
+#include <QCoreApplication>
+#include <QDataStream>
+#include <QDateTime>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QDebug>
-#include <QDataStream>
-#include <QCoreApplication>
-#include <QDateTime>
+#include <QStandardPaths>
 
 namespace caelestia {
 
@@ -18,9 +19,11 @@ enum class Opcode : int32_t {
 };
 
 DiscordIpc::DiscordIpc(QObject* parent)
-    : QObject(parent), m_socket(new QLocalSocket(this)), m_reconnectTimer(new QTimer(this)),
-      m_connectTimeout(new QTimer(this)), m_connected(false)
-{
+    : QObject(parent)
+    , m_socket(new QLocalSocket(this))
+    , m_reconnectTimer(new QTimer(this))
+    , m_connectTimeout(new QTimer(this))
+    , m_connected(false) {
     connect(m_socket, &QLocalSocket::connected, this, &DiscordIpc::onSocketConnected);
     connect(m_socket, &QLocalSocket::disconnected, this, &DiscordIpc::onSocketDisconnected);
     connect(m_socket, &QLocalSocket::readyRead, this, &DiscordIpc::onReadyRead);
@@ -73,22 +76,25 @@ void DiscordIpc::disconnectIpc() {
 }
 
 void DiscordIpc::checkReconnect() {
-    if (m_clientId.isEmpty()) return;
-    if (m_socket->state() == QLocalSocket::ConnectedState || m_socket->state() == QLocalSocket::ConnectingState) return;
+    if (m_clientId.isEmpty())
+        return;
+    if (m_socket->state() == QLocalSocket::ConnectedState || m_socket->state() == QLocalSocket::ConnectingState)
+        return;
 
     const QString runtimeDir = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
 
     m_pendingPaths.clear();
     for (int slot = 0; slot <= 9; ++slot)
-        m_pendingPaths << runtimeDir + "/discord-ipc-" + QString::number(slot);
+        m_pendingPaths << runtimeDir + QStringLiteral("/discord-ipc-") + QString::number(slot);
 
     static const QStringList flatpakIds = {
-        "com.discordapp.Discord",
-        "dev.vencord.Vesktop",
+        QStringLiteral("com.discordapp.Discord"),
+        QStringLiteral("dev.vencord.Vesktop"),
     };
     for (const auto& id : flatpakIds)
         for (int slot = 0; slot <= 9; ++slot)
-            m_pendingPaths << runtimeDir + "/app/" + id + "/discord-ipc-" + QString::number(slot);
+            m_pendingPaths << runtimeDir + QStringLiteral("/app/") + id + QStringLiteral("/discord-ipc-") +
+                                  QString::number(slot);
 
     tryNextPath();
 }
@@ -116,8 +122,8 @@ void DiscordIpc::onSocketConnected() {
     m_pendingPaths.clear();
 
     QJsonObject payload;
-    payload["v"] = 1;
-    payload["client_id"] = m_clientId;
+    payload[QStringLiteral("v")] = 1;
+    payload[QStringLiteral("client_id")] = m_clientId;
     sendFrame(static_cast<int>(Opcode::Handshake), payload);
 }
 
@@ -147,7 +153,7 @@ void DiscordIpc::onReadyRead() {
         int32_t opcode;
         int32_t length;
         stream >> opcode >> length;
-        
+
         if (length < 0 || length > 1024 * 1024) { // 1MB clamp to prevent hangs
             qWarning() << "DiscordIPC: Malformed frame length received:" << length << "- aborting connection.";
             m_socket->abort();
@@ -171,8 +177,10 @@ void DiscordIpc::onReadyRead() {
 
 void DiscordIpc::processPayload(int opcode, const QJsonObject& payload) {
     if (opcode == static_cast<int>(Opcode::Frame)) {
-        if (payload.contains("cmd") && payload["cmd"].toString() == "DISPATCH") {
-            if (payload.contains("evt") && payload["evt"].toString() == "READY") {
+        if (payload.contains(QStringLiteral("cmd")) &&
+            payload[QStringLiteral("cmd")].toString() == QStringLiteral("DISPATCH")) {
+            if (payload.contains(QStringLiteral("evt")) &&
+                payload[QStringLiteral("evt")].toString() == QStringLiteral("READY")) {
                 m_connected = true;
                 emit connectedChanged();
             }
@@ -183,7 +191,8 @@ void DiscordIpc::processPayload(int opcode, const QJsonObject& payload) {
 }
 
 void DiscordIpc::sendFrame(int opcode, const QJsonObject& payload) {
-    if (m_socket->state() != QLocalSocket::ConnectedState) return;
+    if (m_socket->state() != QLocalSocket::ConnectedState)
+        return;
 
     QJsonDocument doc(payload);
     QByteArray data = doc.toJson(QJsonDocument::Compact);
@@ -199,30 +208,32 @@ void DiscordIpc::sendFrame(int opcode, const QJsonObject& payload) {
 }
 
 void DiscordIpc::sendActivity(const QJsonObject& activity) {
-    if (!m_connected) return;
+    if (!m_connected)
+        return;
 
     QJsonObject args;
-    args["pid"] = static_cast<int>(QCoreApplication::applicationPid());
-    args["activity"] = activity;
+    args[QStringLiteral("pid")] = static_cast<int>(QCoreApplication::applicationPid());
+    args[QStringLiteral("activity")] = activity;
 
     QJsonObject payload;
-    payload["cmd"] = "SET_ACTIVITY";
-    payload["args"] = args;
-    payload["nonce"] = QString::number(QDateTime::currentMSecsSinceEpoch());
+    payload[QStringLiteral("cmd")] = QStringLiteral("SET_ACTIVITY");
+    payload[QStringLiteral("args")] = args;
+    payload[QStringLiteral("nonce")] = QString::number(QDateTime::currentMSecsSinceEpoch());
 
     sendFrame(static_cast<int>(Opcode::Frame), payload);
 }
 
 void DiscordIpc::clearActivity() {
-    if (!m_connected) return;
+    if (!m_connected)
+        return;
 
     QJsonObject args;
-    args["pid"] = static_cast<int>(QCoreApplication::applicationPid());
+    args[QStringLiteral("pid")] = static_cast<int>(QCoreApplication::applicationPid());
 
     QJsonObject payload;
-    payload["cmd"] = "SET_ACTIVITY";
-    payload["args"] = args;
-    payload["nonce"] = QString::number(QDateTime::currentMSecsSinceEpoch());
+    payload[QStringLiteral("cmd")] = QStringLiteral("SET_ACTIVITY");
+    payload[QStringLiteral("args")] = args;
+    payload[QStringLiteral("nonce")] = QString::number(QDateTime::currentMSecsSinceEpoch());
 
     sendFrame(static_cast<int>(Opcode::Frame), payload);
 }

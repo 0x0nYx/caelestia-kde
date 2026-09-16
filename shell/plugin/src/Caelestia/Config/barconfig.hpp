@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-#include "enums.hpp"
-
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
+#include "enums.hpp"
 
 namespace caelestia::config {
 
@@ -19,7 +19,6 @@ class BarScrollActions : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, workspaces, true)
     CONFIG_PROPERTY(bool, volume, true)
     CONFIG_PROPERTY(bool, brightness, true)
-
 };
 
 class BarPopouts : public settings::ObjectNode {
@@ -29,7 +28,6 @@ class BarPopouts : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, activeWindow, true)
     CONFIG_PROPERTY(bool, tray, true)
     CONFIG_PROPERTY(bool, statusIcons, true)
-
 };
 
 class BarWorkspaces : public settings::ObjectNode {
@@ -38,6 +36,7 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(int, shown, 5)
     CONFIG_PROPERTY(bool, activeIndicator, true)
     CONFIG_PROPERTY(bool, occupiedBg, false)
+    CONFIG_PROPERTY(bool, showUnoccupied, true)
     CONFIG_PROPERTY(bool, showWindows, true)
     CONFIG_PROPERTY(bool, showWindowsOnSpecialWorkspaces, true)
     CONFIG_PROPERTY(int, maxWindowIcons, 5)
@@ -75,7 +74,6 @@ class BarWorkspaces : public settings::ObjectNode {
             { u"icon"_s, u"sports_esports"_s },
         }) })
     CONFIG_GLOBAL_PROPERTY(QVariantList, wsIcons, QVariantList())
-
 };
 
 class BarGreeter : public settings::ObjectNode {
@@ -110,15 +108,10 @@ class BarGreeter : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, slideshowIcon, u"waving_hand"_s)
     CONFIG_PROPERTY(QStringList, slideshowFolders, QStringList())
     CONFIG_PROPERTY(QStringList, slideshowGifs,
-        DEFAULT_ARG({
-            u"root:/assets/morning.gif"_s,
-            u"root:/assets/afternoon.gif"_s,
-            u"root:/assets/evening.gif"_s,
-            u"root:/assets/night.gif"_s
-        }))
+        DEFAULT_ARG({ u"root:/assets/morning.gif"_s, u"root:/assets/afternoon.gif"_s, u"root:/assets/evening.gif"_s,
+            u"root:/assets/night.gif"_s }))
     CONFIG_PROPERTY(qreal, slideshowInterval, 60.0)
     CONFIG_PROPERTY(bool, slideshowRandom, false)
-
 };
 
 class BarTray : public settings::ObjectNode {
@@ -129,7 +122,6 @@ class BarTray : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, compact, true)
     CONFIG_GLOBAL_PROPERTY(QVariantList, iconSubs, QVariantList())
     CONFIG_GLOBAL_PROPERTY(QStringList, hiddenIcons, QStringList())
-
 };
 
 class BarStatus : public settings::ObjectNode {
@@ -147,7 +139,6 @@ class BarStatus : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showLockStatus, true)
     CONFIG_PROPERTY(bool, showNotifications, true)
     CONFIG_PROPERTY(bool, showNightLight, true)
-
 };
 
 class BarClock : public settings::ObjectNode {
@@ -157,7 +148,7 @@ class BarClock : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showDate, false)
     CONFIG_PROPERTY(bool, showIcon, true)
     CONFIG_PROPERTY(bool, centerClock, false)
-
+    CONFIG_PROPERTY(bool, showSeconds, false)
 };
 
 class BarDock : public settings::ObjectNode {
@@ -166,21 +157,18 @@ class BarDock : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, monitorCenter, true)
     CONFIG_PROPERTY(bool, recolourIcons, false)
     CONFIG_PROPERTY(int, iconSize, 32)
-
 };
 
 class BarGithub : public settings::ObjectNode {
     CONFIG_NODE(BarGithub, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, background, false)
-
 };
 
 class BarPerformance : public settings::ObjectNode {
     CONFIG_NODE(BarPerformance, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, showText, true)
-
 };
 
 class BarPreviewScales : public settings::ObjectNode {
@@ -200,7 +188,6 @@ class BarPreviewScales : public settings::ObjectNode {
     CONFIG_PROPERTY(qreal, peripheralBattery, 0.0)
     CONFIG_PROPERTY(qreal, trayMenu, 0.0)
     CONFIG_PROPERTY(qreal, wirelessPassword, 0.0)
-
 };
 
 class BarPreviewFontScales : public settings::ObjectNode {
@@ -220,7 +207,6 @@ class BarPreviewFontScales : public settings::ObjectNode {
     CONFIG_PROPERTY(qreal, peripheralBattery, 0.0)
     CONFIG_PROPERTY(qreal, trayMenu, 0.0)
     CONFIG_PROPERTY(qreal, wirelessPassword, 0.0)
-
 };
 
 class BarConfig : public settings::ObjectNode {
@@ -310,7 +296,6 @@ class BarConfig : public settings::ObjectNode {
             vmap({ { u"id"_s, u"power"_s }, { u"enabled"_s, true }, { u"zone"_s, u"right"_s } }),
         }))
     CONFIG_PROPERTY(QStringList, excludedScreens, QStringList())
-
 };
 
 } // namespace caelestia::config

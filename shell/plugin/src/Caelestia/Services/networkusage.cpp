@@ -7,14 +7,6 @@
 #include <cmath>
 #include <cstdio>
 
-namespace {
-
-constexpr qreal kBytesPerKiB = 1024.0;
-constexpr qreal kBytesPerMiB = 1024.0 * 1024.0;
-constexpr qreal kBytesPerGiB = 1024.0 * 1024.0 * 1024.0;
-
-} // namespace
-
 namespace caelestia::services {
 
 NetworkUsage::NetworkUsage(QObject* parent)
@@ -51,36 +43,6 @@ CircularBuffer* NetworkUsage::downloadBuffer() const {
 
 CircularBuffer* NetworkUsage::uploadBuffer() const {
     return m_uploadBuffer;
-}
-
-NetworkFormatResult NetworkUsage::formatBytesRate(qreal bytes) const {
-    NetworkFormatResult result = formatBytes(bytes);
-    result.unit = result.unit + QStringLiteral("/s");
-    return result;
-}
-
-NetworkFormatResult NetworkUsage::formatBytes(qreal bytes) const {
-    NetworkFormatResult result;
-
-    if (bytes < 0 || std::isnan(bytes) || !std::isfinite(bytes)) {
-        result.value = 0;
-        result.unit = QStringLiteral("B");
-        return result;
-    }
-    if (bytes < kBytesPerKiB) {
-        result.value = bytes;
-        result.unit = QStringLiteral("B");
-    } else if (bytes < kBytesPerMiB) {
-        result.value = bytes / kBytesPerKiB;
-        result.unit = QStringLiteral("KB");
-    } else if (bytes < kBytesPerGiB) {
-        result.value = bytes / kBytesPerMiB;
-        result.unit = QStringLiteral("MB");
-    } else {
-        result.value = bytes / kBytesPerGiB;
-        result.unit = QStringLiteral("GB");
-    }
-    return result;
 }
 
 void NetworkUsage::tick() {

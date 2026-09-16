@@ -47,7 +47,7 @@ let len = Kwin.workspaces.length;
 if (len > 0 && GlobalConfig.bar.workspaces.shown !== len) {
     GlobalConfig.bar.workspaces.shown = len;
 }
-        
+
         }
 
         StepperRow {
@@ -70,7 +70,7 @@ while (count > v) {
     Kwin.removeWorkspace(d[count - 1].id);
     count--;
 }
-            
+
             }
         }
 
@@ -107,6 +107,14 @@ while (count > v) {
             subtext: qsTr("Show icons of open windows on each workspace")
             checked: Config.bar.workspaces.showWindows
             onToggled: GlobalConfig.bar.workspaces.showWindows = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
+            text: qsTr("Show unoccupied")
+            subtext: qsTr("Show workspaces that are inactive and empty")
+            checked: Config.bar.workspaces.showUnoccupied
+            onToggled: GlobalConfig.bar.workspaces.showUnoccupied = checked
         }
 
         ToggleRow {

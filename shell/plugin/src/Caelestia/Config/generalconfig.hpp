@@ -1,15 +1,14 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
 #include <QFileInfo>
 #include <QStandardPaths>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
 using Qt::StringLiterals::operator""_s;
-using settings::vmap;
 using settings::vmap;
 
 class GeneralApps : public settings::ObjectNode {
@@ -81,13 +80,13 @@ class GeneralConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, showOverFullscreen, false)
     CONFIG_PROPERTY(qreal, mediaGifSpeedAdjustment, 300)
     CONFIG_PROPERTY(qreal, sessionGifSpeed, 0.7)
-    CONFIG_PROPERTY(QString, language, "system")
+    CONFIG_PROPERTY(QString, language, QStringLiteral("system"))
     CONFIG_PROPERTY(bool, debugLogs, false)
     CONFIG_PROPERTY(bool, checkUpdates, true)
     CONFIG_PROPERTY(bool, magicLampEnabled, true)
     CONFIG_PROPERTY(bool, caelestiaMode, false)
     CONFIG_PROPERTY(bool, krohnkiteEnabled, false)
-    CONFIG_PROPERTY(QString, krohnkiteLastLayout, "BTree")
+    CONFIG_PROPERTY(QString, krohnkiteLastLayout, QStringLiteral("BTree"))
     CONFIG_SUBOBJECT(GeneralApps, apps)
     CONFIG_SUBOBJECT(GeneralIdle, idle)
     CONFIG_SUBOBJECT(GeneralBattery, battery)
