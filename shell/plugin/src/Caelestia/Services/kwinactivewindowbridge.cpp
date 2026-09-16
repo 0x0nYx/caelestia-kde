@@ -307,9 +307,10 @@ void KWinActiveWindowBridge::focusWindow(const QString& address) {
         m_pendingFocusAddress = address;
         emit pendingFocusAddressChanged();
 
-        // To focus a window, we set the active state
-        handle->set_state(QtWayland::org_kde_plasma_window_management::state_active,
-            QtWayland::org_kde_plasma_window_management::state_active);
+        // A minimized window ignores the active flag, so every restore path -
+        // dock, overview, window switcher - has to clear that one first.
+        handle->setState(QtWayland::org_kde_plasma_window_management::state_minimized, false);
+        handle->setState(QtWayland::org_kde_plasma_window_management::state_active, true);
     }
 }
 
@@ -321,8 +322,7 @@ void KWinActiveWindowBridge::closeWindow(const QString& address) {
 
 void KWinActiveWindowBridge::minimizeWindow(const QString& address) {
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
-        handle->set_state(QtWayland::org_kde_plasma_window_management::state_minimized,
-            QtWayland::org_kde_plasma_window_management::state_minimized);
+        handle->setState(QtWayland::org_kde_plasma_window_management::state_minimized, true);
     }
 }
 
@@ -334,7 +334,7 @@ void KWinActiveWindowBridge::maximizeWindow(const QString& address, bool horz, b
         // any maximize request maps onto the combined flag. The only caller
         // (windowinfo/Buttons.qml) passes both axes equal, so this preserves the
         // maximize/restore behaviour.
-        handle->set_state((horz || vert) ? max : 0, max);
+        handle->setState(max, horz || vert);
     }
 }
 
@@ -355,7 +355,7 @@ void KWinActiveWindowBridge::setWindowProperty(const QString& address, const QSt
             state = QtWayland::org_kde_plasma_window_management::state_demands_attention;
 
         if (state != 0) {
-            handle->set_state(enable ? state : 0, state);
+            handle->setState(state, enable);
         }
     }
 }
@@ -379,15 +379,13 @@ void KWinActiveWindowBridge::setWindowDesktop(const QString& address, int deskto
 
 void KWinActiveWindowBridge::setFullscreen(const QString& address, bool fullscreen) {
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
-        handle->set_state(fullscreen ? QtWayland::org_kde_plasma_window_management::state_fullscreen : 0,
-            QtWayland::org_kde_plasma_window_management::state_fullscreen);
+        handle->setState(QtWayland::org_kde_plasma_window_management::state_fullscreen, fullscreen);
     }
 }
 
 void KWinActiveWindowBridge::setMaximized(const QString& address, bool maximized) {
     if (auto* handle = PlasmaWindows::instance()->handleFor(address)) {
-        handle->set_state(maximized ? QtWayland::org_kde_plasma_window_management::state_maximized : 0,
-            QtWayland::org_kde_plasma_window_management::state_maximized);
+        handle->setState(QtWayland::org_kde_plasma_window_management::state_maximized, maximized);
     }
 }
 
