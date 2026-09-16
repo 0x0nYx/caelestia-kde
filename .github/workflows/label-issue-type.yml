@@ -25,9 +25,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Read the payload with jq rather than through ${{ }} interpolation:
-          # issue bodies contain quotes, backticks and newlines, and the env var
-          # round-trip mangles them.
+          # Read the payload with jq rather than through a workflow
+          # expression: issue bodies contain quotes, backticks and newlines,
+          # and the round-trip mangles them.
           title="$(jq -r '.issue.title' "$EVENT_PATH")"
           body_file="$(mktemp)"
           trap 'rm -f "$body_file"' EXIT
