@@ -58,6 +58,10 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 printf '%s %s %s\n' "$profile" "$key" "$value" >>"${PD_LOG:?}"
+if [[ "${PD_WRITE_FAILS:-0}" == "1" ]]; then
+    exit 1
+fi
+exit 0
 EOF
 
     chmod +x "$dir/kreadconfig6" "$dir/kwriteconfig6"
@@ -140,6 +144,20 @@ test_caelestia_not_owning_suspend_touches_nothing() {
         PD_AC_AUTOSUSPENDACTION=1 PD_AC_AUTOSUSPENDIDLETIMEOUTSEC=900 \
         PD_BATTERY_AUTOSUSPENDACTION=1 PD_BATTERY_AUTOSUSPENDIDLETIMEOUTSEC=600 >/dev/null
     assert_eq "" "$(writes_to "$log")" "KDE's timers stay as the user left them while Caelestia has no suspend timeout"
+}
+
+test_a_failed_write_reaches_the_caller_and_spares_the_other_profile() {
+    local dir log
+    dir="$(new_tmpdir)/stubs"
+    log="$(new_tmpdir)/writes.log"
+    make_stubs "$dir"
+
+    # The setting reads as applied either way, so the caller has to be able to
+    # tell that the mirror did not land.
+    assert_ne "0" "$(run_mirror "$dir" "$log" 1800 PD_WRITE_FAILS=1 \
+        PD_AC_AUTOSUSPENDACTION=1 PD_AC_AUTOSUSPENDIDLETIMEOUTSEC=900 \
+        PD_BATTERY_AUTOSUSPENDACTION=1 PD_BATTERY_AUTOSUSPENDIDLETIMEOUTSEC=600)" "a failed write has to reach the caller"
+    assert_contains "$(writes_to "$log")" "Battery AutoSuspendIdleTimeoutSec 1800" "one failing profile must not stop the other"
 }
 
 test_missing_tools_are_not_a_reason_to_write() {

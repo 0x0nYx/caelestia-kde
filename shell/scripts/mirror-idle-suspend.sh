@@ -28,6 +28,8 @@ read_profile() {
         --key "$2" --default "$3" 2>/dev/null || printf '%s' "$3"
 }
 
+failed=0
+
 for profile in AC Battery; do
     # 1 is sleep and 2 is hibernate. Anything else means powerdevil will not
     # suspend on its own, so there is no second timer to line up.
@@ -38,6 +40,12 @@ for profile in AC Battery; do
 
     if [[ "$(read_profile "$profile" AutoSuspendIdleTimeoutSec 0)" != "$seconds" ]]; then
         kwriteconfig6 --file powermanagementprofilesrc --group "$profile" --group SuspendAndShutdown \
-            --key AutoSuspendIdleTimeoutSec "$seconds"
+            --key AutoSuspendIdleTimeoutSec "$seconds" || failed=1
     fi
 done
+
+# A failed profile does not stop the other one: a half mirrored pair leaves the
+# shorter timer in place, which is the bug this exists to fix. The caller reports
+# the failure, because a mirror that quietly did nothing puts the user back where
+# they started.
+exit "$failed"

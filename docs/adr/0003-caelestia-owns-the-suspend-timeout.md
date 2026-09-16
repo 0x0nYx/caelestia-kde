@@ -11,12 +11,15 @@ the shorter of two numbers they could not see together.
 
 We decided that while Caelestia has a suspend idle action enabled it also states
 that timeout to powerdevil: for the AC and Battery profiles whose action is sleep
-or hibernate, `AutoSuspendIdleTimeoutSec` is set to the Caelestia timeout. A
+or hibernate, `AutoSuspendIdleTimeoutSec` is set to the Caelestia timeout, which
+is the shortest enabled suspend action because that is the one that fires. A
 profile powerdevil would not suspend from is left alone, the low battery profile
 is never touched, and an install with no suspend action keeps KDE's configuration
 exactly as its user left it. The mirror runs when the setting changes and once
 when the config lands; it reads before it writes, so a value that already matches
-is not rewritten.
+is not rewritten, and a write that fails is reported in the shell rather than
+swallowed, because a mirror that quietly did nothing would put the user back
+where this started.
 
 Not touching KDE and warning about the conflict instead was the first
 alternative. It tells the user that the setting they just made does not work and
@@ -40,7 +43,7 @@ Settings will show the mirrored value - which is the point, but it is our write.
 The low battery profile keeps its own, earlier timeout, so a nearly empty battery
 still sleeps before the idle preference; that profile exists to save the machine,
 not to express a preference, and it is the one case where being overridden is
-correct. And only the timeout is mirrored, not powerdevil's sleep mode, so the
-two timers can ask for sleep at the same instant with different modes; logind
-refuses the second request while one is in flight, so the duplicate is wasted
-rather than harmful.
+correct. And only the timeout is mirrored, not powerdevil's sleep mode, so the two
+timers can ask for sleep at the same moment with different modes; the second
+request is redundant rather than coordinated, which is what mirroring one number
+instead of taking over KDE's action costs.

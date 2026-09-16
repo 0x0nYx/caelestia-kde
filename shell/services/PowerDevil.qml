@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Caelestia
 import qs.services
 
 // powerdevil keeps its own idle-suspend timer per power profile and the shortest
@@ -23,8 +24,9 @@ Singleton {
 
     onSuspendSecondsChanged: root.mirror()
 
-    // A stepped value changes several times in a row, and a run already in
-    // flight would miss the last one.
+    // A wheel over the stepper, or a held key, moves the value several times in a
+    // row; collapsing those keeps an in-flight run from writing a value the user
+    // has already moved past.
     Timer {
         id: settle
 
@@ -40,5 +42,15 @@ Singleton {
         id: mirroring
 
         command: ["bash", Quickshell.shellPath("scripts/mirror-idle-suspend.sh"), String(root.suspendSeconds)]
+
+        onExited: code => {
+            if (code === 0)
+                return;
+
+            // The setting reads as applied in Nexus either way, so a failed
+            // write has to be said out loud.
+            console.warn("[PowerDevil] could not line KDE's idle-suspend timers up with the Caelestia timeout");
+            Toaster.toast(qsTr("KDE's suspend timer was not updated"), qsTr("Its own timer in System Settings > Power Management can still suspend before the timeout set here."), "warning", Toast.Warning);
+        }
     }
 }
