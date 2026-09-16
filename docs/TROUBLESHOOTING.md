@@ -574,6 +574,11 @@ are left behind, and a group that matches but carries no action is empty as far 
 KWin is concerned: it discards such a rule once a window it matches has been
 withdrawn, so the residue is harmless.
 
+A window that is already open keeps what a rule forced on it. Opacity and keep-above
+are set on the window itself, so an open window stays dimmed or pinned after the rules
+are gone, until it is closed and reopened or another rule forces the value back. Only
+windows created after the removal start clean.
+
 The installer always applies the rules; `APPLY_WINDOW_RULES=false` is an override
 for running the step by hand (`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`).
 `WINDOW_OPACITY` changes the percentage the opacity rule writes.
