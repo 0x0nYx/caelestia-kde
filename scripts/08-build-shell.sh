@@ -261,6 +261,26 @@ shell_release_tag() {
     sed -nE 's/^[[:space:]]*VERSION=//p' "$BUNDLE_DIR/.github/version.env" 2>/dev/null | tr -d '[:space:]'
 }
 
+# The prebuilt archive holds one released revision, so it may only stand in for a
+# tree that is that revision: the released tag itself (an update pinned to a
+# version) or main sitting on its remote tip. A stale main, or one carrying
+# commits of its own, would silently lose them, so those build locally.
+checkout_is_release_revision() {
+    local head revision
+    revision="$(shell_release_tag)"
+    [[ -n "$revision" ]] || return 1
+
+    head="$(git -C "$BUNDLE_DIR" rev-parse HEAD 2>/dev/null || true)"
+    [[ -n "$head" ]] || return 1
+
+    if [[ "$(git -C "$BUNDLE_DIR" describe --tags --exact-match "$head" 2>/dev/null || true)" == "$revision" ]]; then
+        return 0
+    fi
+
+    [[ "$(git -C "$BUNDLE_DIR" branch --show-current 2>/dev/null || true)" == "main" ]] || return 1
+    [[ "$head" == "$(git -C "$BUNDLE_DIR" rev-parse --verify --quiet refs/remotes/origin/main 2>/dev/null || true)" ]]
+}
+
 try_download_prebuilt_shell() {
     local arch qt_abi tag tmp_archive url checksum expected actual asset candidate
     arch="$(uname -m)"
@@ -340,7 +360,7 @@ backup_shell_config || exit 1
 
 SHELL_PREBUILT=0
 if [[ -z "${CAELESTIA_FORCE_BUILD_SHELL:-}" ]] \
-    && [[ "$(git -C "$BUNDLE_DIR" branch --show-current 2>/dev/null || true)" == "main" ]] \
+    && checkout_is_release_revision \
     && command -v curl >/dev/null 2>&1; then
     if try_download_prebuilt_shell; then
         SHELL_PREBUILT=1
