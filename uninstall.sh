@@ -417,6 +417,35 @@ kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "title"      
 kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "titlematch"          --delete 2>/dev/null || true
 kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "above"               --delete 2>/dev/null || true
 kwriteconfig6 --file kwinrulesrc --group "caelestia-pip"     --key "aboverule"           --delete 2>/dev/null || true
+
+# [General] rules= is the index of the rule groups: KWin loads the groups that list
+# names and nothing else, so our names have to leave it as well, or the file keeps
+# an index entry for three groups that are no longer there. The user's own names are
+# kept, in their order, and count= is rewritten to the number that is left. Both
+# keys go only once no name is left, which is the shape the file had before the
+# install. scripts/04a-window-rules.sh owns this index: changing one means changing
+# the other.
+KEPT_RULE_NAMES=()
+KEPT_RULE_COUNT=0
+while IFS= read -r rule_name; do
+    rule_name="${rule_name#"${rule_name%%[![:space:]]*}"}"
+    rule_name="${rule_name%"${rule_name##*[![:space:]]}"}"
+    [[ -n "$rule_name" ]] || continue
+    case "$rule_name" in
+        caelestia-opacity|caelestia-dialogs|caelestia-pip) continue ;;
+    esac
+    KEPT_RULE_NAMES+=("$rule_name")
+    KEPT_RULE_COUNT=$((KEPT_RULE_COUNT + 1))
+done <<< "$(kreadconfig6 --file kwinrulesrc --group General --key rules 2>/dev/null | tr ',' '\n' || true)"
+
+if (( KEPT_RULE_COUNT > 0 )); then
+    KEPT_RULE_LIST="$(IFS=,; printf '%s' "${KEPT_RULE_NAMES[*]}")"
+    kwriteconfig6 --file kwinrulesrc --group General --key rules "$KEPT_RULE_LIST" 2>/dev/null || true
+    kwriteconfig6 --file kwinrulesrc --group General --key count "$KEPT_RULE_COUNT" 2>/dev/null || true
+else
+    kwriteconfig6 --file kwinrulesrc --group General --key rules --delete 2>/dev/null || true
+    kwriteconfig6 --file kwinrulesrc --group General --key count --delete 2>/dev/null || true
+fi
 ok "Removed the Caelestia window rules from kwinrulesrc"
 
 kwriteconfig6 --file plasmashellrc --group "Shell" --key "ShellPackage" --delete 2>/dev/null || true
