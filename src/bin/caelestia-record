@@ -42,7 +42,16 @@ _get_focused_refresh_rate() {
     local active_output=""
     local runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
 
-    if [[ -f "$runtime_dir/qs_kwin_active_output.txt" ]]; then
+    # Ask KWin, the same way the shell's bridge does (KWinActiveWindowBridge reads
+    # /KWin's activeOutputName). The runtime file below is written by nothing in this tree,
+    # so without this the rate was always the 60 fallback, and a 120 Hz display was
+    # recorded at 60.
+    if command -v qdbus6 >/dev/null 2>&1; then
+        active_output="$(qdbus6 org.kde.KWin /KWin org.kde.KWin.activeOutputName 2>/dev/null || true)"
+    fi
+
+    # Kept for an install whose shell still writes the old runtime file.
+    if [[ -z "$active_output" ]] && [[ -f "$runtime_dir/qs_kwin_active_output.txt" ]]; then
         active_output=$(cat "$runtime_dir/qs_kwin_active_output.txt" 2>/dev/null || true)
     fi
 
@@ -50,10 +59,12 @@ _get_focused_refresh_rate() {
         local kscreen_json
         kscreen_json=$(kscreen-doctor -j 2>/dev/null || true)
         if [[ -n "$kscreen_json" ]]; then
-            rr=$(echo "$kscreen_json" | python3 -c "
-import sys, json
+            # The output name is data, not code: pass it through the environment rather
+            # than into the snippet's source text.
+            rr=$(printf '%s' "$kscreen_json" | CAELESTIA_ACTIVE_OUTPUT="$active_output" python3 -c "
+import os, sys, json
 data = json.load(sys.stdin)
-active = '${active_output}'
+active = os.environ['CAELESTIA_ACTIVE_OUTPUT']
 for o in data.get('outputs', []):
     if o.get('name') == active and o.get('connected'):
         current_id = o.get('currentModeId')
