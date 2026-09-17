@@ -151,7 +151,8 @@ void EmojiDb::loadEmojis() {
     const QString dataHome = qEnvironmentVariable("XDG_DATA_HOME", QDir::homePath() + QStringLiteral("/.local/share"));
 
     const QStringList textCandidates = {
-        shellConfig.isEmpty() ? QString() : QFileInfo(shellConfig).absoluteDir().filePath(QStringLiteral("assets/emojis.txt")),
+        shellConfig.isEmpty() ? QString()
+                              : QFileInfo(shellConfig).absoluteDir().filePath(QStringLiteral("assets/emojis.txt")),
         configDir + QStringLiteral("/quickshell/caelestia/assets/emojis.txt"),
         QDir::homePath() + QStringLiteral("/caelestia-kde/shell/assets/emojis.txt"),
         dataHome + QStringLiteral("/caelestia/assets/emojis.txt"),

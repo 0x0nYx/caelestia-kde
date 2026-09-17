@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "plasmawindowicon.hpp"
 
-#include "plasmawindows.hpp"
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <QBuffer>
 #include <QCryptographicHash>
@@ -13,8 +14,7 @@
 #include <QSocketNotifier>
 #include <QStandardPaths>
 
-#include <fcntl.h>
-#include <unistd.h>
+#include "plasmawindows.hpp"
 
 namespace caelestia::services {
 
@@ -148,8 +148,7 @@ void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
     // file, and no window can ever pick up one belonging to something else.
     const auto cacheRoot =
         QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/caelestia/winicons");
-    const auto digest =
-        QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
+    const auto digest = QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
     const auto path = cacheRoot + QStringLiteral("/") + digest + QStringLiteral(".png");
 
     if (!QFile::exists(path)) {
