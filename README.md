@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/4c3e20c9-5050-4cc8-8e9c-32fd0594ac8b
 
 ## Installation
 
-**Requirements:** Arch-based, Fedora, or Debian/Ubuntu - KDE Plasma 6 on Wayland
+**Requirements:** Arch-based, Fedora, or Debian/Ubuntu - KDE Plasma 6 on Wayland, Qt 6.9+
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ladybug-me/caelestia-kde/main/install.sh | sh
