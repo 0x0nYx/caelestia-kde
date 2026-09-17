@@ -984,6 +984,37 @@ class ScriptNumberingTests(unittest.TestCase):
             )
 
 
+class KrohnkiteIgnoreClassTests(unittest.TestCase):
+    """The C++ fallback and the startup task must name the same window classes.
+
+    Nexus renders DEFAULT_IGNORE_CLASS when kwinrc has no ignoreClass key and writes it
+    back on the first edit, so a fallback that lags IGNORE_CLASSES drops every class it is
+    missing from kwinrc for the rest of the session.
+    """
+
+    def test_default_ignore_class_matches_the_startup_task(self) -> None:
+        cpp_path = ROOT / "shell" / "plugin" / "src" / "Caelestia" / "Services" / "krohnkiteconfig.cpp"
+        cpp = cpp_path.read_text(encoding="utf-8")
+        literal = re.search(r"DEFAULT_IGNORE_CLASS\s*=\s*QStringLiteral\((.*?)\);", cpp, re.DOTALL)
+        self.assertIsNotNone(literal, "DEFAULT_IGNORE_CLASS should be built from a QStringLiteral")
+
+        cpp_classes: list[str] = []
+        for chunk in re.findall(r'"([^"]*)"', literal.group(1)):
+            cpp_classes.extend(entry for entry in chunk.split(",") if entry)
+
+        script_path = ROOT / "shell" / "services" / "startuptasks" / "02-krohnkite-setup.sh"
+        script = script_path.read_text(encoding="utf-8")
+        block = re.search(r"IGNORE_CLASSES=\((.*?)\n\)", script, re.DOTALL)
+        self.assertIsNotNone(block, "the startup task should declare IGNORE_CLASSES")
+        script_classes = [line.strip() for line in block.group(1).splitlines() if line.strip()]
+
+        self.assertEqual(
+            cpp_classes,
+            script_classes,
+            "DEFAULT_IGNORE_CLASS in krohnkiteconfig.cpp and IGNORE_CLASSES in 02-krohnkite-setup.sh have drifted",
+        )
+
+
 if __name__ == "__main__":
     suite = unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     result = unittest.TextTestRunner(verbosity=2).run(suite)
