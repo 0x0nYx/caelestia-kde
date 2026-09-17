@@ -23,6 +23,10 @@ SELF_DIR="$(dirname -- "$SELF")"
 # nothing set and must answer before it can find install-kind.sh, so it decides from its
 # own location: /usr/bin is a package, anything else a checkout. Using the checkout paths
 # unconditionally put ~/.config/quickshell/caelestia ahead of the installed /etc/xdg tree.
+#
+# Only a checkout has a version.env to fall back to, so this stays empty for a package;
+# it is defined here because cmd_version tests it under `set -u`.
+VERSION_FILE=""
 case "${CAELESTIA_INSTALL_KIND:-$( [[ "$BIN_DIR" == /usr/bin ]] && printf 'package' || printf 'source' )}" in
     package)
         KIND=package
@@ -309,8 +313,15 @@ EOF
         return 2
     fi
 
-    local root="${CAELESTIA_DIR:-$HOME/caelestia-kde}"
-    if [[ -f "$root/install.sh" ]]; then
+    # Only a checkout uses a checkout's installer: either this command IS one, or the user
+    # pointed at one. Defaulting to ~/caelestia-kde on a package ran that clone's whole
+    # installer (system packages, ~/.local/lib, a second local C++ build) over a
+    # package-owned install whenever the user kept a clone in the documented place.
+    local root="${CAELESTIA_DIR:-}"
+    if [[ -z "$root" && "$KIND" == source ]]; then
+        root="$HOME/caelestia-kde"
+    fi
+    if [[ -n "$root" && -f "$root/install.sh" ]]; then
         exec sh "$root/install.sh"
     fi
 
