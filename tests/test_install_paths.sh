@@ -7,6 +7,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LIB="$REPO_ROOT/scripts/lib/install-kind.sh"
 CLI="$REPO_ROOT/src/bin/caelestia"
+IPC_HELPER="$REPO_ROOT/src/bin/caelestia-shell-ipc"
 
 layout() {
     CAELESTIA_INSTALL_KIND="$1" BUNDLE_DIR="$REPO_ROOT" LAYOUT_LIB="$LIB" LAYOUT_FN="$2" \
@@ -22,6 +23,18 @@ cli_env() {
         HOME="$2" XDG_CONFIG_HOME="$2/.config" CAELESTIA_BIN_DIR="$1" \
         bash -c 'source "$0" >/dev/null 2>&1; printf "%s|%s" "$QML2_IMPORT_PATH" "$CAELESTIA_LIB_DIR"' \
         "$CLI"
+}
+
+ipc_defaults() {
+    # $1 = stub dir, $2 = home, $3 = the config path to resolve the defaults for
+    env -u QML2_IMPORT_PATH -u CAELESTIA_LIB_DIR -u CAELESTIA_INSTALL_KIND \
+        PATH="$1:$PATH" HOME="$2" XDG_CONFIG_HOME="$2/.config" \
+        CAELESTIA_SHELL_CONFIG="$2/.config/quickshell/caelestia/shell.qml" \
+        bash -c 'source "$0" >/dev/null 2>&1
+                 SHELL_CONFIG="$1"
+                 _export_shell_env
+                 printf "%s|%s" "$QML2_IMPORT_PATH" "$CAELESTIA_LIB_DIR"' \
+        "$IPC_HELPER" "$3"
 }
 
 test_the_packaged_layout_is_the_packages_directories() {
@@ -143,6 +156,29 @@ test_a_package_does_not_run_a_checkout_it_was_not_pointed_at() {
     out="$(env CAELESTIA_INSTALL_KIND=source CAELESTIA_DIR="$home/caelestia-kde" HOME="$home" \
         XDG_CONFIG_HOME="$home/.config" "$CLI" install 2>&1 || true)"
     assert_contains "$out" "RAN-THE-CHECKOUT-INSTALLER" "a checkout named explicitly still runs its installer"
+}
+
+test_the_ipc_helper_defaults_to_the_installs_own_directories() {
+    # caelestia-shell-ipc cannot source install-kind.sh (it may run before any tree is
+    # known), so its defaults mirror that table and the resolved config path decides which
+    # half applies. Exporting the checkout paths on a package handed the shell - and every
+    # command it spawns - a data directory that is not there.
+    local dir home
+    dir="$(new_tmpdir)"
+    home="$dir/home"
+    mkdir -p "$home/.local/bin" "$home/.config/quickshell/caelestia"
+    stub_bin "$dir/stubs" quickshell "exit 0"
+    # The helper refuses to load without a config file; which path it resolves is what the
+    # defaults below are keyed on.
+    : > "$home/.config/quickshell/caelestia/shell.qml"
+
+    assert_eq "/usr/lib/qt6/qml:/etc/xdg/quickshell/caelestia|/usr/lib/caelestia" \
+        "$(ipc_defaults "$dir/stubs" "$home" /etc/xdg/quickshell/caelestia/shell.qml)" \
+        "a packaged shell config should get the package's directories"
+
+    assert_eq "$home/.local/lib/qt6/qml:$home/.config/quickshell/caelestia|$home/.local/lib/caelestia" \
+        "$(ipc_defaults "$dir/stubs" "$home" "$home/.config/quickshell/caelestia/shell.qml")" \
+        "a checkout's shell config should get the user's directories"
 }
 
 run_tests
