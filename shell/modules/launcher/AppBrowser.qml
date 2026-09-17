@@ -101,6 +101,10 @@ Item {
             root.launch(grid.currentItem.modelData);
     }
 
+    function openContextMenu(app: DesktopEntry, targetItem: Item): void {
+        contextMenu.openFor(app, targetItem);
+    }
+
     implicitWidth: Math.min(Tokens.sizes.launcher.browseWidth, root.maxWidth)
     implicitHeight: root.padding * 2 + (root.count === 0 ? root.tileCellHeight * 2 : root.rows * root.tileCellHeight)
 
@@ -116,6 +120,25 @@ Item {
         }
 
         target: Apps
+    }
+
+    Connections {
+        function onFavouriteAppsChanged(): void {
+            root.refresh();
+        }
+
+        function onHiddenAppsChanged(): void {
+            root.refresh();
+        }
+
+        target: GlobalConfig.launcher
+    }
+
+    AppContextMenu {
+        id: contextMenu
+
+        attachTo: root
+        visibilities: root.visibilities
     }
 
     RowLayout {

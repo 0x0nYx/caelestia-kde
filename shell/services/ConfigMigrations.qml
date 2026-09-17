@@ -153,10 +153,21 @@ Singleton {
         }
     }
 
+    // Pinned apps on the dock now have their own configuration property `bar.dock.pinnedApps`.
+    // If the dock pinned list was not explicitly set, migrate any customized `launcher.favouriteApps`.
+    function migrateDockPinned(): void {
+        const dock = GlobalConfig.bar.dock;
+        const launcher = GlobalConfig.launcher;
+        if (!dock.isOverride("pinnedApps") && launcher.isOverride("favouriteApps")) {
+            dock.pinnedApps = [...launcher.favouriteApps];
+        }
+    }
+
     Component.onCompleted: {
         root.migrateWorkspaceDisplay();
         root.migrateQuickToggles();
         root.migrateTemperatureUnits();
+        root.migrateDockPinned();
         orderReader.running = true;
     }
 

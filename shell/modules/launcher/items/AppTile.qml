@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import Quickshell
@@ -37,16 +39,22 @@ Item {
         }
     }
 
-    // Hover ripple + click to launch
+    // Hover ripple + click to launch / right click for context menu
     StateLayer {
         anchors.fill: parent
         radius: Tokens.rounding.large
-        acceptedButtons: Qt.LeftButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         onContainsMouseChanged: {
             if (containsMouse)
                 root.browser.selectTile(root.index);
         }
-        onClicked: root.browser.launch(root.modelData)
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                root.browser.openContextMenu(root.modelData, root);
+            } else {
+                root.browser.launch(root.modelData);
+            }
+        }
     }
 
     // Icon + label

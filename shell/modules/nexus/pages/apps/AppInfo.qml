@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -14,6 +16,7 @@ PageBase {
     readonly property DesktopEntry app: nState.selectedApp
     readonly property bool favouriteByRegex: app && matchedByRegex(GlobalConfig.launcher.favouriteApps, app.id)
     readonly property bool hiddenByRegex: app && matchedByRegex(GlobalConfig.launcher.hiddenApps, app.id)
+    readonly property bool pinnedToDockByRegex: app && matchedByRegex(GlobalConfig.bar.dock.pinnedApps, app.id)
 
     function isRegexEntry(s: string): bool {
         return /^\^.*\$$/.test(s);
@@ -73,9 +76,27 @@ PageBase {
             }
         }
 
-        // Launcher
+        // Dock
         SectionHeader {
             first: true
+            text: qsTr("Taskbar & Dock")
+        }
+
+        ToggleRow {
+            first: true
+            last: true
+            text: qsTr("Pin to dock")
+            subtext: root.pinnedToDockByRegex ? qsTr("Matched by a regex in pinnedApps - edit the config file to change") : qsTr("Show on the dock even when not running")
+            enabled: !root.pinnedToDockByRegex
+            checked: root.app && Strings.testRegexList(GlobalConfig.bar.dock.pinnedApps, root.app.id)
+            onToggled: {
+                const apps = GlobalConfig.bar.dock.pinnedApps ? [...GlobalConfig.bar.dock.pinnedApps] : [];
+                GlobalConfig.bar.dock.pinnedApps = checked ? [...apps, root.app.id] : apps.filter(a => a !== root.app.id);
+            }
+        }
+
+        // Launcher
+        SectionHeader {
             text: qsTr("Launcher")
         }
 

@@ -128,9 +128,6 @@ Item {
             onObjectAdded: (index, object) => {
                 object.parent = gridItem;
             }
-            onObjectRemoved: (index, object) => {
-                object.destroy();
-            }
 
             delegate: Item {
                 id: delegateItem

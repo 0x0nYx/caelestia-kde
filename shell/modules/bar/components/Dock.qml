@@ -136,7 +136,7 @@ Item {
         }
         
         // Only update if arrays are different length or different order
-        const currentFavs = GlobalConfig.launcher.favouriteApps || [];
+        const currentFavs = GlobalConfig.bar.dock.pinnedApps || [];
         let changed = currentFavs.length !== newFavs.length;
         if (!changed) {
             for (let i = 0; i < newFavs.length; i++) {
@@ -148,10 +148,15 @@ Item {
         }
         
         if (changed) {
-            GlobalConfig.launcher.favouriteApps = newFavs;
+            GlobalConfig.bar.dock.pinnedApps = newFavs;
         }
 
         root.modelDataArray = newArr;
+        const map = {};
+        for (const app of newArr) {
+            map[app.id] = app;
+        }
+        root.modelDataMap = map;
     }
 
     function handleWheel(angleDelta: point): void {
@@ -405,14 +410,15 @@ Item {
             Item {
                 id: delegateContainer
 
+                required property int index
+                required property string appId
+
                 width: container.itemSize
                 height: container.itemSize
                 implicitWidth: width
                 implicitHeight: height
 
-                property var modelData: root.modelDataArray[index]
-
-                required property int index
+                property var modelData: root.modelDataMap[appId] || root.modelDataArray[index]
 
                 DropArea {
                     anchors.fill: parent
@@ -739,15 +745,17 @@ Item {
 
     property var modelDataArray: []
 
+    property var modelDataMap: ({})
+
     property var currentOrder: []
 
     onModelDataArrayChanged: currentOrder = [...modelDataArray]
 
     function rebuildModel(): void {
         if (root.isDragging) return;
-        const apps = [];
+        let apps = [];
 
-        const pinnedIds = GlobalConfig.launcher.favouriteApps || [];
+        const pinnedIds = GlobalConfig.bar.dock.pinnedApps || [];
         
         for (const pid of pinnedIds) {
             for (const entry of DesktopEntries.applications.values) {
@@ -862,6 +870,32 @@ Item {
             root.launchingApps = newLaunching;
         }
 
+        // Preserve user dock order if present in currentOrder / modelDataArray
+        const existingOrder = (root.currentOrder && root.currentOrder.length > 0) ? root.currentOrder : root.modelDataArray;
+        const existingPinnedOrder = existingOrder.filter(a => a && a.isPinned).map(a => a.id);
+        const pinnedOrderMatches = existingPinnedOrder.length === pinnedIds.length &&
+            existingPinnedOrder.every((id, idx) => id === pinnedIds[idx]);
+
+        if (existingOrder.length > 0 && pinnedOrderMatches) {
+            const orderedApps = [];
+            const remainingApps = [...apps];
+            
+            for (let i = 0; i < existingOrder.length; i++) {
+                const prevItem = existingOrder[i];
+                if (!prevItem) continue;
+                const idx = remainingApps.findIndex(a => a.id === prevItem.id);
+                if (idx !== -1) {
+                    orderedApps.push(remainingApps.splice(idx, 1)[0]);
+                }
+            }
+            
+            for (let i = 0; i < remainingApps.length; i++) {
+                orderedApps.push(remainingApps[i]);
+            }
+            
+            apps = orderedApps;
+        }
+
         let changed = false;
         if (apps.length !== dockModel.count) {
             changed = true;
@@ -909,6 +943,11 @@ Item {
             }
         }
         
+        const map = {};
+        for (const app of apps) {
+            map[app.id] = app;
+        }
+        root.modelDataMap = map;
         root.modelDataArray = apps;
         root.modelUpdateTrigger += 1;
     }
@@ -938,9 +977,9 @@ Item {
     }
 
     Connections {
-        target: GlobalConfig.launcher
+        target: GlobalConfig.bar.dock
 
-        function onFavouriteAppsChanged(): void {
+        function onPinnedAppsChanged(): void {
             root.rebuildModel();
         }
     }

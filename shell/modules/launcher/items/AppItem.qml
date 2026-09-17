@@ -1,13 +1,11 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 import Caelestia
 import Caelestia.Config
 import qs.components
-import qs.components.containers
-import qs.components.effects
 import qs.services
 import qs.utils
 import qs.modules.launcher.services
@@ -17,6 +15,7 @@ Item {
 
     required property DesktopEntry modelData
     required property DrawerVisibilities visibilities
+    required property var list
 
     implicitHeight: Tokens.sizes.launcher.itemHeight
 
@@ -27,10 +26,14 @@ Item {
         id: stateLayer
 
         radius: Tokens.rounding.large
-        acceptedButtons: Qt.LeftButton
-        onClicked: {
-            Apps.launch(root.modelData);
-            root.visibilities.launcher = false;
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                root.list.openContextMenu(root.modelData, root);
+            } else {
+                Apps.launch(root.modelData);
+                root.visibilities.launcher = false;
+            }
         }
     }
 
@@ -55,7 +58,7 @@ Item {
             anchors.leftMargin: Tokens.spacing.medium
             anchors.verticalCenter: icon.verticalCenter
 
-            implicitWidth: parent.width - icon.width - 120
+            implicitWidth: parent.width - icon.width - 60
             implicitHeight: name.implicitHeight + comment.implicitHeight
 
             StyledText {
@@ -73,45 +76,9 @@ Item {
                 color: Colours.palette.m3outline
 
                 elide: Text.ElideRight
-                width: root.width - icon.width - 120 - Tokens.rounding.extraLargeIncreased
+                width: root.width - icon.width - 60 - Tokens.rounding.extraLargeIncreased
 
                 anchors.top: name.bottom
-            }
-        }
-
-        StateLayer {
-            id: hideIcon
-
-            anchors.fill: undefined
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-
-            onClicked: {
-                const appId = root.modelData?.id;
-                if (!appId)
-                    return;
-                const hiddenApps = GlobalConfig.launcher.hiddenApps ? [...GlobalConfig.launcher.hiddenApps] : [];
-                if (Strings.testRegexList(hiddenApps, appId)) {
-                    const idx = hiddenApps.indexOf(appId);
-                    if (idx !== -1)
-                        hiddenApps.splice(idx, 1);
-                } else {
-                    hiddenApps.push(appId);
-                }
-                GlobalConfig.launcher.hiddenApps = hiddenApps;
-            }
-
-            MaterialIcon {
-                anchors.centerIn: parent
-                text: Strings.testRegexList(GlobalConfig.launcher.hiddenApps, root.modelData?.id) ? "visibility_off" : "visibility"
-                color: hideIcon.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-
-                Behavior on color {
-                    CAnim {}
-                }
             }
         }
 
@@ -120,8 +87,7 @@ Item {
 
             anchors.fill: undefined
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: hideIcon.left
-            anchors.rightMargin: Tokens.padding.small
+            anchors.right: parent.right
             width: 32
             height: 32
             radius: Tokens.rounding.full
@@ -146,63 +112,6 @@ Item {
                 text: Strings.testRegexList(GlobalConfig.launcher.favouriteApps, root.modelData?.id) ? "favorite" : "favorite_border"
                 fill: Strings.testRegexList(GlobalConfig.launcher.favouriteApps, root.modelData?.id) ? 1 : 0
                 color: favIcon.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
-
-                Behavior on color {
-                    CAnim {}
-                }
-            }
-        }
-
-        StateLayer {
-            id: pinIcon
-
-            property bool isPinned: false
-
-            anchors.fill: undefined
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: favIcon.left
-            anchors.rightMargin: Tokens.padding.small
-            width: 32
-            height: 32
-            radius: Tokens.rounding.full
-
-            onClicked: {
-                const appId = root.modelData?.id;
-                if (!appId)
-                    return;
-
-                if (isPinned) {
-                    Quickshell.execDetached([
-                        "sh", "-c", 
-                        `rm -f ~/Desktop/"$1" ~/Desktop/"$1.desktop"`, 
-                        "--", appId
-                    ]);
-                    isPinned = false;
-                } else {
-                    Quickshell.execDetached([
-                        "sh", "-c", 
-                        `FILE=$(find /usr/share/applications ~/.local/share/applications /var/lib/flatpak/exports/share/applications -name "$1" -o -name "$1.desktop" 2>/dev/null | head -n 1); if [ -n "$FILE" ]; then cp "$FILE" ~/Desktop/; BASENAME=$(basename "$FILE"); chmod +x ~/Desktop/"$BASENAME"; fi`, 
-                        "--", appId
-                    ]);
-                    isPinned = true;
-                }
-            }
-
-            Process {
-                id: checkPinnedProc
-
-                command: ["sh", "-c", "test -f ~/Desktop/\"$1\" || test -f ~/Desktop/\"$1.desktop\"", "--", root.modelData?.id ?? ""]
-                running: true
-                onExited: code => {
-                    pinIcon.isPinned = (code === 0);
-                }
-            }
-
-            MaterialIcon {
-                anchors.centerIn: parent
-                text: "push_pin"
-                fill: pinIcon.isPinned ? 1 : 0
-                color: pinIcon.isPinned ? Colours.palette.m3primary : (pinIcon.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant)
 
                 Behavior on color {
                     CAnim {}

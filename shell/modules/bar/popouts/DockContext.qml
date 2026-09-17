@@ -19,7 +19,7 @@ ColumnLayout {
     property bool isPinned: {
         if (!model)
             return false;
-        const current = GlobalConfig.launcher.favouriteApps || [];
+        const current = GlobalConfig.bar.dock.pinnedApps || [];
         for (let i = 0; i < current.length; i++) {
             if (model.id === current[i] || (model.entry && model.entry.id === current[i])) {
                 return true;
@@ -73,20 +73,20 @@ ColumnLayout {
 
                     onClicked: {
                         if (isPinned) {
-                            const current = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
+                            const current = GlobalConfig.bar.dock.pinnedApps ? [...GlobalConfig.bar.dock.pinnedApps] : [];
                             let index = current.indexOf(model.id);
                             if (index === -1 && model.entry)
                                 index = current.indexOf(model.entry.id);
                             if (index !== -1) {
                                 current.splice(index, 1);
-                                GlobalConfig.launcher.favouriteApps = current;
+                                GlobalConfig.bar.dock.pinnedApps = current;
                             }
                         } else {
-                            const current = GlobalConfig.launcher.favouriteApps ? [...GlobalConfig.launcher.favouriteApps] : [];
+                            const current = GlobalConfig.bar.dock.pinnedApps ? [...GlobalConfig.bar.dock.pinnedApps] : [];
                             const idToPin = model.entry ? model.entry.id : model.id;
                             if (!current.includes(idToPin)) {
                                 current.push(idToPin);
-                                GlobalConfig.launcher.favouriteApps = current;
+                                GlobalConfig.bar.dock.pinnedApps = current;
                             }
                         }
                         root.popouts.hasCurrent = false;
