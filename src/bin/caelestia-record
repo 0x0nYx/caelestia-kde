@@ -40,19 +40,13 @@ _is_recording() {
 _get_focused_refresh_rate() {
     local rr=60  # fallback
     local active_output=""
-    local runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
 
-    # Ask KWin, the same way the shell's bridge does (KWinActiveWindowBridge reads
-    # /KWin's activeOutputName). The runtime file below is written by nothing in this tree,
-    # so without this the rate was always the 60 fallback, and a 120 Hz display was
-    # recorded at 60.
+    # The focused output comes from KWin, the same property the shell's bridge reads
+    # (KWinActiveWindowBridge::cursorOutputName). An earlier build also wrote it to a file
+    # under XDG_RUNTIME_DIR, but that writer was deleted in the same change that added this
+    # reader, so the file is not a source here - it made every recording `-f 60`.
     if command -v qdbus6 >/dev/null 2>&1; then
         active_output="$(qdbus6 org.kde.KWin /KWin org.kde.KWin.activeOutputName 2>/dev/null || true)"
-    fi
-
-    # Kept for an install whose shell still writes the old runtime file.
-    if [[ -z "$active_output" ]] && [[ -f "$runtime_dir/qs_kwin_active_output.txt" ]]; then
-        active_output=$(cat "$runtime_dir/qs_kwin_active_output.txt" 2>/dev/null || true)
     fi
 
     if [[ -n "$active_output" ]] && command -v kscreen-doctor >/dev/null 2>&1; then
