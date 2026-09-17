@@ -296,24 +296,23 @@ rm -f "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/wallpaper-plugin-installed"
 
 section "Step 4 - Remove Bridge Scripts"
 
-for f in \
-    "$HOME/.local/bin/kcolorpicker" \
-    "$HOME/.local/bin/qs-kwin-bridge.py" \
-    "$HOME/.local/bin/caelestia-shortcuts" \
-    "$HOME/.local/bin/caelestia" \
-    "$HOME/.local/bin/caelestia-color" \
-    "$HOME/.local/bin/caelestia-screenshot" \
-    "$HOME/.local/bin/caelestia-record" \
-    "$HOME/.local/bin/caelestia-keyd-run" \
-    "$HOME/.local/bin/caelestia-shell-ipc" \
-    "$HOME/.local/bin/ydotoold-wrapper" \
-    "$HOME/.local/bin/caelestia-update" \
-    "$HOME/.local/bin/caelestia-check-updates" \
-    "$HOME/.local/bin/caelestia-autostart.sh"
-do
-    if [[ -f "$f" ]]; then
-        rm -f "$f"
-        ok "Removed: $f"
+# Derived from src/bin, which is what 03-deploy-configs.sh and 08-build-shell.sh copy into
+# ~/.local/bin: a hand-written list here has already drifted from theirs twice.
+for source_file in "$BUNDLE_DIR"/src/bin/*; do
+    [[ -f "$source_file" ]] || continue
+    bin_target="$HOME/.local/bin/$(basename -- "$source_file")"
+    if [[ -f "$bin_target" ]]; then
+        rm -f "$bin_target"
+        ok "Removed: $bin_target"
+    fi
+done
+
+# Names no version installs any more.
+for name in kcolorpicker qs-kwin-bridge.py caelestia-shortcuts caelestia-keyd-run ydotoold-wrapper caelestia-autostart.sh; do
+    bin_target="$HOME/.local/bin/$name"
+    if [[ -f "$bin_target" ]]; then
+        rm -f "$bin_target"
+        ok "Removed: $bin_target"
     fi
 done
 
