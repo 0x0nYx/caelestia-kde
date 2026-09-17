@@ -692,20 +692,78 @@
   <context>
     <name>AppBrowser</name>
     <message>
-      <location filename="../modules/launcher/AppBrowser.qml" line="+202"/>
+      <location filename="../modules/launcher/AppBrowser.qml" line="+225"/>
       <source>No apps in this category</source>
       <translation>Ingen apps i denne kategori</translation>
     </message>
   </context>
   <context>
+    <name>AppContextMenu</name>
+    <message>
+      <location filename="../modules/launcher/items/AppContextMenu.qml" line="+56"/>
+      <source>Unpin from dock</source>
+      <translation type="unfinished">Unpin from dock</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Pin to dock</source>
+      <translation type="unfinished">Pin to dock</translation>
+    </message>
+    <message>
+      <location line="+18"/>
+      <source>Remove from desktop</source>
+      <translation type="unfinished">Remove from desktop</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Add to desktop</source>
+      <translation type="unfinished">Add to desktop</translation>
+    </message>
+    <message>
+      <location line="+25"/>
+      <source>Show in launcher</source>
+      <translation type="unfinished">Show in launcher</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Hide app</source>
+      <translation type="unfinished">Hide app</translation>
+    </message>
+    <message>
+      <location line="+18"/>
+      <source>App info</source>
+      <translation type="unfinished">App info</translation>
+    </message>
+  </context>
+  <context>
     <name>AppInfo</name>
     <message>
-      <location filename="../modules/nexus/pages/apps/AppInfo.qml" line="+32"/>
+      <location filename="../modules/nexus/pages/apps/AppInfo.qml" line="+35"/>
       <source>App info</source>
       <translation>Oplysninger om appen</translation>
     </message>
     <message>
       <location line="+47"/>
+      <source>Taskbar &amp; Dock</source>
+      <translation type="unfinished">Taskbar &amp; Dock</translation>
+    </message>
+    <message>
+      <location line="+6"/>
+      <source>Pin to dock</source>
+      <translation type="unfinished">Pin to dock</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Matched by a regex in pinnedApps - edit the config file to change</source>
+      <translation type="unfinished">Matched by a regex in pinnedApps - edit the config file to change</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Show on the dock even when not running</source>
+      <translation type="unfinished">Show on the dock even when not running</translation>
+    </message>
+    <message>
+      <location line="+11"/>
       <source>Launcher</source>
       <translation>Start</translation>
     </message>
@@ -766,7 +824,7 @@
   <context>
     <name>AppTile</name>
     <message>
-      <location filename="../modules/launcher/items/AppTile.qml" line="+139"/>
+      <location filename="../modules/launcher/items/AppTile.qml" line="+147"/>
       <source>Matched by a regex in favouriteApps - edit the config file to change</source>
       <translation>Matchet af en regex i favoritApps - rediger konfigurationsfilen for at ændre</translation>
     </message>
