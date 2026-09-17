@@ -109,4 +109,40 @@ test_the_command_asks_the_install_for_its_version() {
     assert_not_contains "$cli" '$BIN_DIR/../../../.github/version.env' "at two depths either"
 }
 
+test_a_package_with_no_version_helper_reports_unknown() {
+    # The version file is a checkout's, so only that branch defines VERSION_FILE. Reading it
+    # under `set -u` from the packaged branch made this exact case die with
+    # "VERSION_FILE: unbound variable" instead of answering.
+    local dir home status out
+    dir="$(new_tmpdir)"
+    home="$dir/home"
+    mkdir -p "$dir/empty" "$home"
+
+    out="$(env CAELESTIA_INSTALL_KIND=package HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+        CAELESTIA_BIN_DIR=/usr/bin CAELESTIA_LIB_DIR="$dir/empty" "$CLI" version 2>&1)"
+    status=$?
+
+    assert_status 0 "$status" "a package with no version helper should still answer"
+    assert_eq "caelestia unknown" "$out" "and report unknown rather than fail"
+}
+
+test_a_package_does_not_run_a_checkout_it_was_not_pointed_at() {
+    # cmd_install defaulted to ~/caelestia-kde, so a packaged install whose user kept a clone
+    # there ran that clone's whole installer (packages, ~/.local/lib, a second C++ build).
+    local dir home out
+    dir="$(new_tmpdir)"
+    home="$dir/home"
+    mkdir -p "$home/caelestia-kde"
+    printf '#!/bin/sh\necho RAN-THE-CHECKOUT-INSTALLER\n' > "$home/caelestia-kde/install.sh"
+    chmod +x "$home/caelestia-kde/install.sh"
+
+    out="$(env CAELESTIA_INSTALL_KIND=package HOME="$home" XDG_CONFIG_HOME="$home/.config" \
+        CAELESTIA_DATA_DIR="$dir/no-scripts" "$CLI" install 2>&1 || true)"
+    assert_not_contains "$out" "RAN-THE-CHECKOUT-INSTALLER" "a package must not run ~/caelestia-kde/install.sh"
+
+    out="$(env CAELESTIA_INSTALL_KIND=source CAELESTIA_DIR="$home/caelestia-kde" HOME="$home" \
+        XDG_CONFIG_HOME="$home/.config" "$CLI" install 2>&1 || true)"
+    assert_contains "$out" "RAN-THE-CHECKOUT-INSTALLER" "a checkout named explicitly still runs its installer"
+}
+
 run_tests
