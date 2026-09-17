@@ -3081,7 +3081,7 @@
     <message>
       <location line="+6"/>
       <source>Performance</source>
-      <translation>Производительность</translation>
+      <translation>Нагрузка</translation>
     </message>
     <message>
       <location line="+6"/>
@@ -3156,7 +3156,7 @@
     <message>
       <location line="+3"/>
       <source>AI Assistant</source>
-      <translation>ИИ-ассистент</translation>
+      <translation>Ассистент</translation>
     </message>
     <message>
       <location line="+3"/>
@@ -3505,7 +3505,7 @@
     <message>
       <location line="+6"/>
       <source>Performance</source>
-      <translation>Производительность</translation>
+      <translation>Нагрузка</translation>
     </message>
     <message>
       <location line="+7"/>
