@@ -300,12 +300,16 @@ for f in \
     "$HOME/.local/bin/kcolorpicker" \
     "$HOME/.local/bin/qs-kwin-bridge.py" \
     "$HOME/.local/bin/caelestia-shortcuts" \
+    "$HOME/.local/bin/caelestia" \
+    "$HOME/.local/bin/caelestia-color" \
+    "$HOME/.local/bin/caelestia-screenshot" \
     "$HOME/.local/bin/caelestia-record" \
     "$HOME/.local/bin/caelestia-keyd-run" \
     "$HOME/.local/bin/caelestia-shell-ipc" \
     "$HOME/.local/bin/ydotoold-wrapper" \
     "$HOME/.local/bin/caelestia-update" \
-    "$HOME/.local/bin/caelestia-check-updates"
+    "$HOME/.local/bin/caelestia-check-updates" \
+    "$HOME/.local/bin/caelestia-autostart.sh"
 do
     if [[ -f "$f" ]]; then
         rm -f "$f"
@@ -321,7 +325,10 @@ fi
 
 section "Step 5 - Restore or Remove Config Directories"
 
-for cfg in btop fastfetch fish foot hypr kitty micro thunar; do
+# hypr is deliberately absent: nothing here deploys ~/.config/hypr any more (compare the
+# deploy and backup lists in 03-deploy-configs.sh), so removing it deleted a Hyprland
+# user's own configuration with no backup to restore it from.
+for cfg in btop fastfetch fish foot kitty micro thunar; do
     if [[ -e "$HOME/.config/$cfg" ]]; then
         restore_or_remove "$cfg" "$HOME/.config/$cfg" ".config"
     fi
