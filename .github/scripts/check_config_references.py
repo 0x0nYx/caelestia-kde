@@ -61,7 +61,7 @@ def parse_headers() -> tuple[dict[str, dict[str, str]], dict[str, str]]:
     for hdr in sorted(CONFIG_DIR.glob("*.hpp")):
         try:
             text = hdr.read_text(encoding="utf-8")
-        except OSError:
+        except (OSError, UnicodeDecodeError):
             continue
 
         class_spans: list[tuple[int, str]] = []
@@ -192,7 +192,7 @@ def main() -> int:
             continue
         try:
             src = qml.read_text(encoding="utf-8")
-        except OSError:
+        except (OSError, UnicodeDecodeError):
             continue
         cleaned = strip_comments_and_strings(src)
         for m in CHAIN_RE.finditer(cleaned):
