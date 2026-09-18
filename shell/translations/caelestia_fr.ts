@@ -324,6 +324,84 @@
     </message>
   </context>
   <context>
+    <name>AdvancedColorsPage</name>
+    <message>
+      <location filename="../modules/nexus/pages/wallandstyle/AdvancedColorsPage.qml" line="+19"/>
+      <source>Sunrise and sunset</source>
+      <translation type="unfinished">Sunrise and sunset</translation>
+    </message>
+    <message>
+      <location line="+3"/>
+      <source>Fixed times</source>
+      <translation type="unfinished">Fixed times</translation>
+    </message>
+    <message>
+      <location line="+19"/>
+      <source>Advanced Colors</source>
+      <translation type="unfinished">Advanced Colors</translation>
+    </message>
+    <message>
+      <location line="+16"/>
+      <source>Theme Automation</source>
+      <translation type="unfinished">Theme Automation</translation>
+    </message>
+    <message>
+      <location line="+9"/>
+      <source>Smart color scheme</source>
+      <translation type="unfinished">Smart color scheme</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Automatically select color variants and theme mode</source>
+      <translation type="unfinished">Automatically select color variants and theme mode</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Automatic light and dark</source>
+      <translation type="unfinished">Automatic light and dark</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Switch the theme mode on a schedule</source>
+      <translation type="unfinished">Switch the theme mode on a schedule</translation>
+    </message>
+    <message>
+      <location line="+9"/>
+      <source>Schedule</source>
+      <translation type="unfinished">Schedule</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Sunrise and sunset use your weather location</source>
+      <translation type="unfinished">Sunrise and sunset use your weather location</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Set a weather location to use sunrise and sunset</source>
+      <translation type="unfinished">Set a weather location to use sunrise and sunset</translation>
+    </message>
+    <message>
+      <location line="+10"/>
+      <source>Light mode hour</source>
+      <translation type="unfinished">Light mode hour</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Switches at %1</source>
+      <translation type="unfinished">Switches at %1</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>Dark mode hour</source>
+      <translation type="unfinished">Dark mode hour</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Switches at %1, also used when sunrise and sunset are unavailable</source>
+      <translation type="unfinished">Switches at %1, also used when sunrise and sunset are unavailable</translation>
+    </message>
+  </context>
+  <context>
     <name>AiAssistant</name>
     <message>
       <location filename="../modules/sidebar/AiAssistant.qml" line="+789"/>
@@ -3012,7 +3090,7 @@
       <translation>Couleurs qui suivent votre fond d'écran</translation>
     </message>
     <message>
-      <location line="+18"/>
+      <location line="+27"/>
       <source>Light</source>
       <translation>Lumière</translation>
     </message>
@@ -5780,7 +5858,7 @@
   <context>
     <name>M3Variants</name>
     <message>
-      <location filename="../modules/launcher/services/M3Variants.qml" line="+41"/>
+      <location filename="../modules/launcher/services/M3Variants.qml" line="+31"/>
       <source>Vibrant</source>
       <translation>Vibreur</translation>
     </message>
@@ -7192,7 +7270,7 @@
   <context>
     <name>PageCompRegistry</name>
     <message>
-      <location filename="../modules/nexus/PageCompRegistry.qml" line="+351"/>
+      <location filename="../modules/nexus/PageCompRegistry.qml" line="+354"/>
       <source>Page under construction</source>
       <translation>Page en construction</translation>
     </message>
@@ -7238,6 +7316,11 @@
       <location line="+1"/>
       <source>Colors</source>
       <translation>Couleurs</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Advanced color settings</source>
+      <translation type="unfinished">Advanced color settings</translation>
     </message>
     <message>
       <location line="+1"/>
