@@ -64,7 +64,7 @@ PageBase {
             ToggleRow {
                 first: true
                 text: qsTr("Smart color scheme")
-                subtext: qsTr("Disable this to set Variants manually")
+                subtext: qsTr("Automatically select color variants and theme mode")
                 checked: GlobalConfig.services.smartScheme
                 onToggled: GlobalConfig.services.smartScheme = checked
             }
