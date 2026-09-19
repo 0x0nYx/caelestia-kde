@@ -140,27 +140,6 @@ void applyToKwin() {
     }
 }
 
-bool isLockscreenEdges() {
-    static bool checked = false;
-    static bool result = false;
-    if (!checked) {
-        checked = true;
-        
-        QFile cmdline(QStringLiteral("/proc/self/cmdline"));
-        if (cmdline.open(QIODevice::ReadOnly)) {
-            QByteArray data = cmdline.readAll();
-            QList<QByteArray> args = data.split('\0');
-            for (const QByteArray& arg : args) {
-                if (arg.endsWith("lockscreen.qml")) {
-                    result = true;
-                    break;
-                }
-            }
-        }
-    }
-    return result;
-}
-
 } // namespace
 
 ScreenEdges::ScreenEdges(QObject* parent)
@@ -172,9 +151,7 @@ ScreenEdges::ScreenEdges(QObject* parent)
     m_reconfigureTimer->setInterval(50);
     connect(m_reconfigureTimer, &QTimer::timeout, this, [] { applyToKwin(); });
 
-    if (!isLockscreenEdges()) {
-        recoverFromCrash();
-    }
+    recoverFromCrash();
 
     if (QCoreApplication::instance()) {
         connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, [this] { restoreAll(); });
@@ -216,7 +193,7 @@ void ScreenEdges::recoverFromCrash() {
 }
 
 void ScreenEdges::claim(int corner) {
-    if (isLockscreenEdges() || electricBorderKey(corner).isEmpty() || m_stolen.contains(corner)) {
+    if (electricBorderKey(corner).isEmpty() || m_stolen.contains(corner)) {
         return;
     }
     stealCorner(corner);
