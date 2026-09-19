@@ -542,7 +542,7 @@ Item {
                                 asynchronous: true
                                 implicitSize: Math.round(Math.min(activeWin.width, activeWin.height) * 0.62)
                                 opacity: activeWin.morphed ? 1 : 0
-                                source: modelData.iconName ? Icons.getAppIcon(modelData.iconName, "image-missing") : (modelData.class ? Icons.getAppIcon(modelData.class, "image-missing") : "")
+                                source: WinIcons.sourceForClient(modelData)
                                 visible: opacity > 0.01
                                 z: 10
 
@@ -886,12 +886,7 @@ Item {
                 active: incoming.arriving
                 address: Visibilities.dragAddress
                 anchors.fill: parent
-                fallbackIcon: {
-                    const w = incoming.window;
-                    if (!w)
-                        return "";
-                    return w.iconName ? Icons.getAppIcon(w.iconName, "image-missing") : (w.class ? Icons.getAppIcon(w.class, "image-missing") : "");
-                }
+                fallbackIcon: incoming.window ? WinIcons.sourceForClient(incoming.window) : ""
                 sourceAspect: incoming.aspect
             }
         }

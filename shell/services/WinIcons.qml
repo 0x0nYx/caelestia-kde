@@ -100,8 +100,8 @@ Singleton {
         const wp = root.paths[root.keyFor(client.class ?? "", client.pid ?? 0)];
         if (wp)
             return "file://" + wp;
-        return client.iconName ? Icons.getAppIcon(client.iconName, "image-missing")
-                               : (client.class ? Icons.getAppIcon(client.class, "image-missing") : "");
+        return client.iconName ? Icons.getAppIcon(client.iconName, "application-x-executable")
+                               : (client.class ? Icons.getAppIcon(client.class, "application-x-executable") : "");
     }
 
     // extract() returns the path directly; the signal carries the same result

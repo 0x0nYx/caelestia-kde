@@ -47,7 +47,7 @@ PageBase {
             IconImage {
                 asynchronous: true
                 implicitSize: Math.round(Tokens.font.icon.large.pointSize * 3)
-                source: Quickshell.iconPath(root.app?.icon, "image-missing")
+                source: WinIcons.sourceFor(root.app, "", root.app?.id ?? "", 0)
             }
 
             ColumnLayout {
