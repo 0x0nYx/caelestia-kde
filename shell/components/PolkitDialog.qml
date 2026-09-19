@@ -369,43 +369,13 @@ StyledWindow {
                             Behavior on opacity { Anim { type: Anim.DefaultEffects } }
                         }
 
-                        ListView {
+                        AnimatedPasswordMask {
                             id: charList
-
-                            readonly property int fullWidth: {
-                                let w = (count - 1) * spacing;
-                                for (let i = 0; i < count; i++)
-                                    w += ((itemAtIndex(i) as CharItem)?.nonAnimWidthScale ?? 1) * implicitHeight;
-                                return w + implicitHeight;
-                            }
-
-                            function bindImWidth(): void {
-                                imWidthBehavior.enabled = false;
-                                implicitWidth = Qt.binding(() => fullWidth);
-                                imWidthBehavior.enabled = true;
-                            }
 
                             anchors.centerIn: parent
                             anchors.horizontalCenterOffset: implicitWidth > parent.width ? -(implicitWidth - parent.width) / 2 : 0
-
-                            implicitWidth: fullWidth
-                            implicitHeight: Tokens.font.body.medium.pointSize
-
-                            orientation: Qt.Horizontal
-                            spacing: Tokens.spacing.extraSmall
-                            interactive: false
-
-                            model: ScriptModel {
-                                values: root.buffer.split("")
-                            }
-
-                            delegate: CharItem {}
-
-                            Behavior on implicitWidth {
-                                id: imWidthBehavior
-
-                                Anim {}
-                            }
+                            buffer: root.buffer
+                            shapeQueue: root.shapeQueue
                         }
                     }
                     
@@ -457,123 +427,5 @@ StyledWindow {
                     }
                 }
             }
-        }
-    }
-
-    component CharItem: Item {
-        id: ch
-
-        required property int index
-        property real nonAnimWidthScale: 1
-
-        implicitHeight: charList.implicitHeight
-
-        ListView.onRemove: {
-            initAnim.stop();
-            removeAnim.start();
-        }
-
-        MaterialShape {
-            id: charShape
-
-            anchors.centerIn: parent
-            implicitSize: charList.implicitHeight * 1.5
-            shape: root.shapeQueue[ch.index % root.shapeQueue.length] ?? MaterialShape.Circle
-            color: Colours.palette.m3onSurface
-
-            Behavior on color {
-                CAnim {}
-            }
-
-            SequentialAnimation {
-                id: initAnim
-
-                running: true
-
-                ParallelAnimation {
-                    Anim {
-                        target: charShape
-                        property: "opacity"
-                        from: 0
-                        to: 1
-                        type: Anim.DefaultEffects
-                    }
-                    Anim {
-                        target: charShape
-                        property: "scale"
-                        from: 0
-                        to: 1
-                        type: Anim.FastSpatial
-                    }
-                    Anim {
-                        target: ch
-                        property: "implicitWidth"
-                        from: charList.implicitHeight
-                        to: charList.implicitHeight * 1.3
-                        type: Anim.DefaultEffects
-                    }
-                    PropertyAction {
-                        target: ch
-                        property: "nonAnimWidthScale"
-                        value: 1.5
-                    }
-                }
-                PauseAnimation {
-                    duration: 180 * Tokens.anim.durations.scale
-                }
-                PropertyAction {
-                    target: charShape
-                    property: "shape"
-                    value: MaterialShape.Circle
-                }
-                ParallelAnimation {
-                    Anim {
-                        target: charShape
-                        property: "scale"
-                        to: 2 / 3
-                        type: Anim.FastSpatial
-                    }
-                    Anim {
-                        target: ch
-                        property: "implicitWidth"
-                        to: charList.implicitHeight
-                        type: Anim.DefaultEffects
-                    }
-                    PropertyAction {
-                        target: ch
-                        property: "nonAnimWidthScale"
-                        value: 1
-                    }
-                }
-            }
-
-            SequentialAnimation {
-                id: removeAnim
-
-                PropertyAction {
-                    target: ch
-                    property: "ListView.delayRemove"
-                    value: true
-                }
-                ParallelAnimation {
-                    Anim {
-                        type: Anim.DefaultEffects
-                        target: charShape
-                        property: "opacity"
-                        to: 0
-                    }
-                    Anim {
-                        target: charShape
-                        property: "scale"
-                        to: 0.5
-                    }
-                }
-                PropertyAction {
-                    target: ch
-                    property: "ListView.delayRemove"
-                    value: false
-                }
-            }
-        }
     }
 }
