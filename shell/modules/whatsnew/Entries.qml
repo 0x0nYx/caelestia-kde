@@ -71,6 +71,13 @@ QtObject {
             "icon": "dock_to_bottom",
             "title": qsTr("Dock Desktop Filtering & Live Previews"),
             "description": qsTr("The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -> Panels -> Taskbar -> Dock.")
+        },
+        {
+            "id": "color_engine_theme_automation",
+            "revision": 17,
+            "icon": "palette",
+            "title": qsTr("Color Engine & Theme Automation"),
+            "description": qsTr("Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.")
         }
     ]
 
