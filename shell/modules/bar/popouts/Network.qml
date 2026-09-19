@@ -96,9 +96,10 @@ ColumnLayout {
         font.pointSize: Tokens.font.body.medium.pointSize * root.fontScale
     }
 
-    Toggle {
+    PopoutToggleRow {
         visible: root.view === "wireless"
-
+        scaleOffset: root.scaleOffset
+        fontScale: root.fontScale
         label: qsTr("Enabled")
         checked: Nmcli.wifiEnabled
         toggle.onToggled: Nmcli.enableWifi(checked)
@@ -274,9 +275,11 @@ ColumnLayout {
     // VPN section. Deliberately not gated on root.view: a saved VPN profile is
     // reachable whether the machine is on Wi-Fi or docked on Ethernet, and a
     // wired connection is exactly when the VPN profiles matter.
-    Section {
+    PopoutSection {
         Layout.fillWidth: true
         Layout.topMargin: Tokens.padding.small * root.scaleOffset
+        scaleOffset: root.scaleOffset
+        fontScale: root.fontScale
         title: qsTr("VPN")
         expanded: false
 
@@ -470,10 +473,12 @@ ColumnLayout {
     }
 
     // Connection details (IP / subnet / gateway / DNS / MAC) for the active device
-    Section {
+    PopoutSection {
         visible: root.activeDetails.visible
         Layout.fillWidth: true
         Layout.topMargin: visible ? Tokens.padding.medium * root.scaleOffset : 0
+        scaleOffset: root.scaleOffset
+        fontScale: root.fontScale
         title: qsTr("Connection details")
         expanded: false
 
@@ -535,106 +540,5 @@ ColumnLayout {
         }
 
         target: root.popouts
-    }
-
-    component Section: ColumnLayout {
-        id: section
-
-        required property string title
-        property bool expanded: false
-        default property alias content: contentColumn.data
-
-        Layout.fillWidth: true
-        spacing: Tokens.spacing.extraSmall * root.scaleOffset
-
-        Item {
-            id: sectionHeader
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: Math.max(titleRow.implicitHeight + Tokens.padding.small * 2 * root.scaleOffset, 36 * root.scaleOffset)
-
-            RowLayout {
-                id: titleRow
-
-                anchors.fill: parent
-                anchors.rightMargin: Tokens.padding.extraSmall * root.scaleOffset
-                spacing: Tokens.spacing.small * root.scaleOffset
-
-                StyledText {
-                    Layout.fillWidth: true
-                    text: section.title
-                    font.weight: Font.Medium
-                    font.pointSize: Tokens.font.body.medium.pointSize * root.fontScale
-                }
-
-                MaterialIcon {
-                    text: "expand_more"
-                    rotation: section.expanded ? 180 : 0
-                    color: Colours.palette.m3onSurfaceVariant
-                    fontStyle.pointSize: Tokens.font.icon.medium.pointSize * root.fontScale
-
-                    Behavior on rotation {
-                        Anim {
-                            type: Anim.StandardSmall
-                        }
-                    }
-                }
-            }
-
-            StateLayer {
-                anchors.fill: parent
-                radius: Tokens.rounding.medium * root.scaleOffset
-                showHoverBackground: false
-                onClicked: section.expanded = !section.expanded
-            }
-        }
-
-        Item {
-            id: contentWrapper
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: section.expanded ? (contentColumn.implicitHeight + Tokens.spacing.extraSmall * root.scaleOffset) : 0
-            implicitHeight: Layout.preferredHeight
-            clip: true
-
-            Behavior on Layout.preferredHeight {
-                Anim {}
-            }
-
-            ColumnLayout {
-                id: contentColumn
-
-                width: parent.width
-                y: Tokens.spacing.extraSmall * root.scaleOffset
-                spacing: Tokens.spacing.extraSmall * root.scaleOffset
-                opacity: section.expanded ? 1.0 : 0.0
-
-                Behavior on opacity {
-                    Anim {
-                        type: Anim.DefaultEffects
-                    }
-                }
-            }
-        }
-    }
-
-    component Toggle: RowLayout {
-        required property string label
-        property alias checked: toggle.checked
-        property alias toggle: toggle
-
-        Layout.fillWidth: true
-        Layout.rightMargin: Tokens.padding.extraSmall * root.scaleOffset
-        spacing: Tokens.spacing.medium * root.scaleOffset
-
-        StyledText {
-            Layout.fillWidth: true
-            text: parent.label
-            font.pointSize: Tokens.font.body.medium.pointSize * root.fontScale
-        }
-
-        StyledSwitch {
-            id: toggle
-        }
     }
 }

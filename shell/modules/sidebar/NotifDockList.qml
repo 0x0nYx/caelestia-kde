@@ -47,14 +47,13 @@ LazyListView {
     }
 
     delegate: Component {
-        MouseArea {
+        NotifSwipeDelegate {
             id: notif
 
             required property int index
             required property string modelData
 
             readonly property bool closed: notifInner.notifCount === 0
-            property int startY
 
             function closeAll(): void {
                 clearTimer.start();
@@ -68,35 +67,8 @@ LazyListView {
             opacity: LazyListView.removing || closed || LazyListView.adding ? 0 : 1
             scale: LazyListView.removing || closed ? 0.6 : LazyListView.adding ? 0 : 1
 
-            hoverEnabled: true
-            cursorShape: pressed ? Qt.ClosedHandCursor : undefined
-            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-            preventStealing: true
-            enabled: !closed
-
-            drag.target: this
-            drag.axis: Drag.XAxis
-
-            onPressed: event => {
-                startY = event.y;
-                if (event.button === Qt.RightButton)
-                    notifInner.toggleExpand(!notifInner.expanded);
-                else if (event.button === Qt.MiddleButton)
-                    closeAll();
-            }
-            onPositionChanged: event => {
-                if (pressed) {
-                    const diffY = event.y - startY;
-                    if (Math.abs(diffY) > Config.notifs.expandThreshold)
-                        notifInner.toggleExpand(diffY > 0);
-                }
-            }
-            onReleased: event => {
-                if (Math.abs(x) < width * Config.notifs.clearThreshold)
-                    x = 0;
-                else
-                    closeAll();
-            }
+            onExpandRequested: expanded => notifInner.toggleExpand(expanded)
+            onCloseRequested: notif.closeAll()
 
             Timer {
                 id: clearTimer
@@ -108,7 +80,7 @@ LazyListView {
                 triggeredOnStart: true
                 onTriggered: {
                     // Collect targets, remove from list in one assignment,
-                    // then close each \u2014 NotifData.close() skips its own filter
+                    // then close each — NotifData.close() skips its own filter
                     // path when the item is no longer in Notifs.list.
                     const toClose = Notifs.list.filter(n => !n.closed && n.appName === notif.modelData);
                     if (toClose.length === 0)
@@ -126,26 +98,6 @@ LazyListView {
                 props: root.props
                 container: root.container
                 visibilities: root.visibilities
-            }
-
-            Behavior on y {
-                enabled: notif.LazyListView.ready
-
-                Anim {}
-            }
-
-            Behavior on opacity {
-                Anim {
-                    type: Anim.DefaultEffects
-                }
-            }
-
-            Behavior on scale {
-                Anim {}
-            }
-
-            Behavior on x {
-                Anim {}
             }
         }
     }
