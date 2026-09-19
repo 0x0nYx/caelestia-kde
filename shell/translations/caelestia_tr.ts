@@ -3399,7 +3399,7 @@
     <message>
         <location filename="../components/filedialog/CurrentItem.qml" line="+85"/>
         <source>&quot;%1&quot; selected</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; seçildi</translation>
     </message>
 </context>
 <context>
@@ -4545,74 +4545,74 @@
     <message>
         <location filename="../modules/nexus/common/Ipv4ConfigSection.qml" line="+98"/>
         <source>IPv4</source>
-        <translation type="unfinished">IPv4</translation>
+        <translation>IPv4</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>IP assignment</source>
-        <translation type="unfinished">IP atama</translation>
+        <translation>IP atama</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+8"/>
         <source>Automatic (DHCP)</source>
-        <translation type="unfinished">Otomatik (DHCP)</translation>
+        <translation>Otomatik (DHCP)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Automatic, DNS only</source>
-        <translation type="unfinished">Otomatik, yalnızca DNS</translation>
+        <translation>Otomatik, yalnızca DNS</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Manual</source>
-        <translation type="unfinished">Elle</translation>
+        <translation>Elle</translation>
     </message>
     <message>
         <location line="+84"/>
         <source>Address (CIDR)</source>
-        <translation type="unfinished">Adres (CIDR)</translation>
+        <translation>Adres (CIDR)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>IP and prefix, e.g. 192.168.1.50/24</source>
-        <translation type="unfinished">IP ve ön ek, örn. 192.168.1.50/24</translation>
+        <translation>IP ve ön ek, örn. 192.168.1.50/24</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter a valid address in CIDR notation</source>
-        <translation type="unfinished">CIDR gösteriminde geçerli bir adres girin</translation>
+        <translation>CIDR gösteriminde geçerli bir adres girin</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Gateway</source>
-        <translation type="unfinished">Ağ geçidi</translation>
+        <translation>Ağ geçidi</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter a valid gateway address</source>
-        <translation type="unfinished">Geçerli bir ağ geçidi adresi girin</translation>
+        <translation>Geçerli bir ağ geçidi adresi girin</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>DNS servers</source>
-        <translation type="unfinished">DNS sunucuları</translation>
+        <translation>DNS sunucuları</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Comma-separated</source>
-        <translation type="unfinished">Virgülle ayrılmış</translation>
+        <translation>Virgülle ayrılmış</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter valid DNS server addresses</source>
-        <translation type="unfinished">Geçerli DNS sunucu adresleri girin</translation>
+        <translation>Geçerli DNS sunucu adresleri girin</translation>
     </message>
     <message>
         <location line="+45"/>
         <location line="+26"/>
         <source>Apply</source>
-        <translation type="unfinished">Uygula</translation>
+        <translation>Uygula</translation>
     </message>
 </context>
 <context>

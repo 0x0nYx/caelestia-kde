@@ -4545,74 +4545,74 @@
     <message>
         <location filename="../modules/nexus/common/Ipv4ConfigSection.qml" line="+98"/>
         <source>IPv4</source>
-        <translation type="unfinished">IPv4</translation>
+        <translation>IPv4</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>IP assignment</source>
-        <translation type="unfinished">Назначение IP</translation>
+        <translation>Назначение IP</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+8"/>
         <source>Automatic (DHCP)</source>
-        <translation type="unfinished">Автоматически (DHCP)</translation>
+        <translation>Автоматически (DHCP)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Automatic, DNS only</source>
-        <translation type="unfinished">Автоматически, кроме DNS</translation>
+        <translation>Автоматически, кроме DNS</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Manual</source>
-        <translation type="unfinished">Вручную</translation>
+        <translation>Вручную</translation>
     </message>
     <message>
         <location line="+84"/>
         <source>Address (CIDR)</source>
-        <translation type="unfinished">Адрес (CIDR)</translation>
+        <translation>Адрес (CIDR)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>IP and prefix, e.g. 192.168.1.50/24</source>
-        <translation type="unfinished">IP и префикс, напр. 192.168.1.50/24</translation>
+        <translation>IP и префикс, напр. 192.168.1.50/24</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter a valid address in CIDR notation</source>
-        <translation type="unfinished">Введите корректный адрес в нотации CIDR</translation>
+        <translation>Введите корректный адрес в нотации CIDR</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Gateway</source>
-        <translation type="unfinished">Шлюз</translation>
+        <translation>Шлюз</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter a valid gateway address</source>
-        <translation type="unfinished">Введите корректный адрес шлюза</translation>
+        <translation>Введите корректный адрес шлюза</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>DNS servers</source>
-        <translation type="unfinished">DNS-серверы</translation>
+        <translation>DNS-серверы</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Comma-separated</source>
-        <translation type="unfinished">Через запятую</translation>
+        <translation>Через запятую</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter valid DNS server addresses</source>
-        <translation type="unfinished">Введите корректные адреса DNS-серверов</translation>
+        <translation>Введите корректные адреса DNS-серверов</translation>
     </message>
     <message>
         <location line="+45"/>
         <location line="+26"/>
         <source>Apply</source>
-        <translation type="unfinished">Применить</translation>
+        <translation>Применить</translation>
     </message>
 </context>
 <context>

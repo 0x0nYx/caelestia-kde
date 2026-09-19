@@ -3399,7 +3399,7 @@
     <message>
         <location filename="../components/filedialog/CurrentItem.qml" line="+85"/>
         <source>&quot;%1&quot; selected</source>
-        <translation type="unfinished"></translation>
+        <translation>選定了“%1”</translation>
     </message>
 </context>
 <context>
@@ -4545,74 +4545,74 @@
     <message>
         <location filename="../modules/nexus/common/Ipv4ConfigSection.qml" line="+98"/>
         <source>IPv4</source>
-        <translation type="unfinished">IPv4</translation>
+        <translation>IPv4</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>IP assignment</source>
-        <translation type="unfinished">IP 分配</translation>
+        <translation>IP 分配</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+8"/>
         <source>Automatic (DHCP)</source>
-        <translation type="unfinished">自動 (DHCP)</translation>
+        <translation>自動 (DHCP)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Automatic, DNS only</source>
-        <translation type="unfinished">僅 DNS 自動</translation>
+        <translation>僅 DNS 自動</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Manual</source>
-        <translation type="unfinished">手動</translation>
+        <translation>手動</translation>
     </message>
     <message>
         <location line="+84"/>
         <source>Address (CIDR)</source>
-        <translation type="unfinished">地址 (CIDR)</translation>
+        <translation>地址 (CIDR)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>IP and prefix, e.g. 192.168.1.50/24</source>
-        <translation type="unfinished">IP 及字首，例如 192.168.1.50/24</translation>
+        <translation>IP 及字首，例如 192.168.1.50/24</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter a valid address in CIDR notation</source>
-        <translation type="unfinished">請輸入有效的 CIDR 格式地址</translation>
+        <translation>請輸入有效的 CIDR 格式地址</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Gateway</source>
-        <translation type="unfinished">閘道器</translation>
+        <translation>閘道器</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter a valid gateway address</source>
-        <translation type="unfinished">請輸入有效的閘道器地址</translation>
+        <translation>請輸入有效的閘道器地址</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>DNS servers</source>
-        <translation type="unfinished">DNS 伺服器</translation>
+        <translation>DNS 伺服器</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Comma-separated</source>
-        <translation type="unfinished">逗號分隔</translation>
+        <translation>逗號分隔</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter valid DNS server addresses</source>
-        <translation type="unfinished">請輸入有效的 DNS 伺服器地址</translation>
+        <translation>請輸入有效的 DNS 伺服器地址</translation>
     </message>
     <message>
         <location line="+45"/>
         <location line="+26"/>
         <source>Apply</source>
-        <translation type="unfinished">應用</translation>
+        <translation>應用</translation>
     </message>
 </context>
 <context>
