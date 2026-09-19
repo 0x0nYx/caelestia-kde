@@ -27,19 +27,24 @@ QString stolenEdgesPath() {
 /// The [ElectricBorders] key that names a corner, or empty if not a corner.
 QString electricBorderKey(int corner) {
     switch (corner) {
-    case ScreenEdges::TopLeft: return QStringLiteral("TopLeft");
-    case ScreenEdges::TopRight: return QStringLiteral("TopRight");
-    case ScreenEdges::BottomLeft: return QStringLiteral("BottomLeft");
-    case ScreenEdges::BottomRight: return QStringLiteral("BottomRight");
-    default: return {};
+    case ScreenEdges::TopLeft:
+        return QStringLiteral("TopLeft");
+    case ScreenEdges::TopRight:
+        return QStringLiteral("TopRight");
+    case ScreenEdges::BottomLeft:
+        return QStringLiteral("BottomLeft");
+    case ScreenEdges::BottomRight:
+        return QStringLiteral("BottomRight");
+    default:
+        return {};
     }
 }
 
 /// Groups whose BorderActivate-ish keys reserve an edge. Effects and scripts
 /// each get their own group, and the task switcher has a fixed one.
 bool ownsEdges(const QString& group) {
-    return group.startsWith(QStringLiteral("Effect-")) || group.startsWith(QStringLiteral("Script-"))
-        || group == QStringLiteral("TabBox") || group == QStringLiteral("TabBoxAlternative");
+    return group.startsWith(QStringLiteral("Effect-")) || group.startsWith(QStringLiteral("Script-")) ||
+           group == QStringLiteral("TabBox") || group == QStringLiteral("TabBoxAlternative");
 }
 
 /// Every key shape KWin reads an edge int-list out of, pointer and touch
@@ -130,9 +135,9 @@ QStringList effectsOwningEdges() {
 }
 
 void applyToKwin() {
-    QDBusConnection::sessionBus().call(QDBusMessage::createMethodCall(QLatin1String(kwinService),
-                                           QStringLiteral("/KWin"), QLatin1String(kwinService),
-                                           QStringLiteral("reconfigure")),
+    QDBusConnection::sessionBus().call(
+        QDBusMessage::createMethodCall(QLatin1String(kwinService), QStringLiteral("/KWin"), QLatin1String(kwinService),
+            QStringLiteral("reconfigure")),
         QDBus::NoBlock);
     const QStringList effects = effectsOwningEdges();
     for (const QString& effect : effects) {
@@ -149,12 +154,16 @@ ScreenEdges::ScreenEdges(QObject* parent)
     // reconfigure, and each one is a full KWin settings reload.
     m_reconfigureTimer->setSingleShot(true);
     m_reconfigureTimer->setInterval(50);
-    connect(m_reconfigureTimer, &QTimer::timeout, this, [] { applyToKwin(); });
+    connect(m_reconfigureTimer, &QTimer::timeout, this, [] {
+        applyToKwin();
+    });
 
     recoverFromCrash();
 
     if (QCoreApplication::instance()) {
-        connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, [this] { restoreAll(); });
+        connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, [this] {
+            restoreAll();
+        });
     }
 }
 

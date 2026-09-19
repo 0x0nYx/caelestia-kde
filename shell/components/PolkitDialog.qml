@@ -58,21 +58,30 @@ StyledWindow {
     readonly property string commandText: splitMessage.command
 
     property string buffer: ""
+    property bool isActive: agent.isActive && agent.flow != null
+
     readonly property list<int> shapeQueue: {
-        const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Fan, MaterialShape.Arrow, MaterialShape.SemiCircle, MaterialShape.Triangle, MaterialShape.Diamond, MaterialShape.ClamShell, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.Sunny, MaterialShape.VerySunny, MaterialShape.Cookie4Sided, MaterialShape.Ghostish, MaterialShape.SoftBurst];
+        let shapes = [
+            MaterialShape.Circle,
+            MaterialShape.Square,
+            MaterialShape.Diamond,
+            MaterialShape.Pentagon,
+            MaterialShape.Gem,
+            MaterialShape.Cookie4Sided,
+            MaterialShape.Cookie6Sided
+        ];
+        // Fisher-Yates shuffle
         for (let i = shapes.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            let j = Math.floor(Math.random() * (i + 1));
             [shapes[i], shapes[j]] = [shapes[j], shapes[i]];
         }
         return shapes;
     }
 
     name: "polkit"
+    visible: isActive || closeAnim.running
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-
-    property bool isActive: agent.isActive && agent.flow != null
-    visible: isActive || closeAnim.running
 
     anchors.top: true
     anchors.bottom: true
@@ -281,14 +290,6 @@ StyledWindow {
                 
                 focus: true
 
-                Behavior on implicitWidth { Anim {} }
-                    
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.IBeamCursor
-                    onClicked: passwordRect.forceActiveFocus()
-                }
-                
                 Keys.onPressed: event => {
                     if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
                         if (agent.flow && root.buffer) {
@@ -314,8 +315,17 @@ StyledWindow {
                     } else if (event.text.length > 0) {
                         charList.bindImWidth();
                         root.buffer += event.text;
+                        placeholder.animate = false;
                         event.accepted = true;
                     }
+                }
+
+                Behavior on implicitWidth { Anim {} }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.IBeamCursor
+                    onClicked: passwordRect.forceActiveFocus()
                 }
 
                 Connections {
@@ -427,5 +437,6 @@ StyledWindow {
                     }
                 }
             }
+        }
     }
 }

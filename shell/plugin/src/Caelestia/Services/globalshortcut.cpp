@@ -84,8 +84,7 @@ GlobalShortcutDispatcher* GlobalShortcutDispatcher::instance() {
                             keys.append(seq);
                     }
                     if (!component.isEmpty() && !action.isEmpty()) {
-                        qDebug() << "[Caelestia] Crash recovery: restoring shortcut" << action << "for"
-                                 << component;
+                        qDebug() << "[Caelestia] Crash recovery: restoring shortcut" << action << "for" << component;
                         QProcess::startDetached(QStringLiteral("gdbus"), buildRestoreArgs(component, action, keys));
 
                         // Populate the collision index so the blinker shows collisions
