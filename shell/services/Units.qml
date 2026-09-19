@@ -93,4 +93,23 @@ QtObject {
         const totalText = root.withDataUnit(+total.value.toFixed(1), total.unit);
         return qsTr("%1 / %2", "used / total amount").arg(usedText).arg(totalText);
     }
+
+    // Formats a duration in seconds into H:MM:SS or M:SS
+    function formatDuration(seconds: int, alwaysHours = false): string {
+        if (seconds < 0)
+            return "-1:-1";
+
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+
+        if (hours > 0 || alwaysHours)
+            return `${hours}:${mins.toString().padStart(2, "0")}:${secs}`;
+        return `${mins}:${secs}`;
+    }
+
+    // Formats a unit fraction (e.g. 0.75) into a percentage string (e.g. "75%")
+    function formatPercent(value: real): string {
+        return `${Math.round(value * 100)}%`;
+    }
 }

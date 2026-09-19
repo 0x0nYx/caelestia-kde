@@ -97,20 +97,6 @@ Item {
         return null;
     }
 
-    // Resolve an icon for a window card, mirroring the dock: prefer an icon
-    // extracted from the window's own _NET_WM_ICON (apps with no desktop
-    // entry, e.g. Steam games or Minecraft), then fall back to the themed
-    // desktop-entry icon lookup the overview already used.
-    function windowIconSource(client: var): string {
-        if (!client)
-            return "";
-        const wp = WinIcons.paths[WinIcons.keyFor(client.class, client.pid ?? 0)];
-        if (wp)
-            return "file://" + wp;
-        return client.iconName ? Icons.getAppIcon(client.iconName, "image-missing")
-                               : (client.class ? Icons.getAppIcon(client.class, "image-missing") : "");
-    }
-
     function cycleSelection(backwards: bool): void {
         const n = root.currentWindows.length;
         if (n === 0)
@@ -624,7 +610,7 @@ Item {
                                             return (wAspect > containerAspect) ? thumb.height : thumb.width / wAspect;
                                         }
                                         anchors.centerIn: parent
-                                        fallbackIcon: root.windowIconSource(modelData)
+                                        fallbackIcon: WinIcons.sourceForClient(modelData)
                                         sourceAspect: activeWin.windowAspect
                                     }
 
@@ -653,7 +639,7 @@ Item {
                                     IconImage {
                                         implicitSize: Math.round(titleText.implicitHeight * 1.1)
                                         asynchronous: true
-                                        source: root.windowIconSource(modelData)
+                                        source: WinIcons.sourceForClient(modelData)
                                     }
                                     StyledText {
                                         id: titleText
