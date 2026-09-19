@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 import Caelestia.Config
+import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.services
@@ -25,6 +26,7 @@ ColumnLayout {
     readonly property bool hasOutputChoice: Audio.sinks.length > 1
     readonly property bool hasSources: Audio.sources.length > 0
     readonly property bool hasStreams: Audio.appStreams.length > 0
+    readonly property bool isPlaying: (Players.active?.isPlaying ?? false) || Players.list.some(p => p.isPlaying)
 
     function outputIcon(node: PwNode): string {
         if (!node)
@@ -62,6 +64,10 @@ ColumnLayout {
         }
 
         target: Audio
+    }
+
+    ServiceRef {
+        service: Audio.cava
     }
 
     RowLayout {
@@ -221,7 +227,7 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 28 * root.scaleOffset
-                visible: !!Audio.cava && root.hasStreams && (Audio.cava.values?.some(v => v > 0.01) ?? false)
+                visible: !!Audio.cava && root.isPlaying
                 radius: Tokens.rounding.small * root.scaleOffset
                 color: Colours.tPalette.m3surfaceContainerHigh
 
