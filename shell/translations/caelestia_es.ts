@@ -328,27 +328,27 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/AdvancedColorsPage.qml" line="+19"/>
       <source>Sunrise and sunset</source>
-      <translation >Amanecer y atardecer</translation>
+      <translation>Amanecer y atardecer</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Fixed times</source>
-      <translation >Horarios fijos</translation>
+      <translation>Horarios fijos</translation>
     </message>
     <message>
       <location line="+19"/>
       <source>Advanced Colors</source>
-      <translation >Colores avanzados</translation>
+      <translation>Colores avanzados</translation>
     </message>
     <message>
       <location line="+16"/>
       <source>Theme Automation</source>
-      <translation >Automatización del tema</translation>
+      <translation>Automatización del tema</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Smart color scheme</source>
-      <translation >Esquema de colores inteligente</translation>
+      <translation>Esquema de colores inteligente</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -358,47 +358,47 @@
     <message>
       <location line="+7"/>
       <source>Automatic light and dark</source>
-      <translation >Claro y oscuro automáticos</translation>
+      <translation>Claro y oscuro automáticos</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switch the theme mode on a schedule</source>
-      <translation >Cambiar el modo del tema según un horario</translation>
+      <translation>Cambiar el modo del tema según un horario</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Schedule</source>
-      <translation >Horario</translation>
+      <translation>Horario</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Sunrise and sunset use your weather location</source>
-      <translation >El amanecer y el atardecer usan tu ubicación meteorológica</translation>
+      <translation>El amanecer y el atardecer usan tu ubicación meteorológica</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Set a weather location to use sunrise and sunset</source>
-      <translation >Establece una ubicación meteorológica para usar el amanecer y el atardecer</translation>
+      <translation>Establece una ubicación meteorológica para usar el amanecer y el atardecer</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Light mode hour</source>
-      <translation >Hora del modo claro</translation>
+      <translation>Hora del modo claro</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switches at %1</source>
-      <translation >Cambia a las %1</translation>
+      <translation>Cambia a las %1</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Dark mode hour</source>
-      <translation >Hora del modo oscuro</translation>
+      <translation>Hora del modo oscuro</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switches at %1, also used when sunrise and sunset are unavailable</source>
-      <translation >Cambia a las %1; también se usa cuando el amanecer y el atardecer no están disponibles</translation>
+      <translation>Cambia a las %1; también se usa cuando el amanecer y el atardecer no están disponibles</translation>
     </message>
   </context>
   <context>
@@ -780,12 +780,12 @@
     <message>
       <location filename="../modules/launcher/items/AppContextMenu.qml" line="+56"/>
       <source>Unpin from dock</source>
-      <translation >Quitar del dock</translation>
+      <translation>Quitar del dock</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Pin to dock</source>
-      <translation >Fijar en el dock</translation>
+      <translation>Fijar en el dock</translation>
     </message>
     <message>
       <location line="+18"/>
@@ -810,7 +810,7 @@
     <message>
       <location line="+18"/>
       <source>App info</source>
-      <translation >Información de la aplicación</translation>
+      <translation>Información de la aplicación</translation>
     </message>
   </context>
   <context>
@@ -828,7 +828,7 @@
     <message>
       <location line="+6"/>
       <source>Pin to dock</source>
-      <translation >Fijar en el dock</translation>
+      <translation>Fijar en el dock</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -1828,7 +1828,7 @@
     <message>
       <location line="+7"/>
       <source>Filter by current desktop</source>
-      <translation >Filtrar por escritorio actual</translation>
+      <translation>Filtrar por escritorio actual</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -1838,7 +1838,7 @@
     <message>
       <location line="+8"/>
       <source>Preview window on desktop</source>
-      <translation >Previsualizar ventana en el escritorio</translation>
+      <translation>Previsualizar ventana en el escritorio</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -2709,7 +2709,7 @@
     <message>
       <location line="+7"/>
       <source>Connected%1</source>
-      <translation >Conectado%1</translation>
+      <translation>Conectado%1</translation>
     </message>
     <message>
       <location line="+0"/>
@@ -4537,74 +4537,74 @@
     <message>
       <location filename="../modules/nexus/common/Ipv4ConfigSection.qml" line="+98"/>
       <source>IPv4</source>
-      <translation >IPv4</translation>
+      <translation type="unfinished">IPv4</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>IP assignment</source>
-      <translation >Asignación de IP</translation>
+      <translation>Asignación de IP</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+8"/>
       <source>Automatic (DHCP)</source>
-      <translation >Automática (DHCP)</translation>
+      <translation>Automática (DHCP)</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Automatic, DNS only</source>
-      <translation >Automática, solo DNS</translation>
+      <translation>Automática, solo DNS</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Manual</source>
-      <translation >Manual</translation>
+      <translation type="unfinished">Manual</translation>
     </message>
     <message>
       <location line="+84"/>
       <source>Address (CIDR)</source>
-      <translation >Dirección (CIDR)</translation>
+      <translation>Dirección (CIDR)</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>IP and prefix, e.g. 192.168.1.50/24</source>
-      <translation >IP y prefijo, p. ej. 192.168.1.50/24</translation>
+      <translation>IP y prefijo, p. ej. 192.168.1.50/24</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter a valid address in CIDR notation</source>
-      <translation >Introduce una dirección válida en notación CIDR</translation>
+      <translation>Introduce una dirección válida en notación CIDR</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Gateway</source>
-      <translation >Puerta de enlace</translation>
+      <translation>Puerta de enlace</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Enter a valid gateway address</source>
-      <translation >Introduce una dirección de puerta de enlace válida</translation>
+      <translation>Introduce una dirección de puerta de enlace válida</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>DNS servers</source>
-      <translation >Servidores DNS</translation>
+      <translation>Servidores DNS</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>Comma-separated</source>
-      <translation >Separados por comas</translation>
+      <translation>Separados por comas</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter valid DNS server addresses</source>
-      <translation >Introduce direcciones de servidores DNS válidas</translation>
+      <translation>Introduce direcciones de servidores DNS válidas</translation>
     </message>
     <message>
       <location line="+45"/>
       <location line="+26"/>
       <source>Apply</source>
-      <translation >Aplicar</translation>
+      <translation>Aplicar</translation>
     </message>
   </context>
   <context>
@@ -7112,7 +7112,7 @@
     <message>
       <location line="+1"/>
       <source>Advanced color settings</source>
-      <translation >Configuración avanzada de colores</translation>
+      <translation>Configuración avanzada de colores</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -10323,7 +10323,7 @@
     <message>
       <location line="+1"/>
       <source>You&apos;re up to date</source>
-      <translation >Todo está actualizado</translation>
+      <translation>Todo está actualizado</translation>
     </message>
     <message>
       <location line="+8"/>
@@ -10696,7 +10696,7 @@
       <location line="+0"/>
       <location line="+5"/>
       <source>%1: %2</source>
-      <translation >%1: %2</translation>
+      <translation type="unfinished">%1: %2</translation>
     </message>
     <message>
       <location line="+0"/>
