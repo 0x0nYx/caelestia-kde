@@ -3,6 +3,11 @@
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
+# shellcheck source=scripts/lib/toolchain.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
+
+export BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
 
 echo
 echo ""
@@ -18,7 +23,7 @@ install_if_missing() {
         fi
         info "Installing $pkg..."
         yay -S --needed ${CONFIRM_ARG:-} "$pkg" 2>/dev/null || \
-        sudo pacman -S --needed ${CONFIRM_ARG:-} "$pkg" 2>/dev/null || {
+        caelestia_sudo pacman -S --needed ${CONFIRM_ARG:-} "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
             mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
             echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
@@ -31,7 +36,7 @@ install_if_missing() {
             return 0
         fi
         info "Installing $pkg..."
-        sudo dnf install -y "$pkg" 2>/dev/null || {
+        caelestia_sudo dnf install -y "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
             mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
             echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
@@ -44,7 +49,7 @@ install_if_missing() {
             return 0
         fi
         info "Installing $pkg..."
-        sudo apt-get install -y "$pkg" 2>/dev/null || {
+        caelestia_sudo apt-get install -y "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
             mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
             echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"

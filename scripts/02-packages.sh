@@ -4,23 +4,17 @@ set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
+# shellcheck source=scripts/lib/toolchain.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
 
-BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
+BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
 
 echo
 
 info "Ensuring Python tooling for konsave backups"
 if ! command -v python3 >/dev/null 2>&1 || ! python3 -m pip --version >/dev/null 2>&1; then
-    package_distro="${BASE_DISTRO:-}"
-    if [[ -z "$package_distro" ]]; then
-        if command -v pacman >/dev/null 2>&1; then
-            package_distro="arch"
-        elif command -v dnf >/dev/null 2>&1; then
-            package_distro="fedora"
-        elif command -v apt-get >/dev/null 2>&1; then
-            package_distro="debian"
-        fi
-    fi
+    package_distro="$BASE_DISTRO"
 
     if [[ "$package_distro" == "arch" ]]; then
         caelestia_sudo pacman -S --needed --noconfirm python python-pip
@@ -39,16 +33,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 if command -v matugen >/dev/null 2>&1; then
     ok "matugen is installed."
 else
-    package_distro="${BASE_DISTRO:-}"
-    if [[ -z "$package_distro" ]]; then
-        if command -v pacman >/dev/null 2>&1; then
-            package_distro="arch"
-        elif command -v dnf >/dev/null 2>&1; then
-            package_distro="fedora"
-        elif command -v apt-get >/dev/null 2>&1; then
-            package_distro="debian"
-        fi
-    fi
+    package_distro="$BASE_DISTRO"
 
     if [[ "$package_distro" == "fedora" ]]; then
         info "Installing matugen for Fedora..."

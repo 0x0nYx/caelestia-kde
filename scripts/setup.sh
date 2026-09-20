@@ -15,46 +15,8 @@ export PATH="$HOME/.local/bin:$PATH"
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/caelestia-setup.lock"
 flock -n 9 || { echo "Another Caelestia setup is already running."; exit 1; }
 
-detect_base_distro() {
-    local detected="unknown"
-
-    if [[ -f /etc/os-release ]]; then
-       # shellcheck disable=SC1091
-        . /etc/os-release
-        case "$ID" in
-            arch|cachyos|endeavouros|manjaro|artix)
-                detected="arch"
-                ;;
-            fedora|nobara|bazzite|rhel|centos|almalinux|rocky)
-                detected="fedora"
-                ;;
-            debian|ubuntu|pop|mint|kali|raspbian|elementary|zorin|deepin|devuan)
-                detected="debian"
-                ;;
-            *)
-                if echo "${ID_LIKE:-}" | grep -iq "arch"; then
-                    detected="arch"
-                elif echo "${ID_LIKE:-}" | grep -iq "fedora"; then
-                    detected="fedora"
-                elif echo "${ID_LIKE:-}" | grep -iq -E "debian|ubuntu"; then
-                    detected="debian"
-                fi
-                ;;
-        esac
-    fi
-
-    if [[ "$detected" == "unknown" ]]; then
-        if command -v pacman >/dev/null 2>&1; then
-            detected="arch"
-        elif command -v dnf >/dev/null 2>&1; then
-            detected="fedora"
-        elif command -v apt-get >/dev/null 2>&1; then
-            detected="debian"
-        fi
-    fi
-
-    echo "$detected"
-}
+# shellcheck source=scripts/lib/toolchain.sh
+source "$SCRIPTS_DIR/lib/toolchain.sh"
 
 run_arch_pacman_install() {
     local -a pkgs=("$@")

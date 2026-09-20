@@ -173,4 +173,16 @@ test_install_cava_sdk_fails_on_unknown_distro() {
     assert_status 1 "$status" "an unknown distro should be reported as a failure"
 }
 
+test_detect_base_distro_prefers_environment_override() {
+    local out
+    out="$(BASE_DISTRO=fedora detect_base_distro)"
+    assert_eq "fedora" "$out" "detect_base_distro should honor BASE_DISTRO override"
+}
+
+test_detect_base_distro_identifies_distros() {
+    local out
+    out="$(unset BASE_DISTRO; detect_base_distro)"
+    assert_ne "unknown" "$out" "detect_base_distro should resolve a known base on the host"
+}
+
 run_tests

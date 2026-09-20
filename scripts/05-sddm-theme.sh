@@ -5,6 +5,10 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
+# shellcheck source=scripts/lib/toolchain.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
+
+export BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
 
 BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
 SRC_DIR="$BUNDLE_DIR/src/sddm"

@@ -56,15 +56,24 @@ install_linguist_tools() {
         return 0
     fi
 
-    if command -v pacman >/dev/null 2>&1; then
-        caelestia_sudo pacman -S --needed --noconfirm qt6-tools
-    elif command -v dnf >/dev/null 2>&1; then
-        caelestia_sudo dnf install -y qt6-qttools-devel
-    elif command -v apt-get >/dev/null 2>&1; then
-        caelestia_sudo apt-get install -y qt6-l10n-tools qt6-tools-dev
-    else
-        return 1
-    fi
+    local distro="${1:-$(detect_base_distro)}"
+    case "$distro" in
+        arch)
+            command -v pacman >/dev/null 2>&1 || return 1
+            caelestia_sudo pacman -S --needed --noconfirm qt6-tools
+            ;;
+        fedora)
+            command -v dnf >/dev/null 2>&1 || return 1
+            caelestia_sudo dnf install -y qt6-qttools-devel
+            ;;
+        debian|ubuntu)
+            command -v apt-get >/dev/null 2>&1 || return 1
+            caelestia_sudo apt-get install -y qt6-l10n-tools qt6-tools-dev
+            ;;
+        *)
+            return 1
+            ;;
+    esac
 }
 
 install_cava_sdk() {
@@ -73,16 +82,7 @@ install_cava_sdk() {
         arch="$(uname -m 2>/dev/null || echo "x86_64")"
     fi
 
-    local distro="${1:-${BASE_DISTRO:-}}"
-    if [[ -z "$distro" ]]; then
-        if command -v pacman >/dev/null 2>&1; then
-            distro="arch"
-        elif command -v dnf >/dev/null 2>&1; then
-            distro="fedora"
-        elif command -v apt-get >/dev/null 2>&1; then
-            distro="ubuntu"
-        fi
-    fi
+    local distro="${1:-$(detect_base_distro)}"
 
     local asset_suffix
     case "$distro" in
