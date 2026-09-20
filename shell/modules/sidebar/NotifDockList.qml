@@ -53,41 +53,46 @@ LazyListView {
             required property int index
             required property string modelData
 
-            readonly property bool closed: notifInner.notifCount === 0
-
-            function closeAll(): void {
-                clearTimer.start();
-            }
+            width: parent?.width ?? root.width
+            implicitWidth: width
 
             LazyListView.trackViewport: !notifInner.expanded && notifInner.nonAnimHeight < notifInner.implicitHeight
-            LazyListView.preferredHeight: closed ? 0 : notifInner.nonAnimHeight
+            LazyListView.preferredHeight: notifInner.notifCount === 0 ? 0 : notifInner.nonAnimHeight
             LazyListView.visibleHeight: notifInner.implicitHeight
             implicitHeight: notifInner.implicitHeight
 
-            opacity: LazyListView.removing || closed || LazyListView.adding ? 0 : 1
-            scale: LazyListView.removing || closed ? 0.6 : LazyListView.adding ? 0 : 1
+            opacity: LazyListView.removing || notifInner.notifCount === 0 || LazyListView.adding ? 0 : 1
+            scale: LazyListView.removing || notifInner.notifCount === 0 ? 0.6 : LazyListView.adding ? 0 : 1
+
+            allowExpandGesture: !notifInner.expanded
+            closed: closeAnim.running || notifInner.notifCount === 0
 
             onExpandRequested: expanded => notifInner.toggleExpand(expanded)
-            onCloseRequested: notif.closeAll()
+            onCloseRequested: closeAnim.restart()
 
-            Timer {
-                id: clearTimer
+            ParallelAnimation {
+                id: closeAnim
 
-                // One-shot: detach-first mirrors Notifs.clear() to avoid the
-                // O(n) self-removal inside NotifData.close() firing per item.
-                interval: 15
-                repeat: false
-                triggeredOnStart: true
-                onTriggered: {
-                    // Collect targets, remove from list in one assignment,
-                    // then close each — NotifData.close() skips its own filter
-                    // path when the item is no longer in Notifs.list.
-                    const toClose = Notifs.list.filter(n => !n.closed && n.appName === notif.modelData);
+                onFinished: {
+                    const appName = notif.modelData;
+                    const toClose = Notifs.list.filter(n => !n.closed && n.appName === appName);
                     if (toClose.length === 0)
                         return;
                     Notifs.list = Notifs.list.filter(n => !toClose.includes(n));
-                    Notifs.openCount = Math.max(0, Notifs.openCount - toClose.length);
                     for (const n of toClose) n.close();
+                }
+
+                Anim {
+                    type: Anim.DefaultEffects
+                    target: notif
+                    property: "opacity"
+                    to: 0
+                }
+
+                Anim {
+                    target: notif
+                    property: "x"
+                    to: notif.x >= 0 ? notif.width : -notif.width
                 }
             }
 

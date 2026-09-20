@@ -71,8 +71,9 @@ LazyListView {
             scale: LazyListView.removing || LazyListView.adding ? 0.7 : 1
 
             cursorShape: notifInner.body?.hoveredLink ? Qt.PointingHandCursor : pressed ? Qt.ClosedHandCursor : undefined
-            preventStealingDrag: !root.expanded
-            allowExpandGesture: !root.expanded
+            preventStealingDrag: true
+            allowExpandGesture: false
+            enabled: root.expanded && !(modelData?.closed ?? true)
             closed: modelData?.closed ?? true
 
             onExpandRequested: expanded => root.requestToggleExpand(expanded)

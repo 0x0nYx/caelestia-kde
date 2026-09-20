@@ -48,7 +48,7 @@ MouseArea {
     }
 
     Behavior on y {
-        enabled: root.LazyListView.ready
+        enabled: root.LazyListView?.ready ?? false
 
         Anim {}
     }
