@@ -438,6 +438,14 @@ if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
 
+if ! command -v qdbus6 >/dev/null 2>&1; then
+    if command -v qdbus-qt6 >/dev/null 2>&1; then
+        sudo ln -sf "$(command -v qdbus-qt6)" /usr/local/bin/qdbus6 || true
+    elif [[ -x "/usr/lib/qt6/bin/qdbus" ]]; then
+        sudo ln -sf /usr/lib/qt6/bin/qdbus /usr/local/bin/qdbus6 || true
+    fi
+fi
+
 fi  # end of PACKAGE_GROUP shell/all block
 
 log "Debian package installation complete."
