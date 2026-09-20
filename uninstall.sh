@@ -5,6 +5,10 @@ set -uo pipefail
 BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/log.sh"
+# shellcheck source=scripts/lib/toolchain.sh
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/toolchain.sh" ]]; then
+    source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/toolchain.sh"
+fi
 
 section() {
     local title="$1"
@@ -14,21 +18,10 @@ section() {
     echo "-------------------------------------------------------------"
 }
 
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    case "$ID" in
-        arch|cachyos|endeavouros|manjaro|artix) BASE_DISTRO="arch" ;;
-        fedora|nobara|bazzite|rhel|centos|almalinux|rocky) BASE_DISTRO="fedora" ;;
-        debian|ubuntu|pop|mint|kali|raspbian|elementary|zorin|deepin|devuan) BASE_DISTRO="debian" ;;
-        *)
-            if echo "${ID_LIKE:-}" | grep -iq "arch"; then BASE_DISTRO="arch"
-            elif echo "${ID_LIKE:-}" | grep -iq "fedora"; then BASE_DISTRO="fedora"
-            elif echo "${ID_LIKE:-}" | grep -iq -E "debian|ubuntu"; then BASE_DISTRO="debian"
-            else BASE_DISTRO="unknown"; fi
-            ;;
-    esac
+if declare -f detect_base_distro >/dev/null 2>&1; then
+    BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
 else
-    BASE_DISTRO="unknown"
+    BASE_DISTRO="${BASE_DISTRO:-unknown}"
 fi
 
 if [[ "$BASE_DISTRO" == "unknown" ]]; then
@@ -71,7 +64,7 @@ read -r -p "Are you sure you want to uninstall Caelestia? [y/N]: " _confirm
 
 echo
 echo "Remove installed packages as well? This will uninstall"
-echo "tools like fish, foot, btop, fastfetch, and others."
+echo "tools like foot, btop, fastfetch, and others."
 read -r -p "Remove packages? [y/N]: " _remove_pkgs
 REMOVE_PACKAGES=false
 [[ "${_remove_pkgs,,}" == "y" || "${_remove_pkgs,,}" == "yes" ]] && REMOVE_PACKAGES=true
@@ -769,55 +762,40 @@ fi
 if [[ "$REMOVE_PACKAGES" == "true" ]]; then
     section "Step 9 - Remove Packages (Optional)"
 
+    # Only user-level utilities, standalone apps, custom fonts, and shell tools.
+    # NEVER include core libraries, development headers, compiler toolchains,
+    # desktop environment services, or base system components (e.g. pipewire,
+    # networkmanager, qt6-*, kf6-*, cmake, python, spectacle, bash).
     ARCH_PACKAGES=(
-        quickshell matugen python
-        cmake ninja
-        wl-clipboard cliphist inotify-tools app2unit wireplumber trash-cli
-        jq aubio lm_sensors libcava libqalculate
-        foot fish eza fastfetch starship btop
-        adw-gtk-theme papirus-icon-theme
+        quickshell matugen
+        foot eza fastfetch starship btop
+        fuzzel swappy satty gpu-screen-recorder slurp grim
+        wl-clipboard cliphist wl-clip-persist app2unit libcava
+        brightnessctl ddcutil tesseract tesseract-data-eng
+        bat ripgrep lazygit
+        adw-gtk-theme papirus-icon-theme darkly darkly-bin
         ttf-jetbrains-mono-nerd ttf-material-symbols-variable
-        ttf-rubik-vf ttf-cascadia-code-nerd darkly darkly-bin
-        swappy brightnessctl ddcutil imagemagick
-        tesseract tesseract-data-eng satty spectacle sassc
-        kvantum kvantum-qt5 kde-material-you-colors
-        keyd
+        ttf-rubik-vf ttf-cascadia-code-nerd
     )
 
     FEDORA_PACKAGES=(
         quickshell-git matugen
-        cmake ninja-build
-        wl-clipboard cliphist inotify-tools app2unit wireplumber trash-cli
-        jq aubio lm_sensors lm_sensors-devel libcava libcava-devel libqalculate libqalculate-devel
-        foot fish eza fastfetch starship btop
-        adw-gtk3-theme google-rubik-fonts papirus-icon-theme darkly
-        swappy brightnessctl ddcutil imagemagick
-        tesseract tesseract-langpack-eng spectacle
-        fuzzel satty slurp grim sassc
-        ffmpeg gpu-screen-recorder
-        qt6-qtdeclarative qt6-qtdeclarative-devel
-        qt6-qtsvg qt6-qtsvg-devel qt6-qtshadertools-devel
-        pipewire-devel aubio-devel
-        dbus-devel dbus-glib-devel python3-devel
-        kvantum kde-material-you-colors
-        keyd
+        foot eza fastfetch starship btop
+        fuzzel swappy satty gpu-screen-recorder gpu-screen-recorder-ui slurp grim
+        wl-clipboard cliphist wl-clip-persist app2unit libcava libcava-devel
+        brightnessctl ddcutil tesseract tesseract-langpack-eng
+        bat ripgrep
+        adw-gtk3-theme papirus-icon-theme darkly darkly-gtk
+        google-rubik-fonts
     )
 
     DEBIAN_PACKAGES=(
-        cmake ninja-build ccache g++ build-essential
-        wl-clipboard cliphist inotify-tools wireplumber trash-cli jq yq
-        libaubio-dev aubio-tools lm-sensors libsensors-dev cava
-        libpipewire-0.3-dev pipewire
-        qt6-base-dev qt6-base-private-dev qt6-declarative-dev qml6-module-qtquick qt6-wayland qt6-wayland-dev qt6-svg-dev qt6-shadertools-dev
-        libkf6globalaccel-dev libkf6windowsystem-dev libkf6kpipewire-dev libsecret-1-dev libkirigami-dev libkdecorations3-dev libkf6style-dev libkf6kcmutils-dev libkf6colorscheme-dev
-        ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libqalculate-dev qalc
-        foot fish eza fastfetch btop bash
-        adw-gtk3-theme fonts-rubik papirus-icon-theme darkly
-        fuzzel swappy brightnessctl ddcutil network-manager imagemagick
-        tesseract-ocr tesseract-ocr-eng kde-spectacle slurp grim xdg-utils sassc
-        libdbus-1-dev libdbus-glib-1-dev python3-dev
-        qt6-style-kvantum kvantum quickshell
-        libxi-dev libdrm-dev libx11-dev libxcomposite-dev libxdamage-dev libxrender-dev libxrandr-dev libpulse-dev libva-dev libcap-dev libavfilter-dev libvulkan-dev
+        quickshell matugen
+        foot eza fastfetch starship btop
+        fuzzel swappy satty gpu-screen-recorder slurp grim
+        wl-clipboard cliphist wl-clip-persist app2unit cava libcava
+        brightnessctl ddcutil tesseract-ocr tesseract-ocr-eng
+        adw-gtk3 adw-gtk3-theme papirus-icon-theme darkly
     )
 
     if [[ "$BASE_DISTRO" == "arch" ]]; then
