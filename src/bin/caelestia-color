@@ -975,7 +975,7 @@ after_fan_out() {
         apply_terms "$CACHE_HOME/caelestia/terminal-sequences"
     fi
 
-    if enabled enableSpicetify && command -v spicetify >/dev/null 2>&1; then
+    if enabled enableSpicetify && command -v spicetify >/dev/null 2>&1 && pgrep -x spotify >/dev/null 2>&1; then
         spicetify apply >/dev/null 2>&1 || warn "spicetify apply failed"
     fi
 
