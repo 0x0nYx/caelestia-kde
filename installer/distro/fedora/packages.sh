@@ -45,7 +45,7 @@ CORE_PACKAGES=(
 
     kf6-kglobalaccel-devel kf6-kwindowsystem-devel kf6-kguiaddons-devel
     kf6-kcoreaddons-devel kwin-devel kf6-kconfig-devel
-    kf6-networkmanager-qt-devel kf6-kpipewire kf6-kpipewire-devel
+    kf6-networkmanager-qt-devel kpipewire kpipewire-devel
     libepoxy-devel libdrm-devel
 
     libqalculate libqalculate-devel libsecret vulkan-headers ksshaskpass libX11-devel
@@ -64,7 +64,7 @@ UTILITY_PACKAGES=(
     fuzzel swappy ddcutil NetworkManager ImageMagick
     tesseract tesseract-langpack-eng spectacle gpu-screen-recorder
     slurp grim brightnessctl power-profiles-daemon
-    xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
+    xdg-utils sassc bat ripgrep xdg-user-dirs
 )
 
 COPR_CORE=(app2unit libcava)
