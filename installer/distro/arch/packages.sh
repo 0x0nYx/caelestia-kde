@@ -4,6 +4,8 @@ set -uo pipefail
 
 # shellcheck source=scripts/lib/toolchain.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/toolchain.sh"
+# shellcheck source=scripts/lib/privileges.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -17,7 +19,7 @@ INSTALL_DARKLY="${INSTALL_DARKLY:-true}"
 
 if ! command -v yay >/dev/null 2>&1; then
     log "yay not found - installing..."
-    sudo pacman -S --needed --noconfirm base-devel git || true
+    caelestia_sudo pacman -S --needed --noconfirm base-devel git || true
     tmpdir="$(mktemp -d)"
     git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$tmpdir"
     (
@@ -103,7 +105,7 @@ fi
 
 if grep -q '^\[caelestia-bin\]' /etc/pacman.conf 2>/dev/null; then
     log "Removing stale caelestia-bin repo entry from pacman.conf..."
-    sudo sed -i '/^\[caelestia-bin\]/,/^$/d' /etc/pacman.conf
+    caelestia_sudo sed -i '/^\[caelestia-bin\]/,/^$/d' /etc/pacman.conf
 fi
 
 log "Installing packages (group: $PACKAGE_GROUP)..."
@@ -138,14 +140,14 @@ build_from_source() {
     (
         cd "$tmpdir" || exit 1
         if [ -f "meson.build" ]; then
-            meson setup build && meson compile -C build && sudo meson install -C build
+            meson setup build && meson compile -C build && caelestia_sudo meson install -C build
         elif [ -f "CMakeLists.txt" ]; then
-            cmake -B build && cmake --build build && sudo cmake --install build
+            cmake -B build && cmake --build build && caelestia_sudo cmake --install build
         elif [ -x "autogen.sh" ] || [ -f "configure.ac" ] || [ -f "configure" ]; then
             if [ -x "autogen.sh" ]; then ./autogen.sh; fi
-            ./configure && make && sudo make install
+            ./configure && make && caelestia_sudo make install
         elif [ -f "Makefile" ] || [ -f "makefile" ] || [ -f "GNUmakefile" ]; then
-            make && sudo make install
+            make && caelestia_sudo make install
         else
             err "No recognized build system for $pkg; skipping source build."
             exit 1
@@ -159,64 +161,78 @@ build_from_source() {
     return 0
 }
 
-if ! yay -S --needed --noconfirm "${PACKAGES[@]}"; then
-    log "Batch install had failures. Retrying individually..."
-    for pkg in "${PACKAGES[@]}"; do
-        if pacman -Q "$pkg" >/dev/null 2>&1; then
-            continue
-        fi
-        if ! yay -S --needed --noconfirm "$pkg"; then
-            log "yay failed to install $pkg. Attempting manual build from AUR..."
-            _built=no
-            tmpdir="$(mktemp -d)"
-            if git clone --depth 1 "https://aur.archlinux.org/${pkg}.git" "$tmpdir"; then
-                (
-                    cd "$tmpdir" || exit 1
-                    makepkg -si --noconfirm
-                ) && _built=yes || {
-                    err "Manual build from AUR for $pkg failed."
-                }
-            else
-                err "Could not fetch AUR repository for $pkg."
-            fi
-            rm -rf "$tmpdir"
+MISSING_PKGS=()
+for pkg in "${PACKAGES[@]}"; do
+    if ! pacman -Qq "$pkg" >/dev/null 2>&1; then
+        MISSING_PKGS+=("$pkg")
+    fi
+done
 
-            if [[ "$_built" != "yes" ]]; then
-                repo="$(source_repo_for "$pkg")"
-                if [[ -n "$repo" ]]; then
-                    log "Compiling $pkg from source ($repo)..."
-                    if build_from_source "$pkg" "$repo"; then
-                        log "Built $pkg from source."
+if (( ${#MISSING_PKGS[@]} > 0 )); then
+    if ! yay -S --needed --noconfirm "${MISSING_PKGS[@]}"; then
+        log "Batch install had failures. Retrying individually..."
+        for pkg in "${MISSING_PKGS[@]}"; do
+            if pacman -Q "$pkg" >/dev/null 2>&1; then
+                continue
+            fi
+            if ! yay -S --needed --noconfirm "$pkg"; then
+                log "yay failed to install $pkg. Attempting manual build from AUR..."
+                _built=no
+                tmpdir="$(mktemp -d)"
+                if git clone --depth 1 "https://aur.archlinux.org/${pkg}.git" "$tmpdir"; then
+                    (
+                        cd "$tmpdir" || exit 1
+                        makepkg -si --noconfirm
+                    ) && _built=yes || {
+                        err "Manual build from AUR for $pkg failed."
+                    }
+                else
+                    err "Could not fetch AUR repository for $pkg."
+                fi
+                rm -rf "$tmpdir"
+
+                if [[ "$_built" != "yes" ]]; then
+                    repo="$(source_repo_for "$pkg")"
+                    if [[ -n "$repo" ]]; then
+                        log "Compiling $pkg from source ($repo)..."
+                        if build_from_source "$pkg" "$repo"; then
+                            log "Built $pkg from source."
+                        else
+                            FAILED_PKGS+=("$pkg")
+                        fi
                     else
+                        err "No source repository mapping for $pkg."
                         FAILED_PKGS+=("$pkg")
                     fi
-                else
-                    err "No source repository mapping for $pkg."
-                    FAILED_PKGS+=("$pkg")
                 fi
             fi
-        fi
-    done
+        done
+    fi
+else
+    log "All requested packages for group $PACKAGE_GROUP are already installed."
 fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     if [[ "$INSTALL_DARKLY" == "true" ]]; then
-        log "Installing Darkly GTK theme..."
-        yay -S --needed --noconfirm sassc >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm sassc >/dev/null 2>&1 || true
-        tmpdir="$(mktemp -d)"
-        if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
-            (
-                cd "$tmpdir" || exit 1
-                ./install.sh -l || {
-                    err "Failed to install Darkly GTK theme."
-                    FAILED_PKGS+=("darkly-gtk")
-                }
-            ) || FAILED_PKGS+=("darkly-gtk")
-        else
-            err "Failed to clone Darkly GTK theme."
-            FAILED_PKGS+=("darkly-gtk")
+        if ! pacman -Qq darkly-gtk >/dev/null 2>&1 && \
+           [[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" && ! -d "$HOME/.themes/Darkly" && ! -d "/usr/share/themes/Darkly" ]]; then
+            log "Installing Darkly GTK theme..."
+            yay -S --needed --noconfirm sassc >/dev/null 2>&1 || caelestia_sudo pacman -S --needed --noconfirm sassc >/dev/null 2>&1 || true
+            tmpdir="$(mktemp -d)"
+            if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
+                (
+                    cd "$tmpdir" || exit 1
+                    ./install.sh -l || {
+                        err "Failed to install Darkly GTK theme."
+                        FAILED_PKGS+=("darkly-gtk")
+                    }
+                ) || FAILED_PKGS+=("darkly-gtk")
+            else
+                err "Failed to clone Darkly GTK theme."
+                FAILED_PKGS+=("darkly-gtk")
+            fi
+            rm -rf "$tmpdir"
         fi
-        rm -rf "$tmpdir"
     else
         log "Skipping Darkly GTK theme by user choice."
     fi
@@ -227,7 +243,7 @@ if command -v xdg-user-dirs-update >/dev/null 2>&1; then
 fi
 
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
-    sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
+    caelestia_sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
 
 if [ ${#FAILED_PKGS[@]} -ne 0 ]; then

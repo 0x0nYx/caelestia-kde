@@ -1,4 +1,49 @@
 #!/usr/bin/env bash
+detect_base_distro() {
+    local detected="unknown"
+
+    if [[ -n "${BASE_DISTRO:-}" ]]; then
+        printf '%s\n' "$BASE_DISTRO"
+        return 0
+    fi
+
+    if [[ -f /etc/os-release ]]; then
+        # shellcheck disable=SC1091
+        . /etc/os-release
+        case "${ID:-}" in
+            arch|cachyos|endeavouros|manjaro|artix)
+                detected="arch"
+                ;;
+            fedora|nobara|bazzite|rhel|centos|almalinux|rocky)
+                detected="fedora"
+                ;;
+            debian|ubuntu|pop|mint|kali|raspbian|elementary|zorin|deepin|devuan)
+                detected="debian"
+                ;;
+            *)
+                if echo "${ID_LIKE:-}" | grep -iq "arch"; then
+                    detected="arch"
+                elif echo "${ID_LIKE:-}" | grep -iq "fedora"; then
+                    detected="fedora"
+                elif echo "${ID_LIKE:-}" | grep -iq -E "debian|ubuntu"; then
+                    detected="debian"
+                fi
+                ;;
+        esac
+    fi
+
+    if [[ "$detected" == "unknown" ]]; then
+        if command -v pacman >/dev/null 2>&1; then
+            detected="arch"
+        elif command -v dnf >/dev/null 2>&1; then
+            detected="fedora"
+        elif command -v apt-get >/dev/null 2>&1; then
+            detected="debian"
+        fi
+    fi
+
+    printf '%s\n' "$detected"
+}
 
 linguist_tools_available() {
     local fallback="${CAELESTIA_LRELEASE_FALLBACK:-/usr/lib/qt6/bin/lrelease}"

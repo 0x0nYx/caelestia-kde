@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 if [[ -z "${CAELESTIA_INSTALL_KIND_SOURCED:-}" ]]; then
 CAELESTIA_INSTALL_KIND_SOURCED=1
+_CAELESTIA_INSTALL_KIND_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)"
 
 install_kind() {
     case "${CAELESTIA_INSTALL_KIND:-}" in
@@ -10,9 +11,7 @@ install_kind() {
             ;;
     esac
 
-    local lib_dir
-    lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-    case "$lib_dir" in
+    case "$_CAELESTIA_INSTALL_KIND_DIR" in
         /usr/*) printf 'package\n' ;;
         *) printf 'source\n' ;;
     esac

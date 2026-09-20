@@ -4,6 +4,8 @@ set -uo pipefail
 
 # shellcheck source=scripts/lib/toolchain.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/toolchain.sh"
+# shellcheck source=scripts/lib/privileges.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -115,9 +117,6 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     fi
 fi
 
-log "Updating apt package index..."
-sudo apt-get update || true
-
 FAILED_PKGS=()
 
 BATCH_PKGS=()
@@ -131,19 +130,30 @@ for pkg in "${PACKAGES[@]}"; do
     fi
 done
 
-if [[ ${#BATCH_PKGS[@]} -gt 0 ]]; then
-    log "Batch installing standard Debian packages..."
-    if ! sudo apt-get install -y --no-install-recommends "${BATCH_PKGS[@]}"; then
+NEEDED_BATCH_PKGS=()
+for pkg in "${BATCH_PKGS[@]}"; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        NEEDED_BATCH_PKGS+=("$pkg")
+    fi
+done
+
+if [[ ${#NEEDED_BATCH_PKGS[@]} -gt 0 ]]; then
+    log "Updating apt package index..."
+    caelestia_sudo apt-get update || true
+    log "Batch installing missing Debian packages: ${NEEDED_BATCH_PKGS[*]}"
+    if ! caelestia_sudo apt-get install -y --no-install-recommends "${NEEDED_BATCH_PKGS[@]}"; then
         log "Batch install had failures. Retrying standard packages individually..."
-        for pkg in "${BATCH_PKGS[@]}"; do
+        for pkg in "${NEEDED_BATCH_PKGS[@]}"; do
             if ! dpkg -s "$pkg" >/dev/null 2>&1; then
-                sudo apt-get install -y --no-install-recommends "$pkg" || {
+                caelestia_sudo apt-get install -y --no-install-recommends "$pkg" || {
                     err "apt failed to install $pkg"
                     FAILED_PKGS+=("$pkg")
                 }
             fi
         done
     fi
+else
+    log "All standard Debian packages already installed."
 fi
 
 for pkg in "${FALLBACK_TARGETS[@]}"; do
@@ -151,7 +161,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
         continue
     fi
 
-    if sudo apt-get install -y "$pkg" 2>/dev/null; then
+    if caelestia_sudo apt-get install -y "$pkg" 2>/dev/null; then
         continue
     fi
 
@@ -159,20 +169,20 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
     case "$pkg" in
         quickshell)
             log "Attempting to install quickshell from PPA..."
-            sudo apt-get install -y software-properties-common || true
-            sudo add-apt-repository -y ppa:avengemedia/danklinux || true
-            sudo apt-get update || true
-            sudo apt-get install -y quickshell || { err "Failed to install quickshell from PPA."; FAILED_PKGS+=("$pkg"); }
+            caelestia_sudo apt-get install -y software-properties-common || true
+            caelestia_sudo add-apt-repository -y ppa:avengemedia/danklinux || true
+            caelestia_sudo apt-get update || true
+            caelestia_sudo apt-get install -y quickshell || { err "Failed to install quickshell from PPA."; FAILED_PKGS+=("$pkg"); }
             ;;
         libcava)
             if install_cava_sdk debian; then
                 log "Installed prebuilt CAVA SDK from release."
             else
                 log "Attempting to install cava from PPA..."
-                sudo apt-get install -y software-properties-common || true
-                sudo add-apt-repository -y ppa:hsheth2/ppa || true
-                sudo apt-get update || true
-                if sudo apt-get install -y cava; then
+                caelestia_sudo apt-get install -y software-properties-common || true
+                caelestia_sudo add-apt-repository -y ppa:hsheth2/ppa || true
+                caelestia_sudo apt-get update || true
+                if caelestia_sudo apt-get install -y cava; then
                     log "cava installed via PPA."
                 else
                     err "Failed to install libcava SDK / cava."
@@ -182,11 +192,11 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             ;;
         app2unit)
             tmpdir="$(mktemp -d)"
-            sudo apt-get install -y make scdoc || true
+            caelestia_sudo apt-get install -y make scdoc || true
             if git clone --depth 1 https://github.com/Vladimir-csp/app2unit "$tmpdir"; then
                 (
                     cd "$tmpdir" || exit 1
-                    sudo make install 2>/dev/null || sudo make install-bin
+                    caelestia_sudo make install 2>/dev/null || caelestia_sudo make install-bin
                 ) || { err "Manual build for $pkg failed."; FAILED_PKGS+=("$pkg"); }
             else
                 err "Failed to clone $pkg."
@@ -196,11 +206,11 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             ;;
         gpu-screen-recorder)
             tmpdir="$(mktemp -d)"
-            sudo apt-get install -y build-essential git ffmpeg meson libxi-dev libdrm-dev libavcodec-dev libavformat-dev libx11-dev libxcomposite-dev libxdamage-dev libxrender-dev libxrandr-dev libpulse-dev libva-dev libcap-dev libdbus-1-dev libpipewire-0.3-dev libavfilter-dev libvulkan-dev || true
+            caelestia_sudo apt-get install -y build-essential git ffmpeg meson libxi-dev libdrm-dev libavcodec-dev libavformat-dev libx11-dev libxcomposite-dev libxdamage-dev libxrender-dev libxrandr-dev libpulse-dev libva-dev libcap-dev libdbus-1-dev libpipewire-0.3-dev libavfilter-dev libvulkan-dev || true
             if git clone --depth 1 https://repo.dec05eba.com/gpu-screen-recorder "$tmpdir"; then
                 (
                     cd "$tmpdir" || exit 1
-                    sudo ./install.sh
+                    caelestia_sudo ./install.sh
                 ) || { err "Manual build for $pkg failed."; FAILED_PKGS+=("$pkg"); }
             else
                 err "Failed to clone $pkg."
@@ -230,7 +240,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             if [ -n "$LATEST_URL" ]; then
                 tmpbin="$(mktemp)"
                 if curl -fsSL "$LATEST_URL" -o "$tmpbin"; then
-                    sudo install -m 755 "$tmpbin" /usr/local/bin/cliphist
+                    caelestia_sudo install -m 755 "$tmpbin" /usr/local/bin/cliphist
                     log "cliphist installed successfully to /usr/local/bin."
                 else
                     err "Failed to download cliphist."
@@ -243,7 +253,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             fi
             ;;
         wl-clip-persist)
-            sudo apt-get install -y build-essential curl git libwayland-dev || true
+            caelestia_sudo apt-get install -y build-essential curl git libwayland-dev || true
             if ! command -v cargo >/dev/null 2>&1 || [ "$(rustc --version 2>/dev/null | awk '{print $2}' | cut -d. -f2 || echo 0)" -lt 85 ]; then
                 log "Modern Rust toolchain (>= 1.85) required. Installing via rustup..."
                 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal || true # ci:allow-curl-pipe
@@ -255,7 +265,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
                     (
                         cd "$tmpdir" || exit 1
                         cargo build --release
-                        sudo cp target/release/wl-clip-persist /usr/local/bin/
+                        caelestia_sudo cp target/release/wl-clip-persist /usr/local/bin/
                     ) || { err "cargo build $pkg failed."; FAILED_PKGS+=("$pkg"); }
                 else
                     err "Failed to clone $pkg."
@@ -282,7 +292,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             if command -v cargo-binstall >/dev/null 2>&1; then
                 cargo-binstall -y satty || {
                     log "Normal cargo-binstall failed. Trying with sudo..."
-                    sudo "$(command -v cargo-binstall)" -y satty || { err "sudo cargo-binstall $pkg failed."; FAILED_PKGS+=("$pkg"); }
+                    caelestia_sudo "$(command -v cargo-binstall)" -y satty || { err "sudo cargo-binstall $pkg failed."; FAILED_PKGS+=("$pkg"); }
                 }
             else
                 err "cargo-binstall not available to install $pkg."
@@ -373,7 +383,7 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
             tmpdir="$(mktemp -d)"
             log "Downloading Darkly .deb from GitHub releases..."
             if curl -fsSL "$_darkly_deb" -o "$tmpdir/darkly.deb"; then
-                if ! sudo apt-get install -y "$tmpdir/darkly.deb" && ! sudo dpkg -i "$tmpdir/darkly.deb"; then
+                if ! caelestia_sudo apt-get install -y "$tmpdir/darkly.deb" && ! caelestia_sudo dpkg -i "$tmpdir/darkly.deb"; then
                     err "Failed to install Darkly .deb."
                     FAILED_PKGS+=("darkly")
                 fi
@@ -388,22 +398,25 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
         fi
     fi
 
-    log "Installing Darkly GTK theme..."
-    sudo apt-get install -y sassc || true
-    tmpdir="$(mktemp -d)"
-    if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
-        (
-            cd "$tmpdir" || exit 1
-            ./install.sh -l || {
-                err "Failed to install Darkly GTK theme."
-                FAILED_PKGS+=("darkly-gtk")
-            }
-        ) || FAILED_PKGS+=("darkly-gtk")
-    else
-        err "Failed to clone Darkly GTK theme."
-        FAILED_PKGS+=("darkly-gtk")
+    if ! dpkg -s darkly-gtk >/dev/null 2>&1 && \
+       [[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" && ! -d "$HOME/.themes/Darkly" && ! -d "/usr/share/themes/Darkly" ]]; then
+        log "Installing Darkly GTK theme..."
+        caelestia_sudo apt-get install -y sassc || true
+        tmpdir="$(mktemp -d)"
+        if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
+            (
+                cd "$tmpdir" || exit 1
+                ./install.sh -l || {
+                    err "Failed to install Darkly GTK theme."
+                    FAILED_PKGS+=("darkly-gtk")
+                }
+            ) || FAILED_PKGS+=("darkly-gtk")
+        else
+            err "Failed to clone Darkly GTK theme."
+            FAILED_PKGS+=("darkly-gtk")
+        fi
+        rm -rf "$tmpdir"
     fi
-    rm -rf "$tmpdir"
 else
     log "Skipping Darkly package installation by user choice."
 fi
@@ -414,7 +427,7 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
 log "Installing Caelestia CLI wrapper..."
 if ! command -v caelestia >/dev/null 2>&1; then
-    sudo apt-get install -y python3-pip python3-build python3-installer python3-hatchling python3-hatch-vcs || true
+    caelestia_sudo apt-get install -y python3-pip python3-build python3-installer python3-hatchling python3-hatch-vcs || true
     tmpdir="$(mktemp -d)"
     (
         cd "$tmpdir" || exit 1
@@ -422,10 +435,10 @@ if ! command -v caelestia >/dev/null 2>&1; then
         tar -xzf caelestia.tar.gz
         cd caelestia-1.0.8 || exit 1
         python3 -m build --wheel --no-isolation
-        if ! sudo pip3 install dist/*.whl --break-system-packages 2>/dev/null; then
+        if ! caelestia_sudo pip3 install dist/*.whl --break-system-packages 2>/dev/null; then
             pip3 install dist/*.whl --user --break-system-packages 2>/dev/null || pip3 install dist/*.whl --user
             if [[ -f "$HOME/.local/bin/caelestia" ]]; then
-                sudo ln -sf "$HOME/.local/bin/caelestia" /usr/local/bin/caelestia || true
+                caelestia_sudo ln -sf "$HOME/.local/bin/caelestia" /usr/local/bin/caelestia || true
             fi
         fi
 
@@ -441,14 +454,14 @@ if ! command -v caelestia >/dev/null 2>&1 && [[ ! -f "$HOME/.local/bin/caelestia
 fi
 
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
-    sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
+    caelestia_sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
 
 if ! command -v qdbus6 >/dev/null 2>&1; then
     if command -v qdbus-qt6 >/dev/null 2>&1; then
-        sudo ln -sf "$(command -v qdbus-qt6)" /usr/local/bin/qdbus6 || true
+        caelestia_sudo ln -sf "$(command -v qdbus-qt6)" /usr/local/bin/qdbus6 || true
     elif [[ -x "/usr/lib/qt6/bin/qdbus" ]]; then
-        sudo ln -sf /usr/lib/qt6/bin/qdbus /usr/local/bin/qdbus6 || true
+        caelestia_sudo ln -sf /usr/lib/qt6/bin/qdbus /usr/local/bin/qdbus6 || true
     fi
 fi
 
