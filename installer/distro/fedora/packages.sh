@@ -41,6 +41,7 @@ CORE_PACKAGES=(
 
     qt6-qtbase qt6-qtbase-private-devel qt6-qtdeclarative qt6-qtdeclarative-devel
     qt6-qtwayland qt6-qtwayland-devel qt6-qtsvg qt6-qtsvg-devel qt6-qtshadertools-devel
+    qt6-qtmultimedia-devel qt6-qt5compat-devel qt6-qtimageformats
 
     kf6-kglobalaccel-devel kf6-kwindowsystem-devel kf6-kguiaddons-devel
     kf6-kcoreaddons-devel kwin-devel kf6-kconfig-devel
@@ -51,7 +52,7 @@ CORE_PACKAGES=(
 )
 
 SHELL_PACKAGES=(
-    foot eza fastfetch starship btop bash
+    foot eza fastfetch starship btop bash matugen
 )
 
 THEME_PACKAGES=(
@@ -62,7 +63,8 @@ THEME_PACKAGES=(
 UTILITY_PACKAGES=(
     fuzzel swappy ddcutil NetworkManager ImageMagick
     tesseract tesseract-langpack-eng spectacle gpu-screen-recorder
-    slurp grim xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
+    slurp grim brightnessctl power-profiles-daemon
+    xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
 )
 
 COPR_CORE=(app2unit libcava)
@@ -134,7 +136,10 @@ if [[ ${#BATCH_PKGS[@]} -gt 0 ]]; then
         log "Batch install had failures. Retrying standard packages individually..."
         for pkg in "${BATCH_PKGS[@]}"; do
             if ! rpm -q "$pkg" >/dev/null 2>&1; then
-                sudo dnf install -y "$pkg" || true
+                if ! sudo dnf install -y "$pkg"; then
+                    err "dnf failed to install $pkg."
+                    FAILED_PKGS+=("$pkg")
+                fi
             fi
         done
     fi
@@ -238,16 +243,6 @@ for pkg in "${COPR_PKGS[@]}"; do
     esac
 done
 
-if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
-    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
-    err "The following packages could not be installed:"
-    for pkg in "${FAILED_PKGS[@]}"; do
-        err "  - $pkg"
-        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
-    done
-fi
-
-
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
 
 log "Downloading and installing required custom fonts (parallel)..."
@@ -264,9 +259,9 @@ _pid_jb=$!
 
 wait $_pid_ms $_pid_cc $_pid_jb
 
-unzip -qo "/tmp/CascadiaCode.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/CascadiaCode.zip" || { err "Failed to extract CascadiaCode font."; echo "CascadiaCode font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
-unzip -qo "/tmp/JetBrainsMono.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/JetBrainsMono.zip" || { err "Failed to extract JetBrains Mono Nerd Font."; echo "JetBrains Mono Nerd Font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/MaterialSymbolsRounded.ttf" ]] || { err "Failed to download Material Symbols font."; echo "Material Symbols font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
+unzip -qo "/tmp/CascadiaCode.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/CascadiaCode.zip" || { err "Failed to extract CascadiaCode font."; FAILED_PKGS+=("CascadiaCode font"); }
+unzip -qo "/tmp/JetBrainsMono.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/JetBrainsMono.zip" || { err "Failed to extract JetBrains Mono Nerd Font."; FAILED_PKGS+=("JetBrains Mono Nerd Font"); }
+[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/MaterialSymbolsRounded.ttf" ]] || { err "Failed to download Material Symbols font."; FAILED_PKGS+=("Material Symbols font"); }
 
 fc-cache -f
 
@@ -279,9 +274,13 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
                 log "COPR install failed; falling back to prebuilt RPM from GitHub releases..."
                 _darkly_rpm="$(darkly_rpm_asset_url || true)"
                 if [[ -n "$_darkly_rpm" ]]; then
-                    sudo dnf install -y "$_darkly_rpm" || err "Failed to install Darkly RPM."
+                    if ! sudo dnf install -y "$_darkly_rpm"; then
+                        err "Failed to install Darkly RPM."
+                        FAILED_PKGS+=("darkly")
+                    fi
                 else
                     err "No prebuilt Darkly RPM found for this Fedora version."
+                    FAILED_PKGS+=("darkly")
                 fi
             fi
         fi
@@ -293,10 +292,14 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
     if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
         (
             cd "$tmpdir" || exit 1
-            ./install.sh -l || err "Failed to install Darkly GTK theme."
-        )
+            ./install.sh -l || {
+                err "Failed to install Darkly GTK theme."
+                FAILED_PKGS+=("darkly-gtk")
+            }
+        ) || FAILED_PKGS+=("darkly-gtk")
     else
         err "Failed to clone Darkly GTK theme."
+        FAILED_PKGS+=("darkly-gtk")
     fi
     rm -rf "$tmpdir"
 else
@@ -334,6 +337,11 @@ if ! command -v caelestia >/dev/null 2>&1; then
     rm -rf "$tmpdir"
 fi
 
+if ! command -v caelestia >/dev/null 2>&1 && [[ ! -f "$HOME/.local/bin/caelestia" ]]; then
+    err "Failed to install Caelestia CLI wrapper."
+    FAILED_PKGS+=("caelestia")
+fi
+
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
@@ -349,5 +357,14 @@ if ! command -v qdbus6 >/dev/null 2>&1; then
 fi
 
 fi  # end of PACKAGE_GROUP shell/all block
+
+if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
+    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+    err "The following packages could not be installed:"
+    for pkg in "${FAILED_PKGS[@]}"; do
+        err "  - $pkg"
+        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
+    done
+fi
 
 log "Fedora package installation complete."

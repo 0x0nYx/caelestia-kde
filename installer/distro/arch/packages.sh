@@ -36,7 +36,8 @@ CORE_PACKAGES=(
 
     aubio lm_sensors libpipewire pulseaudio-qt libpulse fftw
 
-    qt6-base qt6-declarative qt6-wayland qt6-shadertools
+    qt6-base qt6-declarative qt6-wayland qt6-shadertools qt6-svg
+    qt6-multimedia qt6-5compat qt6-imageformats
 
     kglobalaccel kglobalacceld kguiaddons kwindowsystem
     kcoreaddons kconfig networkmanager-qt kpipewire kwin
@@ -55,8 +56,9 @@ THEME_PACKAGES=(
 )
 
 UTILITY_PACKAGES=(
-    swappy ddcutil networkmanager imagemagick tesseract tesseract-data-eng
-    satty spectacle xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
+    fuzzel swappy ddcutil networkmanager imagemagick tesseract tesseract-data-eng
+    satty spectacle gpu-screen-recorder slurp grim brightnessctl power-profiles-daemon
+    xdg-utils sassc bat ripgrep lazygit xdg-user-dirs
 )
 
 PACKAGES=()
@@ -197,15 +199,6 @@ if ! yay -S --needed --noconfirm "${PACKAGES[@]}"; then
     done
 fi
 
-if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
-    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
-    err "The following packages could not be installed:"
-    for pkg in "${FAILED_PKGS[@]}"; do
-        err "  - $pkg"
-        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
-    done
-fi
-
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     if [[ "$INSTALL_DARKLY" == "true" ]]; then
         log "Installing Darkly GTK theme..."
@@ -214,10 +207,14 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
         if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
             (
                 cd "$tmpdir" || exit 1
-                ./install.sh -l || err "Failed to install Darkly GTK theme."
-            )
+                ./install.sh -l || {
+                    err "Failed to install Darkly GTK theme."
+                    FAILED_PKGS+=("darkly-gtk")
+                }
+            ) || FAILED_PKGS+=("darkly-gtk")
         else
             err "Failed to clone Darkly GTK theme."
+            FAILED_PKGS+=("darkly-gtk")
         fi
         rm -rf "$tmpdir"
     else
@@ -231,6 +228,15 @@ fi
 
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
+fi
+
+if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
+    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+    err "The following packages could not be installed:"
+    for pkg in "${FAILED_PKGS[@]}"; do
+        err "  - $pkg"
+        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
+    done
 fi
 
 log "Arch package installation complete."

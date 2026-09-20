@@ -20,6 +20,8 @@ install_if_missing() {
         yay -S --needed ${CONFIRM_ARG:-} "$pkg" 2>/dev/null || \
         sudo pacman -S --needed ${CONFIRM_ARG:-} "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
+            mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+            echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
             return 1
         }
         ok "$pkg installed."
@@ -31,6 +33,8 @@ install_if_missing() {
         info "Installing $pkg..."
         sudo dnf install -y "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
+            mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+            echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
             return 1
         }
         ok "$pkg installed."
@@ -42,6 +46,8 @@ install_if_missing() {
         info "Installing $pkg..."
         sudo apt-get install -y "$pkg" 2>/dev/null || {
             warn "Could not install $pkg, skipping."
+            mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+            echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
             return 1
         }
         ok "$pkg installed."

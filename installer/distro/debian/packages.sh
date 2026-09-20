@@ -55,7 +55,7 @@ CORE_PACKAGES=(
     libaubio-dev aubio-tools lm-sensors libsensors-dev libpipewire-0.3-dev pipewire libfftw3-dev
 
     qt6-base-dev qt6-base-private-dev qt6-declarative-dev qml6-module-qtquick qt6-wayland qt6-wayland-dev
-    qt6-svg-dev qt6-shadertools-dev
+    qt6-svg-dev qt6-shadertools-dev qt6-multimedia-dev qt6-5compat-dev qt6-image-formats-plugins
 
     libkf6globalaccel-dev libkf6windowsystem-dev libkf6guiaddons-dev
     libkf6coreaddons-dev kwin-dev libkf6pulseaudioqt-dev libpulse-dev
@@ -78,6 +78,7 @@ THEME_PACKAGES=(
 UTILITY_PACKAGES=(
     fuzzel swappy ddcutil network-manager imagemagick
     tesseract-ocr tesseract-ocr-eng kde-spectacle slurp grim
+    brightnessctl power-profiles-daemon
     xdg-utils sassc python3-venv uv konsave
 )
 
@@ -338,15 +339,6 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
     esac
 done
 
-if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
-    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
-    err "The following packages could not be installed:"
-    for pkg in "${FAILED_PKGS[@]}"; do
-        err "  - $pkg"
-        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
-    done
-fi
-
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
 
 log "Downloading and installing required custom fonts (parallel)..."
@@ -366,10 +358,10 @@ _pid_ru=$!
 
 wait $_pid_ms $_pid_cc $_pid_jb $_pid_ru
 
-unzip -qo "/tmp/CascadiaCode.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/CascadiaCode.zip" || { err "Failed to extract CascadiaCode font."; echo "CascadiaCode font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
-unzip -qo "/tmp/JetBrainsMono.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/JetBrainsMono.zip" || { err "Failed to extract JetBrains Mono Nerd Font."; echo "JetBrains Mono Nerd Font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/MaterialSymbolsRounded.ttf" ]] || { err "Failed to download Material Symbols font."; echo "Material Symbols font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/Rubik-VariableFont_wght.ttf" ]] || { err "Failed to download Rubik font."; echo "Rubik font" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"; }
+unzip -qo "/tmp/CascadiaCode.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/CascadiaCode.zip" || { err "Failed to extract CascadiaCode font."; FAILED_PKGS+=("CascadiaCode font"); }
+unzip -qo "/tmp/JetBrainsMono.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" 2>/dev/null && rm -f "/tmp/JetBrainsMono.zip" || { err "Failed to extract JetBrains Mono Nerd Font."; FAILED_PKGS+=("JetBrains Mono Nerd Font"); }
+[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/MaterialSymbolsRounded.ttf" ]] || { err "Failed to download Material Symbols font."; FAILED_PKGS+=("Material Symbols font"); }
+[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/Rubik-VariableFont_wght.ttf" ]] || { err "Failed to download Rubik font."; FAILED_PKGS+=("Rubik font"); }
 
 fc-cache -f
 
@@ -381,13 +373,18 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
             tmpdir="$(mktemp -d)"
             log "Downloading Darkly .deb from GitHub releases..."
             if curl -fsSL "$_darkly_deb" -o "$tmpdir/darkly.deb"; then
-                sudo apt-get install -y "$tmpdir/darkly.deb" || sudo dpkg -i "$tmpdir/darkly.deb" || err "Failed to install Darkly .deb."
+                if ! sudo apt-get install -y "$tmpdir/darkly.deb" && ! sudo dpkg -i "$tmpdir/darkly.deb"; then
+                    err "Failed to install Darkly .deb."
+                    FAILED_PKGS+=("darkly")
+                fi
             else
                 err "Failed to download Darkly .deb from GitHub releases."
+                FAILED_PKGS+=("darkly")
             fi
             rm -rf "$tmpdir"
         else
             err "No prebuilt Darkly .deb found for this distro."
+            FAILED_PKGS+=("darkly")
         fi
     fi
 
@@ -397,10 +394,14 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
     if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
         (
             cd "$tmpdir" || exit 1
-            ./install.sh -l || err "Failed to install Darkly GTK theme."
-        )
+            ./install.sh -l || {
+                err "Failed to install Darkly GTK theme."
+                FAILED_PKGS+=("darkly-gtk")
+            }
+        ) || FAILED_PKGS+=("darkly-gtk")
     else
         err "Failed to clone Darkly GTK theme."
+        FAILED_PKGS+=("darkly-gtk")
     fi
     rm -rf "$tmpdir"
 else
@@ -434,6 +435,11 @@ if ! command -v caelestia >/dev/null 2>&1; then
     rm -rf "$tmpdir"
 fi
 
+if ! command -v caelestia >/dev/null 2>&1 && [[ ! -f "$HOME/.local/bin/caelestia" ]]; then
+    err "Failed to install Caelestia CLI wrapper."
+    FAILED_PKGS+=("caelestia")
+fi
+
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
@@ -447,5 +453,14 @@ if ! command -v qdbus6 >/dev/null 2>&1; then
 fi
 
 fi  # end of PACKAGE_GROUP shell/all block
+
+if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
+    mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"
+    err "The following packages could not be installed:"
+    for pkg in "${FAILED_PKGS[@]}"; do
+        err "  - $pkg"
+        echo "$pkg" >> "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde/failed_packages.txt"
+    done
+fi
 
 log "Debian package installation complete."
