@@ -5834,24 +5834,22 @@
   <context>
     <name>Media</name>
     <message>
-      <location filename="../modules/dashboard/dash/Media.qml" line="+86"/>
-      <location line="+17"/>
-      <location line="+17"/>
+      <location filename="../modules/dashboard/dash/Media.qml" line="+91"/>
       <source>No media</source>
       <translation>メディアがありません</translation>
     </message>
     <message>
-      <location line="-34"/>
+      <location line="+0"/>
       <source>Unknown title</source>
       <translation>不明なタイトル</translation>
     </message>
     <message>
-      <location line="+17"/>
+      <location line="+14"/>
       <source>Unknown album</source>
       <translation>不明なアルバム</translation>
     </message>
     <message>
-      <location line="+17"/>
+      <location line="+14"/>
       <source>Unknown artist</source>
       <translation>不明なアーティスト</translation>
     </message>
@@ -5935,7 +5933,7 @@
       <translation>%1 ネットワークが利用可能です</translation>
     </message>
     <message>
-      <location line="+141"/>
+      <location line="+146"/>
       <source>Rescan networks</source>
       <translation>ネットワークを再スキャン</translation>
     </message>
@@ -5950,7 +5948,7 @@
       <translation>%1 プロファイルが利用可能です</translation>
     </message>
     <message>
-      <location line="+81"/>
+      <location line="+85"/>
       <source>No VPN profiles found</source>
       <translation>VPNプロファイルが見つかりません</translation>
     </message>
@@ -5965,12 +5963,12 @@
       <translation>%1 デバイスが利用可能です</translation>
     </message>
     <message>
-      <location line="+55"/>
+      <location line="+48"/>
       <source>Unknown</source>
       <translation>不明</translation>
     </message>
     <message>
-      <location line="+36"/>
+      <location line="+47"/>
       <source>Connection details</source>
       <translation>接続の詳細</translation>
     </message>

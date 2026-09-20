@@ -5834,24 +5834,22 @@
   <context>
     <name>Media</name>
     <message>
-      <location filename="../modules/dashboard/dash/Media.qml" line="+86"/>
-      <location line="+17"/>
-      <location line="+17"/>
+      <location filename="../modules/dashboard/dash/Media.qml" line="+91"/>
       <source>No media</source>
       <translation>Немає медіа</translation>
     </message>
     <message>
-      <location line="-34"/>
+      <location line="+0"/>
       <source>Unknown title</source>
       <translation>Невідома назва</translation>
     </message>
     <message>
-      <location line="+17"/>
+      <location line="+14"/>
       <source>Unknown album</source>
       <translation>Невідомий альбом</translation>
     </message>
     <message>
-      <location line="+17"/>
+      <location line="+14"/>
       <source>Unknown artist</source>
       <translation>Невідомий виконавець</translation>
     </message>
@@ -5935,7 +5933,7 @@
       <translation>Доступно %1 мереж</translation>
     </message>
     <message>
-      <location line="+141"/>
+      <location line="+146"/>
       <source>Rescan networks</source>
       <translation>Повторне сканування мереж</translation>
     </message>
@@ -5950,7 +5948,7 @@
       <translation>Доступні %1 профілі</translation>
     </message>
     <message>
-      <location line="+81"/>
+      <location line="+85"/>
       <source>No VPN profiles found</source>
       <translation>Не знайдено профілів VPN</translation>
     </message>
@@ -5965,12 +5963,12 @@
       <translation>доступні пристрої %1</translation>
     </message>
     <message>
-      <location line="+55"/>
+      <location line="+48"/>
       <source>Unknown</source>
       <translation>Не вказано</translation>
     </message>
     <message>
-      <location line="+36"/>
+      <location line="+47"/>
       <source>Connection details</source>
       <translation>Деталі підключення</translation>
     </message>
