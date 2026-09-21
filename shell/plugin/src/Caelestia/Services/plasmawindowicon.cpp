@@ -117,11 +117,19 @@ void PlasmaWindowIcon::request(const QString& uuid) {
             notifier->setEnabled(false);
             notifier->deleteLater();
             ::close(readFd);
-            m_inFlight.remove(key);
+
+            // handleLost() settles the ask when the window goes away, and its pipe still
+            // drains afterwards. Dropping the second settle here is what makes the
+            // header's "exactly once" true: without it a window that closed mid-read got
+            // failed() and then resolved(), and the late resolved() registered an icon
+            // for a window that was already gone.
+            const bool stillWaiting = m_inFlight.remove(key);
 
             const QByteArray data = *payload;
             delete payload;
-            deliver(key, data);
+            if (stillWaiting) {
+                deliver(key, data);
+            }
             return;
         }
     });

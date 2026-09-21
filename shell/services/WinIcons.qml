@@ -21,7 +21,10 @@ Singleton {
     // key -> extracted png path
     property var paths: ({})
 
-    // key -> extraction already attempted (don't re-spawn the helper)
+    // key -> the window instance that key was last asked for, as its address. Remembering
+    // which window, rather than only that an ask happened, is what lets a failed lookup be
+    // retried by a later window that reuses the key while a live window that has no icon
+    // is not re-asked on every dock rebuild.
     property var tried: ({})
 
     // uuid -> the key its icon should be registered under, for the compositor
@@ -49,11 +52,18 @@ Singleton {
     // matches no desktop entry either.
     function request(appClass: string, title: string, pid: int, address: string): void {
         const key = root.keyFor(appClass, pid ?? 0);
-        if (!key || root.tried[key])
+        if (!key)
+            return;
+
+        const asked = root.tried[key];
+        // A key that has already resolved belongs to whichever window won it, and keyFor
+        // says the class is only a fallback, so a second window sharing the key must not
+        // overwrite that answer. Otherwise only the same window instance is skipped.
+        if (asked !== undefined && (root.paths[key] || asked === address))
             return;
 
         const t = root.tried;
-        t[key] = true;
+        t[key] = address;
         root.tried = t;
 
         const path = WindowIcon.extract(appClass || "", title || "", pid ?? 0);
@@ -70,13 +80,12 @@ Singleton {
         }
     }
 
-    // Drop the wait for `uuid` once it has been answered either way. `retry`
-    // also clears the key's "already tried" mark, which is the only thing that
-    // lets a window whose extraction produced nothing be asked for again, and
-    // it stops a later window reusing that pid from inheriting the failure.
-    // The mark is kept once a path exists, because it may be another window's
-    // icon registered under the same key.
-    function finishWait(uuid: string, retry: bool): void {
+    // Drop the wait for `uuid` once it has been answered either way, so a window
+    // that produced nothing does not leave an entry behind for the session. The
+    // "asked" mark is deliberately left alone: request() scopes it to the window
+    // instance, so a window with no icon is not re-asked, and a later window that
+    // reuses its key retries because its address differs.
+    function finishWait(uuid: string): void {
         const key = root._awaiting[uuid];
         if (!uuid || !key)
             return;
@@ -84,12 +93,6 @@ Singleton {
         const a = Object.assign({}, root._awaiting);
         delete a[String(uuid)];
         root._awaiting = a;
-
-        if (retry && !root.paths[key]) {
-            const t = Object.assign({}, root.tried);
-            delete t[key];
-            root.tried = t;
-        }
     }
 
     // Record a freshly extracted icon. Reassigning a copy is what notifies the
@@ -140,15 +143,15 @@ Singleton {
         // The uuid comes back normalised, which is also how it was stored.
         function onResolved(uuid: string, path: string): void {
             const key = root._awaiting[uuid];
-            root.finishWait(uuid, false);
+            root.finishWait(uuid);
             if (key)
                 root.register(key, path);
         }
 
-        // No icon came back for this window. Release the wait and let the key
-        // be tried again rather than remembered as a dead end.
+        // No icon came back for this window. Release the wait; whether the ask is
+        // repeated is request()'s decision, and it decides per window instance.
         function onFailed(uuid: string): void {
-            root.finishWait(uuid, true);
+            root.finishWait(uuid);
         }
 
         target: PlasmaWindowIcon
