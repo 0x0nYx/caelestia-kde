@@ -11,7 +11,7 @@ namespace caelestia::settings {
 inline QVariantMap vmap(std::initializer_list<std::pair<QString, QVariant>> entries) {
     QVariantMap map;
     for (const auto& [key, value] : entries)
-        map.insert(std::move(key), std::move(value));
+        map.insert(key, value); // Not const, so std::move would be a no-op here
     return map;
 }
 
