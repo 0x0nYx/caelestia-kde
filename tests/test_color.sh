@@ -24,14 +24,28 @@ printf '%s\n' "$*" >> "$MATUGEN_CALLS"
 config=""
 mode="dark"
 meta="{}"
+kind=""
+source=""
 args=("$@")
 for ((i = 0; i < ${#args[@]}; i++)); do
     case "${args[i]}" in
         --config) config="${args[i + 1]}" ;;
         --mode) mode="${args[i + 1]}" ;;
         --import-json-string) meta="${args[i + 1]}" ;;
+        image|json) kind="${args[i]}"; source="${args[i + 1]}" ;;
     esac
 done
+
+# The primary a template is rendered with. An image render derives it, and this stub
+# derives the same fixed palette its scheme template writes; a json render is handed a
+# palette, which is how one the command has scaled reaches the fan out.
+render_primary() {
+    if [[ "$kind" == "json" ]]; then
+        sed -n 's/.*"primary": {"dark": {"color": "#\([0-9a-fA-F]*\)".*/\1/p' "$source"
+    else
+        printf '92cef5'
+    fi
+}
 
 # matugen resolves "smart" itself; this stub always ands up dark.
 [[ "$mode" == "smart" ]] && mode="dark"
@@ -69,7 +83,7 @@ EOF
                 printf '%s' '{"primary": {"50": "227cbb"}, "secondary": {"50": "677987"}, "tertiary": {"50": "6e759f"}, "neutral": {"50": "74777a"}, "neutral_variant": {"50": "71787e"}}' > "$output"
                 ;;
             *)
-                printf 'rendered %s\n' "${input##*/}" > "$output"
+                printf 'primary %s\n' "$(render_primary)" > "$output"
                 ;;
         esac
     fi
@@ -570,6 +584,221 @@ test_turning_the_desktop_apply_off_leaves_it_alone() {
     assert_status 0 "$STATUS" "the scheme is still written for the shell to read"
     assert_file_exists "$XDG_STATE_HOME/caelestia/scheme.json"
     assert_eq "" "$(cat "$KDE_CALLS")" "nothing was applied to the desktop"
+}
+
+# The intensity is a property of the scheme, like the variant: it is written beside
+# the name, read back when the palette is derived again, and read by the shell out of
+# the same file. It lives here rather than in the CLI config because every re-derive -
+# a wallpaper change, the login reseed - goes through these functions and none of them
+# pass a flag.
+intensity_of() {
+    python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["intensity"])' "$1"
+}
+
+test_the_intensity_defaults_to_what_the_engine_produced() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    assert_status 0 "$STATUS" "setting a wallpaper should succeed"
+
+    local scheme="$XDG_STATE_HOME/caelestia/scheme.json"
+    assert_eq "1" "$(intensity_of "$scheme")" "a palette nobody has tuned is at 1"
+
+    local described
+    described="$(python3 - "$scheme" <<'PY' 2>&1
+import json, pathlib, sys
+colours = json.loads(pathlib.Path(sys.argv[1]).read_text())["colours"]
+assert colours["primary"] == "92cef5", colours["primary"]
+assert colours["background"] == "101417", colours["background"]
+print("the render is left alone")
+PY
+)"
+    assert_contains "$described" "the render is left alone" "$described"
+}
+
+test_the_intensity_scales_the_chroma_of_a_generated_palette() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    local plain="$SANDBOX/plain.json"
+    cp "$XDG_STATE_HOME/caelestia/scheme.json" "$plain"
+
+    run_color scheme set -i 1.5
+    assert_status 0 "$STATUS" "setting the intensity should succeed"
+
+    local scheme="$XDG_STATE_HOME/caelestia/scheme.json"
+    assert_eq "1.5" "$(intensity_of "$scheme")" "the factor is recorded in the scheme"
+
+    local described
+    described="$(python3 - "$plain" "$scheme" <<'PY' 2>&1
+import colorsys, json, pathlib, sys
+
+def palette(path):
+    data = json.loads(pathlib.Path(path).read_text())
+    described = {}
+    for role, code in data["colours"].items():
+        rgb = [int(code[i:i + 2], 16) for i in (0, 2, 4)]
+        h, l, s = colorsys.rgb_to_hls(*(channel / 255 for channel in rgb))
+        described[role] = (h * 360, l * 100, s * 100, max(rgb) - min(rgb))
+    return described
+
+before, after = palette(sys.argv[1]), palette(sys.argv[2])
+assert before.keys() == after.keys(), "roles went missing"
+for role, (h0, l0, s0, _) in before.items():
+    h1, l1, s1, chroma = after[role]
+    # One step of the widest channel moves a hue by 60/chroma degrees, so a colour only
+    # holds its hue as tightly as eight bits allow - a dark surface has few levels to spend.
+    # Two degrees is the floor: below that nothing is visible.
+    allowance = max(2.0, 60.0 / chroma) if chroma else 180.0
+    assert abs(h1 - h0) <= allowance, f"{role}: hue moved from {h0} to {h1}"
+    assert abs(l1 - l0) <= 2, f"{role}: lightness moved from {l0} to {l1}"
+    expected = min(100, s0 * 1.5)
+    assert abs(s1 - expected) <= 3, f"{role}: saturation is {s1}, expected about {expected}"
+print(f"{len(before)} roles scaled, hue and tone kept")
+PY
+)"
+    assert_contains "$described" "roles scaled, hue and tone kept" "$described"
+}
+
+test_the_intensity_survives_a_wallpaper_change() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image one.png)"
+    run_color scheme set -i 1.5
+    assert_status 0 "$STATUS" "setting the intensity should succeed"
+
+    run_color wallpaper -f "$(wallpaper_image two.png)"
+    assert_status 0 "$STATUS" "the wallpaper should still be set"
+
+    local scheme="$XDG_STATE_HOME/caelestia/scheme.json"
+    assert_eq "1.5" "$(intensity_of "$scheme")" \
+        "the palette derived from the new wallpaper is at the intensity that was set"
+
+    local described
+    described="$(python3 - "$scheme" <<'PY' 2>&1
+import colorsys, json, pathlib, sys
+colours = json.loads(pathlib.Path(sys.argv[1]).read_text())["colours"]
+r, g, b = (int(colours["onSurface"][i:i + 2], 16) / 255 for i in (0, 2, 4))
+saturation = colorsys.rgb_to_hls(r, g, b)[2] * 100
+assert saturation > 9, f"onSurface is at {saturation}%, which is the unscaled palette"
+print(f"onSurface is at {saturation:.1f}%")
+PY
+)"
+    assert_contains "$described" "onSurface is at" "$described"
+}
+
+test_the_intensity_at_zero_is_a_grey_palette() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    run_color scheme set -i 0
+    assert_status 0 "$STATUS" "a grey palette should be allowed"
+
+    local described
+    described="$(python3 - "$XDG_STATE_HOME/caelestia/scheme.json" <<'PY' 2>&1
+import json, pathlib, sys
+data = json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert data["intensity"] == 0, data["intensity"]
+tinted = [
+    role for role, code in data["colours"].items()
+    if len({code[i:i + 2] for i in (0, 2, 4)}) != 1
+]
+assert not tinted, f"still tinted: {tinted}"
+print(f'{len(data["colours"])} roles, all grey')
+PY
+)"
+    assert_contains "$described" "roles, all grey" "$described"
+}
+
+test_an_intensity_outside_the_range_is_refused() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+
+    local bad
+    for bad in 3 -1 banana ""; do
+        run_color scheme set -i "$bad"
+        assert_status 1 "$STATUS" "-i '$bad' should be refused"
+        assert_ne "" "$OUTPUT" "'$bad' is refused with a reason"
+    done
+
+    run_color scheme set -i 3
+    assert_contains "$OUTPUT" "between 0 and 2" "the range is named"
+    assert_eq "1" "$(intensity_of "$XDG_STATE_HOME/caelestia/scheme.json")" \
+        "the palette keeps the intensity it had"
+}
+
+test_scheme_get_prints_the_intensity() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    run_color scheme set -i 1.25
+    run_color scheme get -i
+    assert_status 0 "$STATUS" "scheme get -i should succeed"
+    assert_eq "1.25" "$OUTPUT" "the intensity comes back"
+}
+
+test_a_preview_shows_the_intensity_it_was_asked_for() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+
+    run_color scheme set --preview -i 1.5
+    assert_status 0 "$STATUS" "the preview should succeed"
+    assert_contains "$OUTPUT" '"intensity": 1.5' "the preview is rendered at the intensity asked for"
+    assert_eq "1" "$(intensity_of "$XDG_STATE_HOME/caelestia/scheme.json")" \
+        "the palette in effect keeps its own intensity"
+}
+
+test_the_whole_desktop_follows_the_intensity_not_just_the_shell() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    assert_status 0 "$STATUS" "setting a wallpaper should succeed"
+
+    local gtk="$XDG_CONFIG_HOME/gtk-3.0/colors.css"
+    local plasma="$XDG_DATA_HOME/color-schemes/Matugen.colors"
+    assert_eq "primary 92cef5" "$(cat "$gtk")" \
+        "at the default intensity the fan out carries what matugen produced"
+
+    run_color scheme set -i 1.5
+    assert_status 0 "$STATUS" "setting the intensity should succeed"
+
+    local scaled
+    scaled="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["colours"]["primary"])' \
+        "$XDG_STATE_HOME/caelestia/scheme.json")"
+    assert_ne "92cef5" "$scaled" "the palette the shell reads was scaled"
+    assert_eq "primary $scaled" "$(cat "$gtk")" \
+        "the fan out was rendered from the scaled palette, not from matugen's own"
+    assert_eq "primary $scaled" "$(cat "$plasma")" \
+        "and so was the scheme the desktop is applied"
+}
+
+test_only_a_palette_that_asks_for_one_is_rendered_twice() {
+    setup_sandbox
+    run_color wallpaper -f "$(wallpaper_image wall.png)"
+    assert_eq "1" "$(grep -c . "$CALLS")" \
+        "the default intensity renders the palette and the fan out in one pass"
+
+    run_color scheme set -i 1.5
+    assert_eq "2" "$(grep -c . "$CALLS")" \
+        "an intensity renders the palette once, then the fan out from what it scaled"
+}
+
+test_a_named_scheme_keeps_the_colors_in_its_file() {
+    setup_sandbox
+    run_color scheme set -n catppuccin -f mocha -m dark -i 1.5
+    assert_status 0 "$STATUS" "the switch should succeed"
+    assert_contains "$OUTPUT" "wallpaper-derived" "the scope of the slider is named"
+
+    local described
+    described="$(python3 - "$XDG_STATE_HOME/caelestia/scheme.json" \
+        "$REPO_ROOT/src/schemes/catppuccin/mocha/dark.txt" <<'PY' 2>&1
+import json, pathlib, sys
+scheme = json.loads(pathlib.Path(sys.argv[1]).read_text())
+source = {}
+for line in pathlib.Path(sys.argv[2]).read_text().splitlines():
+    parts = line.split()
+    if len(parts) == 2:
+        source[parts[0]] = parts[1].lstrip("#")
+assert scheme["colours"] == source, "a named scheme is its file, scaled or not"
+assert scheme["intensity"] == 1.5, "the setting travels with the scheme"
+print("the file is the palette")
+PY
+)"
+    assert_contains "$described" "the file is the palette" "$described"
 }
 
 run_tests

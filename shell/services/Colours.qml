@@ -18,6 +18,9 @@ Singleton {
     property string scheme: "dynamic"
     property string flavour: "default"
     property string variant: "default"
+    // How saturated the palette is, carried by the scheme itself: 1 is what the color
+    // engine produced, and it is what a scheme written before the knob existed reads as.
+    property real intensity: 1.0
     property string previewScheme: ""
     property string previewFlavour: ""
     property string previewVariant: ""
@@ -201,6 +204,11 @@ Singleton {
             root.flavour = (scheme.flavour || "").trim();
             root.variant = (scheme.variant || "").trim();
             root.currentLight = scheme.mode === "light";
+
+            // Absent rather than zero when a scheme predates the knob, and 0 is a real
+            // setting (a grey palette), so this cannot lean on falsiness.
+            const intensity = Number(scheme.intensity);
+            root.intensity = Number.isFinite(intensity) ? intensity : 1.0;
         } else {
             root.previewScheme = (scheme.name || "").trim();
             root.previewFlavour = (scheme.flavour || "").trim();

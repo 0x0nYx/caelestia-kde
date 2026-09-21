@@ -112,5 +112,32 @@ PageBase {
                 onMoved: h => GlobalConfig.services.autoSchemeDarkTime = root.withHour(GlobalConfig.services.autoSchemeDarkTime, h)
             }
         }
+
+        SectionHeader {
+            text: qsTr("Palette")
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
+
+            // Only a finished interaction is rendered: each one is a run of the color engine,
+            // the whole theme fan out and a re-apply of the Plasma scheme. This is also the
+            // one slider here whose value comes back through scheme.json rather than from
+            // GlobalConfig, so there is nothing to write a `moved` to, and the wheel, which
+            // only emits `moved`, deliberately does nothing. It colors the palette derived
+            // from the wallpaper, so it is off while a palette that is its own file is on.
+            SliderRow {
+                first: true
+                last: true
+                Layout.fillWidth: true
+                enabled: Colours.scheme === "dynamic"
+                label: qsTr("Color intensity")
+                subtext: qsTr("Scales the chroma of the wallpaper-derived palette. 100% is what the color engine produces")
+                valueLabel: Math.round(value * 200) + "%"
+                value: Colours.intensity / 2
+                onReleased: v => Quickshell.execDetached(["caelestia", "scheme", "set", "-i", (v * 2).toFixed(2)])
+            }
+        }
     }
 }
