@@ -89,7 +89,9 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
 fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "core" ]]; then
-    if install_cava_sdk arch; then
+    if cava_sdk_installed; then
+        log "CAVA SDK already installed; skipping the release download."
+    elif install_cava_sdk arch; then
         log "Installed prebuilt CAVA SDK from release."
     else
         PACKAGES+=(libcava)
@@ -214,8 +216,7 @@ fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     if [[ "$INSTALL_DARKLY" == "true" ]]; then
-        if ! pacman -Qq darkly-gtk >/dev/null 2>&1 && \
-           [[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" && ! -d "$HOME/.themes/Darkly" && ! -d "/usr/share/themes/Darkly" ]]; then
+        if ! darkly_gtk_installed; then
             log "Installing Darkly GTK theme..."
             yay -S --needed --noconfirm sassc >/dev/null 2>&1 || caelestia_sudo pacman -S --needed --noconfirm sassc >/dev/null 2>&1 || true
             tmpdir="$(mktemp -d)"

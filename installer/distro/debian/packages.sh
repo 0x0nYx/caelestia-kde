@@ -130,20 +130,20 @@ for pkg in "${PACKAGES[@]}"; do
     fi
 done
 
-NEEDED_BATCH_PKGS=()
+MISSING_PKGS=()
 for pkg in "${BATCH_PKGS[@]}"; do
     if ! dpkg -s "$pkg" >/dev/null 2>&1; then
-        NEEDED_BATCH_PKGS+=("$pkg")
+        MISSING_PKGS+=("$pkg")
     fi
 done
 
-if [[ ${#NEEDED_BATCH_PKGS[@]} -gt 0 ]]; then
+if (( ${#MISSING_PKGS[@]} > 0 )); then
     log "Updating apt package index..."
     caelestia_sudo apt-get update || true
-    log "Batch installing missing Debian packages: ${NEEDED_BATCH_PKGS[*]}"
-    if ! caelestia_sudo apt-get install -y --no-install-recommends "${NEEDED_BATCH_PKGS[@]}"; then
+    log "Batch installing missing Debian packages: ${MISSING_PKGS[*]}"
+    if ! caelestia_sudo apt-get install -y --no-install-recommends "${MISSING_PKGS[@]}"; then
         log "Batch install had failures. Retrying standard packages individually..."
-        for pkg in "${NEEDED_BATCH_PKGS[@]}"; do
+        for pkg in "${MISSING_PKGS[@]}"; do
             if ! dpkg -s "$pkg" >/dev/null 2>&1; then
                 caelestia_sudo apt-get install -y --no-install-recommends "$pkg" || {
                     err "apt failed to install $pkg"
@@ -398,8 +398,7 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
         fi
     fi
 
-    if ! dpkg -s darkly-gtk >/dev/null 2>&1 && \
-       [[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" && ! -d "$HOME/.themes/Darkly" && ! -d "/usr/share/themes/Darkly" ]]; then
+    if ! darkly_gtk_installed; then
         log "Installing Darkly GTK theme..."
         caelestia_sudo apt-get install -y sassc || true
         tmpdir="$(mktemp -d)"

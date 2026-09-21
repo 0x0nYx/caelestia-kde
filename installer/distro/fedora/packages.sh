@@ -132,18 +132,18 @@ done
 
 FAILED_PKGS=()
 
-MISSING_BATCH_PKGS=()
+MISSING_PKGS=()
 for pkg in "${BATCH_PKGS[@]}"; do
     if ! rpm -q "$pkg" >/dev/null 2>&1; then
-        MISSING_BATCH_PKGS+=("$pkg")
+        MISSING_PKGS+=("$pkg")
     fi
 done
 
-if (( ${#MISSING_BATCH_PKGS[@]} > 0 )); then
+if (( ${#MISSING_PKGS[@]} > 0 )); then
     log "Installing packages via dnf (batch mode)..."
-    if ! caelestia_sudo dnf install -y "${MISSING_BATCH_PKGS[@]}"; then
+    if ! caelestia_sudo dnf install -y "${MISSING_PKGS[@]}"; then
         log "Batch install had failures. Retrying standard packages individually..."
-        for pkg in "${MISSING_BATCH_PKGS[@]}"; do
+        for pkg in "${MISSING_PKGS[@]}"; do
             if ! rpm -q "$pkg" >/dev/null 2>&1; then
                 if ! caelestia_sudo dnf install -y "$pkg"; then
                     err "dnf failed to install $pkg."
@@ -301,8 +301,7 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
         fi
     fi
 
-    if ! rpm -q darkly-gtk >/dev/null 2>&1 && \
-       [[ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" && ! -d "$HOME/.themes/Darkly" && ! -d "/usr/share/themes/Darkly" ]]; then
+    if ! darkly_gtk_installed; then
         log "Installing Darkly GTK theme..."
         caelestia_sudo dnf install -y sassc || true
         tmpdir="$(mktemp -d)"
