@@ -8,7 +8,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-fs.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/update-state.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/lib/submodules.sh"
 
 export BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SHELL_DIR="$BUNDLE_DIR/shell"
@@ -179,17 +178,19 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
     # A checkout that predates `installer/` being in the sparse-checkout rules needs
     # the path adding before anything can read it. src/bin/caelestia-update owns that
     # list and writes it before it checks the tree out; this is the fallback for the
-    # copies it already deployed, so keep the path name in step with it.
-    if [[ ! -d "$BUNDLE_DIR/installer" && -d "$BUNDLE_DIR/.git" ]]; then
-        if [[ -f "$BUNDLE_DIR/.git/info/sparse-checkout" ]]; then
-            if ! grep -q '^installer/' "$BUNDLE_DIR/.git/info/sparse-checkout" 2>/dev/null; then
-                echo "installer/" >> "$BUNDLE_DIR/.git/info/sparse-checkout"
-            fi
-            if command -v git >/dev/null 2>&1; then
-                git -C "$BUNDLE_DIR" read-tree -mu HEAD 2>/dev/null || \
-                git -C "$BUNDLE_DIR" checkout HEAD -- installer 2>/dev/null || true
-            fi
-        fi
+    # copies it already deployed. Run from the tree so the path git prints resolves
+    # there, and ask git for it: in a linked worktree .git is a file and the rules
+    # live in the main repository instead.
+    if [[ ! -d "$BUNDLE_DIR/installer" ]]; then
+        (
+            cd "$BUNDLE_DIR" || exit 0
+            sparse_file="$(git rev-parse --git-path info/sparse-checkout 2>/dev/null || true)"
+            [[ -n "$sparse_file" && -f "$sparse_file" ]] || exit 0
+
+            grep -q '^installer/' "$sparse_file" 2>/dev/null || echo "installer/" >> "$sparse_file"
+            git read-tree -mu HEAD 2>/dev/null ||
+                git checkout HEAD -- installer 2>/dev/null || true
+        )
     fi
 
     if [[ -f "$BUNDLE_DIR/scripts/02-all-packages.sh" && -d "$BUNDLE_DIR/installer" ]]; then
