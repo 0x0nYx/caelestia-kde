@@ -6,6 +6,8 @@ set -uo pipefail
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/toolchain.sh"
 # shellcheck source=scripts/lib/privileges.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
+# shellcheck source=scripts/lib/packages.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -163,18 +165,13 @@ build_from_source() {
     return 0
 }
 
-MISSING_PKGS=()
-for pkg in "${PACKAGES[@]}"; do
-    if ! pacman -Qq "$pkg" >/dev/null 2>&1; then
-        MISSING_PKGS+=("$pkg")
-    fi
-done
+mapfile -t MISSING_PKGS < <(filter_missing "${PACKAGES[@]}")
 
 if (( ${#MISSING_PKGS[@]} > 0 )); then
     if ! yay -S --needed --noconfirm "${MISSING_PKGS[@]}"; then
         log "Batch install had failures. Retrying individually..."
         for pkg in "${MISSING_PKGS[@]}"; do
-            if pacman -Q "$pkg" >/dev/null 2>&1; then
+            if package_present "$pkg"; then
                 continue
             fi
             if ! yay -S --needed --noconfirm "$pkg"; then
@@ -219,20 +216,7 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
         if ! darkly_gtk_installed; then
             log "Installing Darkly GTK theme..."
             yay -S --needed --noconfirm sassc >/dev/null 2>&1 || caelestia_sudo pacman -S --needed --noconfirm sassc >/dev/null 2>&1 || true
-            tmpdir="$(mktemp -d)"
-            if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
-                (
-                    cd "$tmpdir" || exit 1
-                    ./install.sh -l || {
-                        err "Failed to install Darkly GTK theme."
-                        FAILED_PKGS+=("darkly-gtk")
-                    }
-                ) || FAILED_PKGS+=("darkly-gtk")
-            else
-                err "Failed to clone Darkly GTK theme."
-                FAILED_PKGS+=("darkly-gtk")
-            fi
-            rm -rf "$tmpdir"
+            install_darkly_gtk_theme || FAILED_PKGS+=("darkly-gtk")
         fi
     else
         log "Skipping Darkly GTK theme by user choice."

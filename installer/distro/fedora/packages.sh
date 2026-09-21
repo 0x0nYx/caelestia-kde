@@ -6,6 +6,8 @@ set -uo pipefail
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/toolchain.sh"
 # shellcheck source=scripts/lib/privileges.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
+# shellcheck source=scripts/lib/packages.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -132,19 +134,14 @@ done
 
 FAILED_PKGS=()
 
-MISSING_PKGS=()
-for pkg in "${BATCH_PKGS[@]}"; do
-    if ! rpm -q "$pkg" >/dev/null 2>&1; then
-        MISSING_PKGS+=("$pkg")
-    fi
-done
+mapfile -t MISSING_PKGS < <(filter_missing "${BATCH_PKGS[@]}")
 
 if (( ${#MISSING_PKGS[@]} > 0 )); then
     log "Installing packages via dnf (batch mode)..."
     if ! caelestia_sudo dnf install -y "${MISSING_PKGS[@]}"; then
         log "Batch install had failures. Retrying standard packages individually..."
         for pkg in "${MISSING_PKGS[@]}"; do
-            if ! rpm -q "$pkg" >/dev/null 2>&1; then
+            if ! package_present "$pkg"; then
                 if ! caelestia_sudo dnf install -y "$pkg"; then
                     err "dnf failed to install $pkg."
                     FAILED_PKGS+=("$pkg")
@@ -304,20 +301,7 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
     if ! darkly_gtk_installed; then
         log "Installing Darkly GTK theme..."
         caelestia_sudo dnf install -y sassc || true
-        tmpdir="$(mktemp -d)"
-        if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
-            (
-                cd "$tmpdir" || exit 1
-                ./install.sh -l || {
-                    err "Failed to install Darkly GTK theme."
-                    FAILED_PKGS+=("darkly-gtk")
-                }
-            ) || FAILED_PKGS+=("darkly-gtk")
-        else
-            err "Failed to clone Darkly GTK theme."
-            FAILED_PKGS+=("darkly-gtk")
-        fi
-        rm -rf "$tmpdir"
+        install_darkly_gtk_theme || FAILED_PKGS+=("darkly-gtk")
     fi
 else
     log "Skipping Darkly package installation by user choice."
