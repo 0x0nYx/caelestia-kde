@@ -183,14 +183,17 @@ MIN_INTENSITY = 0.0
 MAX_INTENSITY = 2.0
 
 
-def as_intensity(value: object) -> float:
-    """An intensity read back out of a file, or the default when there is nothing usable.
+def as_intensity(value: str | float | int | None) -> float:
+    """An intensity from the file or the command line, or the default when nothing usable.
 
-    A value outside the range is clamped rather than obeyed: the field lives in a file on
-    disk, and a hand-edited 99 should not be able to render a palette nothing can read.
+    None is the field being absent, a string is what the command line carries, and a number is
+    what the file holds. A value outside the range is clamped rather than obeyed: the field
+    lives in a file on disk, and a hand-edited 99 should not render a palette nothing can read.
     """
+    if value is None:
+        return 1.0
     try:
-        number = float(value)  # type: ignore[arg-type]
+        number = float(value)
     except (TypeError, ValueError):
         return 1.0
     if not math.isfinite(number):
@@ -210,6 +213,9 @@ def scale_saturation(code: str, factor: float) -> str:
     tone, and tone is lightness, so scaling saturation moves the palette without reshaping
     it. At 1 the colour comes back untouched, which is what keeps an untouched scheme byte
     for byte - and what makes the default no change to anyone's colors.
+
+    This is colorsys rather than the `Colour` below, whose hue and saturation are rounded for
+    display: a transform cannot round trip through those without losing channels on the way.
     """
     if factor == 1:
         return code
@@ -490,16 +496,23 @@ SUCCESS_COLORS = {
 }
 
 
-def cmd_merge_palette(scheme_path: str, palettes_path: str) -> int:
-    """Fold the roles matugen cannot name into a scheme it just rendered.
+def cmd_finish_palette(scheme_path: str, palettes_path: str, factor: str) -> int:
+    """Fold the roles matugen cannot name into a render, and put it at the intensity.
 
     The palette key colours come from the same run through a second template: a shade
     cannot be asked for by name in a template, since shades are keyed by number and the
-    template language takes no index.
+    template language takes no index. They are folded in before the scaling rather than
+    after it, because they are colours of this palette and would otherwise be left at a
+    chroma the roles beside them do not have - which is why the two are one step and not
+    two writes of the same file.
+
+    The factor is recorded with the palette, which is what carries it to the next render:
+    the command reads the scheme in effect before it derives one, the way the variant and
+    the mode survive a wallpaper change too.
     """
-    scheme_file = pathlib.Path(scheme_path)
-    data = json.loads(scheme_file.read_text(encoding="utf-8"))
-    colours = data.setdefault("colours", {})
+    scheme = pathlib.Path(scheme_path)
+    data = json.loads(scheme.read_text(encoding="utf-8"))
+    colours = data.get("colours", {})
     palettes = json.loads(pathlib.Path(palettes_path).read_text(encoding="utf-8"))
 
     for role, palette in PALETTE_KEY_COLORS.items():
@@ -513,7 +526,11 @@ def cmd_merge_palette(scheme_path: str, palettes_path: str) -> int:
     if colours.get("onSurface") and not colours.get("text"):
         colours["text"] = colours["onSurface"]
 
-    atomic_write(scheme_file, json.dumps(data))
+    intensity = as_intensity(factor)
+    data["colours"] = {role: scale_saturation(code, intensity) for role, code in colours.items()}
+    data["intensity"] = intensity_json(intensity)
+
+    atomic_write(scheme, json.dumps(data))
     return 0
 
 
@@ -522,24 +539,6 @@ def cmd_meta(path: str) -> int:
     for key in ("name", "flavour", "mode", "variant"):
         print(str(data.get(key, "")).strip())
     print(f"{as_intensity(data.get('intensity')):g}")
-    return 0
-
-
-def cmd_apply_intensity(scheme_path: str, factor: str) -> int:
-    """Scale the palette a render just produced, and record the factor it was scaled at.
-
-    Only a generated palette comes through here; a named scheme is its own file. Recording
-    the factor is also what carries it across a wallpaper change, because the next derive
-    reads the scheme in effect before it renders - the way the variant and the mode survive
-    one too.
-    """
-    path = pathlib.Path(scheme_path)
-    data = json.loads(path.read_text(encoding="utf-8"))
-    value = as_intensity(factor)
-    colours = data.get("colours", {})
-    data["colours"] = {role: scale_saturation(code, value) for role, code in colours.items()}
-    data["intensity"] = intensity_json(value)
-    atomic_write(path, json.dumps(data))
     return 0
 
 
@@ -557,11 +556,6 @@ def cmd_normalise_intensity(value: str) -> int:
         raise SystemExit(f"intensity must be a number between {MIN_INTENSITY:g} and {MAX_INTENSITY:g}, not {value}")
     print(f"{number:g}")
     return 0
-
-
-def cmd_intensity_changes_palette(value: str) -> int:
-    """Whether an intensity asks for anything other than the render matugen produced."""
-    return 1 if as_intensity(value) == 1.0 else 0
 
 
 def cmd_colours_json(path: str) -> int:
@@ -735,12 +729,8 @@ def main(argv: list[str]) -> int:
         return cmd_write_named(*args)
     if command == "read-scheme":
         return cmd_read_scheme(*args)
-    if command == "apply-intensity":
-        return cmd_apply_intensity(*args)
     if command == "normalise-intensity":
         return cmd_normalise_intensity(*args)
-    if command == "intensity-changes-palette":
-        return cmd_intensity_changes_palette(*args)
     if command == "import-scheme":
         return cmd_import_scheme(*args)
     if command == "list-nested":
@@ -751,8 +741,8 @@ def main(argv: list[str]) -> int:
         return cmd_names(*args)
     if command == "pick-mode":
         return cmd_pick_mode(*args)
-    if command == "merge-palette":
-        return cmd_merge_palette(*args)
+    if command == "finish-palette":
+        return cmd_finish_palette(*args)
     if command == "meta":
         return cmd_meta(*args)
     if command == "colours-json":
@@ -914,12 +904,16 @@ meta_string() {
     python3 -c 'import json, sys; print(json.dumps({"name": sys.argv[1], "flavour": sys.argv[2], "variant": sys.argv[3]}))' "$1" "$2" "$3"
 }
 
+# The config comes first so a failure can name the one that was used: there are two of them, and
+# a fan out failure does not come from the palette's.
 run_matugen() {
+    local config="$1"
+    shift
     command -v matugen >/dev/null 2>&1 || die "matugen is not installed; it generates the palette"
-    if ! matugen "$@" > /dev/null 2> "$MATUGEN_LOG"; then
+    if ! matugen "$@" --config "$config" > /dev/null 2> "$MATUGEN_LOG"; then
         err "matugen failed; its output follows"
         cat "$MATUGEN_LOG" >&2
-        err "the config it was given is at $GENERATED_CONFIG"
+        err "the config it was given is at $config"
         return 1
     fi
 }
@@ -928,10 +922,20 @@ smart_variant() {
     py smart-variant "$1"
 }
 
+# Renders from colors that are already decided rather than derived from the wallpaper, by handing
+# them to matugen as data. A named scheme is such a palette, and so is a generated one whose
+# intensity matugen would not have produced by itself.
+render_decided() {
+    local import_json="$1" meta="$2" fan_out="$3"
+    write_matugen_config "$FANOUT_CONFIG" "" "$fan_out"
+    run_matugen "$FANOUT_CONFIG" json "$import_json" --import-json-string "$meta"
+}
+
 # --source-color-index 0 stops matugen asking which color to use.
 render_image() {
     local wallpaper="$1" flavour="$2" mode="$3" variant="$4" smart="$5" fan_out="$6" out="$7"
-    local type mode_arg intensity="${META_INTENSITY:-1}" fan_out_now="${6}" second_pass=false
+    local type mode_arg intensity="${META_INTENSITY:-1}"
+    local fan_out_with_palette="$fan_out" fan_out_after=false
 
     if [[ "$smart" == "true" ]]; then
         mode_arg='smart'
@@ -946,35 +950,33 @@ render_image() {
         mode_arg="$mode"
     fi
 
-    # matugen cannot be asked for a palette it would not have produced itself, so an intensity
-    # that asks for one is scaled and handed back to it for the fan out. Everything that reads
-    # matugen's own colours - the terminals, GTK, Qt, the scheme Plasma is applied - is then on
-    # the same colors as the shell, instead of the desktop being themed at one intensity and
-    # the shell at another. At the default intensity there is nothing to scale and one pass
-    # does all of it, as it always did.
-    if [[ "$fan_out_now" == "true" ]] && py intensity-changes-palette "$intensity"; then
-        fan_out_now=false
-        second_pass=true
+    # Everything that reads matugen's own colors - the terminals, GTK, Qt, the scheme Plasma is
+    # applied - is rendered by the same run as the palette, and matugen cannot be asked for the
+    # palette an intensity asks for. So the palette is rendered and put at that intensity on its
+    # own, and the fan out follows from it, on the colors the shell is given rather than on the
+    # ones matugen would have had. At the default intensity there is nothing to scale and one
+    # pass does all of it, which is what every install does until somebody moves the slider.
+    # Both the command line and the file normalise the value through `%g`, so the default
+    # arrives here as exactly "1".
+    if [[ "$fan_out_with_palette" == "true" && "$intensity" != "1" ]]; then
+        fan_out_with_palette=false
+        fan_out_after=true
     fi
 
-    write_matugen_config "$GENERATED_CONFIG" "$out" "$fan_out_now"
-    run_matugen image "$wallpaper" \
-        --config "$GENERATED_CONFIG" \
+    write_matugen_config "$GENERATED_CONFIG" "$out" "$fan_out_with_palette"
+    run_matugen "$GENERATED_CONFIG" image "$wallpaper" \
         --source-color-index 0 \
         --type "$type" \
         --mode "$mode_arg" \
         --import-json-string "$(meta_string dynamic "$flavour" "$variant")"
 
-    py merge-palette "$out" "$PALETTES_JSON" || die "could not fold the palette key colors in"
-    py apply-intensity "$out" "$intensity" || die "could not apply the color intensity"
+    py finish-palette "$out" "$PALETTES_JSON" "$intensity" \
+        || die "could not render the palette at that intensity"
 
-    if [[ "$second_pass" == "true" ]]; then
-        write_matugen_config "$FANOUT_CONFIG" "" true
+    if [[ "$fan_out_after" == "true" ]]; then
         py import-scheme "$(require_data_dir)" "$out" "$IMPORT_JSON" "$wallpaper" \
             || die "could not read the scaled palette back for the theme fan out"
-        run_matugen json "$IMPORT_JSON" \
-            --config "$FANOUT_CONFIG" \
-            --import-json-string "$(meta_string dynamic "$flavour" "$variant")"
+        render_decided "$IMPORT_JSON" "$(meta_string dynamic "$flavour" "$variant")" true
     fi
 }
 
@@ -985,17 +987,21 @@ render_named() {
 
     py import-json "$data" "$IMPORT_JSON" "$name" "$flavour" "$mode" "$image" \
         || die "no colors for $name/$flavour/$mode"
-    write_matugen_config "$GENERATED_CONFIG" "" "$fan_out"
-    run_matugen json "$IMPORT_JSON" \
-        --config "$GENERATED_CONFIG" \
-        --import-json-string "$(meta_string "$name" "$flavour" "$variant")"
+    render_decided "$IMPORT_JSON" "$(meta_string "$name" "$flavour" "$variant")" "$fan_out"
 
     py write-named "$data" "$out" "$name" "$flavour" "$mode" "$variant" "${META_INTENSITY:-1}"
 }
 
-commit() {
-    mkdir -p "$STATE_DIR"
-    mv -f "$1" "$SCHEME_FILE"
+# The scheme's metadata, in the order `py meta` prints it: name, flavour, mode, variant and the
+# intensity the palette was rendered at. A scheme that is not there yet leaves it all empty,
+# which is what the callers fall back from.
+read_meta() {
+    META_NAME=""
+    META_FLAVOUR=""
+    META_MODE=""
+    META_VARIANT=""
+    META_INTENSITY=""
+    [[ -f "$SCHEME_FILE" ]] || return 0
 
     local line
     local -a fields=()
@@ -1012,30 +1018,15 @@ commit() {
     META_MODE="${fields[2]}"
     META_VARIANT="${fields[3]}"
     META_INTENSITY="${fields[4]}"
-    META_COLOURS="$(py colours-json "$SCHEME_FILE")"
 }
 
-current_meta() {
-    META_NAME=""
-    META_FLAVOUR=""
-    META_MODE=""
-    META_VARIANT=""
-    META_INTENSITY=""
-    META_COLOURS=""
-    [[ -f "$SCHEME_FILE" ]] || return 0
+commit() {
+    mkdir -p "$STATE_DIR"
+    mv -f "$1" "$SCHEME_FILE"
 
-    local line
-    local -a fields=()
-    while IFS= read -r line; do
-        fields+=("$line")
-    done < <(py meta "$SCHEME_FILE")
-    if [[ ${#fields[@]} -eq 5 ]]; then
-        META_NAME="${fields[0]}"
-        META_FLAVOUR="${fields[1]}"
-        META_MODE="${fields[2]}"
-        META_VARIANT="${fields[3]}"
-        META_INTENSITY="${fields[4]}"
-    fi
+    read_meta
+    [[ -n "$META_NAME" ]] || return 0
+    META_COLOURS="$(py colours-json "$SCHEME_FILE")"
 }
 
 # Only a shell on a pty wants the escapes; anything else echoed them.
@@ -1230,11 +1221,19 @@ cmd_scheme_list() {
         return 0
     fi
 
-    current_meta
+    read_meta
     py list-nested "$(require_data_dir)" "${META_MODE:-dark}"
 }
 
 cmd_scheme_get() {
+    # No flags is the whole scheme, which is what a caller that wants everything reads. Asking
+    # for the file rather than counting the flags keeps the flag set out of this expression.
+    if [[ $# -eq 0 && -f "$SCHEME_FILE" ]]; then
+        cat "$SCHEME_FILE"
+        printf '\n'
+        return 0
+    fi
+
     local show_name=0 show_flavour=0 show_mode=0 show_variant=0 show_intensity=0
 
     while [[ $# -gt 0 ]]; do
@@ -1249,14 +1248,7 @@ cmd_scheme_get() {
         esac
     done
 
-    if [[ -f "$SCHEME_FILE" ]] && [[ $show_name -eq 0 && $show_flavour -eq 0 && $show_mode -eq 0 ]] \
-        && [[ $show_variant -eq 0 && $show_intensity -eq 0 ]]; then
-        cat "$SCHEME_FILE"
-        printf '\n'
-        return 0
-    fi
-
-    current_meta
+    read_meta
     ((show_name)) && printf '%s\n' "${META_NAME:-dynamic}"
     ((show_flavour)) && printf '%s\n' "${META_FLAVOUR:-default}"
     ((show_mode)) && printf '%s\n' "${META_MODE:-dark}"
@@ -1267,7 +1259,6 @@ cmd_scheme_get() {
 
 cmd_scheme_set() {
     local name="" flavour="" mode="" variant="" intensity="" random=0 preview=0 notify=0
-    local intensity_set=0
     local data
 
     while [[ $# -gt 0 ]]; do
@@ -1276,7 +1267,7 @@ cmd_scheme_set() {
             -f|--flavour) flavour="${2:-}"; [[ -n "$flavour" ]] || die "-f needs a flavour"; shift 2 ;;
             -m|--mode) mode="${2:-}"; [[ -n "$mode" ]] || die "-m needs a mode"; shift 2 ;;
             -v|--variant) variant="${2:-}"; [[ -n "$variant" ]] || die "-v needs a variant"; shift 2 ;;
-            -i|--intensity) intensity="${2:-}"; [[ -n "$intensity" ]] || die "-i needs an intensity"; intensity_set=1; shift 2 ;;
+            -i|--intensity) intensity="${2:-}"; [[ -n "$intensity" ]] || die "-i needs an intensity"; shift 2 ;;
             -r|--random) random=1; shift ;;
             -P|--preview) preview=1; shift ;;
             --notify) notify=1; shift ;;
@@ -1291,20 +1282,18 @@ cmd_scheme_set() {
     if [[ -n "$variant" ]] && ! variant_type "$variant" >/dev/null; then
         die "unknown variant: $variant"
     fi
-    if ((intensity_set)); then
-        intensity="$(py normalise-intensity "$intensity")"
-    fi
-
-    current_meta
+    read_meta
     [[ -n "$name" ]] || name="${META_NAME:-dynamic}"
     [[ -n "$flavour" ]] || flavour="${META_FLAVOUR:-default}"
     [[ -n "$mode" ]] || mode="${META_MODE:-dark}"
     [[ -n "$variant" ]] || variant="${META_VARIANT:-tonalspot}"
 
-    # The knob is carried by the scheme like the variant is, so it is read out of the scheme
-    # in effect and handed to the render that follows. A preview is rendered at it without
-    # being written back, since recording it is the render's own job.
-    if ((intensity_set)); then
+    # The knob is carried by the scheme like the variant is, so it is read out of the scheme in
+    # effect unless this command was given one. Then it is checked here, before anything is
+    # rendered, and handed to the render, which records it; a preview is rendered at it without
+    # it being written back.
+    if [[ -n "$intensity" ]]; then
+        intensity="$(py normalise-intensity "$intensity")"
         META_INTENSITY="$intensity"
     fi
 
@@ -1324,7 +1313,7 @@ cmd_scheme_set() {
 
     # A named scheme is its own file, so there is nothing here for the knob to scale. Say so
     # rather than leaving a change that did nothing unexplained.
-    if ((intensity_set)) && [[ "$name" != "dynamic" ]]; then
+    if [[ -n "$intensity" && "$name" != "dynamic" ]]; then
         warn "$name keeps the colors in its file; the intensity colors the wallpaper-derived palette"
     fi
 
@@ -1430,7 +1419,7 @@ cmd_wallpaper() {
     done
 
     ((no_smart)) && smart="false"
-    current_meta
+    read_meta
 
     if ((print)); then
         local source="$print_path"

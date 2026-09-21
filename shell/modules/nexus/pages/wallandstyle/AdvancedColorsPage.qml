@@ -117,27 +117,19 @@ PageBase {
             text: qsTr("Palette")
         }
 
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 0
-
-            // Only a finished interaction is rendered: each one is a run of the color engine,
-            // the whole theme fan out and a re-apply of the Plasma scheme. This is also the
-            // one slider here whose value comes back through scheme.json rather than from
-            // GlobalConfig, so there is nothing to write a `moved` to, and the wheel, which
-            // only emits `moved`, deliberately does nothing. It colors the palette derived
-            // from the wallpaper, so it is off while a palette that is its own file is on.
-            SliderRow {
-                first: true
-                last: true
-                Layout.fillWidth: true
-                enabled: Colours.scheme === "dynamic"
-                label: qsTr("Color intensity")
-                subtext: qsTr("Scales the chroma of the wallpaper-derived palette. 100% is what the color engine produces")
-                valueLabel: Math.round(value * 200) + "%"
-                value: Colours.intensity / 2
-                onReleased: v => Quickshell.execDetached(["caelestia", "scheme", "set", "-i", (v * 2).toFixed(2)])
-            }
+        // A finished interaction is rendered, not every step of one, since each is a run of the
+        // color engine, the theme fan out and a re-apply of the Plasma scheme. That is also why
+        // `moved` is unhandled, and why the wheel - which emits only `moved` - does not reach
+        // this slider: a wheel notch is not the deliberate act that letting go of a drag is.
+        SliderRow {
+            first: true
+            last: true
+            enabled: Colours.scheme === "dynamic"
+            label: qsTr("Color intensity")
+            subtext: enabled ? qsTr("Chroma of the wallpaper-derived palette. 100% is what the color engine produces") : qsTr("%1 keeps the colors in its file; this scales the wallpaper-derived palette").arg(Colours.scheme)
+            valueLabel: Math.round(value * Colours.maxIntensity * 100) + "%"
+            value: Colours.intensityFraction
+            onReleased: v => Colours.setIntensity(v)
         }
     }
 }

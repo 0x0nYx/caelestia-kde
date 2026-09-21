@@ -36,12 +36,12 @@ for ((i = 0; i < ${#args[@]}; i++)); do
     esac
 done
 
-# The primary a template is rendered with. An image render derives it, and this stub
-# derives the same fixed palette its scheme template writes; a json render is handed a
-# palette, which is how one the command has scaled reaches the fan out.
+# The primary a template is rendered with. An image render derives it, and this stub derives
+# the same fixed palette its scheme template writes; a json render is handed a palette, which
+# is how one the command has scaled reaches the fan out.
 render_primary() {
     if [[ "$kind" == "json" ]]; then
-        sed -n 's/.*"primary": {"dark": {"color": "#\([0-9a-fA-F]*\)".*/\1/p' "$source"
+        python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["colors"]["primary"]["dark"]["color"].lstrip("#"))' "$source"
     else
         printf '92cef5'
     fi
@@ -375,8 +375,12 @@ test_the_generated_config_follows_the_user_config() {
     run_color scheme set -n catppuccin -f mocha -m dark
     assert_status 0 "$STATUS" "the switch should succeed with a config file"
 
-    local config="$XDG_STATE_HOME/caelestia/matugen/config.toml"
+    # A named scheme is rendered from its own palette rather than derived from the wallpaper, so
+    # the config it is rendered through is the fan out one; the targets it lists are the point.
+    local config="$XDG_STATE_HOME/caelestia/matugen/fanout.toml"
     assert_file_exists "$config"
+    assert_contains "$(cat "$config")" "btop.theme" "an enabled target is in the config"
+    assert_not_contains "$(cat "$config")" "gtk-colors.css" "a disabled target is not"
     assert_file_missing "$XDG_CONFIG_HOME/gtk-3.0/colors.css"
     assert_file_missing "$XDG_CONFIG_HOME/gtk-4.0/colors.css"
     assert_file_exists "$XDG_CONFIG_HOME/btop/themes/matugen.theme"
@@ -592,7 +596,12 @@ test_turning_the_desktop_apply_off_leaves_it_alone() {
 # a wallpaper change, the login reseed - goes through these functions and none of them
 # pass a flag.
 intensity_of() {
-    python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["intensity"])' "$1"
+    python3 -c 'import json, pathlib, sys; print(json.loads(pathlib.Path(sys.argv[1]).read_text())["intensity"])' "$1"
+}
+
+# A role's colour in the scheme the command wrote, as the shell reads it.
+colour_of() {
+    python3 -c 'import json, pathlib, sys; print(json.loads(pathlib.Path(sys.argv[1]).read_text())["colours"][sys.argv[2]])' "$1" "$2"
 }
 
 test_the_intensity_defaults_to_what_the_engine_produced() {
@@ -618,8 +627,6 @@ PY
 test_the_intensity_scales_the_chroma_of_a_generated_palette() {
     setup_sandbox
     run_color wallpaper -f "$(wallpaper_image wall.png)"
-    local plain="$SANDBOX/plain.json"
-    cp "$XDG_STATE_HOME/caelestia/scheme.json" "$plain"
 
     run_color scheme set -i 1.5
     assert_status 0 "$STATUS" "setting the intensity should succeed"
@@ -627,35 +634,27 @@ test_the_intensity_scales_the_chroma_of_a_generated_palette() {
     local scheme="$XDG_STATE_HOME/caelestia/scheme.json"
     assert_eq "1.5" "$(intensity_of "$scheme")" "the factor is recorded in the scheme"
 
+    # The render's own colors with their saturation scaled by 1.5 and their hue and tone held,
+    # worked out from the definitions rather than by running this command, so this checks it
+    # rather than echoing it. 92cef5 reaches full saturation on the way, which is the clamp.
     local described
-    described="$(python3 - "$plain" "$scheme" <<'PY' 2>&1
-import colorsys, json, pathlib, sys
+    described="$(python3 - "$scheme" <<'PY' 2>&1
+import json, pathlib, sys
 
-def palette(path):
-    data = json.loads(pathlib.Path(path).read_text())
-    described = {}
-    for role, code in data["colours"].items():
-        rgb = [int(code[i:i + 2], 16) for i in (0, 2, 4)]
-        h, l, s = colorsys.rgb_to_hls(*(channel / 255 for channel in rgb))
-        described[role] = (h * 360, l * 100, s * 100, max(rgb) - min(rgb))
-    return described
-
-before, after = palette(sys.argv[1]), palette(sys.argv[2])
-assert before.keys() == after.keys(), "roles went missing"
-for role, (h0, l0, s0, _) in before.items():
-    h1, l1, s1, chroma = after[role]
-    # One step of the widest channel moves a hue by 60/chroma degrees, so a colour only
-    # holds its hue as tightly as eight bits allow - a dark surface has few levels to spend.
-    # Two degrees is the floor: below that nothing is visible.
-    allowance = max(2.0, 60.0 / chroma) if chroma else 180.0
-    assert abs(h1 - h0) <= allowance, f"{role}: hue moved from {h0} to {h1}"
-    assert abs(l1 - l0) <= 2, f"{role}: lightness moved from {l0} to {l1}"
-    expected = min(100, s0 * 1.5)
-    assert abs(s1 - expected) <= 3, f"{role}: saturation is {s1}, expected about {expected}"
-print(f"{len(before)} roles scaled, hue and tone kept")
+colours = json.loads(pathlib.Path(sys.argv[1]).read_text())["colours"]
+expected = {
+    "background": "0e1419",
+    "onSurface": "dce6f0",
+    "surface": "080f14",
+    "primary": "88d0ff",
+    "term0": "303a43",
+}
+wrong = {role: (colours.get(role), code) for role, code in expected.items() if colours.get(role) != code}
+assert not wrong, f"scaled colors differ (rendered, expected): {wrong}"
+print(f"{len(expected)} roles at saturation x1.5")
 PY
 )"
-    assert_contains "$described" "roles scaled, hue and tone kept" "$described"
+    assert_contains "$described" "roles at saturation x1.5" "$described"
 }
 
 test_the_intensity_survives_a_wallpaper_change() {
@@ -757,8 +756,7 @@ test_the_whole_desktop_follows_the_intensity_not_just_the_shell() {
     assert_status 0 "$STATUS" "setting the intensity should succeed"
 
     local scaled
-    scaled="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["colours"]["primary"])' \
-        "$XDG_STATE_HOME/caelestia/scheme.json")"
+    scaled="$(colour_of "$XDG_STATE_HOME/caelestia/scheme.json" primary)"
     assert_ne "92cef5" "$scaled" "the palette the shell reads was scaled"
     assert_eq "primary $scaled" "$(cat "$gtk")" \
         "the fan out was rendered from the scaled palette, not from matugen's own"
@@ -766,7 +764,7 @@ test_the_whole_desktop_follows_the_intensity_not_just_the_shell() {
         "and so was the scheme the desktop is applied"
 }
 
-test_only_a_palette_that_asks_for_one_is_rendered_twice() {
+test_a_default_intensity_still_renders_in_one_pass() {
     setup_sandbox
     run_color wallpaper -f "$(wallpaper_image wall.png)"
     assert_eq "1" "$(grep -c . "$CALLS")" \
