@@ -763,7 +763,9 @@ class InstallerTests(unittest.TestCase):
         08-build-shell.sh runs on its own when a checkout updates itself. A script in none
         of them is dead weight that every other check still reports as covered; a list
         entry with no file fails at install time instead of here. The step numbers are not
-        an order: the TUI runs 00-backup-themes after 02a-submodules, deliberately.
+        an order: the TUI runs 00-backup-themes after 02a-submodules, deliberately. The
+        lists differ in failure policy - the installer stops, the update path warns and
+        carries on - so only their membership is comparable, which is all this checks.
         """
         runner_text = (ROOT / "installer" / "tui" / "Runner.cpp").read_text(encoding="utf-8")
         packaged_text = (ROOT / "src" / "bin" / "caelestia").read_text(encoding="utf-8")

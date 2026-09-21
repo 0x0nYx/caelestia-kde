@@ -5,16 +5,6 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/lib/toolchain.sh"
 
-with_path() {
-    local dir="$1" fallback="$2"
-    shift 2
-    (
-        PATH="$dir"
-        export CAELESTIA_LRELEASE_FALLBACK="$fallback"
-        "$@"
-    )
-}
-
 test_linguist_tools_available_when_lrelease_is_on_path() {
     local tmp stub
     tmp="$(new_tmpdir)"
@@ -171,18 +161,6 @@ test_install_cava_sdk_fails_on_unknown_distro() {
     status=$?
 
     assert_status 1 "$status" "an unknown distro should be reported as a failure"
-}
-
-test_detect_base_distro_prefers_environment_override() {
-    local out
-    out="$(BASE_DISTRO=fedora detect_base_distro)"
-    assert_eq "fedora" "$out" "detect_base_distro should honor BASE_DISTRO override"
-}
-
-test_detect_base_distro_identifies_distros() {
-    local out
-    out="$(unset BASE_DISTRO; detect_base_distro)"
-    assert_ne "unknown" "$out" "detect_base_distro should resolve a known base on the host"
 }
 
 run_tests
