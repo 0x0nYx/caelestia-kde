@@ -219,6 +219,49 @@ class ScriptNumberingTests(unittest.TestCase):
             )
 
 
+class InstallerEnvironmentTests(unittest.TestCase):
+    """The TUI reads its directories from the environment, and HOME is optional here.
+
+    POSIX does not promise HOME. UI.cpp already treats it as optional for its state
+    directory, but three other call sites built a std::string straight from
+    getenv("HOME"), and libstdc++ throws std::logic_error ("basic_string: construction
+    from null is not valid") on a null pointer rather than yielding an empty string.
+    That aborts the installer: in Runner::execute before the first step runs, and again
+    on the success path in phase 5. Nothing executes the TUI - no test, no CI job - so
+    only reading the source catches it. Every caller now goes through xdg_cache_dir()
+    in Globals.cpp, which is where the checked form lives.
+    """
+
+    TUI = ROOT / "installer" / "tui"
+    # A direct argument to string()/std::string(), with or without the "std::" prefix. A
+    # ternary whose condition is itself a getenv() call counts too: it is the false
+    # branch that decides what gets constructed.
+    UNCHECKED_GETENV = re.compile(r"\bstring\(\s*(?:std::)?getenv\(")
+
+    def tui_sources(self) -> list[Path]:
+        return sorted(self.TUI.glob("*.cpp"))
+
+    def test_the_tui_sources_are_where_this_expects_them(self) -> None:
+        """Keeps the check below from passing just because it read no files."""
+        names = [path.name for path in self.tui_sources()]
+        self.assertIn("main.cpp", names)
+        self.assertIn("Runner.cpp", names)
+
+    def test_no_string_is_constructed_from_an_unchecked_getenv(self) -> None:
+        offenders = []
+        for path in self.tui_sources():
+            text = path.read_text(encoding="utf-8")
+            for number, line in enumerate(text.splitlines(), start=1):
+                if self.UNCHECKED_GETENV.search(line):
+                    offenders.append(f"{path.relative_to(ROOT).as_posix()}:{number}")
+
+        self.assertEqual(
+            offenders,
+            [],
+            "string is built from getenv() without checking the pointer for null:",
+        )
+
+
 if __name__ == "__main__":
     suite = unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     result = unittest.TextTestRunner(verbosity=2).run(suite)
