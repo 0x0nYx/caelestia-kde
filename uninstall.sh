@@ -4,21 +4,13 @@ set -uo pipefail
 
 BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/log.sh"
-
-# The tree can be half gone by the time this runs, so the shared helpers are treated
-# as optional: without them there is no distro to name - the question below asks the
-# user instead - and no escalation helper, so plain sudo it is.
 LIB_DIR="$(dirname "${BASH_SOURCE[0]}")/scripts/lib"
-if [[ -f "$LIB_DIR/packages.sh" ]]; then
-    # shellcheck source=scripts/lib/packages.sh
-    source "$LIB_DIR/packages.sh"
-    # shellcheck source=scripts/lib/privileges.sh
-    source "$LIB_DIR/privileges.sh"
-else
-    BASE_DISTRO="${BASE_DISTRO:-unknown}"
-    caelestia_sudo() { sudo "$@"; }
-fi
+
+source "$LIB_DIR/log.sh"
+# shellcheck source=scripts/lib/packages.sh
+source "$LIB_DIR/packages.sh"
+# shellcheck source=scripts/lib/privileges.sh
+source "$LIB_DIR/privileges.sh"
 
 section() {
     local title="$1"
@@ -790,7 +782,7 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         brightnessctl ddcutil tesseract tesseract-langpack-eng
         bat ripgrep jq trash-cli inotify-tools
         ImageMagick sassc xdg-utils xdg-user-dirs spectacle
-        adw-gtk3-theme papirus-icon-theme darkly darkly-gtk
+        adw-gtk3-theme papirus-icon-theme darkly
         google-rubik-fonts
     )
 
