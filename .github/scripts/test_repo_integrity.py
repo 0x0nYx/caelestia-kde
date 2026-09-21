@@ -796,6 +796,28 @@ class InstallerTests(unittest.TestCase):
             "Step list(s) reference script(s) that do not exist in scripts/:",
         )
 
+    def test_the_update_fallback_sparsifies_only_paths_the_updater_writes(self) -> None:
+        """08-build-shell.sh adds to the sparse-checkout list src/bin/caelestia-update owns.
+
+        The updater writes that list before it checks the tree out, so a helper cannot
+        live in the tree and be called from there: the two name the same paths twice.
+        This is what stops the second copy from drifting to a path nothing sparsifies,
+        which would leave the fallback silently doing nothing.
+        """
+        updater = (ROOT / "src" / "bin" / "caelestia-update").read_text(encoding="utf-8")
+        build = (ROOT / "scripts" / "08-build-shell.sh").read_text(encoding="utf-8")
+
+        owned = set(re.findall(r'echo "([^"]+)" >+ \.git/info/sparse-checkout', updater))
+        added = set(re.findall(r'echo "([^"]+)" >> "\$sparse_file"', build))
+
+        self.assertTrue(owned, "caelestia-update should still write the sparse-checkout list")
+        self.assertTrue(added, "08-build-shell.sh should still name the path it adds")
+        self.assertEqual(
+            sorted(added - owned),
+            [],
+            "08-build-shell.sh sparsifies path(s) caelestia-update never writes:",
+        )
+
 
 class InstallStepSafetyTests(unittest.TestCase):
     """Ordering and wiring invariants for the install/update step scripts.
