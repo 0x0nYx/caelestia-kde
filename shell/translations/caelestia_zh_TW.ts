@@ -336,12 +336,12 @@
       <translation>固定時間</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location line="+27"/>
       <source>Advanced Colors</source>
       <translation>高階顏色</translation>
     </message>
     <message>
-      <location line="+16"/>
+      <location line="+25"/>
       <source>Theme Automation</source>
       <translation>主題自動化</translation>
     </message>
@@ -399,6 +399,26 @@
       <location line="+1"/>
       <source>Switches at %1, also used when sunrise and sunset are unavailable</source>
       <translation>在 %1 時切換；不可用日出日落時也使用此時間</translation>
+    </message>
+    <message>
+      <location line="+9"/>
+      <source>Palette</source>
+      <translation type="unfinished">Palette</translation>
+    </message>
+    <message>
+      <location line="+10"/>
+      <source>Color intensity</source>
+      <translation type="unfinished">Color intensity</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Chroma of the wallpaper-derived palette, at 100% by default</source>
+      <translation type="unfinished">Chroma of the wallpaper-derived palette, at 100% by default</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>%1 keeps its own colors, so this does not apply</source>
+      <translation type="unfinished">%1 keeps its own colors, so this does not apply</translation>
     </message>
   </context>
   <context>
@@ -7111,6 +7131,11 @@
       <location line="+1"/>
       <source>Advanced color settings</source>
       <translation>高階顏色設定</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Color intensity</source>
+      <translation type="unfinished">Color intensity</translation>
     </message>
     <message>
       <location line="+1"/>

@@ -328,32 +328,32 @@
     <message>
       <location filename="../modules/nexus/pages/wallandstyle/AdvancedColorsPage.qml" line="+19"/>
       <source>Sunrise and sunset</source>
-      <translation type="unfinished">Sunrise and sunset</translation>
+      <translation>Lever et coucher de soleil</translation>
     </message>
     <message>
       <location line="+3"/>
       <source>Fixed times</source>
-      <translation type="unfinished">Fixed times</translation>
+      <translation>Heure fixe</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location line="+27"/>
       <source>Advanced Colors</source>
-      <translation type="unfinished">Advanced Colors</translation>
+      <translation>Couleurs avancées</translation>
     </message>
     <message>
-      <location line="+16"/>
+      <location line="+25"/>
       <source>Theme Automation</source>
-      <translation type="unfinished">Theme Automation</translation>
+      <translation>Automatisation du Thème</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Smart color scheme</source>
-      <translation type="unfinished">Smart color scheme</translation>
+      <translation>Schéma de couleurs intelligent</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Automatically select color variants and theme mode</source>
-      <translation type="unfinished">Automatically select color variants and theme mode</translation>
+      <translation>Sélectionner automatiquement les variantes de couleurs et le mode de thème</translation>
     </message>
     <message>
       <location line="+7"/>
@@ -368,37 +368,57 @@
     <message>
       <location line="+9"/>
       <source>Schedule</source>
-      <translation type="unfinished">Schedule</translation>
+      <translation>Calendrier</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Sunrise and sunset use your weather location</source>
-      <translation type="unfinished">Sunrise and sunset use your weather location</translation>
+      <translation>Le lever et le coucher du soleil utilisent votre localisation météo</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Set a weather location to use sunrise and sunset</source>
-      <translation type="unfinished">Set a weather location to use sunrise and sunset</translation>
+      <translation>Définir une position météo pour utiliser le lever et le coucher du soleil</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Light mode hour</source>
-      <translation type="unfinished">Light mode hour</translation>
+      <translation>Horaire du mode clair</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switches at %1</source>
-      <translation type="unfinished">Switches at %1</translation>
+      <translation>Changements à %1</translation>
     </message>
     <message>
       <location line="+11"/>
       <source>Dark mode hour</source>
-      <translation type="unfinished">Dark mode hour</translation>
+      <translation>Horaire du mode sombre</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Switches at %1, also used when sunrise and sunset are unavailable</source>
       <translation type="unfinished">Switches at %1, also used when sunrise and sunset are unavailable</translation>
+    </message>
+    <message>
+      <location line="+9"/>
+      <source>Palette</source>
+      <translation type="unfinished">Palette</translation>
+    </message>
+    <message>
+      <location line="+10"/>
+      <source>Color intensity</source>
+      <translation type="unfinished">Color intensity</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Chroma of the wallpaper-derived palette, at 100% by default</source>
+      <translation type="unfinished">Chroma of the wallpaper-derived palette, at 100% by default</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>%1 keeps its own colors, so this does not apply</source>
+      <translation type="unfinished">%1 keeps its own colors, so this does not apply</translation>
     </message>
   </context>
   <context>
@@ -780,37 +800,37 @@
     <message>
       <location filename="../modules/launcher/items/AppContextMenu.qml" line="+56"/>
       <source>Unpin from dock</source>
-      <translation type="unfinished">Unpin from dock</translation>
+      <translation>Désépingler du dock</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Pin to dock</source>
-      <translation type="unfinished">Pin to dock</translation>
+      <translation>Épingler au dock</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>Remove from desktop</source>
-      <translation type="unfinished">Remove from desktop</translation>
+      <translation>Supprimer du bureau</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Add to desktop</source>
-      <translation type="unfinished">Add to desktop</translation>
+      <translation>Ajouter au bureau</translation>
     </message>
     <message>
       <location line="+25"/>
       <source>Show in launcher</source>
-      <translation type="unfinished">Show in launcher</translation>
+      <translation>Afficher dans le lanceur</translation>
     </message>
     <message>
       <location line="+0"/>
       <source>Hide app</source>
-      <translation type="unfinished">Hide app</translation>
+      <translation>Masquer l'application</translation>
     </message>
     <message>
       <location line="+18"/>
       <source>App info</source>
-      <translation type="unfinished">App info</translation>
+      <translation>Infos sur l'application</translation>
     </message>
   </context>
   <context>
@@ -823,12 +843,12 @@
     <message>
       <location line="+47"/>
       <source>Taskbar &amp; Dock</source>
-      <translation type="unfinished">Taskbar &amp; Dock</translation>
+      <translation>Barre des tâches et Dock</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Pin to dock</source>
-      <translation type="unfinished">Pin to dock</translation>
+      <translation>Épingler au dock</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -863,7 +883,7 @@
     <message>
       <location line="+11"/>
       <source>Hidden</source>
-      <translation>Hidden</translation>
+      <translation>Masqué</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -960,12 +980,12 @@
     <message>
       <location line="+20"/>
       <source>Font</source>
-      <translation>Font</translation>
+      <translation>Police</translation>
     </message>
     <message>
       <location line="+10"/>
       <source>Monospace font</source>
-      <translation>Monospace font</translation>
+      <translation>Police mono</translation>
     </message>
     <message>
       <location line="+18"/>
@@ -1730,12 +1750,12 @@
     <message>
       <location line="+12"/>
       <source>Add to right zone</source>
-      <translation type="unfinished">Add to right zone</translation>
+      <translation>Ajouter à la zone de droite</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>Disable component</source>
-      <translation type="unfinished">Disable component</translation>
+      <translation>Désactive le composant</translation>
     </message>
     <message>
       <location line="+183"/>
@@ -1828,22 +1848,22 @@
     <message>
       <location line="+7"/>
       <source>Filter by current desktop</source>
-      <translation type="unfinished">Filter by current desktop</translation>
+      <translation>Filtrer par bureau actuel</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Only show applications and windows belonging to the active virtual desktop</source>
-      <translation type="unfinished">Only show applications and windows belonging to the active virtual desktop</translation>
+      <translation>Afficher uniquement les applications et les fenêtres appartenant au bureau virtuel actif</translation>
     </message>
     <message>
       <location line="+8"/>
       <source>Preview window on desktop</source>
-      <translation type="unfinished">Preview window on desktop</translation>
+      <translation>Prévisualiser la fenêtre sur le bureau</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Highlight and show the window itself on the workspace while hovering over dock previews</source>
-      <translation type="unfinished">Highlight and show the window itself on the workspace while hovering over dock previews</translation>
+      <translation>Mettre en surbrillance et afficher la fenêtre elle-même sur l'espace de travail en survolant les aperçus du dock</translation>
     </message>
   </context>
   <context>
@@ -2551,7 +2571,7 @@
     <message>
       <location line="+149"/>
       <source>%1%</source>
-      <translation type="unfinished">%1%</translation>
+      <translation>%1%</translation>
     </message>
     <message>
       <location line="+0"/>
@@ -2671,7 +2691,7 @@
     <message>
       <location line="+54"/>
       <source>%1%</source>
-      <translation type="unfinished">%1%</translation>
+      <translation>%1%</translation>
     </message>
     <message>
       <location line="+58"/>
@@ -3079,7 +3099,7 @@
     <message>
       <location filename="../modules/nexus/common/CommitRow.qml" line="+50"/>
       <source>%1 • %2</source>
-      <translation type="unfinished">%1 • %2</translation>
+      <translation>%1 • %2</translation>
     </message>
   </context>
   <context>
@@ -4129,17 +4149,17 @@
     <message>
       <location line="+1"/>
       <source>The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</source>
-      <translation type="unfinished">The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</translation>
+      <translation>Le dock de la barre des tâches prend désormais en charge le filtrage des applications et ouvre des fenêtres sur le bureau virtuel actif, parallèlement à la mise en évidence de la fenêtre en direct sur votre espace de travail lorsque vous passez au-dessus des vignettes du dock. Configurez les deux sous Paramètres -&gt; Panneaux -&gt; Barre des tâches -&gt; Dock.</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Color Engine &amp; Theme Automation</source>
-      <translation type="unfinished">Color Engine &amp; Theme Automation</translation>
+      <translation>Moteur de couleur et Automatisation du thème</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</source>
-      <translation type="unfinished">Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</translation>
+      <translation>Caelestia est maintenant doté d'un pipeline de couleur natif haute performance utilisant la maturité Kde-material-you-color a été enlevé. Les variantes de couleur basculant automatiquement au tonal dans certaines conditions ont été fixées.</translation>
     </message>
   </context>
   <context>
@@ -4537,12 +4557,12 @@
     <message>
       <location filename="../modules/nexus/common/Ipv4ConfigSection.qml" line="+98"/>
       <source>IPv4</source>
-      <translation type="unfinished">IPv4</translation>
+      <translation>IPv4</translation>
     </message>
     <message>
       <location line="+9"/>
       <source>IP assignment</source>
-      <translation type="unfinished">IP assignment</translation>
+      <translation>Affectation IP</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -4553,27 +4573,27 @@
     <message>
       <location line="+6"/>
       <source>Automatic, DNS only</source>
-      <translation type="unfinished">Automatic, DNS only</translation>
+      <translation>Automatique, DNS uniquement</translation>
     </message>
     <message>
       <location line="+6"/>
       <source>Manual</source>
-      <translation type="unfinished">Manual</translation>
+      <translation>Manuel</translation>
     </message>
     <message>
       <location line="+84"/>
       <source>Address (CIDR)</source>
-      <translation type="unfinished">Address (CIDR)</translation>
+      <translation>Adresse (CIDR)</translation>
     </message>
     <message>
       <location line="+2"/>
       <source>IP and prefix, e.g. 192.168.1.50/24</source>
-      <translation type="unfinished">IP and prefix, e.g. 192.168.1.50/24</translation>
+      <translation>IP et préfixe, par exemple 192.168.1.50/24</translation>
     </message>
     <message>
       <location line="+1"/>
       <source>Enter a valid address in CIDR notation</source>
-      <translation type="unfinished">Enter a valid address in CIDR notation</translation>
+      <translation>Entrez une adresse valide en notation CIDR</translation>
     </message>
     <message>
       <location line="+9"/>
@@ -7111,6 +7131,11 @@
       <location line="+1"/>
       <source>Advanced color settings</source>
       <translation type="unfinished">Advanced color settings</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Color intensity</source>
+      <translation type="unfinished">Color intensity</translation>
     </message>
     <message>
       <location line="+1"/>
