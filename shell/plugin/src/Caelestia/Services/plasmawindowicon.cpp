@@ -55,6 +55,8 @@ PlasmaWindowIcon::PlasmaWindowIcon(QObject* parent)
     connect(PlasmaWindows::instance(), &PlasmaWindows::handleLost, this, [this](const QString& uuid) {
         m_resolved.remove(uuid);
         m_inFlight.remove(uuid);
+        // The window closed before its icon arrived, so no answer is coming.
+        emit failed(uuid);
     });
 }
 
@@ -74,6 +76,7 @@ void PlasmaWindowIcon::request(const QString& uuid) {
 
     auto* handle = PlasmaWindows::instance()->handleFor(key);
     if (!handle) {
+        emit failed(key);
         return;
     }
 
@@ -83,6 +86,7 @@ void PlasmaWindowIcon::request(const QString& uuid) {
     int fds[2];
     if (::pipe2(fds, O_CLOEXEC | O_NONBLOCK) != 0) {
         qCWarning(logPlasmaWindowIcon) << "could not create a pipe for" << key;
+        emit failed(key);
         return;
     }
 
@@ -125,6 +129,7 @@ void PlasmaWindowIcon::request(const QString& uuid) {
 
 void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
     if (payload.isEmpty()) {
+        emit failed(uuid);
         return;
     }
 
@@ -133,11 +138,13 @@ void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
     stream >> icon;
     if (stream.status() != QDataStream::Ok || icon.isNull()) {
         qCDebug(logPlasmaWindowIcon) << "no usable icon for" << uuid;
+        emit failed(uuid);
         return;
     }
 
     const auto image = largestPixmap(icon);
     if (image.isNull()) {
+        emit failed(uuid);
         return;
     }
 
@@ -146,6 +153,7 @@ void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
     buffer.open(QIODevice::WriteOnly);
     if (!image.save(&buffer, "PNG")) {
         qCWarning(logPlasmaWindowIcon) << "could not encode icon for" << uuid;
+        emit failed(uuid);
         return;
     }
     buffer.close();
@@ -162,6 +170,7 @@ void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
         QFile file(path);
         if (!QDir().mkpath(cacheRoot) || !file.open(QIODevice::WriteOnly) || file.write(png) != png.size()) {
             qCWarning(logPlasmaWindowIcon) << "could not write icon cache for" << uuid << "to" << path;
+            emit failed(uuid);
             return;
         }
     }

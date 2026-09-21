@@ -70,6 +70,28 @@ Singleton {
         }
     }
 
+    // Drop the wait for `uuid` once it has been answered either way. `retry`
+    // also clears the key's "already tried" mark, which is the only thing that
+    // lets a window whose extraction produced nothing be asked for again, and
+    // it stops a later window reusing that pid from inheriting the failure.
+    // The mark is kept once a path exists, because it may be another window's
+    // icon registered under the same key.
+    function finishWait(uuid: string, retry: bool): void {
+        const key = root._awaiting[uuid];
+        if (!uuid || !key)
+            return;
+
+        const a = Object.assign({}, root._awaiting);
+        delete a[String(uuid)];
+        root._awaiting = a;
+
+        if (retry && !root.paths[key]) {
+            const t = Object.assign({}, root.tried);
+            delete t[key];
+            root.tried = t;
+        }
+    }
+
     // Record a freshly extracted icon. Reassigning a copy is what notifies the
     // bindings that read paths[...] — mutating in place would not.
     function register(key: string, path: string): void {
@@ -118,8 +140,15 @@ Singleton {
         // The uuid comes back normalised, which is also how it was stored.
         function onResolved(uuid: string, path: string): void {
             const key = root._awaiting[uuid];
+            root.finishWait(uuid, false);
             if (key)
                 root.register(key, path);
+        }
+
+        // No icon came back for this window. Release the wait and let the key
+        // be tried again rather than remembered as a dead end.
+        function onFailed(uuid: string): void {
+            root.finishWait(uuid, true);
         }
 
         target: PlasmaWindowIcon
