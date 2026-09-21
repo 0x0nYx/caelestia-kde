@@ -4073,93 +4073,53 @@
     <name>Entries</name>
     <message>
       <location filename="../modules/whatsnew/Entries.qml" line="+23"/>
-      <source>Window Switcher Add-ons</source>
-      <translation>Complementos alternativos de janela</translation>
+      <source>Window Rules Out of the Box</source>
+      <translation type="unfinished">Window Rules Out of the Box</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The window switcher now runs on a KWin-native backend, and window previews are cached so they appear instantly. Its own page under Settings -&gt; Panels -&gt; Window Switcher adds filtering by current desktop, minimized windows, windows from all screens, a live preview on the workspace, and a switch to turn it off entirely.</source>
-      <translation>O alternador de janela agora é executado em um backend nativo do KWin, e as pré-visualizações de janelas são armazenadas em cache para que apareçam instantaneamente. Sua própria página em Configurações -&gt; Painéis -&gt; Seletor de Janela adiciona filtragem pela área de trabalho atual, janelas minimizadas, janelas de todas as telas, uma visualização ao vivo na área de trabalho, e um interruptor para desativá-la completamente.</translation>
+      <source>The installer now writes three KWin rules: unfocused windows and dialogs dim to 95 percent, dialogs open centered, and picture-in-picture windows stay above others. Only Caelestia&apos;s own groups are written, so your rules keep their names and their order. Edit or remove them under System Settings -&gt; Window Rules, or let uninstall.sh take them out again.</source>
+      <translation type="unfinished">The installer now writes three KWin rules: unfocused windows and dialogs dim to 95 percent, dialogs open centered, and picture-in-picture windows stay above others. Only Caelestia&apos;s own groups are written, so your rules keep their names and their order. Edit or remove them under System Settings -&gt; Window Rules, or let uninstall.sh take them out again.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Notifications on Any Screen</source>
-      <translation>Notificações em qualquer tela</translation>
+      <source>Right-Click Any App</source>
+      <translation type="unfinished">Right-Click Any App</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>Notification popups can now follow the screen they belong to instead of always using the focused one, and the shell can stay quiet while a fullscreen app is focused. Both live in Settings -&gt; Services -&gt; Notifications, as &apos;Display on screen&apos; and &apos;Show in fullscreen&apos;.</source>
-      <translation>Notificações popups agora podem seguir a tela a que pertencem ao invés de sempre usar a focalizada. e o shell pode ficar em silêncio enquanto um aplicativo em tela cheia estiver em foco. Ambos estão em Configurações -&gt; Serviços -&gt; Notificações, como &apos;Exibir na tela&apos; e &apos;Mostrar em tela cheia&apos;.</translation>
+      <source>An app in the launcher or its app browser now opens a context menu on right click: pin it to the dock, add it to the desktop, hide it from the launcher, or open it in the menu editor. The dock&apos;s pinned list is its own setting now (bar.dock.pinnedApps) instead of borrowing the launcher&apos;s favorites, and an existing list is carried over.</source>
+      <translation type="unfinished">An app in the launcher or its app browser now opens a context menu on right click: pin it to the dock, add it to the desktop, hide it from the launcher, or open it in the menu editor. The dock&apos;s pinned list is its own setting now (bar.dock.pinnedApps) instead of borrowing the launcher&apos;s favorites, and an existing list is carried over.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>GIF Recording</source>
-      <translation>Gravação GIF</translation>
+      <source>Status Icons You Can Arrange</source>
+      <translation type="unfinished">Status Icons You Can Arrange</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The screen recorder can capture a region straight to an animated GIF. Choose Record GIF from the recorder menu - it is enabled by default and can be switched off under Settings -&gt; Utilities -&gt; Utilities panel.</source>
-      <translation type="unfinished">The screen recorder can capture a region straight to an animated GIF. Choose Record GIF from the recorder menu - it is enabled by default and can be switched off under Settings -&gt; Utilities -&gt; Utilities panel.</translation>
+      <source>The bar&apos;s status icons are an ordered list now instead of a wall of switches: add one, switch it off, or drag it into place under Settings -&gt; Panels -&gt; Taskbar -&gt; Status icons, and the bar draws them in that order. The clock can show seconds, and the workspace indicator can hide the ones that are empty and inactive.</source>
+      <translation type="unfinished">The bar&apos;s status icons are an ordered list now instead of a wall of switches: add one, switch it off, or drag it into place under Settings -&gt; Panels -&gt; Taskbar -&gt; Status icons, and the bar draws them in that order. The clock can show seconds, and the workspace indicator can hide the ones that are empty and inactive.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>SDDM Theme Out of the Box</source>
-      <translation>Tema SDDM fora da caixa</translation>
+      <source>Game Mode at a Tap</source>
+      <translation type="unfinished">Game Mode at a Tap</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The Material You login screen, with wallpaper and color sync, is now installed by default, so the greeter matches your desktop from the first boot. It remains optional in the installer for anyone who prefers the stock theme.</source>
-      <translation>A tela Material You de login, com plano de fundo e sincronização de cor, agora está instalada por padrão, então o greeter corresponde ao seu desktop na primeira inicialização. Ele permanece opcional no instalador para qualquer pessoa que prefira o tema de estoque.</translation>
+      <source>The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -&gt; Services -&gt; Game mode.</source>
+      <translation type="unfinished">The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -&gt; Services -&gt; Game mode.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Audio-Reactive Desktop Shapes</source>
-      <translation>Formas de Área de Trabalho Audio-Reativa</translation>
+      <source>Color Intensity</source>
+      <translation type="unfinished">Color Intensity</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The media visualiser is now a set of audio-reactive material shapes, and it can live on the wallpaper as well as in the dashboard. Turn on &apos;Desktop media shapes&apos; under Settings -&gt; Desktop -&gt; Desktop Addons and let it auto-hide while a window is open.</source>
-      <translation>O visualizador de mídia é agora um conjunto de formas de material reativo de áudio e pode viver no papel de parede, bem como no painel. Ative as formas de mídia &apos;Desktop&apos; em Configurações -&gt; Desktop -&gt; Desktop Addons e deixe que a janela seja aberta.</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Chinese Translations</source>
-      <translation>Traduções Chinesas</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>The shell now ships Simplified and Traditional Chinese catalogues, so the interface follows your language instead of staying English. Pick one from Settings -&gt; Language &amp; region.</source>
-      <translation>A concha agora envia catálogos chineses simplificados e tradicionais, então a interface segue o seu idioma ao invés de ficar inglês. Escolha uma das Configurações -&gt; Idioma e região.</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>A New Name and Look</source>
-      <translation>Um novo nome e aparência</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.</source>
-      <translation>Agora o projeto é uma caelestikde. O repositório, suas referências e o trabalho artístico foram renomeados e colocados em uma paleta e um logotipo. Suas configurações e configurações estão intocadas.</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Dock Desktop Filtering &amp; Live Previews</source>
-      <translation type="unfinished">Dock Desktop Filtering &amp; Live Previews</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</source>
-      <translation type="unfinished">The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Color Engine &amp; Theme Automation</source>
-      <translation type="unfinished">Color Engine &amp; Theme Automation</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</source>
-      <translation type="unfinished">Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</translation>
+      <source>Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and &apos;caelestia scheme set -i&apos; sets it from the command line.</source>
+      <translation type="unfinished">Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and &apos;caelestia scheme set -i&apos; sets it from the command line.</translation>
     </message>
   </context>
   <context>
