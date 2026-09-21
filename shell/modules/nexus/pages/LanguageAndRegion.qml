@@ -411,6 +411,8 @@ PageBase {
             last: true
             label: qsTr("Clock format")
             subtext: qsTr("How times are shown across the shell")
+            // Last row on the page, so the list has to open upwards or it clips.
+            menuOnTop: true
             menuItems: root.clockItems
             active: root.clockItems[GlobalConfig.services.useTwelveHourClock ? 1 : 0]
             onSelected: item => GlobalConfig.services.useTwelveHourClock = root.clockItems.indexOf(item) === 1
