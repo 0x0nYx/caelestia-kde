@@ -7,7 +7,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 # shellcheck source=scripts/lib/toolchain.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
 
-export BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
+export BASE_DISTRO="$(detect_base_distro)"
 
 is_cachyos() {
     local os_id=""
