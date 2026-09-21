@@ -26,7 +26,12 @@ install_kind() {
 }
 
 install_is_packaged() {
-    [[ "$(install_kind)" == "package" ]]
+    # install_kind reports failure when it cannot tell where it was sourced from, and a
+    # failure is not an answer: passing it on keeps the caller from reading "not a
+    # package" into a question that was never answered.
+    local kind
+    kind="$(install_kind)" || return 1
+    [[ "$kind" == "package" ]]
 }
 
 install_lib_dir() {
