@@ -1,22 +1,14 @@
 #!/usr/bin/env bash
-# 04-deploy-kde.sh  Apply KDE Plasma settings: Darkly theme, Kvantum,
-#                    5 virtual desktops, disable KDE OSDs.
 
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/js.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
-
-# Applies:
-#   - Plasma style:      Darkly
-#   - Application style: Darkly (via kvantum-dark as engine)
-#   - Window decoration: Darkly
-#   - Kvantum theme:     MaterialAdw (from repo-base .config/Kvantum)
-#   - 5 virtual desktops with Meta+1..0 / Meta+Shift+1..0 shortcuts
-#   - KDE OSD disabled (volume/brightness popups)
+source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 
 BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
 
-# True when a Darkly KWin decoration is actually installed and loadable.
 darkly_decoration_installed() {
     local plugin_dir
     plugin_dir="$(qtpaths6 --plugin-dir 2>/dev/null || true)"
@@ -26,30 +18,35 @@ darkly_decoration_installed() {
     [[ -f "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3/org.kde.darkly.so" ]]
 }
 
+patch_breeze_login_wallpaper() {
+    local image="$1"
+    # No sudo check here: caelestia_sudo has its own escalation paths (askpass, pkexec),
+    # and the edit is best-effort either way.
+    if ! install_is_packaged &&
+        [[ -f /usr/share/sddm/themes/breeze/theme.conf ]]; then
+        caelestia_sudo sed -i "s|^background=.*|background=$image|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
+    fi
+}
+
 echo
 echo ""
 info "Applying KDE settings"
 echo ""
 
-#  Darkly Theme
 if [[ "${APPLY_DARKLY:-true}" == "true" ]]; then
-    #  Darkly: Plasma style
     info "Applying Darkly plasma style..."
     kwriteconfig6 --file plasmarc --group "Theme" --key "name" "darkly" 2>/dev/null || true
 
-    # Ensure desktoptheme path is resolvable regardless of case
     if [[ -d "/usr/share/plasma/desktoptheme/darkly" ]]; then
         mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/plasma/desktoptheme"
         ln -sfn "/usr/share/plasma/desktoptheme/darkly" "${XDG_DATA_HOME:-$HOME/.local/share}/plasma/desktoptheme/Darkly" 2>/dev/null || true
         ln -sfn "/usr/share/plasma/desktoptheme/darkly" "${XDG_DATA_HOME:-$HOME/.local/share}/plasma/desktoptheme/darkly" 2>/dev/null || true
     fi
 
-    #  Darkly: Application style (Qt widget style)
     info "Applying Darkly application style..."
     kwriteconfig6 --file kdeglobals --group "KDE" --key "widgetStyle" "darkly" 2>/dev/null || true
     kwriteconfig6 --file kdeglobals --group "General" --key "ColorScheme" "Darkly" 2>/dev/null || true
 
-    #  Darkly: Window decoration
     info "Applying Darkly window decoration..."
     if darkly_decoration_installed; then
         kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" \
@@ -57,8 +54,6 @@ if [[ "${APPLY_DARKLY:-true}" == "true" ]]; then
         kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" \
             --key "theme" "@darkly" 2>/dev/null || true
     else
-        # kwriteconfig6 can't tell whether a decoration is loadable, so check
-        # ourselves and fall back to Breeze when Darkly isn't installed.
         kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" \
             --key "library" "org.kde.breeze" 2>/dev/null || true
         kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" \
@@ -69,7 +64,6 @@ else
     skip "Skipping Darkly theme"
 fi
 
-# ── 3. Apply via lookandfeeltool if Darkly LNF exists (Fonts included) ────────
 if [[ "${APPLY_FONTS:-true}" == "true" ]]; then
     if command -v lookandfeeltool >/dev/null 2>&1; then
         if [[ "${APPLY_DARKLY:-true}" == "true" ]]; then
@@ -85,7 +79,6 @@ else
     skip "Skipping custom fonts application."
 fi
 
-#  Cliphist Service
 info "Setting up cliphist background service..."
 mkdir -p "$HOME/.config/systemd/user"
 cat > "$HOME/.config/systemd/user/cliphist.service" << 'EOF'
@@ -108,10 +101,6 @@ ok "Cliphist background service enabled."
 
 ok "KDE settings applied."
 
-#  Set Default Wallpaper
-# Prefer the dharmx "digital" pack (downloaded by 03a-wallpapers.sh) when it
-# is present; otherwise keep the bundled Minimal-Paper.png fallback so a fresh
-# install still has a wallpaper even with no network.
 if [[ -n "${CAELESTIA_WALLPAPERS_DIR:-}" ]]; then
     WALLS_DIR="$CAELESTIA_WALLPAPERS_DIR"
 elif [[ -n "${XDG_PICTURES_DIR:-}" ]]; then
@@ -131,34 +120,48 @@ if [[ -f "$PACK_DEFAULT" ]]; then
 else
     WALLPAPER_PATH="$FALLBACK_PATH"
 fi
-info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
-if [[ -f "$WALLPAPER_PATH" ]]; then
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+WALLPAPER_IN_USE=""
+if [[ -s "$STATE_DIR/wallpaper/path.txt" ]]; then
+    WALLPAPER_IN_USE="$(cat "$STATE_DIR/wallpaper/path.txt" 2>/dev/null || true)"
+fi
+
+if [[ -n "$WALLPAPER_IN_USE" && -f "$WALLPAPER_IN_USE" ]]; then
+    skip "Keeping the wallpaper in use: $(basename "$WALLPAPER_IN_USE")"
+
+    if command -v qdbus6 >/dev/null 2>&1; then
+        WALLPAPER_URL="$(js_string "file://$WALLPAPER_IN_USE")"
+        qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+            var allDesktops = desktops();
+            for (i=0; i < allDesktops.length; i++) {
+                d = allDesktops[i];
+                d.wallpaperPlugin = 'org.kde.image';
+                d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
+                d.writeConfig('Image', '$WALLPAPER_URL');
+            }
+        " 2>/dev/null || true
+    fi
+
+    patch_breeze_login_wallpaper "$WALLPAPER_IN_USE"
+elif [[ -f "$WALLPAPER_PATH" ]]; then
+    info "Setting default wallpaper to $(basename "$WALLPAPER_PATH")..."
+    WALLPAPER_URL="$(js_string "file://$WALLPAPER_PATH")"
     qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
         var allDesktops = desktops();
         for (i=0; i < allDesktops.length; i++) {
             d = allDesktops[i];
             d.wallpaperPlugin = 'org.kde.image';
             d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
-            d.writeConfig('Image', 'file://' + '$WALLPAPER_PATH');
+            d.writeConfig('Image', '$WALLPAPER_URL');
         }
     " 2>/dev/null || true
-    # Save it for Caelestia, in the state dir the shell actually reads.
-    STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
     mkdir -p "$STATE_DIR/wallpaper"
     echo "$WALLPAPER_PATH" > "$STATE_DIR/wallpaper/path.txt"
 
-    # Now that the new wallpaper is set (desktop + shell state), mirror it onto
-    # the KDE lock screen so both match out of the box, even before the
-    # lockscreen proxy takes over.
     if command -v kwriteconfig6 >/dev/null 2>&1; then
         kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin "org.kde.image" 2>/dev/null || true
         kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "file://$WALLPAPER_PATH" 2>/dev/null || true
     fi
 
-    # Mirror it onto the SDDM login screen too, so the logout screen matches.
-    # The breeze theme reads its background from its package-owned theme.conf,
-    # so patch that in place; a package update may revert it until the next run.
-    if [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] && command -v sudo >/dev/null 2>&1; then
-        sudo sed -i "s|^background=.*|background=$WALLPAPER_PATH|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
-    fi
+    patch_breeze_login_wallpaper "$WALLPAPER_PATH"
 fi

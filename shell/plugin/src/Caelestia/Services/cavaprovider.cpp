@@ -1,11 +1,15 @@
 #include "cavaprovider.hpp"
 
+#include <qloggingcategory.h>
+
+#include <cava/cavacore.h>
+
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+
 #include "audiocollector.hpp"
 #include "audioprovider.hpp"
-#include <cava/cavacore.h>
-#include <cstddef>
-#include <cmath>
-#include <qloggingcategory.h>
 
 Q_LOGGING_CATEGORY(lcCava, "caelestia.services.cava", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcCavaProcessor, "caelestia.services.cava.processor", QtInfoMsg)
@@ -34,6 +38,21 @@ void CavaProcessor::process() {
     }
 
     const int count = static_cast<int>(AudioCollector::instance().readChunk(m_in));
+
+    // Silence is a full FFT for a row of zeros, and an idle desktop captures nothing else, so the
+    // visualiser used to run cava for the life of the session to draw the same flat line. Settle
+    // the bars to zero once and skip the analysis until there is something to analyse; cava keeps
+    // the sensitivity it had, which is what the first audible frame wants.
+    if (isSilent(m_in, static_cast<std::size_t>(count))) {
+        if (std::any_of(m_values.cbegin(), m_values.cend(), [](double value) {
+                return value != 0.0;
+            })) {
+            m_frameValues.fill(0.0);
+            m_values.fill(0.0);
+            emit valuesChanged(m_values);
+        }
+        return;
+    }
 
     // Process in data via cava
     cava_execute(m_in, count, m_out, m_plan);
@@ -115,7 +134,8 @@ void CavaProcessor::initCava() {
     constexpr int highCutoff = 10000;
 
 #ifdef CAVA_SCALING_LINEAR
-    m_plan = cava_init(m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff, CAVA_SCALING_LINEAR);
+    m_plan = cava_init(
+        m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff, CAVA_SCALING_LINEAR);
 #else
     m_plan = cava_init(m_bars, ac::SAMPLE_RATE, channels, autosens, noiseReduction, lowCutoff, highCutoff);
 #endif

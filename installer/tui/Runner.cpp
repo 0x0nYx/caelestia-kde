@@ -22,13 +22,10 @@
 
 using namespace std;
 
-// Signal flags defined in main.cpp (global scope, not in any namespace).
 extern volatile sig_atomic_t g_sigint_received;
 extern volatile sig_atomic_t g_sigterm_received;
 
 namespace {
-// Spinner frame for the running step's status glyph. Advanced on each poll
-// timeout so the Install screen shows ongoing activity.
 static size_t g_spin_frame = 0;
 
 std::string env_val(const char* name) {
@@ -38,8 +35,6 @@ std::string env_val(const char* name) {
 
 bool env_is_true(const char* name) { return env_val(name) == "true"; }
 
-// Reads the log bytes appended since start_offset so a step's own output
-// segment can be scanned for warning markers.
 bool log_tail_since(const std::string& log_path, long start_offset,
                     std::string& out) {
   FILE* f = fopen(log_path.c_str(), "rb");
@@ -61,8 +56,6 @@ bool log_tail_since(const std::string& log_path, long start_offset,
   return true;
 }
 
-// Forks a bash step script with stdout/stderr appended to the shared install
-// log, so the terminal stays reserved for the TUI.
 pid_t spawn_step(const string& script_path, int log_fd) {
   pid_t child = fork();
   if (child < 0)
@@ -73,19 +66,13 @@ pid_t spawn_step(const string& script_path, int log_fd) {
       dup2(log_fd, STDOUT_FILENO);
       dup2(log_fd, STDERR_FILENO);
     }
-    // stdbuf forces line buffering on the redirected stdout/stderr, so each
-    // log line reaches the file (and the live log view) as it is printed
-    // instead of sitting in a 4 KiB stdio buffer until the step ends.
     execlp("stdbuf", "stdbuf", "-oL", "-eL", "bash", script_path.c_str(),
            static_cast<char*>(nullptr));
-    // Fall back to plain bash if stdbuf is unavailable (e.g. minimal image).
     execlp("bash", "bash", script_path.c_str(), static_cast<char*>(nullptr));
     _exit(127);
   }
   return child;
 }
-// Menu answers are authoritative; they are exported to the environment only
-// after the review screen, so the review screen must read them directly.
 bool answer_is_true(const char* name) {
   auto it = g_answers.find(name);
   if (it != g_answers.end())
@@ -93,8 +80,6 @@ bool answer_is_true(const char* name) {
   return env_is_true(name);
 }
 
-// Reads the last `max_lines` lines of the log (ANSI stripped). The log can be
-// large and is appended live, so only a fixed tail is read.
 bool read_log_tail(const std::string& log_path, size_t max_lines,
                    std::vector<std::string>& out) {
   out.clear();
@@ -128,7 +113,6 @@ bool read_log_tail(const std::string& log_path, size_t max_lines,
   return true;
 }
 
-// Animated status glyph for the currently running step.
 string spin_glyph() {
   static const char* frames[] = {"[/]", "[-]", "[\\]", "[|]"};
   return frames[g_spin_frame % 4];
@@ -142,8 +126,6 @@ const vector<Phase> phases = {
     {"finalize", "Finalize"},
 };
 
-// The backup step runs inside Prepare, before any package or config change,
-// so the phase story reads true: snapshot, then install.
 vector<Step> steps = {
     {"Refresh mirrors", "scripts/00-refresh-mirrors.sh", "PENDING", "prepare"},
     {"Update system", "scripts/00a-system-update.sh", "PENDING", "prepare"},
@@ -161,6 +143,8 @@ vector<Step> steps = {
     {"Download wallpapers", "scripts/03a-wallpapers.sh", "PENDING",
      "configure"},
     {"Apply KDE theme", "scripts/04-deploy-kde.sh", "PENDING", "configure"},
+    {"Apply window rules", "scripts/04a-window-rules.sh", "PENDING",
+     "configure"},
     {"Install SDDM theme", "scripts/05-sddm-theme.sh", "PENDING",
      "configure"},
     {"Enable system services", "scripts/06-services.sh", "PENDING",
@@ -202,8 +186,6 @@ string show_error_dialog(const string &step_name, const string &script_path,
   int selected = 0;
   vector<string> opts = {"Retry", "Ignore", "Exit"};
 
-  // Split the captured output into lines and keep only the last few so the
-  // dialog fits on screen while still showing the actual error.
   vector<string> detail;
   {
     string line;
@@ -460,8 +442,7 @@ void execute() {
 
   setenv("CONFIRM_ARG", "--noconfirm", 1);
 
-  // One shared install log: every step appends to it, and the live log view
-  // tails it from the Install screen.
+  // One shared install log: every step appends, and the live view tails it.
   string log_path = cache_dir + "/install.log";
   int log_fd = open(log_path.c_str(),
                     O_WRONLY | O_CREAT | O_TRUNC | O_APPEND | O_CLOEXEC, 0644);
@@ -472,12 +453,8 @@ void execute() {
     exit(1);
   }
 
-  // Live log view state. The log view is a persistent display *mode* rather
-  // than a blocking screen (as log_view() is): while it is open the step loop
-  // below keeps polling the child and advancing to later steps, so watching
-  // the full log never stalls the install. It stays open across step
-  // boundaries until the user presses L/Tab/Esc to return to the progress
-  // screen.
+  // The log view is a display mode, not a blocking screen: the step loop keeps polling and
+  // advancing while it is open, so watching the full log never stalls the install.
   bool log_open = false;
   UI::LogViewState log_state;
 
@@ -491,8 +468,7 @@ void execute() {
   retry_step:
     if (step_is_skipped(steps[i])) {
       steps[i].status = "SKIPPED";
-      // Keep the shared log a complete record (and the live view readable)
-      // when a step is gated off by configuration.
+      // Keep the shared log a complete record when a step is gated off.
       dprintf(log_fd, "\n[CAELESTIA] %s (skipped)\n", steps[i].name.c_str());
       if (log_open) {
         UI::log_view_tick(log_path, log_state);
@@ -505,8 +481,7 @@ void execute() {
     steps[i].status = "RUNNING";
     show_progress(i);
 
-    // Record where this step's log output starts so its own segment can be
-    // scanned for [WARN] markers afterwards.
+    // Where this step's output starts, so its segment can be scanned for [WARN] afterwards.
     long start_offset = 0;
     if (log_fd >= 0) {
       struct stat st {};
@@ -533,10 +508,8 @@ void execute() {
       exit(1);
     }
 
-    // Poll the child, redraw on resize, and let the user toggle the live
-    // log view while the step runs. The log view is non-blocking here: the
-    // loop keeps calling waitpid beneath it, so the running step finishes and
-    // the next one starts even while the full log is on screen.
+    // Polls the child, redraws on resize, and lets the user toggle the log view. waitpid keeps
+    // running beneath it, so the step finishes and the next starts with the full log open.
     int child_status = 0;
     while (true) {
       pid_t r = waitpid(child, &child_status, WNOHANG);
@@ -561,15 +534,14 @@ void execute() {
         exit(130);
       }
 
-      // Poll faster while the live log is open so its tail stays smooth; in
-      // progress mode the longer timeout paces the spinner.
+      // Polls faster with the live log open so its tail stays smooth; in progress mode the
+      // longer timeout paces the spinner.
       string key = Input::wait_key(log_open ? 100 : 200);
 
       bool closed_log = false;
       if (key == "l" || key == "L" || key == "KEY_shift_tab" ||
           (log_open && key == "escape")) {
-        // Toggle the full-screen log. Opening resets scroll state so the view
-        // follows the newest output; closing returns to the progress screen.
+        // Toggles the full-screen log; opening resets scroll so the view follows the newest output.
         log_open = !log_open;
         if (log_open) {
           log_state = UI::LogViewState();
@@ -584,8 +556,7 @@ void execute() {
       if (log_open) {
         UI::log_view_tick(log_path, log_state);
       } else if (closed_log || g_resized || key.empty()) {
-        // Advance the spinner on each poll timeout so the running step shows
-        // ongoing activity.
+        // Advance the spinner each poll timeout so a running step shows activity.
         if (key.empty())
           g_spin_frame++;
         draw_progress_ui(i);
@@ -595,8 +566,7 @@ void execute() {
     int exit_code = WIFEXITED(child_status) ? WEXITSTATUS(child_status) : 1;
 
     if (exit_code == 0) {
-      // A step can succeed while still reporting non-fatal problems; scan
-      // its own output segment for [WARN] markers and surface WARN.
+      // A step can succeed while reporting non-fatal problems; scan its output for [WARN].
       string delta;
       bool warned = log_fd >= 0 &&
                     log_tail_since(log_path, start_offset, delta) &&
@@ -633,9 +603,8 @@ void execute() {
     close(log_fd);
 
   if (log_open) {
-    // Every step is done. Hand the (now static) log to the blocking viewer so
-    // the user can review the whole install before the summary screen; nothing
-    // is left running to stall, so blocking here is fine.
+    // Every step is done, so the (now static) log can go to the blocking viewer: nothing is
+    // left running to stall.
     UI::log_view(log_path);
   } else {
     draw_progress_ui(steps.size());

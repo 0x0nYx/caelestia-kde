@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2024 ladybug-me
 # SPDX-License-Identifier: GPL-3.0-or-later
-#
-# sysinfo.py — Caelestia lockscreen system info provider
-#
-# Outputs a single JSON line with: os, wm, user, uptime, id, logoPath
-# Called via Plasma5Support.DataSource (executable engine) from LockScreenUi.qml.
-# Extracted from the inline python3 -c one-liner to avoid shell-command
-# concatenation in a pre-auth context (security review fix).
 
 import json
 import os
@@ -30,16 +23,21 @@ def find_logo(logo_id: str) -> str:
 
 
 def read_os_release() -> dict:
-    """Parse /etc/os-release into a dict, stripping surrounding quotes."""
+    """Parse /etc/os-release into a dict, stripping surrounding quotes.
+
+    Read as UTF-8 with replacement: the file is display text, and this runs inside the
+    lock screen's data source, where a UnicodeDecodeError would blank the rows instead of
+    showing a name - with no way for the user to see why.
+    """
     result = {}
     try:
-        with open("/etc/os-release") as f:
+        with open("/etc/os-release", encoding="utf-8", errors="replace") as f:
             for line in f:
                 line = line.strip()
                 if "=" in line:
                     k, v = line.split("=", 1)
                     result[k] = v.strip('"')
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         pass
     return result
 

@@ -161,7 +161,7 @@ Item {
         anchors.margins: root.padding
         anchors.bottomMargin: CUtils.clamp(root.padding - Config.border.thickness, 0, root.padding)
 
-        implicitHeight: Math.max(searchIcon.implicitHeight, search.implicitHeight, clearClipboardIcon.implicitHeight, clearIcon.implicitHeight)
+        implicitHeight: Math.max(searchIcon.implicitHeight, search.implicitHeight, clearClipboardIcon.implicitHeight, clearIcon.implicitHeight, commandsBtn.implicitHeight)
 
         MaterialIcon {
             id: searchIcon
@@ -223,7 +223,7 @@ Item {
                     list.currentList?.incrementCurrentIndex();
             }
             Keys.onLeftPressed: event => {
-                if (list.showWallpapers) {
+                if (list.showWallpapers || list.showWindowSwitcher) {
                     list.currentList?.decrementCurrentIndex();
                     event.accepted = true;
                 } else if (list.showAppsBrowser) {
@@ -234,7 +234,7 @@ Item {
                 }
             }
             Keys.onRightPressed: event => {
-                if (list.showWallpapers) {
+                if (list.showWallpapers || list.showWindowSwitcher) {
                     list.currentList?.incrementCurrentIndex();
                     event.accepted = true;
                 } else if (list.showAppsBrowser) {
@@ -246,12 +246,13 @@ Item {
             }
 
             Keys.onEscapePressed: {
-                KWinActiveWindowBridge.clearHighlight();
+                Windows.isSwitching = false;
+                Kwin.clearHighlight();
                 root.visibilities.launcher = false;
             }
 
             Keys.onReleased: event => {
-                if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
+                if (Windows.isSwitching && text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
                     const switcherKey = (typeof KeybindsModel !== "undefined" && KeybindsModel.getKey("windowSwitcher")) || "Alt+Tab";
                     if (!CUtils.isShortcutModifierPressed(switcherKey)) {
                         Windows.focusSelectedWindow();
@@ -262,7 +263,7 @@ Item {
             }
 
             Keys.onPressed: event => {
-                if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
+                if (Windows.isSwitching && text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
                     if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
                         if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Backtab) {
                             Windows.triggerCyclePrev();
@@ -282,13 +283,15 @@ Item {
                         event.accepted = true;
                         return;
                     }
-                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                         Windows.focusSelectedWindow();
                         root.visibilities.launcher = false;
                         event.accepted = true;
                         return;
                     }
                     if (event.key === Qt.Key_Escape) {
+                        Windows.isSwitching = false;
+                        Kwin.clearHighlight();
                         root.visibilities.launcher = false;
                         event.accepted = true;
                         return;
@@ -321,6 +324,13 @@ Item {
                 }
             }
 
+            onTextChanged: {
+                if (!text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
+                    Windows.isSwitching = false;
+                    Kwin.clearHighlight();
+                }
+            }
+
             Component.onCompleted: {
                 if (Visibilities.launcherInitialSearch) {
                     text = Visibilities.launcherInitialSearch;
@@ -343,7 +353,8 @@ Item {
                         // the switcher would stay open and stop cycling.
                         search.forceActiveFocus();
                     } else {
-                        KWinActiveWindowBridge.clearHighlight();
+                        Windows.isSwitching = false;
+                        Kwin.clearHighlight();
                     }
                 }
 
@@ -357,7 +368,7 @@ Item {
 
             Connections {
                 function onModifierReleased(): void {
-                    if (root.visibilities.launcher && search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
+                    if (Windows.isSwitching && root.visibilities.launcher && search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)) {
                         const switcherKey = (typeof KeybindsModel !== "undefined" && KeybindsModel.getKey("windowSwitcher")) || "Alt+Tab";
                         if (!CUtils.isShortcutModifierPressed(switcherKey)) {
                             Windows.focusSelectedWindow();
@@ -375,21 +386,13 @@ Item {
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: clearIcon.left
-            anchors.rightMargin: Tokens.spacing.small
+            anchors.rightMargin: (root.isClipboardMode && Clipboard.items.length > 0) ? Tokens.spacing.small : 0
 
-            width: (root.isClipboardMode && Clipboard.items.length > 0) ? implicitWidth : implicitWidth / 2
-            opacity: {
-                if (!root.isClipboardMode || Clipboard.items.length === 0)
-                    return 0;
-                if (clipboardMouse.pressed)
-                    return 0.7;
-                if (clipboardMouse.containsMouse)
-                    return 0.8;
-                return 1;
-            }
+            width: (root.isClipboardMode && Clipboard.items.length > 0) ? implicitWidth : 0
+            opacity: (root.isClipboardMode && Clipboard.items.length > 0) ? 1 : 0
 
             text: "delete"
-            color: Colours.palette.m3onSurfaceVariant
+            color: clipboardMouse.containsMouse ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
 
             MouseArea {
                 id: clipboardMouse
@@ -409,6 +412,10 @@ Item {
                 }
             }
 
+            Behavior on color {
+                CAnim {}
+            }
+
             Behavior on width {
                 Anim {
                     type: Anim.StandardSmall
@@ -426,22 +433,14 @@ Item {
             id: clearIcon
 
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: root.padding
+            anchors.right: commandsBtn.left
+            anchors.rightMargin: search.text ? Tokens.spacing.small : 0
 
-            width: search.text ? implicitWidth : implicitWidth / 2
-            opacity: {
-                if (!search.text)
-                    return 0;
-                if (mouse.pressed)
-                    return 0.7;
-                if (mouse.containsMouse)
-                    return 0.8;
-                return 1;
-            }
+            width: search.text ? implicitWidth : 0
+            opacity: search.text ? 1 : 0
 
             text: "close"
-            color: Colours.palette.m3onSurfaceVariant
+            color: mouse.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
 
             MouseArea {
                 id: mouse
@@ -451,6 +450,10 @@ Item {
                 cursorShape: search.text ? Qt.PointingHandCursor : undefined
 
                 onClicked: search.text = ""
+            }
+
+            Behavior on color {
+                CAnim {}
             }
 
             Behavior on width {
@@ -463,6 +466,33 @@ Item {
                 Anim {
                     type: Anim.StandardSmall
                 }
+            }
+        }
+
+        IconButton {
+            id: commandsBtn
+
+            isToggle: true
+            type: IconButton.Text
+            implicitWidth: 32
+            implicitHeight: 32
+            radius: Tokens.rounding.full
+            radiusMorph: false
+            icon: "menu"
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: root.padding
+            checked: search.text.startsWith(GlobalConfig.launcher.actionPrefix)
+
+            onClicked: {
+                if (search.text.startsWith(GlobalConfig.launcher.actionPrefix)) {
+                    search.text = "";
+                } else {
+                    search.text = GlobalConfig.launcher.actionPrefix;
+                }
+                search.forceActiveFocus();
+                search.cursorPosition = search.text.length;
             }
         }
     }

@@ -65,7 +65,7 @@ PageBase {
                 icon: "lock"
                 label: qsTr("Lock screen")
                 status: qsTr("Wallpaper sync and lock screen settings")
-                onClicked: root.nState.openSubPage(10)
+                onClicked: root.nState.openSubPage(9)
             }
         }
 

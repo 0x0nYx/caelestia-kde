@@ -238,7 +238,7 @@ ColumnLayout {
                             return qsTr("Network: %1").arg(ssid);
                         }
                     }
-                    return qsTr("Network: Unknown");
+                    return qsTr("Unknown network");
                 }
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.body.small.pointSize * root.fontScale
@@ -396,7 +396,9 @@ ColumnLayout {
                     }
 
                     Behavior on border.width {
-                        CAnim {}
+                        Anim {
+                            type: Anim.FastSpatial
+                        }
                     }
 
                     Behavior on color {

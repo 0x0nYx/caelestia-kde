@@ -48,9 +48,6 @@ SETTING_BLOCKS = (
     "NavRow",
 )
 
-# Sub-pages that cannot stand on their own: each renders whatever the user
-# selected before (a device, a network, an app), so opening one from a search hit
-# would show an empty page. They stay reachable by clicking through their parent.
 CONTEXT_DEPENDENT = {
     (0, 2): "wallpaper category, needs the chosen category",
     (3, 1): "ethernet details, needs the chosen interface",

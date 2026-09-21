@@ -2,9 +2,10 @@
 """Cross-reference QML config accesses against the C++ config declarations.
 
 Quickshell QML reads configuration through the `Config` attached type and the
-`GlobalConfig` singleton, e.g. `Config.bar.workspaces.useIcon` or
+`GlobalConfig` singleton, e.g. `Config.bar.workspaces.displayType` or
 `GlobalConfig.ai.enableClaude`. Those properties are declared with the
-CONFIG_PROPERTY / CONFIG_GLOBAL_PROPERTY / CONFIG_SUBOBJECT macros in
+CONFIG_PROPERTY / CONFIG_GLOBAL_PROPERTY / CONFIG_ENUM_PROPERTY /
+CONFIG_GLOBAL_ENUM_PROPERTY / CONFIG_LIST / CONFIG_SUBOBJECT macros in
 shell/plugin/src/Caelestia/Config/*.hpp. If a QML file references a config key
 that no longer exists (renamed/removed in C++, typo, wrong nesting), the shell
 logs "Cannot assign to non-existent property" and the widget silently breaks —
@@ -32,12 +33,9 @@ GREEN = "\033[0;32m"
 BOLD = "\033[1m"
 RESET = "\033[0m"
 
-# Matches CONFIG_PROPERTY(bool, name, true) / CONFIG_GLOBAL_PROPERTY / CONFIG_SUBOBJECT(Type, name)
-# — DOTALL so multi-line macro invocations are handled.
-PROP_RE = re.compile(r"CONFIG_(?:GLOBAL_)?PROPERTY\(\s*[^,]+,\s*(\w+)", re.DOTALL)
+PROP_RE = re.compile(r"CONFIG_(?:GLOBAL_)?(?:ENUM_)?(?:PROPERTY|LIST)\(\s*[^,]+,\s*(\w+)", re.DOTALL)
 SUBOBJ_RE = re.compile(r"CONFIG_SUBOBJECT\(\s*(\w+),\s*(\w+)", re.DOTALL)
 CLASS_RE = re.compile(r"class\s+(\w+)\s*:\s*public\s+(\w+)")
-# Computed/non-config Q_PROPERTYs on config classes (e.g. BorderConfig.minThickness)
 QPROP_RE = re.compile(r"Q_PROPERTY\(\s*[A-Za-z0-9_:]+\s+(\w+)\s+READ")
 ATTACHED_QPROP_RE = re.compile(
     r'Q_PROPERTY\(\s*const\s+caelestia::config::(\w+)\*\s+(\w+)\s+READ'
@@ -45,30 +43,36 @@ ATTACHED_QPROP_RE = re.compile(
 LEAF = "<leaf>"
 METHOD = "<method>"
 
-# Q_INVOKABLE methods callable on the config roots.
 ROOT_METHODS = {"forScreen", "defaults", "save", "reload", "resetOption", "instance"}
 
 
-def parse_headers() -> tuple[dict[str, dict[str, str]], dict[str, str]]:
-    """Return (class_members, root_props).
+def parse_headers() -> tuple[dict[str, dict[str, str]], dict[str, str], list[str]]:
+    """Return (class_members, root_props, unreadable).
 
     class_members: class name -> { property name -> LEAF or sub-object type }
     root_props:    top-level Config/GlobalConfig name -> LEAF / type / METHOD
+    unreadable:    headers that are not UTF-8, reported instead of skipped
+
+    A file that cannot be decoded must not read as "no references here" - that is how a
+    gate passes while checking nothing. An OSError stays a silent skip on purpose: a header
+    that vanishes mid-run is a race, not a defect in the tree.
     """
     class_members: dict[str, dict[str, str]] = {}
     root_props: dict[str, str] = {}
+    unreadable: list[str] = []
 
     if not CONFIG_DIR.is_dir():
-        return class_members, root_props
+        return class_members, root_props, unreadable
 
     for hdr in sorted(CONFIG_DIR.glob("*.hpp")):
         try:
             text = hdr.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            unreadable.append(f"{hdr.relative_to(ROOT).as_posix()}: not valid UTF-8 ({exc})")
+            continue
         except OSError:
             continue
 
-        # Positions of class declarations, in order, so each member match can be
-        # attributed to the class body that contains it.
         class_spans: list[tuple[int, str]] = []
         for m in CLASS_RE.finditer(text):
             if m.group(1) == "ConfigObject":
@@ -94,27 +98,21 @@ def parse_headers() -> tuple[dict[str, dict[str, str]], dict[str, str]]:
         for m in SUBOBJ_RE.finditer(text):
             add_member(owner(m.start()), m.group(2), m.group(1))
         for m in QPROP_RE.finditer(text):
-            # Skip the attached type's own Q_PROPERTYs (handled separately); only
-            # pick up computed properties on regular config classes.
             if owner(m.start()) not in (None, "Config"):
                 add_member(owner(m.start()), m.group(1), LEAF)
 
-        # Top-level roots: Config (attached type) declares Q_PROPERTYs directly.
         if hdr.name == "configattached.hpp":
             for m in ATTACHED_QPROP_RE.finditer(text):
                 root_props[m.group(2)] = m.group(1)
             if re.search(r"Q_PROPERTY\(QString screen", text):
                 root_props["screen"] = LEAF
 
-    # GlobalConfig (singleton) sub-objects + its own config properties.
-    # The singleton is ConfigSingleton (QML_NAMED_ELEMENT GlobalConfig), which
-    # wraps ConfigRoot - so the root node's members are the singleton's members.
     globals_cls = class_members.get("ConfigRoot", {})
     root_props.update(globals_cls)
     for method in ROOT_METHODS:
         root_props.setdefault(method, METHOD)
 
-    return class_members, root_props
+    return class_members, root_props, unreadable
 
 
 def resolve(class_members: dict[str, dict[str, str]], root_props: dict[str, str], chain: list[str]) -> int | None:
@@ -125,12 +123,8 @@ def resolve(class_members: dict[str, dict[str, str]], root_props: dict[str, str]
             return i
         member = props[name]
         if member == METHOD:
-            # A callable — nothing statically resolvable after it.
             return None
         if member == LEAF:
-            # Reached a concrete value (array/string/number). Anything after it
-            # is JS member access on that value (e.g. .includes, .length, .join)
-            # and cannot be verified statically.
             return None
         if i == len(chain) - 1:
             return None
@@ -186,14 +180,11 @@ def strip_comments_and_strings(src: str) -> str:
     return "".join(out)
 
 
-# Chain starts at a standalone Config/GlobalConfig token, optionally reached
-# through an id like `root.Config.` — the lookbehind rejects the `Config`
-# substring inside longer identifiers (e.g. GlobalConfig's "Config" part).
 CHAIN_RE = re.compile(r"(?<![A-Za-z0-9_$])(Config|GlobalConfig)\.([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)")
 
 
 def main() -> int:
-    class_members, root_props = parse_headers()
+    class_members, root_props, unreadable = parse_headers()
 
     print(f"{BOLD}=== Config reference check ==={RESET}")
     print(f"Parsed {len(class_members)} config classes, {len(root_props)} root properties")
@@ -210,6 +201,9 @@ def main() -> int:
             continue
         try:
             src = qml.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            unreadable.append(f"{qml.relative_to(ROOT).as_posix()}: not valid UTF-8 ({exc})")
+            continue
         except OSError:
             continue
         cleaned = strip_comments_and_strings(src)
@@ -221,7 +215,6 @@ def main() -> int:
             if bad is not None:
                 missing = chain[bad]
                 context = qml.relative_to(ROOT).as_posix()
-                # Report file-relative line number
                 line = src.count("\n", 0, m.start()) + 1
                 errors.append(
                     f"{context}:{line}: unknown config reference "
@@ -232,10 +225,16 @@ def main() -> int:
     for err in errors:
         print(f"{RED}[ERR]{RESET}  {err}")
 
+    for problem in unreadable:
+        print(f"{RED}[ERR]{RESET}  {problem}")
+
     print()
     print(f"Checked {checked} config references across QML files.")
+    if unreadable:
+        print(f"{BOLD}{RED}{len(unreadable)} file(s) could not be read as UTF-8.{RESET}")
     if errors:
         print(f"{BOLD}{RED}{len(errors)} unknown config reference(s) found.{RESET}")
+    if errors or unreadable:
         return 1
     print(f"{BOLD}{GREEN}All config references resolve.{RESET}")
     return 0

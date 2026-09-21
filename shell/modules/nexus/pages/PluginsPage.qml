@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import qs.services.api
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Io
 import Caelestia
 import Caelestia.Config
@@ -56,14 +57,6 @@ PageBase {
         return iconString;
     }
 
-    Item {
-        Layout.preferredWidth: 0
-        Layout.preferredHeight: 0
-        PluginSettingsPopup {
-            id: settingsPopup
-        }
-    }
-
     title: qsTr("Plugins")
 
     headerActions: [
@@ -71,12 +64,6 @@ PageBase {
             text: qsTr("Refresh")
             type: TextButton.Tonal
             visible: root.currentTab === 1
-            scale: pressed ? 0.95 : 1.0
-
-            Behavior on scale {
-                Anim { type: Anim.DefaultEffects }
-            }
-
             onClicked: {
                 PluginStore.fetchIndex(root.storeBranch);
             }
@@ -85,19 +72,21 @@ PageBase {
             text: qsTr("Restart Shell")
             type: TextButton.Filled
             visible: PluginStore.restartRequired
-            scale: pressed ? 0.95 : 1.0
-
-            Behavior on scale {
-                Anim { type: Anim.DefaultEffects }
-            }
-
-            onClicked: Launch.exec(["bash", "-c", "bash \"${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/scripts/restart_shell.sh\"; sleep 1; caelestia shell nexus openPage 15 0"])
+            onClicked: Launch.exec(["bash", "-c", `bash "${Quickshell.shellPath("scripts/restart_shell.sh")}"; sleep 1; caelestia shell nexus openPage 15 0`])
         }
     ]
 
     Component.onCompleted: {
         if (PluginStore.storePlugins.count === 0) {
             PluginStore.fetchIndex(root.storeBranch);
+        }
+    }
+
+    Item {
+        Layout.preferredWidth: 0
+        Layout.preferredHeight: 0
+        PluginSettingsPopup {
+            id: settingsPopup
         }
     }
 

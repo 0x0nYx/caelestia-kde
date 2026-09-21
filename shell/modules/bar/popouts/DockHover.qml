@@ -1,10 +1,11 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import Caelestia.Config
-import Caelestia.Services
 import qs.components
 import qs.components.images
 import qs.services
@@ -37,10 +38,11 @@ StyledRect {
     // fallback below is the correct thing to show.
 
     function closeToplevel(address: string): void {
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList) {
-            KWinActiveWindowBridge.closeWindow(address);
+        Kwin.clearHighlight();
+        if (Kwin.windowList.length > 0) {
+            Kwin.closeWindow(address);
         } else {
-            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.window.close({ window = "address:0x${address}" })` : `closewindow address:0x${address}`);
+            Kwin.dispatch(Kwin.usingLua ? `hl.dsp.window.close({ window = "address:0x${address}" })` : `closewindow address:0x${address}`);
         }
 
         if (!root.model || !root.model.toplevels)
@@ -56,6 +58,10 @@ StyledRect {
         }
 
         root.popouts.dockModel = Object.assign({}, root.model, { toplevels: remaining });
+    }
+
+    Component.onDestruction: {
+        Kwin.clearHighlight();
     }
     radius: Tokens.rounding.medium
     color: Colours.tPalette.m3surfaceContainer
@@ -159,16 +165,27 @@ StyledRect {
 
                     HoverHandler {
                         id: cardHover
+
+                        onHoveredChanged: {
+                            if (hovered && card.modelData?.address) {
+                                if (Config.bar.dock.previewOnDesktop)
+                                    Kwin.highlightWindow(card.modelData.address);
+                            } else {
+                                Kwin.clearHighlight();
+                            }
+                        }
                     }
+
                     StateLayer {
                         anchors.fill: parent
                         radius: parent.radius
                         onClicked: {
+                            Kwin.clearHighlight();
                             if (card.modelData.address) {
-                                if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList) {
-                                    KWinActiveWindowBridge.focusWindow(card.modelData.address);
+                                if (Kwin.windowList.length > 0) {
+                                    Kwin.focusWindow(card.modelData.address);
                                 } else {
-                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${card.modelData.address}" })` : `focuswindow address:0x${card.modelData.address}`);
+                                    Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${card.modelData.address}" })` : `focuswindow address:0x${card.modelData.address}`);
                                 }
                             }
                             root.popouts.hasCurrent = false;
@@ -312,5 +329,14 @@ StyledRect {
             }
             Layout.alignment: Qt.AlignHCenter
         }
+    }
+
+    Connections {
+        function onHasCurrentChanged(): void {
+            if (!root.popouts.hasCurrent)
+                Kwin.clearHighlight();
+        }
+
+        target: root.popouts
     }
 }

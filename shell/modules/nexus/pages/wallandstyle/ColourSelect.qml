@@ -67,11 +67,11 @@ PageBase {
             StateLayer {
                 radius: parent.radius
                 onClicked: {
-                    // The CLI derives dynamic colours from the wallpaper it was
-                    // last told about (caelestia wallpaper). On a fresh install
-                    // the deploy script writes path.txt directly, so the CLI has
-                    // no wallpaper yet and `scheme set -n dynamic` fails silently.
-                    // Seed the wallpaper first, then switch to dynamic.
+                    // caelestia derives dynamic colours from the wallpaper it was
+                    // last told about. On a fresh install the deploy script
+                    // writes path.txt directly, so there is nothing derived yet
+                    // and a bare `scheme set -n dynamic` fails. Seed the
+                    // wallpaper first, then switch to dynamic.
                     const wall = Wallpapers.actualCurrent || Wallpapers.fallback;
                     Quickshell.execDetached(["sh", "-c",
                         'caelestia wallpaper -f "$1" >/dev/null 2>&1; caelestia scheme set -n dynamic',
@@ -139,6 +139,15 @@ PageBase {
                     text: "check"
                     color: Colours.palette.m3onSecondaryContainer
                     fontStyle: Tokens.font.icon.large
+                }
+
+                IconButton {
+                    id: settingsBtn
+
+                    Layout.alignment: Qt.AlignVCenter
+                    icon: "settings"
+                    type: IconButton.Tonal
+                    onClicked: root.nState.openSubPage(10)
                 }
             }
         }
@@ -258,63 +267,12 @@ PageBase {
 
 
 
-        StyledRect {
-            Layout.fillWidth: true
-            Layout.topMargin: Tokens.spacing.large
-            Layout.bottomMargin: Tokens.spacing.extraLarge
-            implicitHeight: row.implicitHeight + Tokens.padding.large * 2
-            radius: Tokens.rounding.large
-            color: Colours.tPalette.m3surfaceContainer
 
-            StateLayer {
-                anchors.fill: parent
-                radius: parent.radius
-                onClicked: root.nState.openSubPage(9)
-            }
-
-            RowLayout {
-                id: row
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: Tokens.padding.large
-                spacing: Tokens.spacing.large
-
-                MaterialIcon {
-                    text: "settings_suggest"
-                    fontStyle: Tokens.font.icon.extraLarge
-                    color: Colours.palette.m3onSurface
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Tokens.spacing.extraSmall
-
-                    StyledText {
-                        text: qsTr("Advanced color settings")
-                        font: Tokens.font.title.small
-                        color: Colours.palette.m3onSurface
-                    }
-                    StyledText {
-                        text: qsTr("Material You engine, terminal and window decoration options")
-                        font: Tokens.font.body.medium
-                        color: Colours.palette.m3onSurfaceVariant
-                    }
-                }
-
-                MaterialIcon {
-                    text: "chevron_right"
-                    fontStyle: Tokens.font.icon.large
-                    color: Colours.palette.m3onSurfaceVariant
-                }
-            }
-        }
 
         Process {
             id: schemeListProc
 
-            command: ["python3", Quickshell.shellPath("scripts/scheme-list.py")]
+            command: ["caelestia", "scheme", "list", "--flat"]
             stdout: StdioCollector {
                 onStreamFinished: root.parseSchemeList(text)
             }

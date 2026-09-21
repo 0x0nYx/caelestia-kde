@@ -12,12 +12,7 @@ PerfStat {
     icon: "swap_vert"
     accent: Colours.palette.m3tertiary
     value: NaN
-    valueText: {
-        const fmt = NetworkUsage.formatBytesRate(totalSpeed);
-        if (!fmt)
-            return "0.0 B/s";
-        return `${fmt.value.toFixed(1)} ${fmt.unit}`;
-    }
+    valueText: Units.formatBytes(totalSpeed, true)
 
     ServiceRef {
         service: NetworkUsage

@@ -125,7 +125,14 @@ PageBase {
                 GlobalConfig.dashboard.profilePicShape = item.value
             }
         }
-
+        ToggleRow {
+            Layout.fillWidth: true
+            last: true
+            text: qsTr("Show clock seconds")
+            subtext: qsTr("Display seconds below the clock in the dashboard")
+            checked: Config.dashboard.showClockSeconds
+            onToggled: GlobalConfig.dashboard.showClockSeconds = checked
+        }
         // Tabs
         SectionHeader {
             text: qsTr("Tabs")
@@ -184,7 +191,7 @@ PageBase {
             Layout.fillWidth: true
             last: true
             text: qsTr("Welcome splash")
-            visible: typeof KWinActiveWindowBridge === "undefined"
+            visible: false
             subtext: qsTr("Show a welcome message on the dashboard")
             checked: Config.dashboard.showHyprlandSplash
             onToggled: GlobalConfig.dashboard.showHyprlandSplash = checked

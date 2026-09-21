@@ -1,7 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.services
@@ -36,16 +39,22 @@ Item {
         }
     }
 
-    // Hover ripple + click to launch
+    // Hover ripple + click to launch / right click for context menu
     StateLayer {
         anchors.fill: parent
         radius: Tokens.rounding.large
-        acceptedButtons: Qt.LeftButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         onContainsMouseChanged: {
             if (containsMouse)
                 root.browser.selectTile(root.index);
         }
-        onClicked: root.browser.launch(root.modelData)
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                root.browser.openContextMenu(root.modelData, root);
+            } else {
+                root.browser.launch(root.modelData);
+            }
+        }
     }
 
     // Icon + label
@@ -60,7 +69,7 @@ Item {
 
             anchors.horizontalCenter: parent.horizontalCenter
             asynchronous: true
-            source: Quickshell.iconPath(root.modelData?.icon, "image-missing")
+            source: WinIcons.sourceFor(root.modelData, "", root.modelData?.id ?? "", 0)
             implicitSize: Math.round(root.implicitWidth * 0.42)
         }
 
@@ -94,7 +103,11 @@ Item {
         opacity: (root.isFavourite || favArea.containsMouse) ? 1 : 0
         text: root.isFavourite ? "favorite" : "favorite_border"
         fill: root.isFavourite ? 1 : 0
-        color: root.favouriteByRegex ? Colours.palette.m3outline : (root.isFavourite ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant)
+        color: root.favouriteByRegex ? Colours.palette.m3outline : (root.isFavourite ? Colours.palette.m3primary : (favArea.containsMouse ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant))
+
+        Behavior on color {
+            CAnim {}
+        }
 
         Behavior on opacity {
             Anim {
@@ -102,12 +115,16 @@ Item {
             }
         }
 
-        MouseArea {
+        StateLayer {
             id: favArea
 
-            anchors.fill: parent
-            hoverEnabled: true
+            anchors.fill: undefined
+            anchors.centerIn: parent
+            implicitWidth: 26
+            implicitHeight: 26
+            radius: Tokens.rounding.full
             cursorShape: root.favouriteByRegex ? Qt.ArrowCursor : Qt.PointingHandCursor
+
             onClicked: {
                 if (root.favouriteByRegex)
                     return;

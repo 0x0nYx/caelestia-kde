@@ -8,11 +8,16 @@ import qs.utils
 Singleton {
     id: root
 
-    readonly property string recordBin: Paths.absolutePath("~/.local/bin/caelestia-record")
+    readonly property string recordBin: Paths.bin("caelestia-record")
 
     readonly property alias running: props.running
     readonly property alias paused: props.paused
     readonly property alias elapsed: props.elapsed
+    // Whether a probe is worth doing often. The answer only changes while a
+    // recording is running or a control action is in flight; otherwise the shell
+    // is waiting to notice a recording started outside it, where a few seconds of
+    // latency costs nothing.
+    readonly property bool probing: running || needsStart || needsStop || needsPause
     property bool needsStart
     property list<string> startArgs
     property bool needsStop
@@ -94,7 +99,12 @@ Singleton {
     }
 
     Timer {
-        interval: 500
+        // gpu-screen-recorder is an optional dependency and the probe costs two
+        // process spawns (a shell and pidof), so an unconditional 500 ms interval
+        // ran that pair twice a second on every machine, most of which do not have
+        // the recorder installed at all. Poll often only while the answer can
+        // change; a recording started outside the shell is still picked up.
+        interval: root.probing ? 500 : 2500
         repeat: true
         running: true
         onTriggered: {
@@ -104,13 +114,13 @@ Singleton {
         }
     }
 
-    Connections {
-        enabled: props.running && !props.paused
+    Timer {
+        interval: 1000
+        repeat: true
+        running: props.running && !props.paused
 
-        function onSecondsChanged(): void {
+        onTriggered: {
             props.elapsed++;
         }
-
-        target: Time // qmllint disable incompatible-type
     }
 }

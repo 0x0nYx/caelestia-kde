@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Caelestia.Config
-import Caelestia.Services
 import qs.components
 import qs.services
 import qs.modules.dashboard.dash as Dash
@@ -20,19 +19,7 @@ Item {
 
     property real shapesScale: Config.background.desktopShapes.scale
     readonly property bool autoHide: Config.background.desktopShapes.autoHide
-    readonly property bool windowHidesShapes: {
-        let isHidden = false;
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
-            isHidden = KWinActiveWindowBridge.activeWindow.fullscreen || KWinActiveWindowBridge.activeWindow.maximized;
-            if (isHidden && !Config.background.visualiser.hideOnAllMonitors) {
-                isHidden = KWinActiveWindowBridge.activeOutputName === screen.name;
-            }
-        } else {
-            return Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.some(
-                t => !(t.lastIpcObject?.floating ?? true)) ?? false;
-        }
-        return !!isHidden;
-    }
+    readonly property bool windowHidesShapes: Kwin.windowHidesDesktopWidgets(root.screen ? root.screen.name : "", Config.background.visualiser.hideOnAllMonitors)
     readonly property bool shouldHide: autoHide && windowHidesShapes
     readonly property bool isPlaying: Players.active?.isPlaying ?? false
 

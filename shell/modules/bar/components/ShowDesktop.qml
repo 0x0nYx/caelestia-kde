@@ -1,7 +1,5 @@
 import QtQuick
-import Quickshell
 import Caelestia.Config
-import Caelestia.Services
 import qs.components
 import qs.services
 import qs.utils
@@ -22,7 +20,10 @@ Item {
         Accessible.name: qsTr("Show desktop")
         Accessible.role: Accessible.Button
         Accessible.description: qsTr("Minimize all windows to show the desktop")
-        onClicked: Quickshell.execDetached(["qdbus6", "org.kde.kglobalaccel", "/component/kwin", "org.kde.kglobalaccel.Component.invokeShortcut", "Show Desktop"])
+        // KWin's showDesktop() takes the state to end up in; the kglobalaccel
+        // shortcut this used to shell out to is a toggle whose result cannot be
+        // read back, so a second click could leave the desktop showing.
+        onClicked: Kwin.setShowingDesktop(!Kwin.showingDesktop)
     }
 
     MaterialIcon {
@@ -38,7 +39,7 @@ Item {
         // Derived from KWin so the arrow stays in sync with the real "show
         // desktop" state: toggling it any other way still flips the arrow, and
         // a failed invocation never leaves it pointing the wrong way.
-        rotation: (typeof KWinWorkspaceState !== "undefined" && KWinWorkspaceState.showingDesktop) ? 180 : 0
+        rotation: (Kwin.showingDesktop) ? 180 : 0
 
         Behavior on rotation {
             Anim { type: Anim.FastSpatial }

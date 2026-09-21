@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Caelestia
 import Caelestia.Config
+import qs.services
 
 Singleton {
     id: root
@@ -286,16 +287,7 @@ Singleton {
     }
 
     function formatBytes(bytes: var): string {
-        if (!bytes || bytes <= 0)
-            return "0 B";
-        const units = ["B", "KB", "MB", "GB", "TB"];
-        let i = 0;
-        let v = bytes;
-        while (v >= 1024 && i < units.length - 1) {
-            v /= 1024;
-            i++;
-        }
-        return `${v.toFixed(v < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
+        return Units.formatBytes(bytes);
     }
 
     // Refresh live In/Out byte counters, tunnel latency and - for providers

@@ -18,6 +18,8 @@ QtObject {
                 { label: qsTr("Monospace font"), keywords: ["monospace", "font", "code", "terminal"], pagePath: "wallandstyle/AppearancePage.qml", subPageIdx: 8 },
                 { label: qsTr("Font scale"), keywords: ["font", "scale", "size", "text"], pagePath: "wallandstyle/AppearancePage.qml", subPageIdx: 8 },
                 { label: qsTr("Colors"), keywords: ["accent", "palette", "scheme", "theme", "color"], pagePath: "wallandstyle/ColourSelect.qml", subPageIdx: 3 },
+                { label: qsTr("Advanced color settings"), keywords: ["advanced", "colors", "palette", "saturation", "contrast", "matugen"], pagePath: "wallandstyle/AdvancedColorsPage.qml", subPageIdx: 10 },
+                { label: qsTr("Color intensity"), keywords: ["intensity", "chroma", "vibrant", "vibrancy"], pagePath: "wallandstyle/AdvancedColorsPage.qml", subPageIdx: 10 },
                 { label: qsTr("Blur & Opacity"), pagePath: "wallandstyle/AppearancePage.qml", subPageIdx: 8 },
                 { label: qsTr("Corner Radius"), keywords: ["rounding", "radius"], pagePath: "wallandstyle/AppearancePage.qml", subPageIdx: 8 },
                 { label: qsTr("Wallpapers"), pagePath: "wallandstyle/WallpaperSelect.qml", subPageIdx: 1 },
@@ -25,9 +27,8 @@ QtObject {
                 { label: qsTr("Wallpaper settings"), keywords: ["filters", "thumbnails", "wallpaper"], pagePath: "wallandstyle/WallpaperSettingsPage.qml", subPageIdx: 5 },
                 { label: qsTr("Slideshow & Order"), keywords: ["slideshow", "interval", "randomise", "shuffle", "order"], pagePath: "wallandstyle/SlideshowAndOrderPage.qml", subPageIdx: 6 },
                 { label: qsTr("Video wallpapers"), keywords: ["video", "animated", "motion"], pagePath: "wallandstyle/VideoWallpapersPage.qml", subPageIdx: 7 },
-                { label: qsTr("Advanced Colors"), keywords: ["kmyc", "custom colors", "palette", "hue"], pagePath: "wallandstyle/KMYCSettings.qml", subPageIdx: 9 },
-                { label: qsTr("Lock Screen"), keywords: ["lock", "wallpaper sync", "screen lock"], pagePath: "wallandstyle/LockScreenPage.qml", subPageIdx: 10 },
-                { label: qsTr("Fingerprint"), keywords: ["fingerprint", "unlock", "attempts", "tries", "howdy", "biometric"], pagePath: "wallandstyle/LockScreenPage.qml", subPageIdx: 10 },
+                { label: qsTr("Lock Screen"), keywords: ["lock", "wallpaper sync", "screen lock"], pagePath: "wallandstyle/LockScreenPage.qml", subPageIdx: 9 },
+                { label: qsTr("Fingerprint"), keywords: ["fingerprint", "unlock", "attempts", "tries", "howdy", "biometric"], pagePath: "wallandstyle/LockScreenPage.qml", subPageIdx: 9 },
                 { label: qsTr("Bezel mode"), keywords: ["pitch black", "bezels", "black", "theme and effects"], pagePath: "wallandstyle/AppearancePage.qml", subPageIdx: 8 }
             ]
         },
@@ -61,11 +62,13 @@ QtObject {
                 { label: qsTr("Overview"), pagePath: "panels/OverviewPanel.qml", keywords: ["overview", "animations", "blur"], subPageIdx: 16 },
                 { label: qsTr("Toggle & Rearrange"), keywords: ["widgets", "components", "reorder", "add"], pagePath: "panels/taskbar/BarComponents.qml", subPageIdx: 6 },
                 { label: qsTr("Workspaces indicator"), keywords: ["workspaces", "indicators", "window icons"], pagePath: "panels/taskbar/BarWorkspaces.qml", subPageIdx: 7 },
+                { label: qsTr("Unoccupied workspaces"), keywords: ["workspaces", "empty", "inactive", "hide"], pagePath: "panels/taskbar/BarWorkspaces.qml", subPageIdx: 7 },
                 { label: qsTr("Greeter"), keywords: ["greeting", "popout"], pagePath: "panels/taskbar/BarGreeter.qml", subPageIdx: 8 },
                 { label: qsTr("Greeter slideshow"), keywords: ["slideshow", "folders", "media", "greeting", "timing", "order"], pagePath: "panels/taskbar/BarGreeter.qml", subPageIdx: 8 },
                 { label: qsTr("Tray"), keywords: ["system tray", "icons"], pagePath: "panels/taskbar/BarTray.qml", subPageIdx: 9 },
                 { label: qsTr("Status icons"), keywords: ["indicators", "bar"], pagePath: "panels/taskbar/BarStatusIcons.qml", subPageIdx: 10 },
                 { label: qsTr("Clock"), keywords: ["date", "time"], pagePath: "panels/taskbar/BarClock.qml", subPageIdx: 11 },
+                { label: qsTr("Clock seconds"), keywords: ["clock", "time", "seconds", "show seconds"], pagePath: "panels/taskbar/BarClock.qml", subPageIdx: 11 },
                 { label: qsTr("Dock"), keywords: ["dock", "pinned", "apps"], pagePath: "panels/taskbar/BarDock.qml", subPageIdx: 12 },
                 { label: qsTr("GitHub"), keywords: ["github", "contributions", "token"], pagePath: "panels/taskbar/BarGithub.qml", subPageIdx: 13 },
                 { label: qsTr("Per-element scaling offsets"), keywords: ["scale", "font scale", "preview"], pagePath: "panels/taskbar/BarPreviewScales.qml", subPageIdx: 14 },
@@ -73,6 +76,7 @@ QtObject {
                 { label: qsTr("Update indicator"), keywords: ["updates", "indicator"], pagePath: "panels/taskbar/BarUpdates.qml", subPageIdx: 17 },
                 { label: qsTr("Preview scale"), keywords: ["preview", "thumbnails", "scale"], pagePath: "panels/TaskbarPanel.qml", subPageIdx: 2 },
                 { label: qsTr("Performance"), keywords: ["performance widgets", "dashboard", "randomize shape colors", "cpu", "memory", "storage"], pagePath: "panels/DashboardPanel.qml", subPageIdx: 1 },
+                { label: qsTr("Dashboard clock seconds"), keywords: ["clock", "seconds", "dashboard", "time"], pagePath: "panels/DashboardPanel.qml", subPageIdx: 1 },
                 { label: qsTr("Fuzzy search"), keywords: ["launcher", "search", "fuzzy"], pagePath: "panels/LauncherPanel.qml", subPageIdx: 3 },
                 { label: qsTr("Activation"), keywords: ["hot corner", "bottom left corner", "bottom right corner", "gestures", "overview"], pagePath: "panels/OverviewPanel.qml", subPageIdx: 16 },
                 { label: qsTr("Window Switcher"), keywords: ["tab switcher", "alt+tab", "task switcher", "desktop", "preview", "filter", "windows"], pagePath: "panels/TabSwitcherPanel.qml", subPageIdx: 18 }
@@ -205,7 +209,7 @@ QtObject {
             description: qsTr("Background services, daemon control"),
             category: "shell",
             settings: [
-                { label: qsTr("Background Services"), keywords: ["daemons", "systemd", "tuning"], subPageIdx: 1 },
+                { label: qsTr("Background Services"), keywords: ["daemons", "systemd", "tuning"] },
                 { label: qsTr("Rich Presence"), keywords: ["discord", "steamgriddb", "activity"], pagePath: "services/ArpcPage.qml", subPageIdx: 1 }
             ]
         },

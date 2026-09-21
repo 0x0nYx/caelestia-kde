@@ -8,6 +8,7 @@ Checks:
   4. No tab indentation in QML / Python / CMake / C++ files
   5. No binary files in text-only directories (docs/, scripts/)
   6. .sh files have the correct extension and shebang
+  7. Scripts the repository runs by path carry the executable bit
 """
 
 import os
@@ -29,15 +30,13 @@ MAX_FILE_SIZE_KB = 500
 EXIT_CODE = 0
 VIOLATIONS: list[str] = []
 
-# Files and directories to always skip
 SKIP_PATTERNS = [
     "diff_upstream.txt",
     "QMLTermWidget",
     "json.hpp",
 ]
 
-# Files/dirs skipped for whitespace/tab checks (vendored/generated)
-STYLE_SKIP_DIRS = {"QMLTermWidget", "build", "__pycache__", ".git"}
+STYLE_SKIP_DIRS = {"QMLTermWidget", "build", "__pycache__", ".git", "templates"}
 
 
 def error(msg: str) -> None:
@@ -74,10 +73,8 @@ def should_skip(rel_path: str, patterns: list[str] | None = None) -> bool:
 
 def get_changed_files() -> list[str]:
     """Get list of files changed in this PR/push, or empty list if no diff available."""
-    # For pull_request events, use GITHUB_BASE_REF
     base_ref = os.environ.get("GITHUB_BASE_REF")
     if not base_ref:
-        # For push events, try comparing with origin/main
         result = subprocess.run(
             ["git", "rev-parse", "--verify", "origin/main"],
             capture_output=True, text=True, cwd=ROOT,
@@ -95,7 +92,6 @@ def get_changed_files() -> list[str]:
             print(f"Checking {len(files)} changed file(s) against {base_ref}")
             return files
 
-    # On push to main/dev with no diff context, skip to avoid flagging pre-existing issues
     print("No diff context available - skipping file hygiene check")
     return []
 
@@ -178,7 +174,6 @@ def check_trailing_whitespace(changed_files: list[str]) -> None:
         if not is_text_file(filepath):
             continue
 
-        # Skip vendored directories
         if any(d in rel_path.replace("\\", "/").split("/") for d in STYLE_SKIP_DIRS):
             continue
 
@@ -257,9 +252,55 @@ def check_shell_extensions(changed_files: list[str]) -> None:
             warn(f"Shell script has unexpected shebang: {rel_path}: {first_line}")
 
 
+def git_mode(rel_path: str) -> str | None:
+    """Return the mode git records for a path, e.g. 100644 or 100755."""
+    result = subprocess.run(
+        ["git", "ls-files", "-s", "--", rel_path],
+        capture_output=True, text=True, cwd=ROOT,
+    )
+    lines = result.stdout.strip().splitlines()
+    return lines[0].split()[0] if lines else None
+
+
+def is_run_by_path(rel_path: str) -> bool:
+    """True for scripts something executes directly rather than through `bash <path>`.
+
+    The step scripts, the command and its helpers, the three entry points, and the
+    packaging helpers. Not scripts/lib, which is sourced, and not tests/, which run
+    under bash.
+    """
+    if rel_path in ("install.sh", "update.sh", "uninstall.sh"):
+        return True
+    if rel_path.startswith("src/bin/"):
+        return True
+    if rel_path.startswith("packaging/") and rel_path.endswith(".sh"):
+        return True
+    return rel_path.startswith("scripts/") and rel_path.count("/") == 1 and rel_path.endswith(".sh")
+
+
+def check_shell_executable(changed_files: list[str]) -> None:
+    """Ensure a script that is run by path is executable in git.
+
+    This is the one hygiene rule a Windows checkout cannot check by looking at the
+    files, because the working tree has no mode to look at. CI checks the repository
+    out with the mode git recorded, so a script committed as 100644 fails there with
+    exit 126, and a test that runs it reports "Permission denied" rather than anything
+    about the file it wanted.
+    """
+    for rel_path in changed_files:
+        if not is_run_by_path(rel_path):
+            continue
+        if should_skip(rel_path) or not (ROOT / rel_path).is_file():
+            continue
+
+        mode = git_mode(rel_path)
+        if mode is None:
+            continue
+        if not mode.endswith("755"):
+            warn(f"Script run by path is not executable (git mode {mode}): {rel_path}")
+
+
 def main() -> int:
-    # --all scans every git-tracked file (used for push events where there is
-    # no PR diff to diff against). Without it, only changed files are checked.
     all_files = "--all" in sys.argv
     if all_files:
         result = subprocess.run(
@@ -304,6 +345,11 @@ def main() -> int:
     check_shell_extensions(changed_files)
     if EXIT_CODE == 0:
         ok("All .sh files have proper shebangs")
+
+    print(f"\n{BOLD}=== Executable Bit Check ==={RESET}")
+    check_shell_executable(changed_files)
+    if EXIT_CODE == 0:
+        ok("Every script run by path is executable")
 
     print()
     if EXIT_CODE == 0:

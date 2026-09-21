@@ -11,7 +11,6 @@ Item {
     property int currentUserIndex: 0
     property var userModel: null
     property var onSwitchUser: null
-    // Calculate actual visual dimensions based on the shape bounds
     readonly property var bounds: bgShape.bounds
 
     onCurrentUserIndexChanged: {

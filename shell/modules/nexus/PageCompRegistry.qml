@@ -57,10 +57,10 @@ QtObject {
                     AppearancePage {}
                 }
                 Component {
-                    KMYCSettings {}
+                    LockScreenPage {}
                 }
                 Component {
-                    LockScreenPage {}
+                    AdvancedColorsPage {}
                 }
             }
         },

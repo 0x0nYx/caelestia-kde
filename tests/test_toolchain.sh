@@ -1,31 +1,9 @@
 #!/usr/bin/env bash
-# test_toolchain.sh - Tests for scripts/lib/toolchain.sh
 
 set -uo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/lib/toolchain.sh"
-
-# `caelestia_sudo` comes from privileges.sh in real use. These tests deliberately
-# do NOT define it as a shell function: a function would shadow the stub on PATH
-# and hide whether the code went through the privilege helper at all.
-
-# with_path <dir> <lrelease-fallback-path> <command> [args...]
-#
-# Run <command> in a subshell where PATH contains only <dir>, so the code under
-# test sees exactly the stubs this file installed and nothing from the host.
-# CAELESTIA_LRELEASE_FALLBACK is overridden too: it defaults to a fixed absolute
-# path that a developer machine may well have and a CI runner may not, which
-# would otherwise make the check non-deterministic.
-with_path() {
-    local dir="$1" fallback="$2"
-    shift 2
-    (
-        PATH="$dir"
-        export CAELESTIA_LRELEASE_FALLBACK="$fallback"
-        "$@"
-    )
-}
 
 test_linguist_tools_available_when_lrelease_is_on_path() {
     local tmp stub
@@ -66,7 +44,7 @@ test_install_linguist_tools_does_nothing_when_lrelease_is_present() {
     recording_stub "$stub" pacman "$log"
     recording_stub "$stub" caelestia_sudo "$log"
 
-    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools
+    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools arch
     status=$?
 
     assert_status 0 "$status" "an available lrelease needs no work"
@@ -79,12 +57,10 @@ test_install_linguist_tools_escalates_through_the_privilege_helper() {
     stub="$tmp/bin"
     log="$tmp/calls.log"
     recording_stub "$stub" pacman "$log"
-    # Records the call, then forwards the arguments so the test also proves the
-    # install command survives the wrapper intact.
     stub_bin "$stub" caelestia_sudo "printf 'caelestia_sudo %s\\n' \"\$*\" >> '$log'
 \"\$@\""
 
-    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools
+    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools arch
     status=$?
 
     assert_status 0 "$status" "installing the linguist tools should succeed"
@@ -102,19 +78,39 @@ test_install_linguist_tools_reports_failure_when_the_install_fails() {
     recording_stub "$stub" pacman "$log"
     recording_stub "$stub" caelestia_sudo "$log" 1
 
-    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools
+    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools arch
     status=$?
 
     assert_status 1 "$status" "a failed install should be reported to the caller"
 }
 
-test_install_linguist_tools_fails_when_no_package_manager_is_known() {
+# "Whichever manager is on PATH" answers for the wrong package universe, which is why
+# the distro is an argument: pacman here is reachable, and still must not be used.
+test_install_linguist_tools_uses_the_named_distro_not_path() {
+    local tmp stub log status
+    tmp="$(new_tmpdir)"
+    stub="$tmp/bin"
+    log="$tmp/calls.log"
+    recording_stub "$stub" pacman "$log"
+    recording_stub "$stub" apt-get "$log"
+    recording_stub "$stub" caelestia_sudo "$log"
+
+    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools debian
+    status=$?
+
+    assert_status 0 "$status" "installing for a debian base should succeed"
+    assert_contains "$(calls_to "$log" caelestia_sudo)" "apt-get install -y qt6-l10n-tools qt6-tools-dev" \
+        "a debian base must install through apt-get"
+    assert_eq "" "$(calls_to "$log" pacman)" "pacman being on PATH must not choose the manager"
+}
+
+test_install_linguist_tools_fails_for_an_unknown_distro() {
     local tmp stub status
     tmp="$(new_tmpdir)"
     stub="$tmp/bin"
     mkdir -p "$stub"
 
-    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools
+    with_path "$stub" "$tmp/absent-lrelease" install_linguist_tools unknown
     status=$?
 
     assert_status 1 "$status" "an unknown distro should be reported as a failure, not a success"

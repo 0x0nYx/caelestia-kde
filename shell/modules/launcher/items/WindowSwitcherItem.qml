@@ -6,7 +6,6 @@ import Quickshell.Widgets
 import Caelestia
 import Caelestia.Config
 import Caelestia.Models
-import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.components.images
@@ -21,7 +20,7 @@ Item {
     required property var list
 
     function clicked(): void {
-        KWinActiveWindowBridge.focusWindow(root.modelData.address);
+        Kwin.focusWindow(root.modelData.address);
         root.list.visibilities.launcher = false;
     }
 
@@ -101,7 +100,7 @@ Item {
         WindowPreview {
             anchors.fill: parent
             address: root.modelData?.address ?? ""
-            fallbackIcon: root.modelData ? WinIcons.sourceFor(null, root.modelData.class, root.modelData.iconName, root.modelData.pid ?? 0) : ""
+            fallbackIcon: root.modelData ? WinIcons.sourceForClient(root.modelData) : ""
             sourceAspect: previewBox.windowAspect
         }
 

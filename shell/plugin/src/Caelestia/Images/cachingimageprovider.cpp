@@ -1,13 +1,13 @@
 #include "cachingimageprovider.hpp"
 
-#include "imagecacher.hpp"
-
 #include <qfileinfo.h>
 #include <qimage.h>
 #include <qimagereader.h>
 #include <qloggingcategory.h>
 #include <qrunnable.h>
 #include <qthreadpool.h>
+
+#include "imagecacher.hpp"
 
 Q_LOGGING_CATEGORY(lcCProv, "caelestia.images.cacheprovider", QtInfoMsg)
 
@@ -87,12 +87,41 @@ private:
                 if (!m_image.isNull())
                     return;
             }
+
+            // Cold cache. Build the file here, in this request's own thread, rather
+            // than scheduling it and handing back something else: scheduling meant
+            // every tile of a folder nobody had looked at yet was decoded twice, once
+            // for this request and once by the pooled job, which is the spike that
+            // comes with opening a folder of wallpapers.
+            ImageCacher::runJob(path, cachePath, size, m_fillMode);
+
+            QImageReader built(cachePath);
+            if (built.canRead()) {
+                m_image = built.read();
+                if (!m_image.isNull())
+                    return;
+            }
         }
 
-        // Schedule cache job (this call will return the original image, but later ones will use cache)
-        ImageCacher::instance()->schedule(path, cachePath, size, m_fillMode);
+        // No cache to read or write (it is disabled, or the source is not a file):
+        // decode at the size that was asked for. QImageReader scales as it decodes,
+        // so this costs the tile rather than the wallpaper.
+        QImageReader coldReader(path);
+        coldReader.setAutoTransform(true);
+        if (m_fillMode == ImageCacher::FillMode::Stretch) {
+            coldReader.setScaledSize(size);
+        } else {
+            const QSize source = coldReader.size();
+            if (source.isValid() && !source.isEmpty()) {
+                const Qt::AspectRatioMode mode =
+                    m_fillMode == ImageCacher::FillMode::Crop ? Qt::KeepAspectRatioByExpanding : Qt::KeepAspectRatio;
+                coldReader.setScaledSize(source.scaled(size, mode));
+            }
+        }
 
-        m_image = QImage(path);
+        m_image = coldReader.read();
+        if (m_image.isNull())
+            m_image = QImage(path); // Whatever the reader would not do, this will.
         if (m_image.isNull()) {
             m_error = QStringLiteral("Failed to decode source: ") + path;
             qCWarning(lcCProv).noquote() << m_error;

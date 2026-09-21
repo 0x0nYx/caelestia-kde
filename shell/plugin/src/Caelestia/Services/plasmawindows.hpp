@@ -32,21 +32,40 @@ public:
     void setUuid(const QString& uuid);
 
     QString title() const { return m_title; }
+
     QString appId() const { return m_appId; }
+
     uint32_t pid() const { return m_pid; }
+
     int x() const { return m_x; }
+
     int y() const { return m_y; }
+
     uint32_t width() const { return m_width; }
+
     uint32_t height() const { return m_height; }
 
     bool isActive() const { return m_isActive; }
+
     bool isMinimized() const { return m_isMinimized; }
+
     bool isMaximized() const { return m_isMaximized; }
+
     bool isFullscreen() const { return m_isFullscreen; }
+
     bool demandsAttention() const { return m_demandsAttention; }
+
     bool skipTaskbar() const { return m_skipTaskbar; }
 
     QStringList desktops() const { return m_desktops; }
+
+    /// Sets or clears one window state flag.
+    ///
+    /// The protocol request carries a flags bitfield (which states are being
+    /// touched) and a state bitfield (their new values), so clearing a flag is
+    /// flags=flag, state=0. Passing flags=0 matches no state at all and does
+    /// nothing, which is what made the "restore" paths silently no-op.
+    void setState(uint32_t flag, bool set) { set_state(flag, set ? flag : 0); }
 
 signals:
     void titleChanged();
@@ -109,12 +128,13 @@ protected:
 
 class PlasmaStackingOrder : public QObject, public QtWayland::org_kde_plasma_stacking_order {
     Q_OBJECT
+
 public:
     explicit PlasmaStackingOrder(struct ::org_kde_plasma_stacking_order* object, QObject* parent = nullptr);
     ~PlasmaStackingOrder() override;
 
 protected:
-    void org_kde_plasma_stacking_order_window(const QString &uuid) override;
+    void org_kde_plasma_stacking_order_window(const QString& uuid) override;
     void org_kde_plasma_stacking_order_done() override;
 
 signals:
@@ -145,7 +165,7 @@ public:
     /// the connection is already gone. Uuids are normalised, so callers need
     /// not care whether theirs arrived brace-wrapped.
     PlasmaWindowHandle* handleFor(const QString& uuid);
-    
+
     QList<QString> windowUuids() const { return m_handles.keys(); }
 
     /// KWin hands out window ids as QUuid::toString(), i.e. brace-wrapped.

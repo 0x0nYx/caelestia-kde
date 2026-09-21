@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import M3Shapes
 import Caelestia.Config
-import Caelestia.Services
 import qs.components
 import qs.services
 import qs.utils
@@ -27,14 +26,25 @@ GridLayout {
     readonly property real scaleFactor: rawScale < 1.0 ? Math.sqrt(Math.max(0.1, rawScale)) : rawScale
     readonly property int barThickness: Math.round(Tokens.sizes.bar.innerWidth * scaleFactor)
 
+    readonly property bool isActive: activeWsId === ws
+    // An inactive, empty workspace keeps its pill only when the user wants the
+    // full strip; otherwise it collapses to nothing.
+    readonly property bool shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || isActive
+    // Animated rather than a plain flag so the pills after a collapsed workspace
+    // close the gap instead of jumping. Everything that measures this item
+    // (OccupiedBg, ActiveIndicator) goes through `size`, so that has to shrink
+    // with the animation as well.
+    property real reveal: shouldShow ? 1 : 0
+    readonly property real revealProgress: Math.max(0, Math.min(1, reveal))
+
     // Unanimated prop for others to use as reference
-    readonly property int size: isHorizontal ? (implicitWidth + (hasWindows ? Tokens.padding.extraSmall : 0)) : (implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0))
+    readonly property real size: ((isHorizontal ? implicitWidth : implicitHeight) + (hasWindows ? Tokens.padding.extraSmall : 0)) * revealProgress
 
     readonly property int ws: groupOffset + index + 1
     readonly property int maxIcons: Config.bar.workspaces.maxWindowIcons
     readonly property bool isOccupied: occupied[ws] ?? false
     readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows
-    property var kwinWindowList: KWinActiveWindowBridge.windowList
+    property var kwinWindowList: Kwin.windowList
 
     // Cache window-icon lists per layout so the Repeater only rebuilds
     // when the set of window identities actually changes, not on every
@@ -52,6 +62,15 @@ GridLayout {
     columnSpacing: 0
     rowSpacing: 0
 
+    visible: shouldShow || revealProgress > 0
+    opacity: revealProgress
+
+    Behavior on reveal {
+        Anim {
+            type: Anim.DefaultEffects
+        }
+    }
+
     Loader {
         id: indicator
 
@@ -60,7 +79,7 @@ GridLayout {
         Layout.preferredHeight: isHorizontal ? -1 : (barThickness - Tokens.padding.small)
 
         asynchronous: true
-        sourceComponent: Config.bar.workspaces.useIcon ? iconComponent : textComponent
+        sourceComponent: Config.bar.workspaces.displayType === BarWorkspaceDisplay.Text ? textComponent : iconComponent
     }
 
     Component {
@@ -97,6 +116,16 @@ GridLayout {
 
             // Track if this position was active (independent of which workspace)
             readonly property bool active: root.activeWsId === root.ws
+            // The shapes the focused workspace morphs into.
+            //
+            // Upstream's pool also carries the organic ones - Cookie4Sided through
+            // Cookie12Sided, Clover4Leaf, Clover8Leaf, SoftBurst and Ghostish. A cookie
+            // is a circle with a bite taken out of it, which reads as a Pac-Man sitting
+            // in the bar rather than as a Material indicator, so this is a deliberate
+            // divergence: re-check the pool when syncing from upstream, or they return
+            // with the next sync.
+            readonly property list<int> focusShapes: [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny]
+
             property int randShape: MaterialShape.Slanted
             property bool wasPositionActive: false
             property int lastKnownWs: -1
@@ -115,13 +144,13 @@ GridLayout {
             property int swipeStartWsId: -1
             property bool generatedShapeThisSwipe: false
 
-            property real rawSwipeOffset: typeof KWinWorkspaceState !== "undefined" ? (KWinWorkspaceState.swipeOffsetByOutput?.[root.screenName] ?? KWinWorkspaceState.swipeOffset) : 0.0
+            property real rawSwipeOffset: Kwin.swipeOffsetByOutput?.[root.screenName] ?? Kwin.swipeOffset
             property real lastRawSwipeOffset: 0.0
             property bool isSwiping: false
 
             readonly property real swipeWeight: {
                 if (!isSwiping || rawSwipeOffset === 0.0) return active ? 1.0 : 0.0;
-                
+
                 // Use swipeStartWsId to prevent KWin desyncs when activeWsId changes before rawSwipeOffset resets
                 const startId = swipeStartWsId !== -1 ? swipeStartWsId : root.activeWsId;
                 const activeIdx = startId - 1;
@@ -140,9 +169,7 @@ GridLayout {
                 const wsChanged = lastKnownWs !== root.ws;
                 if (active && (!wasPositionActive || wsChanged)) {
                     if (!hasRandomShape) {
-                        const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish];
-                        const shuffled = [...shapes].sort(() => Math.random() - 0.5);
-                        randShape = shuffled[0];
+                        randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
                         wsShape.shape = randShape;
                         hasRandomShape = true;
                     }
@@ -186,9 +213,7 @@ GridLayout {
                 if (isSwiping) {
                     if (smoothSwipeWeight >= 0.05 && !hasRandomShape) {
                         if (!generatedShapeThisSwipe && !active) {
-                            const shapes = [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.Clover8Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish];
-                            const shuffled = [...shapes].sort(() => Math.random() - 0.5);
-                            randShape = shuffled[0];
+                            randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
                             generatedShapeThisSwipe = true;
                         }
                         wsShape.shape = randShape;
@@ -332,26 +357,9 @@ GridLayout {
             Repeater {
                 model: ScriptModel {
                     values: {
-                        const ws = root.ws;
-                        let windows = [];
-                        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList) {
-                            const wins = KWinActiveWindowBridge.windowList;
-                            for (let i = 0; i < wins.length; ++i) {
-                                const w = wins[i];
-                                if (w.output !== root.screenName)
-                                    continue;
-                                if (w.workspace && w.workspace.id === ws && w["class"] !== "quickshell" && w["class"] !== "plasmashell") {
-                                    windows.push(w);
-                                }
-                            }
-                        } else if (typeof Hypr !== "undefined") {
-                            const wins = Hypr.toplevels.values;
-                            for (let i = 0; i < wins.length; ++i) {
-                                if (wins[i].workspace && wins[i].workspace.id === ws) {
-                                    windows.push(wins[i]);
-                                }
-                            }
-                        }
+                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
+                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");
@@ -402,26 +410,9 @@ GridLayout {
             Repeater {
                 model: ScriptModel {
                     values: {
-                        const ws = root.ws;
-                        let windows = [];
-                        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList) {
-                            const wins = KWinActiveWindowBridge.windowList;
-                            for (let i = 0; i < wins.length; ++i) {
-                                const w = wins[i];
-                                if (w.output !== root.screenName)
-                                    continue;
-                                if (w.workspace && w.workspace.id === ws && w["class"] !== "quickshell" && w["class"] !== "plasmashell") {
-                                    windows.push(w);
-                                }
-                            }
-                        } else if (typeof Hypr !== "undefined") {
-                            const wins = Hypr.toplevels.values;
-                            for (let i = 0; i < wins.length; ++i) {
-                                if (wins[i].workspace && wins[i].workspace.id === ws) {
-                                    windows.push(wins[i]);
-                                }
-                            }
-                        }
+                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
+                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
+
                         const maxIcons = root.Config.bar.workspaces.maxWindowIcons;
                         windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                         const keys = windows.map(w => w.address || w["class"]).sort().join(",");

@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "weather.hpp"
 
-#include "../Config/rootnodes.hpp"
-#include "../Config/serviceconfig.hpp"
-
-#include <cmath>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qloggingcategory.h>
 #include <qstandardpaths.h>
 #include <qurlquery.h>
+
+#include <cmath>
+
+#include "../Config/rootnodes.hpp"
+#include "../Config/serviceconfig.hpp"
 
 Q_LOGGING_CATEGORY(lcWeather, "caelestia.services.weather", QtInfoMsg)
 
@@ -45,7 +46,7 @@ Weather::Weather(QObject* parent)
                 fetchWeatherData();
             }
         });
-        connect(svcCfg, &config::ServiceConfig::useFahrenheitChanged, this, [this]() {
+        connect(svcCfg, &config::ServiceConfig::weatherUnitsChanged, this, [this]() {
             emit weatherChanged();
             emit forecastChanged();
         });
@@ -162,117 +163,130 @@ bool Weather::loading() const {
 QString Weather::formatTemp(const QVariant& tempVal) const {
     const auto* cfg = config::ConfigSingleton::instance();
     const auto* svcCfg = cfg ? cfg->services() : nullptr;
-    const bool useF = svcCfg ? svcCfg->useFahrenheit() : false;
+    const auto unit = svcCfg ? svcCfg->weatherUnits() : config::TemperatureUnit::Celsius;
+
+    const auto placeholder = [unit]() -> QString {
+        switch (unit) {
+        case config::TemperatureUnit::Fahrenheit:
+            return QStringLiteral("--°F");
+        case config::TemperatureUnit::Kelvin:
+            return QStringLiteral("-- K");
+        default:
+            return QStringLiteral("--°C");
+        }
+    };
 
     if (!tempVal.isValid() || tempVal.isNull()) {
-        return useF ? QStringLiteral("--°F") : QStringLiteral("--°C");
+        return placeholder();
     }
 
     bool ok = false;
     const double val = tempVal.toDouble(&ok);
     if (!ok || std::isnan(val)) {
-        return useF ? QStringLiteral("--°F") : QStringLiteral("--°C");
+        return placeholder();
     }
 
-    if (useF) {
-        const int f = static_cast<int>(std::round(val * 9.0 / 5.0 + 32.0));
-        return QStringLiteral("%1°F").arg(f);
+    switch (unit) {
+    case config::TemperatureUnit::Fahrenheit:
+        return QStringLiteral("%1°F").arg(static_cast<int>(std::round(val * 9.0 / 5.0 + 32.0)));
+    case config::TemperatureUnit::Kelvin:
+        return QStringLiteral("%1 K").arg(static_cast<int>(std::round(val + 273.15)));
+    default:
+        return QStringLiteral("%1°C").arg(static_cast<int>(std::round(val)));
     }
-    const int c = static_cast<int>(std::round(val));
-    return QStringLiteral("%1°C").arg(c);
 }
 
 QString Weather::getWeatherIcon(int code, bool isDay) {
     switch (code) {
-        case 0:
-        case 1:
-            return isDay ? QStringLiteral("clear_day") : QStringLiteral("clear_night");
-        case 2:
-            return isDay ? QStringLiteral("partly_cloudy_day") : QStringLiteral("partly_cloudy_night");
-        case 3:
-            return QStringLiteral("cloud");
-        case 45:
-        case 48:
-            return QStringLiteral("foggy");
-        case 51:
-        case 53:
-        case 55:
-        case 56:
-        case 57:
-        case 61:
-        case 63:
-        case 65:
-        case 66:
-        case 67:
-        case 80:
-        case 81:
-        case 82:
-            return QStringLiteral("rainy");
-        case 71:
-        case 73:
-        case 77:
-        case 85:
-            return QStringLiteral("cloudy_snowing");
-        case 75:
-        case 86:
-            return QStringLiteral("snowing_heavy");
-        case 95:
-        case 96:
-        case 99:
-            return QStringLiteral("thunderstorm");
-        default:
-            return QStringLiteral("air");
+    case 0:
+    case 1:
+        return isDay ? QStringLiteral("clear_day") : QStringLiteral("clear_night");
+    case 2:
+        return isDay ? QStringLiteral("partly_cloudy_day") : QStringLiteral("partly_cloudy_night");
+    case 3:
+        return QStringLiteral("cloud");
+    case 45:
+    case 48:
+        return QStringLiteral("foggy");
+    case 51:
+    case 53:
+    case 55:
+    case 56:
+    case 57:
+    case 61:
+    case 63:
+    case 65:
+    case 66:
+    case 67:
+    case 80:
+    case 81:
+    case 82:
+        return QStringLiteral("rainy");
+    case 71:
+    case 73:
+    case 77:
+    case 85:
+        return QStringLiteral("cloudy_snowing");
+    case 75:
+    case 86:
+        return QStringLiteral("snowing_heavy");
+    case 95:
+    case 96:
+    case 99:
+        return QStringLiteral("thunderstorm");
+    default:
+        return QStringLiteral("air");
     }
 }
 
 QString Weather::getWeatherCondition(int code) {
     switch (code) {
-        case 0:
-        case 1:
-            return QStringLiteral("Clear");
-        case 2:
-            return QStringLiteral("Partly cloudy");
-        case 3:
-            return QStringLiteral("Overcast");
-        case 45:
-        case 48:
-            return QStringLiteral("Fog");
-        case 51:
-        case 53:
-        case 55:
-            return QStringLiteral("Drizzle");
-        case 56:
-        case 57:
-            return QStringLiteral("Freezing drizzle");
-        case 61:
-        case 66:
-        case 80:
-            return QStringLiteral("Light rain");
-        case 63:
-        case 81:
-            return QStringLiteral("Rain");
-        case 65:
-        case 67:
-        case 82:
-            return QStringLiteral("Heavy rain");
-        case 71:
-            return QStringLiteral("Light snow");
-        case 73:
-        case 77:
-            return QStringLiteral("Snow");
-        case 75:
-            return QStringLiteral("Heavy snow");
-        case 85:
-            return QStringLiteral("Light snow showers");
-        case 86:
-            return QStringLiteral("Heavy snow showers");
-        case 95:
-            return QStringLiteral("Thunderstorm");
-        case 96:
-        case 99:
-            return QStringLiteral("Thunderstorm with hail");
-        default:
-            return QStringLiteral("Unknown");
+    case 0:
+    case 1:
+        return QStringLiteral("Clear");
+    case 2:
+        return QStringLiteral("Partly cloudy");
+    case 3:
+        return QStringLiteral("Overcast");
+    case 45:
+    case 48:
+        return QStringLiteral("Fog");
+    case 51:
+    case 53:
+    case 55:
+        return QStringLiteral("Drizzle");
+    case 56:
+    case 57:
+        return QStringLiteral("Freezing drizzle");
+    case 61:
+    case 66:
+    case 80:
+        return QStringLiteral("Light rain");
+    case 63:
+    case 81:
+        return QStringLiteral("Rain");
+    case 65:
+    case 67:
+    case 82:
+        return QStringLiteral("Heavy rain");
+    case 71:
+        return QStringLiteral("Light snow");
+    case 73:
+    case 77:
+        return QStringLiteral("Snow");
+    case 75:
+        return QStringLiteral("Heavy snow");
+    case 85:
+        return QStringLiteral("Light snow showers");
+    case 86:
+        return QStringLiteral("Heavy snow showers");
+    case 95:
+        return QStringLiteral("Thunderstorm");
+    case 96:
+    case 99:
+        return QStringLiteral("Thunderstorm with hail");
+    default:
+        return QStringLiteral("Unknown");
     }
 }
 
@@ -359,7 +373,8 @@ void Weather::fetchLocation() {
     m_locReply = m_nam->get(req);
 
     connect(m_locReply, &QNetworkReply::finished, this, [this]() {
-        if (!m_locReply) return;
+        if (!m_locReply)
+            return;
         if (m_locReply->error() == QNetworkReply::NoError) {
             const auto data = m_locReply->readAll();
             const auto doc = QJsonDocument::fromJson(data);
@@ -386,23 +401,28 @@ void Weather::fetchLocation() {
 }
 
 void Weather::fetchCityFromCoords(const QString& coords) {
-    if (coords.isEmpty() || !coords.contains(QLatin1Char(','))) return;
+    if (coords.isEmpty() || !coords.contains(QLatin1Char(',')))
+        return;
     if (m_cityReply) {
         return; // Already in-flight
     }
 
     const auto parts = coords.split(QLatin1Char(','));
-    if (parts.size() < 2) return;
+    if (parts.size() < 2)
+        return;
     const QString lat = parts.at(0).trimmed();
     const QString lon = parts.at(1).trimmed();
 
-    QUrl url(QStringLiteral("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%1&longitude=%2&localityLanguage=en").arg(lat, lon));
+    QUrl url(QStringLiteral(
+        "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=%1&longitude=%2&localityLanguage=en")
+            .arg(lat, lon));
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("caelestia-shell/1.0"));
     m_cityReply = m_nam->get(req);
 
     connect(m_cityReply, &QNetworkReply::finished, this, [this, coords]() {
-        if (!m_cityReply) return;
+        if (!m_cityReply)
+            return;
         if (m_cityReply->error() == QNetworkReply::NoError) {
             const auto data = m_cityReply->readAll();
             const auto doc = QJsonDocument::fromJson(data);
@@ -469,9 +489,12 @@ void Weather::fetchWeatherData() {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("latitude"), lat);
     query.addQueryItem(QStringLiteral("longitude"), lon);
-    query.addQueryItem(QStringLiteral("hourly"), QStringLiteral("weather_code,temperature_2m,precipitation_probability"));
-    query.addQueryItem(QStringLiteral("daily"), QStringLiteral("weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset"));
-    query.addQueryItem(QStringLiteral("current"), QStringLiteral("temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m"));
+    query.addQueryItem(
+        QStringLiteral("hourly"), QStringLiteral("weather_code,temperature_2m,precipitation_probability"));
+    query.addQueryItem(
+        QStringLiteral("daily"), QStringLiteral("weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset"));
+    query.addQueryItem(QStringLiteral("current"),
+        QStringLiteral("temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m"));
     query.addQueryItem(QStringLiteral("timezone"), QStringLiteral("auto"));
     query.addQueryItem(QStringLiteral("forecast_days"), QStringLiteral("7"));
     url.setQuery(query);
@@ -484,7 +507,8 @@ void Weather::fetchWeatherData() {
     m_weatherReply = m_nam->get(request);
 
     connect(m_weatherReply, &QNetworkReply::finished, this, [this]() {
-        if (!m_weatherReply) return;
+        if (!m_weatherReply)
+            return;
         m_loading = false;
         emit loadingChanged();
 
@@ -534,8 +558,10 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
     const auto dailyCodes = daily.value(QStringLiteral("weather_code")).toArray();
     const auto dailyTimes = daily.value(QStringLiteral("time")).toArray();
 
-    if (!dailyMax.isEmpty()) m_maxTempC = dailyMax.at(0).toDouble();
-    if (!dailyMin.isEmpty()) m_minTempC = dailyMin.at(0).toDouble();
+    if (!dailyMax.isEmpty())
+        m_maxTempC = dailyMax.at(0).toDouble();
+    if (!dailyMin.isEmpty())
+        m_minTempC = dailyMin.at(0).toDouble();
 
     if (!dailySunrise.isEmpty()) {
         const QDateTime dt = QDateTime::fromString(dailySunrise.at(0).toString(), Qt::ISODate);
@@ -601,13 +627,15 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
 }
 
 QString Weather::cacheFilePath() {
-    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/caelestia");
+    const QString cacheDir =
+        QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/caelestia");
     QDir().mkpath(cacheDir);
     return cacheDir + QStringLiteral("/weather_cache.json");
 }
 
 QString Weather::citiesCacheFilePath() {
-    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/caelestia");
+    const QString cacheDir =
+        QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QStringLiteral("/caelestia");
     QDir().mkpath(cacheDir);
     return cacheDir + QStringLiteral("/cities.json");
 }
@@ -631,9 +659,11 @@ void Weather::saveCache(const QJsonObject& json) {
 }
 
 void Weather::loadCachedCity() {
-    if (m_loc.isEmpty()) return;
+    if (m_loc.isEmpty())
+        return;
     QFile f(citiesCacheFilePath());
-    if (!f.open(QIODevice::ReadOnly)) return;
+    if (!f.open(QIODevice::ReadOnly))
+        return;
     const auto doc = QJsonDocument::fromJson(f.readAll());
     if (doc.isObject()) {
         const auto obj = doc.object();
@@ -645,7 +675,8 @@ void Weather::loadCachedCity() {
 }
 
 void Weather::saveCachedCity(const QString& coords, const QString& cityName) {
-    if (coords.isEmpty() || cityName.isEmpty()) return;
+    if (coords.isEmpty() || cityName.isEmpty())
+        return;
     QJsonObject obj;
     QFile f(citiesCacheFilePath());
     if (f.open(QIODevice::ReadOnly)) {

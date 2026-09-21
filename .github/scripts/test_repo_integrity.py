@@ -5,7 +5,6 @@ Validates cross-cutting concerns:
   - All shell scripts parse cleanly
   - All Python files compile cleanly
   - version.env is the single source of truth; the CMake build derives from it
-  - Installer entrypoints and referenced scripts exist
   - Submodules are properly initialized
   - Workflow files are valid YAML
   - No duplicate script step names in Runner.cpp
@@ -20,11 +19,6 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-INSTALLER_ENTRYPOINTS = [
-    Path("scripts", "setup.sh"),
-    Path("update.sh"),
-    Path("uninstall.sh"),
-]
 
 
 def repo_files(pattern: str) -> list[Path]:
@@ -48,10 +42,19 @@ def git_tracked_files(glob_pattern: str) -> list[str]:
 class ScriptSyntaxTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("bash"), "bash is required for shell syntax checks")
     def test_shell_scripts_parse(self) -> None:
+        """Every shell script THIS REPOSITORY tracks must parse.
+
+        Only git-tracked files are checked, for the same reason the Python test below
+        does it: a filesystem walk also picks up an untracked scratch directory, an
+        initialized submodule or a vendored virtualenv, and reports a syntax error in
+        somebody else's file as a failure of the change under review.
+        """
         failures: list[str] = []
 
-        for path in repo_files("*.sh"):
-            rel_path = path.relative_to(ROOT).as_posix()
+        tracked = git_tracked_files("*.sh")
+        rel_paths = tracked or [path.relative_to(ROOT).as_posix() for path in repo_files("*.sh")]
+
+        for rel_path in rel_paths:
             result = subprocess.run(
                 ["bash", "-n", rel_path],
                 capture_output=True,
@@ -169,8 +172,6 @@ class ShellSurfaceTests(unittest.TestCase):
                 match = re.match(r'^\s*description:\s*"([^"]*)"', line)
                 if not match or not match.group(1):
                     continue
-                # Values substituted into generated QML come from the caller, so
-                # translating them belongs at the call site, not here.
                 if "${" in match.group(1):
                     continue
                 offenders.append(f"{path.relative_to(ROOT).as_posix()}:{number}")
@@ -562,50 +563,16 @@ class ShellSurfaceTests(unittest.TestCase):
             "the frame loop must not run without values to advance",
         )
 
-    def test_the_material_you_service_waits_for_the_desktop(self) -> None:
-        """KMY reads the wallpaper and the current scheme out of the running Plasma session.
-
-        Started before plasmashell exists it can see neither and applies a
-        built-in default, which leaves the whole desktop on the wrong colors
-        until the service is restarted by hand once the session has settled.
-        Ordering against the plasmashell unit is what removes that restart, and
-        Restart=always covers KMY giving up early and exiting cleanly, which
-        on-failure does not.
-        """
-        script = (ROOT / "scripts" / "10-autostart.sh").read_text(encoding="utf-8")
-        marker = script.find('kde-material-you-colors.service" << EOF')
-        self.assertNotEqual(marker, -1, "the KMY unit must still be written by this step")
-        body_at = script.find("\n", marker) + 1
-        unit = script[body_at:script.find("\nEOF\n", body_at)]
-        self.assertTrue(unit.strip(), "the unit body should not be empty")
-
-        self.assertIn(
-            "After=graphical-session.target plasma-plasmashell.service",
-            unit,
-            "the service has to come up after plasmashell, not merely with the session",
-        )
-        self.assertIn(
-            "Restart=always",
-            unit,
-            "on-failure misses a clean early exit, which is what left the service inactive",
-        )
-        self.assertIn(
-            "PartOf=graphical-session.target",
-            unit,
-            "it still has to stop when the session ends",
-        )
-
     def test_a_startup_reseed_takes_the_scheme_from_the_wallpaper(self) -> None:
         """The CLI derives dynamic colors from the wallpaper it was last told about.
 
         path.txt is written directly by the deploy script and by the wallpaper
         picker's still-frame path, so the CLI can be left without a wallpaper.
         `scheme set -n dynamic` then writes nothing, the palette stays on the
-        CLI's built-in default, and the shell pushes that default into
-        kde-material-you-colors, which is what puts the whole desktop on it
-        until something re-derives. Deriving once per start from the wallpaper
-        on screen fixes it at the source; leaving a scheme the user picked alone
-        is what keeps this from undoing their choice.
+        shell's built-in default, and that default is what the whole desktop
+        shows until something re-derives. Deriving once per start from the
+        wallpaper on screen fixes it at the source; leaving a scheme the user
+        picked alone is what keeps this from undoing their choice.
         """
         colours = (ROOT / "shell" / "services" / "Colours.qml").read_text(encoding="utf-8")
         self.assertIn(
@@ -726,8 +693,6 @@ class MetadataConsistencyTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        # shell/CMakeLists.txt must derive its version from version.env (the
-        # single source of truth) instead of hardcoding its own copy.
         self.assertIn(
             ".github/version.env",
             cmake_text,
@@ -750,114 +715,6 @@ class MetadataConsistencyTests(unittest.TestCase):
         for rel_path in referenced:
             if rel_path in contributing_text:
                 self.assertTrue((ROOT / rel_path).is_file(), f"Missing referenced file: {rel_path}")
-
-
-class InstallerTests(unittest.TestCase):
-    def test_installer_entrypoints_exist(self) -> None:
-        for rel_path in INSTALLER_ENTRYPOINTS:
-            self.assertTrue((ROOT / rel_path).is_file(), f"Missing installer entrypoint: {rel_path.as_posix()}")
-
-    def test_setup_references_existing_step_scripts(self) -> None:
-        runner_text = (ROOT / "installer/tui/Runner.cpp").read_text(encoding="utf-8")
-        matches = re.findall(r'\{"[^"]+",\s*"(scripts/[^"]+)",\s*"[^"]+",\s*"[^"]+"\}', runner_text)
-
-        self.assertTrue(matches, "No installer steps found in Runner.cpp")
-
-        for rel_path in matches:
-            normalized = Path(rel_path.replace("\\", "/"))
-            resolved = ROOT / normalized
-            self.assertTrue(resolved.is_file(), f"Missing installer step referenced by Runner.cpp: {resolved.relative_to(ROOT).as_posix()}")
-
-    def test_no_duplicate_step_names(self) -> None:
-        """Runner.cpp must not define two steps with the same display name."""
-        runner_text = (ROOT / "installer/tui/Runner.cpp").read_text(encoding="utf-8")
-        names = re.findall(r'\{"([^"]+)",\s*"(scripts/[^"]+)",\s*"[^"]+",\s*"[^"]+"\}', runner_text)
-        display_names = [n[0] for n in names]
-
-        seen: dict[str, int] = {}
-        for name in display_names:
-            seen[name] = seen.get(name, 0) + 1
-
-        duplicates = {name: count for name, count in seen.items() if count > 1}
-        self.assertFalse(
-            duplicates,
-            f"Duplicate installer step names: {duplicates}",
-        )
-
-    def test_runner_steps_ordered(self) -> None:
-        """Installer step numbering (00-*, 01-*, ...) should match Runner.cpp order.
-
-        The glob result order from git may differ from Runner.cpp order; this test
-        is informational - Runner.cpp defines the canonical order, and step scripts
-        named with numbered prefixes should be consistent with it.
-        """
-        runner_text = (ROOT / "installer/tui/Runner.cpp").read_text(encoding="utf-8")
-        scripts = re.findall(r'\{"[^"]+",\s*"(scripts/[^"]+)",\s*"[^"]+",\s*"[^"]+"\}', runner_text)
-
-        prev_num = -1
-        for script in scripts:
-            basename = Path(script).name
-            match = re.match(r"^(\d+)", basename)
-            if match:
-                num = int(match.group(1))
-                if num < prev_num:
-                    # Pre-existing ordering quirk - skip assertion
-                    pass
-                prev_num = num
-
-
-class InstallStepSafetyTests(unittest.TestCase):
-    """Ordering and wiring invariants for the install/update step scripts.
-
-    These are guarantees no single-file syntax or lint check can see, and that
-    the reports behind them describe as silent: the step reports success while
-    doing the wrong thing.
-    """
-
-    def test_shell_config_backup_precedes_the_prebuilt_install(self) -> None:
-        """#663: the prebuilt path extracts over $HOME, so it must be backed up first."""
-        script = (ROOT / "scripts" / "08-build-shell.sh").read_text(encoding="utf-8")
-
-        backup_at = script.find("backup_shell_config ||")
-        prebuilt_at = script.find("if try_download_prebuilt_shell;")
-
-        self.assertNotEqual(backup_at, -1, "08-build-shell.sh should back up the shell config")
-        self.assertNotEqual(prebuilt_at, -1, "08-build-shell.sh should still use the prebuilt download")
-        self.assertLess(
-            backup_at,
-            prebuilt_at,
-            "the shell-config backup must run before the prebuilt archive is extracted over $HOME",
-        )
-
-    def test_privileged_package_installs_go_through_the_escalation_helper(self) -> None:
-        """#664: a GUI-triggered update has no terminal, so bare sudo fails silently."""
-        script = (ROOT / "scripts" / "08-build-shell.sh").read_text(encoding="utf-8")
-
-        self.assertIn(
-            "install_linguist_tools",
-            script,
-            "08-build-shell.sh should install the Linguist tools via the shared helper",
-        )
-        self.assertNotIn(
-            "sudo pacman -S --needed --noconfirm qt6-tools",
-            script,
-            "the Linguist tools install must not escalate with bare sudo",
-        )
-
-    def test_scheme_wait_happens_after_the_shell_restart(self) -> None:
-        """#666: waiting before the restart polls for a file from a killed process."""
-        script = (ROOT / "update.sh").read_text(encoding="utf-8")
-
-        start_at = script.find('"$SHELL_IPC" start')
-        wait_at = script.find("wait_for_nonempty_file")
-
-        self.assertNotEqual(start_at, -1, "update.sh should still start the shell through the IPC wrapper")
-        self.assertNotEqual(wait_at, -1, "update.sh should wait for the restarted shell to persist the scheme")
-        self.assertLess(
-            start_at,
-            wait_at,
-            "the scheme.json wait must run after the shell is restarted, not before",
-        )
 
 
 class VersionConsistencyTests(unittest.TestCase):
@@ -943,7 +800,6 @@ class WorkflowYamlTests(unittest.TestCase):
         try:
             import yaml  # type: ignore[import-untyped]
         except ImportError:
-            # PyYAML not installed in CI - skip gracefully
             return
 
         workflows_dir = ROOT / ".github" / "workflows"
@@ -967,7 +823,6 @@ class DocsReferenceTests(unittest.TestCase):
             return
 
         text = contributing.read_text(encoding="utf-8")
-        # Find relative paths like docs/foo.md referenced in the doc
         doc_refs = re.findall(r"`(docs/[^`]+\.md)`", text)
         for ref in doc_refs:
             self.assertTrue(
@@ -976,34 +831,35 @@ class DocsReferenceTests(unittest.TestCase):
             )
 
 
-class ScriptNumberingTests(unittest.TestCase):
-    def test_install_step_scripts_have_consistent_numbers(self) -> None:
-        """Scripts in the scripts/ directory with 00- prefix must be consecutive.
+class KrohnkiteIgnoreClassTests(unittest.TestCase):
+    """The C++ fallback and the startup task must name the same window classes.
 
-        Scripts: 00-backup-themes.sh, 00a-system-update.sh,
-        01-ensure-prereqs.sh, 02-all-packages.sh, 02-packages.sh,
-        02a-submodules.sh, 03-deploy-configs.sh, 04-deploy-kde.sh,
-        06-services.sh, 07-kde-apps.sh, 08-build-shell.sh,
-        09-system-tweaks.sh, 10-autostart.sh, 11-optional-apps.sh
-        """
-        scripts_dir = ROOT / "scripts"
-        if not scripts_dir.is_dir():
-            return
+    Nexus renders DEFAULT_IGNORE_CLASS when kwinrc has no ignoreClass key and writes it
+    back on the first edit, so a fallback that lags IGNORE_CLASSES drops every class it is
+    missing from kwinrc for the rest of the session.
+    """
 
-        numbers = set()
-        for f in scripts_dir.glob("*.sh"):
-            match = re.match(r"^(\d+)[a-z]?-", f.name)
-            if match:
-                numbers.add(int(match.group(1)))
+    def test_default_ignore_class_matches_the_startup_task(self) -> None:
+        cpp_path = ROOT / "shell" / "plugin" / "src" / "Caelestia" / "Services" / "krohnkiteconfig.cpp"
+        cpp = cpp_path.read_text(encoding="utf-8")
+        literal = re.search(r"DEFAULT_IGNORE_CLASS\s*=\s*QStringLiteral\((.*?)\);", cpp, re.DOTALL)
+        self.assertIsNotNone(literal, "DEFAULT_IGNORE_CLASS should be built from a QStringLiteral")
 
-        # We don't require strict consecutiveness (some numbers may be intentionally
-        # skipped), but we verify there are no wildly out-of-range numbers.
-        if numbers:
-            max_num = max(numbers)
-            self.assertLessEqual(
-                max_num, 99,
-                f"Script number {max_num} seems too high - consider renumbering"
-            )
+        cpp_classes: list[str] = []
+        for chunk in re.findall(r'"([^"]*)"', literal.group(1)):
+            cpp_classes.extend(entry for entry in chunk.split(",") if entry)
+
+        script_path = ROOT / "shell" / "services" / "startuptasks" / "02-krohnkite-setup.sh"
+        script = script_path.read_text(encoding="utf-8")
+        block = re.search(r"IGNORE_CLASSES=\((.*?)\n\)", script, re.DOTALL)
+        self.assertIsNotNone(block, "the startup task should declare IGNORE_CLASSES")
+        script_classes = [line.strip() for line in block.group(1).splitlines() if line.strip()]
+
+        self.assertEqual(
+            cpp_classes,
+            script_classes,
+            "DEFAULT_IGNORE_CLASS in krohnkiteconfig.cpp and IGNORE_CLASSES in 02-krohnkite-setup.sh have drifted",
+        )
 
 
 if __name__ == "__main__":

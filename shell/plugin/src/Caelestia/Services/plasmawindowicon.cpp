@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "plasmawindowicon.hpp"
 
-#include "plasmawindows.hpp"
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <QBuffer>
 #include <QCryptographicHash>
@@ -13,8 +14,7 @@
 #include <QSocketNotifier>
 #include <QStandardPaths>
 
-#include <fcntl.h>
-#include <unistd.h>
+#include "plasmawindows.hpp"
 
 namespace caelestia::services {
 
@@ -25,8 +25,15 @@ Q_LOGGING_CATEGORY(logPlasmaWindowIcon, "caelestia.services.plasmawindowicon");
 /// Largest pixmap the icon can give us, so the dock has something to scale down
 /// from rather than up.
 QImage largestPixmap(const QIcon& icon) {
-    QSize best;
     const auto sizes = icon.availableSizes();
+
+    //  Ref #759. Discard any icons that are not raw pixel data.
+    // (the pipe is for raw pixel data, not theme lookups.)
+    if (sizes.isEmpty() && !icon.name().isEmpty()) {
+        return {};
+    }
+
+    QSize best;
     for (const auto& size : sizes) {
         if (static_cast<qint64>(size.width()) * size.height() > static_cast<qint64>(best.width()) * best.height()) {
             best = size;
@@ -148,8 +155,7 @@ void PlasmaWindowIcon::deliver(const QString& uuid, const QByteArray& payload) {
     // file, and no window can ever pick up one belonging to something else.
     const auto cacheRoot =
         QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/caelestia/winicons");
-    const auto digest =
-        QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
+    const auto digest = QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
     const auto path = cacheRoot + QStringLiteral("/") + digest + QStringLiteral(".png");
 
     if (!QFile::exists(path)) {

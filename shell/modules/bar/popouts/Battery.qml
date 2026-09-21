@@ -16,6 +16,19 @@ ColumnLayout {
     property real fontScale: 1.0
     property bool _isSidebarOpen: false
 
+    // PowerProfiles.degradationReason is an enum; printing it directly showed the
+    // enum member name ("HighTemperature") rather than something a user reads.
+    function perfDegradationToString(p: int): string {
+        switch (p) {
+        case PerformanceDegradationReason.HighTemperature:
+            return qsTr("The device is too hot");
+        case PerformanceDegradationReason.LapDetected:
+            return qsTr("The device is on a lap");
+        default:
+            return qsTr("Unknown reason");
+        }
+    }
+
     width: Math.max(300 * scaleOffset, _isSidebarOpen ? (Tokens.sizes.sidebar.width * scaleOffset) - Tokens.padding.extraLargeIncreased : 0)
     spacing: Tokens.spacing.medium * scaleOffset
 
@@ -61,7 +74,7 @@ ColumnLayout {
                         anchors.top: parent.top
                         color: Colours.palette.m3primary
                         radius: Tokens.rounding.small
-                        
+
                         Rectangle {
                             width: parent.width
                             height: parent.radius
@@ -85,9 +98,9 @@ ColumnLayout {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
                             anchors.right: parent.right
-                            
+
                             height: parent.height * (UPower.displayDevice.isLaptopBattery ? UPower.displayDevice.percentage : 0)
-                            
+
                             Behavior on height {
                                 NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
                             }
@@ -99,9 +112,9 @@ ColumnLayout {
                                 anchors.bottom: parent.bottom
                                 anchors.left: parent.left
                                 anchors.right: parent.right
-                                
+
                                 color: Colours.palette.m3primary
-                                
+
                                 bottomLeftRadius: Tokens.rounding.medium - 3
                                 bottomRightRadius: Tokens.rounding.medium - 3
                                 topLeftRadius: height >= batteryBody.height - 3 ? Tokens.rounding.medium - 3 : 0
@@ -117,7 +130,7 @@ ColumnLayout {
                                 anchors.right: parent.right
                                 height: Math.min(25, parent.height)
                                 clip: true
-                                
+
                                 opacity: {
                                     if (UPower.onBattery) return 0;
                                     if (parent.height <= 30) return 0;
@@ -126,15 +139,15 @@ ColumnLayout {
                                 }
 
                                 Behavior on opacity { NumberAnimation { duration: 300 } }
-                                
+
                                 Rectangle {
                                     width: 140 * root.scaleOffset; height: 140 * root.scaleOffset
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     y: 8 * root.scaleOffset
-                                    
+
                                     color: Colours.palette.m3primary
                                     radius: 50 * root.scaleOffset
-                                    
+
                                     RotationAnimation on rotation {
                                         loops: Animation.Infinite
                                         from: 0; to: 360
@@ -177,30 +190,17 @@ ColumnLayout {
                     }
 
                     StyledText {
-                        function formatSeconds(s: int, fallback: string): string {
-                            const day = Math.floor(s / 86400);
-                            const hr = Math.floor(s / 3600) % 60;
-                            const min = Math.floor(s / 60) % 60;
-
-                            let comps = [];
-                            if (day > 0) comps.push(`${day}d`);
-                            if (hr > 0) comps.push(`${hr}h`);
-                            if (min > 0) comps.push(`${min}m`);
-
-                            return comps.join(" ") || fallback;
-                        }
-
                         text: {
                             if (!UPower.displayDevice.isLaptopBattery)
                                 return qsTr("No battery detected");
 
                             if (UPower.onBattery)
-                                return qsTr("~ %1").arg(formatSeconds(UPower.displayDevice.timeToEmpty, "Calculating..."));
+                                return qsTr("~ %1").arg(Units.formatDurationShort(UPower.displayDevice.timeToEmpty, "Calculating..."));
 
                             if (UPower.displayDevice.state === UPowerDeviceState.FullyCharged || UPower.displayDevice.percentage >= 1.0)
                                 return qsTr("Fully charged!");
 
-                            return qsTr("~ %1").arg(formatSeconds(UPower.displayDevice.timeToFull, "Calculating..."));
+                            return qsTr("~ %1").arg(Units.formatDurationShort(UPower.displayDevice.timeToFull, "Calculating..."));
                         }
                         color: Colours.palette.m3onSurfaceVariant
                         font.pointSize: Tokens.font.body.medium.pointSize * root.fontScale
@@ -238,7 +238,7 @@ ColumnLayout {
 
                             StyledText {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: qsTr("Degraded: %1").arg(PerformanceDegradationReason.toString(PowerProfiles.degradationReason))
+                                text: qsTr("Performance degraded: %1").arg(root.perfDegradationToString(PowerProfiles.degradationReason))
                                 color: Colours.palette.m3onError
                                 font.pointSize: Tokens.font.mono.medium.pointSize * root.fontScale
                             }

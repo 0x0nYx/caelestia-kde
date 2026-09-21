@@ -179,6 +179,14 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "gameMode"
+                    delegate: Toggle {
+                        icon: "gamepad"
+                        checked: GameMode.enabled
+                        onClicked: GameMode.enabled = !GameMode.enabled
+                    }
+                }
+                DelegateChoice {
                     roleValue: "dnd"
                     delegate: Toggle {
                         icon: "notifications_off"
@@ -231,7 +239,7 @@ StyledRect {
                         isToggle: false
                         inactiveOnColour: Colours.palette.m3onSurfaceVariant
                         onClicked: {
-                            Launch.exec(["bash", "-c", "bash \"${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/caelestia/scripts/restart_shell.sh\""]);
+                            Launch.exec(["bash", "-c", `bash "${Quickshell.shellPath("scripts/restart_shell.sh")}"`]);
                         }
                     }
                 }

@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Widgets
 import Caelestia
@@ -137,7 +136,7 @@ Item {
         }
         
         // Only update if arrays are different length or different order
-        const currentFavs = GlobalConfig.launcher.favouriteApps || [];
+        const currentFavs = GlobalConfig.bar.dock.pinnedApps || [];
         let changed = currentFavs.length !== newFavs.length;
         if (!changed) {
             for (let i = 0; i < newFavs.length; i++) {
@@ -149,10 +148,15 @@ Item {
         }
         
         if (changed) {
-            GlobalConfig.launcher.favouriteApps = newFavs;
+            GlobalConfig.bar.dock.pinnedApps = newFavs;
         }
 
         root.modelDataArray = newArr;
+        const map = {};
+        for (const app of newArr) {
+            map[app.id] = app;
+        }
+        root.modelDataMap = map;
     }
 
     function handleWheel(angleDelta: point): void {
@@ -406,14 +410,15 @@ Item {
             Item {
                 id: delegateContainer
 
+                required property int index
+                required property string appId
+
                 width: container.itemSize
                 height: container.itemSize
                 implicitWidth: width
                 implicitHeight: height
 
-                property var modelData: root.modelDataArray[index]
-
-                required property int index
+                property var modelData: root.modelDataMap[appId] || root.modelDataArray[index]
 
                 DropArea {
                     anchors.fill: parent
@@ -444,15 +449,24 @@ Item {
                     Drag.source: delegateItem
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
+                    StyledRect {
+                        anchors.fill: parent
+                        radius: Tokens.rounding.medium
+                        color: Colours.palette.m3onSurface
+                        opacity: delegateItem.isActive ? 0.1 : 0
+
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultEffects
+                            }
+                        }
+                    }
+
                     StateLayer {
                         id: stateLayer
 
                         anchors.fill: parent
                         radius: Tokens.rounding.medium
-
-                        color: delegateItem.isActive ? Colours.palette.m3onSurface : "transparent"
-                        opacity: delegateItem.isActive ? 0.1 : 0
-
                         acceptedButtons: Qt.NoButton
 
                         onEntered: {
@@ -491,56 +505,44 @@ Item {
                                     let activeIdx = -1;
                                     let activeAddr = "";
                                     
-                                    if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow) {
-                                        activeAddr = KWinActiveWindowBridge.activeWindow.address ? String(KWinActiveWindowBridge.activeWindow.address) : "";
-                                        Logger.log("Dock debug: KWin activeWindow address is:", activeAddr);
+                                    if (Kwin.activeWindow) {
+                                        activeAddr = Kwin.activeWindow.address ? String(Kwin.activeWindow.address) : "";
                                     } else if (root.activeTop && root.activeTop.address) {
                                         activeAddr = String(root.activeTop.address);
-                                        Logger.log("Dock debug: Hyprland activeTop address is:", activeAddr);
-                                    } else {
-                                        Logger.log("Dock debug: No active window detected!");
                                     }
 
-                                    Logger.log("Dock debug: Checking", modelData.toplevels.length, "toplevels for app.");
                                     for (let i = 0; i < modelData.toplevels.length; i++) {
                                         let top = modelData.toplevels[i];
                                         let topAddr = String(top.address);
                                         let isMinimized = top.minimized || false;
-                                        Logger.log("Dock debug: Toplevel", i, "address:", topAddr, "focused:", top.focused, "minimized:", isMinimized);
                                         if (!isMinimized && (top.focused || (activeAddr !== "" && activeAddr === topAddr))) {
                                             activeIdx = i;
-                                            Logger.log("Dock debug: Match found at index", i);
                                             break;
                                         }
                                     }
                                     
-                                    Logger.log("Dock debug: Final activeIdx:", activeIdx);
-                                    
-                                    const isKWin = (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList);
+                                    const isKWin = (Kwin.windowList.length > 0);
                                     
                                     if (modelData.toplevels.length === 1) {
                                         let addr = String(modelData.toplevels[0].address);
                                         if (activeIdx === 0) {
-                                            Logger.log("Dock debug: Single window, currently focused. Minimizing.");
                                             if (isKWin) {
-                                                KWinActiveWindowBridge.minimizeWindow(addr);
+                                                Kwin.minimizeWindow(addr);
                                             }
                                         } else {
-                                            Logger.log("Dock debug: Single window, NOT focused. Focusing.");
                                             if (isKWin) {
-                                                KWinActiveWindowBridge.focusWindow(addr);
+                                                Kwin.focusWindow(addr);
                                             } else {
-                                                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                                Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
                                             }
                                         }
                                     } else {
                                         let nextIdx = activeIdx !== -1 ? (activeIdx + 1) % modelData.toplevels.length : 0;
                                         let addr = String(modelData.toplevels[nextIdx].address);
-                                        Logger.log("Dock debug: Multiple windows. Cycling to index", nextIdx);
                                         if (isKWin) {
-                                            KWinActiveWindowBridge.focusWindow(addr);
+                                            Kwin.focusWindow(addr);
                                         } else {
-                                            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                            Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
                                         }
                                     }
                                 } else if (modelData.entry) {
@@ -743,15 +745,17 @@ Item {
 
     property var modelDataArray: []
 
+    property var modelDataMap: ({})
+
     property var currentOrder: []
 
     onModelDataArrayChanged: currentOrder = [...modelDataArray]
 
     function rebuildModel(): void {
         if (root.isDragging) return;
-        const apps = [];
+        let apps = [];
 
-        const pinnedIds = GlobalConfig.launcher.favouriteApps || [];
+        const pinnedIds = GlobalConfig.bar.dock.pinnedApps || [];
         
         for (const pid of pinnedIds) {
             for (const entry of DesktopEntries.applications.values) {
@@ -866,6 +870,32 @@ Item {
             root.launchingApps = newLaunching;
         }
 
+        // Preserve user dock order if present in currentOrder / modelDataArray
+        const existingOrder = (root.currentOrder && root.currentOrder.length > 0) ? root.currentOrder : root.modelDataArray;
+        const existingPinnedOrder = existingOrder.filter(a => a && a.isPinned).map(a => a.id);
+        const pinnedOrderMatches = existingPinnedOrder.length === pinnedIds.length &&
+            existingPinnedOrder.every((id, idx) => id === pinnedIds[idx]);
+
+        if (existingOrder.length > 0 && pinnedOrderMatches) {
+            const orderedApps = [];
+            const remainingApps = [...apps];
+            
+            for (let i = 0; i < existingOrder.length; i++) {
+                const prevItem = existingOrder[i];
+                if (!prevItem) continue;
+                const idx = remainingApps.findIndex(a => a.id === prevItem.id);
+                if (idx !== -1) {
+                    orderedApps.push(remainingApps.splice(idx, 1)[0]);
+                }
+            }
+            
+            for (let i = 0; i < remainingApps.length; i++) {
+                orderedApps.push(remainingApps[i]);
+            }
+            
+            apps = orderedApps;
+        }
+
         let changed = false;
         if (apps.length !== dockModel.count) {
             changed = true;
@@ -913,16 +943,18 @@ Item {
             }
         }
         
+        const map = {};
+        for (const app of apps) {
+            map[app.id] = app;
+        }
+        root.modelDataMap = map;
         root.modelDataArray = apps;
         root.modelUpdateTrigger += 1;
     }
 
-    property var _toplevels: {
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.windowList && KWinActiveWindowBridge.windowList.length > 0) {
-            return KWinActiveWindowBridge.windowList;
-        }
-        return HyprlandData.windowList;
-    }
+    property var _toplevels: Config.bar.dock.currentDesktopOnly
+        ? Kwin.filterWindows(Kwin.windowList, Kwin.activeWorkspaceFor(bar?.screen?.name), bar?.screen?.name, true)
+        : (Kwin.windowList || [])
 
     on_ToplevelsChanged: {
         root.rebuildModel()
@@ -937,12 +969,7 @@ Item {
         onTriggered: root.rebuildModel()
     }
 
-    property var activeTop: {
-        if (typeof KWinActiveWindowBridge !== "undefined" && KWinActiveWindowBridge.activeWindow && KWinActiveWindowBridge.activeWindow.address) {
-            return KWinActiveWindowBridge.activeWindow;
-        }
-        return Hyprland.activeToplevel || HyprlandData.activeWindow;
-    }
+    property var activeTop: (Kwin.activeWindow && Kwin.activeWindow.address) ? Kwin.activeWindow : null
 
     onActiveTopChanged: {
         root.rebuildModel()
@@ -950,9 +977,9 @@ Item {
     }
 
     Connections {
-        target: GlobalConfig.launcher
+        target: GlobalConfig.bar.dock
 
-        function onFavouriteAppsChanged(): void {
+        function onPinnedAppsChanged(): void {
             root.rebuildModel();
         }
     }
@@ -962,6 +989,28 @@ Item {
 
         function onIsHorizontalChanged(): void {
             scrollAnim.stop();
+        }
+    }
+
+    Connections {
+        target: Kwin
+
+        function onActiveWsIdChanged(): void {
+            if (Config.bar.dock.currentDesktopOnly)
+                root.rebuildModel();
+        }
+
+        function onActiveByOutputChanged(): void {
+            if (Config.bar.dock.currentDesktopOnly)
+                root.rebuildModel();
+        }
+    }
+
+    Connections {
+        target: Config.bar.dock
+
+        function onCurrentDesktopOnlyChanged(): void {
+            root.rebuildModel();
         }
     }
 

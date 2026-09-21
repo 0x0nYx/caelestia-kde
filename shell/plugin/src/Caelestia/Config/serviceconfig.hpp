@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
@@ -17,10 +17,20 @@ class ServiceConfig : public settings::ObjectNode {
 
     CONFIG_GLOBAL_PROPERTY(QString, weatherLocation, QString())
     // Guess based on locale
+    CONFIG_GLOBAL_ENUM_PROPERTY(TemperatureUnit, weatherUnits,
+        QLocale().measurementSystem() == QLocale::ImperialUSSystem ||
+                QLocale().measurementSystem() == QLocale::ImperialUKSystem
+            ? TemperatureUnit::Fahrenheit
+            : TemperatureUnit::Celsius)
+    // Always Celsius by default cause apparently even imperial system users don't use it for sensor temps?
+    CONFIG_GLOBAL_ENUM_PROPERTY(TemperatureUnit, sensorUnits, TemperatureUnit::Celsius)
+    // Binary (KiB/MiB/GiB) or decimal (KB/MB/GB) data sizes
+    CONFIG_GLOBAL_ENUM_PROPERTY(DataUnit, dataUnits, DataUnit::Binary)
+    // Superseded by weatherUnits/sensorUnits. Kept for one release so an existing
+    // shell.json can be migrated - see services/ConfigMigrations.qml.
     CONFIG_GLOBAL_PROPERTY(bool, useFahrenheit,
         QLocale().measurementSystem() == QLocale::ImperialUSSystem ||
             QLocale().measurementSystem() == QLocale::ImperialUKSystem)
-    // This is always false by default cause apparently even imperial system users don't use it for perf temps?
     CONFIG_GLOBAL_PROPERTY(bool, useFahrenheitPerformance, false)
     // Attempt to guess based on locale
     CONFIG_GLOBAL_PROPERTY(
@@ -72,7 +82,6 @@ class ServiceConfig : public settings::ObjectNode {
     // Seconds of inactivity after which the presence is cleared. 0 disables it,
     // which keeps the existing always-on behaviour for anyone already using ARPC.
     CONFIG_GLOBAL_PROPERTY(int, arpcIdleTimeout, 0)
-
 };
 
 } // namespace caelestia::config

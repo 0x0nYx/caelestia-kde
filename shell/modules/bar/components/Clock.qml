@@ -16,6 +16,14 @@ StyledRect {
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
 
+    // All three digit pairs share one font: the widest pair sets the scale so the
+    // clock does not jitter as the digits change. Seconds are excluded from the
+    // width comparison because they change too often to re-measure from.
+    function fontFor(text: string, metricWidth: int): font {
+        const scale = text === "11" ? 1.15 : Math.min(1.05, Math.max(hourMetrics.width, minMetrics.width) / metricWidth);
+        return root.font.width(scale * 100).letterSpacing(scale).build();
+    }
+
     implicitWidth: isHorizontal ? (horizontalLayout.implicitWidth + root.padding * 2) : barThickness
     implicitHeight: isHorizontal ? barThickness : (verticalLayout.implicitHeight + root.padding * 2)
 
@@ -87,6 +95,14 @@ StyledRect {
             color: root.colour
         }
 
+        StyledText {
+            Layout.alignment: Qt.AlignVCenter
+            visible: Config.bar.clock.showSeconds
+            text: ":" + Time.format("ss")
+            font: root.font.build()
+            color: root.colour
+        }
+
         Loader {
             Layout.alignment: Qt.AlignVCenter
             asynchronous: true
@@ -140,10 +156,7 @@ StyledRect {
         StyledText {
             Layout.alignment: Qt.AlignHCenter
             text: Time.hourStr
-            font: {
-                const scale = text === "11" ? 1.15 : Math.min(1.05, Math.max(hourMetrics.width, minMetrics.width) / hourMetrics.width);
-                return root.font.width(scale * 100).letterSpacing(scale).build();
-            }
+            font: root.fontFor(text, hourMetrics.width)
             color: root.colour
 
             TextMetrics {
@@ -158,10 +171,7 @@ StyledRect {
             Layout.topMargin: -parent.spacing - 4
             Layout.alignment: Qt.AlignHCenter
             text: Time.minuteStr
-            font: {
-                const scale = text === "11" ? 1.15 : Math.min(1.05, Math.max(hourMetrics.width, minMetrics.width) / minMetrics.width);
-                return root.font.width(scale * 100).letterSpacing(scale).build();
-            }
+            font: root.fontFor(text, minMetrics.width)
             color: root.colour
 
             TextMetrics {
@@ -169,6 +179,22 @@ StyledRect {
 
                 font: root.font.build()
                 text: Time.minuteStr
+            }
+        }
+
+        StyledText {
+            Layout.topMargin: -parent.spacing - 4
+            Layout.alignment: Qt.AlignHCenter
+            visible: Config.bar.clock.showSeconds
+            text: Time.format("ss")
+            font: root.fontFor(text, secMetrics.width)
+            color: root.colour
+
+            TextMetrics {
+                id: secMetrics
+
+                font: root.font.build()
+                text: Time.format("ss")
             }
         }
 

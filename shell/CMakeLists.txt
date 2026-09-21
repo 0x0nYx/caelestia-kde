@@ -36,12 +36,22 @@ if(NOT DEFINED VERSION)
 endif()
 
 if(NOT DEFINED GIT_REVISION)
-    execute_process(COMMAND git rev-parse HEAD
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        OUTPUT_VARIABLE GIT_REVISION
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-    )
+    # A source tarball has no .git to ask. The release job writes REVISION beside
+    # version.env with the commit the tag points at, so a package built from a tarball
+    # reports the same revision a checkout would instead of "unknown".
+    set(_REVISION_FILE "${CMAKE_SOURCE_DIR}/../REVISION")
+    if(EXISTS "${_REVISION_FILE}")
+        file(STRINGS "${_REVISION_FILE}" GIT_REVISION LIMIT_COUNT 1)
+        string(STRIP "${GIT_REVISION}" GIT_REVISION)
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_REVISION_FILE}")
+    else()
+        execute_process(COMMAND git rev-parse HEAD
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+            OUTPUT_VARIABLE GIT_REVISION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+    endif()
 
     if("${GIT_REVISION}" STREQUAL "")
         set(GIT_REVISION "unknown")
@@ -99,6 +109,55 @@ set(INSTALL_LIBDIR "usr/lib/caelestia" CACHE STRING "Library install dir")
 set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
 set(INSTALL_QSCONFDIR "etc/xdg/quickshell/caelestia" CACHE STRING "Quickshell config install dir")
 
+# The M3Shapes checkout is external and builds its strings from raw literals, so it
+# is configured before the strict casts below apply: directory definitions are
+# inherited when a subdirectory is created, and the fetch creates one.
+if("m3shapes" IN_LIST ENABLE_MODULES)
+    message(STATUS "Fetching M3Shapes module")
+    include(FetchContent)
+    set(M3SHAPES_REV bdc327b29f95394a732baf3c9b19658ba23755b6)
+
+    # Opt-in persistent checkout. When enabled, the source is cloned into the
+    # user cache so wiping the build dir doesn't force a re-clone (the
+    # installer enables this). Off by default so CI/packaging/reproducible
+    # builds keep sources inside the build tree via FetchContent's default
+    # _deps location.
+    option(CAELESTIA_CACHE_DEPS "Keep FetchContent sources outside the build tree" OFF)
+
+    if(CAELESTIA_CACHE_DEPS)
+        if(DEFINED ENV{XDG_CACHE_HOME} AND NOT "$ENV{XDG_CACHE_HOME}" STREQUAL "")
+            set(_CAELESTIA_CACHE "$ENV{XDG_CACHE_HOME}/caelestia-kde")
+        else()
+            set(_CAELESTIA_CACHE "$ENV{HOME}/.cache/caelestia-kde")
+        endif()
+        set(_M3SHAPES_SOURCE_DIR "${_CAELESTIA_CACHE}/m3shapes-${M3SHAPES_REV}")
+    else()
+        set(_M3SHAPES_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/m3shapes-${M3SHAPES_REV}")
+    endif()
+
+    FetchContent_Declare(
+        m3shapes_external
+        GIT_REPOSITORY https://github.com/soramanew/m3shapes.git
+        GIT_TAG        ${M3SHAPES_REV}
+        SOURCE_DIR     "${_M3SHAPES_SOURCE_DIR}"
+    )
+    FetchContent_MakeAvailable(m3shapes_external)
+    message(STATUS "Done fetching M3Shapes module")
+
+    # Fix m3shapes wrong rpath
+    if(TARGET m3shapesplugin)
+        set_target_properties(m3shapesplugin PROPERTIES INSTALL_RPATH "$ORIGIN")
+    endif()
+endif()
+
+# An implicit const char* to QString conversion hides a decision about encoding:
+# QStringLiteral/QLatin1String/fromUtf8 have to be written out instead.
+add_compile_definitions(
+    QT_NO_CAST_FROM_ASCII
+    QT_NO_CAST_TO_ASCII
+    QT_NO_CAST_FROM_BYTEARRAY
+)
+
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion
     -Wold-style-cast -Wnull-dereference -Wdouble-promotion
@@ -132,7 +191,6 @@ if("shell" IN_LIST ENABLE_MODULES)
     file(WRITE "${CMAKE_BINARY_DIR}/qml/shell.qml" "${SHELL_QML}")
     install(FILES "${CMAKE_BINARY_DIR}/qml/shell.qml" DESTINATION "${INSTALL_QSCONFDIR}")
 
-    install(FILES lockscreen.qml DESTINATION "${INSTALL_QSCONFDIR}")
     install(FILES LICENSE DESTINATION "${INSTALL_QSCONFDIR}")
 
     # Translations: compile every translations/*.ts into a .qm next to the
@@ -174,43 +232,5 @@ if("shell" IN_LIST ENABLE_MODULES)
         install(FILES ${PREBUILT_QM_FILES} DESTINATION "${INSTALL_QSCONFDIR}/translations")
     elseif(TS_FILES)
         message(WARNING "Qt Linguist tools not found and no compiled catalogues - the shell will only be available in English")
-    endif()
-endif()
-
-if("m3shapes" IN_LIST ENABLE_MODULES)
-    message(STATUS "Fetching M3Shapes module")
-    include(FetchContent)
-    set(M3SHAPES_REV bdc327b29f95394a732baf3c9b19658ba23755b6)
-
-    # Opt-in persistent checkout. When enabled, the source is cloned into the
-    # user cache so wiping the build dir doesn't force a re-clone (the
-    # installer enables this). Off by default so CI/packaging/reproducible
-    # builds keep sources inside the build tree via FetchContent's default
-    # _deps location.
-    option(CAELESTIA_CACHE_DEPS "Keep FetchContent sources outside the build tree" OFF)
-
-    if(CAELESTIA_CACHE_DEPS)
-        if(DEFINED ENV{XDG_CACHE_HOME} AND NOT "$ENV{XDG_CACHE_HOME}" STREQUAL "")
-            set(_CAELESTIA_CACHE "$ENV{XDG_CACHE_HOME}/caelestia-kde")
-        else()
-            set(_CAELESTIA_CACHE "$ENV{HOME}/.cache/caelestia-kde")
-        endif()
-        set(_M3SHAPES_SOURCE_DIR "${_CAELESTIA_CACHE}/m3shapes-${M3SHAPES_REV}")
-    else()
-        set(_M3SHAPES_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/m3shapes-${M3SHAPES_REV}")
-    endif()
-
-    FetchContent_Declare(
-        m3shapes_external
-        GIT_REPOSITORY https://github.com/soramanew/m3shapes.git
-        GIT_TAG        ${M3SHAPES_REV}
-        SOURCE_DIR     "${_M3SHAPES_SOURCE_DIR}"
-    )
-    FetchContent_MakeAvailable(m3shapes_external)
-    message(STATUS "Done fetching M3Shapes module")
-
-    # Fix m3shapes wrong rpath
-    if(TARGET m3shapesplugin)
-        set_target_properties(m3shapesplugin PROPERTIES INSTALL_RPATH "$ORIGIN")
     endif()
 endif()

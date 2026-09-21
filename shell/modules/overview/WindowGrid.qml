@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Widgets
 import Caelestia.Config
 import Caelestia.Layouts
-import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.components.images
@@ -30,15 +29,13 @@ Item {
     readonly property real indicatorSpace: indicatorContainer.height + Tokens.padding.large * 2
     readonly property real verticalOffset: indicatorSpace - overviewBorderThickness
     readonly property int activeWsId: {
-        if (typeof KWinWorkspaceState === "undefined")
-            return 1;
         // activeId comes from D-Bus, which exposes a single current desktop and
         // reports whichever output is focused. Per screen, only the tracker
         // knows.
-        const perOutput = KWinWorkspaceState.activeByOutput[root.screen.name];
+        const perOutput = Kwin.activeByOutput[root.screen.name];
         if (perOutput > 0)
             return perOutput;
-        return KWinWorkspaceState.activeId > 0 ? KWinWorkspaceState.activeId : 1;
+        return Kwin.activeWsId > 0 ? Kwin.activeWsId : 1;
     }
     property bool ignoreNextSwitch: false
     property bool _initialized: false
@@ -76,17 +73,14 @@ Item {
     readonly property real hoverScale: 1.02
     property int selectedIndex: -1
     readonly property var currentWindows: {
-        if (typeof KWinWorkspaceState === "undefined" || listView.currentIndex < 0)
+        if (listView.currentIndex < 0)
             return [];
-        const wsList = KWinWorkspaceState.workspaces;
+        const wsList = Kwin.workspaces;
         if (listView.currentIndex >= wsList.length)
             return [];
         const wsId = wsList[listView.currentIndex].index;
-        // windowsForWorkspace already scopes to the workspace; the overview is
-        // per-screen, so drop anything living on another output.
-        return typeof KWinActiveWindowBridge !== "undefined"
-            ? KWinActiveWindowBridge.windowsForWorkspace(wsId, false).filter(w => w.output === root.screen.name)
-            : [];
+        const _ = Kwin.windowList;
+        return Kwin.filterWindows(Kwin.windowsForWorkspace(wsId, false), null, root.screen.name);
     }
 
     signal requestWindowInfo(var client)
@@ -101,20 +95,6 @@ Item {
                 return s;
         }
         return null;
-    }
-
-    // Resolve an icon for a window card, mirroring the dock: prefer an icon
-    // extracted from the window's own _NET_WM_ICON (apps with no desktop
-    // entry, e.g. Steam games or Minecraft), then fall back to the themed
-    // desktop-entry icon lookup the overview already used.
-    function windowIconSource(client: var): string {
-        if (!client)
-            return "";
-        const wp = WinIcons.paths[WinIcons.keyFor(client.class, client.pid ?? 0)];
-        if (wp)
-            return "file://" + wp;
-        return client.iconName ? Icons.getAppIcon(client.iconName, "image-missing")
-                               : (client.class ? Icons.getAppIcon(client.class, "image-missing") : "");
     }
 
     function cycleSelection(backwards: bool): void {
@@ -133,14 +113,12 @@ Item {
         const addr = wins[root.selectedIndex].address;
         if (!addr)
             return;
-        if (typeof KWinActiveWindowBridge !== "undefined")
-            KWinActiveWindowBridge.focusWindow(addr);
-        if (typeof KWinWorkspaceState !== "undefined" && listView.currentIndex >= 0)
-            KWinWorkspaceState.switchTo(KWinWorkspaceState.workspaces[listView.currentIndex].index, root.screen.name);
+                    Kwin.focusWindow(addr);
+        if (listView.currentIndex >= 0)
+            Kwin.switchToWorkspace(Kwin.workspaces[listView.currentIndex].index, root.screen.name);
         root.requestClose();
     }
     function syncPage() {
-        if (typeof KWinWorkspaceState === "undefined") return;
         // Never while a window is being dragged. The page a drag has reached is
         // chosen by the drag itself, but activeWsId only catches up once the
         // compositor has switched and the tracker's payload has come back over
@@ -150,8 +128,8 @@ Item {
         // where it is and does nothing: the card flies home and the drag looks
         // like it was ignored.
         if (root.isDragging) return;
-        for (let i = 0; i < KWinWorkspaceState.workspaces.length; ++i) {
-            const wId = KWinWorkspaceState.workspaces[i].index;
+        for (let i = 0; i < Kwin.workspaces.length; ++i) {
+            const wId = Kwin.workspaces[i].index;
             if (wId === activeWsId) {
                 if (listView.currentIndex !== i) {
                     listView.currentIndex = i;
@@ -190,16 +168,13 @@ Item {
             }
         }
     }
-    onActiveWsIdChanged: Qt.callLater(syncPage)
+    onActiveWsIdChanged: root.syncPage()
     Component.onCompleted: {
-        if (typeof KWinWorkspaceState !== "undefined") {
-            const count = KWinWorkspaceState.workspaces.length;
-            for (let i = 0; i < count; ++i) {
-                workspaceModel.append({});
-            }
-        } else {
+        const count = Kwin.workspaces.length;
+        for (let i = 0; i < count; ++i) {
             workspaceModel.append({});
         }
+
         Qt.callLater(syncPage);
     }
 
@@ -243,7 +218,7 @@ Item {
     }
     Connections {
         function onWorkspacesChanged() {
-            const newCount = KWinWorkspaceState.workspaces.length;
+            const newCount = Kwin.workspaces.length;
             while (workspaceModel.count < newCount) {
                 workspaceModel.append({});
             }
@@ -252,12 +227,12 @@ Item {
             }
         }
 
-        target: typeof KWinWorkspaceState !== "undefined" ? KWinWorkspaceState : null
+        target: Kwin
     }
     ListView {
         id: listView
 
-        property real rawSwipeOffset: typeof KWinWorkspaceState !== "undefined" ? (KWinWorkspaceState.swipeOffsetByOutput?.[root.screen.name] ?? KWinWorkspaceState.swipeOffset) : 0.0
+        property real rawSwipeOffset: Kwin.swipeOffsetByOutput?.[root.screen.name] ?? Kwin.swipeOffset
 
         property real targetContentX: (currentIndex + rawSwipeOffset) * width
 
@@ -289,27 +264,13 @@ Item {
             id: page
 
             required property int index
-            readonly property int wsId: (typeof KWinWorkspaceState !== "undefined" && KWinWorkspaceState.workspaces && index < KWinWorkspaceState.workspaces.length) ? KWinWorkspaceState.workspaces[index].index : index + 1
-            readonly property string wsName: (typeof KWinWorkspaceState !== "undefined" && KWinWorkspaceState.workspaces && index < KWinWorkspaceState.workspaces.length) ? KWinWorkspaceState.workspaces[index].name : wsId.toString()
+            readonly property int wsId: (Kwin.workspaces && index < Kwin.workspaces.length) ? Kwin.workspaces[index].index : index + 1
+            readonly property string wsName: (Kwin.workspaces && index < Kwin.workspaces.length) ? Kwin.workspaces[index].name : wsId.toString()
             property var wsWindows: []
-            readonly property var _winTrigger: typeof KWinActiveWindowBridge !== "undefined" ? KWinActiveWindowBridge.windowList : null
-            readonly property var _hyprTrigger: (typeof Hypr !== "undefined" && Hypr.toplevels) ? Hypr.toplevels.values : null
+            readonly property var _winTrigger: Kwin.windowList
 
-            function _updateWsWindows() {
-                const kwinList = typeof KWinActiveWindowBridge !== "undefined" ? KWinActiveWindowBridge.windowList : null;
-                const hyprList = (typeof Hypr !== "undefined" && Hypr.toplevels) ? Hypr.toplevels.values : null;
-
-                let arr = [];
-                if (kwinList) {
-                    arr = KWinActiveWindowBridge.windowsForWorkspace(wsId, false).filter(w => w.output === root.screen.name);
-                } else if (hyprList) {
-                    for (let i = 0; i < hyprList.length; ++i) {
-                        const w = hyprList[i];
-                        if (w.workspace && w.workspace.id === wsId) {
-                            arr.push(w);
-                        }
-                    }
-                }
+            function _updateWsWindows(): void {
+                const arr = Kwin.filterWindows(Kwin.windowsForWorkspace(wsId, false), null, root.screen.name);
 
                 let changed = arr.length !== wsWindows.length;
                 if (!changed) {
@@ -327,14 +288,13 @@ Item {
             }
 
             on_WinTriggerChanged: _updateWsWindows()
-            on_HyprTriggerChanged: _updateWsWindows()
             onWsIdChanged: _updateWsWindows()
 
             width: listView.width
             height: listView.height
             Component.onCompleted: {
                 _updateWsWindows();
-                //console.log("WindowGrid Page initialized. wsId:", wsId, "windows found:", wsWindows.length, "Total windows globally:", typeof KWinActiveWindowBridge !== "undefined" ? KWinActiveWindowBridge.windowList.length : -1);
+                //console.log("WindowGrid Page initialized. wsId:", wsId, "windows found:", wsWindows.length, "Total windows globally:", Kwin.windowList.length);
             }
             onWsWindowsChanged: {
                 //console.log("WindowGrid Page updated. wsId:", wsId, "windows found:", wsWindows.length);
@@ -363,11 +323,7 @@ Item {
                             const addr = sourceItem.clientAddress;
                             const targetId = page.wsId;
                             Qt.callLater(() => {
-                                if (typeof KWinActiveWindowBridge !== "undefined") {
-                                    KWinActiveWindowBridge.setWindowDesktop(addr, targetId);
-                                } else {
-                                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.movetoworkspace({ workspace = "${targetId}", window = "address:0x${addr}" })` : `movetoworkspace ${targetId},address:0x${addr}`);
-                                }
+                                Kwin.setWindowDesktop(addr, targetId);
                             });
                             drop.accept();
                         }
@@ -494,7 +450,6 @@ Item {
                                         // desktop follows the page the drag landed on.
                                         switchTimer.restart();
 
-                                        if (typeof KWinWorkspaceState === "undefined" || typeof KWinActiveWindowBridge === "undefined") return;
 
                                         // Checked before Drag.drop(), not after.
                                         // Each screen has its own overview in its
@@ -515,7 +470,7 @@ Item {
                                             activeWin.Drag.cancel();
                                             activeWin.visible = false;
                                             Qt.callLater(() => {
-                                                KWinActiveWindowBridge.sendToOutput(addr, target.name);
+                                                Kwin.sendToOutput(addr, target.name);
                                             });
                                             return;
                                         }
@@ -525,12 +480,12 @@ Item {
                                             return; // Handled by DropArea
                                         }
 
-                                        const targetWsId = KWinWorkspaceState.workspaces[listView.currentIndex].index;
+                                        const targetWsId = Kwin.workspaces[listView.currentIndex].index;
                                         if (targetWsId !== page.wsId) {
                                             activeWin.visible = false;
                                             const addr = clientAddress;
                                             Qt.callLater(() => {
-                                                KWinActiveWindowBridge.setWindowDesktop(addr, targetWsId);
+                                                Kwin.setWindowDesktop(addr, targetWsId);
                                             });
                                         }
                                     }
@@ -556,11 +511,7 @@ Item {
                             Connections {
                                 function onRunningChanged() {
                                     if (!opacityAnim.running && activeWin.closing) {
-                                        if (typeof KWinActiveWindowBridge !== "undefined") {
-                                            KWinActiveWindowBridge.closeWindow(modelData.address);
-                                        } else {
-                                            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.window.close({ window = "address:0x${modelData.address}" })` : `closewindow address:0x${modelData.address}`);
-                                        }
+                                        Kwin.closeWindow(modelData.address);
                                     }
                                 }
 
@@ -591,7 +542,7 @@ Item {
                                 asynchronous: true
                                 implicitSize: Math.round(Math.min(activeWin.width, activeWin.height) * 0.62)
                                 opacity: activeWin.morphed ? 1 : 0
-                                source: modelData.iconName ? Icons.getAppIcon(modelData.iconName, "image-missing") : (modelData.class ? Icons.getAppIcon(modelData.class, "image-missing") : "")
+                                source: WinIcons.sourceForClient(modelData)
                                 visible: opacity > 0.01
                                 z: 10
 
@@ -659,7 +610,7 @@ Item {
                                             return (wAspect > containerAspect) ? thumb.height : thumb.width / wAspect;
                                         }
                                         anchors.centerIn: parent
-                                        fallbackIcon: root.windowIconSource(modelData)
+                                        fallbackIcon: WinIcons.sourceForClient(modelData)
                                         sourceAspect: activeWin.windowAspect
                                     }
 
@@ -688,7 +639,7 @@ Item {
                                     IconImage {
                                         implicitSize: Math.round(titleText.implicitHeight * 1.1)
                                         asynchronous: true
-                                        source: root.windowIconSource(modelData)
+                                        source: WinIcons.sourceForClient(modelData)
                                     }
                                     StyledText {
                                         id: titleText
@@ -699,8 +650,6 @@ Item {
                                         elide: Text.ElideRight
                                         Layout.fillWidth: true
                                     }
-
-                                    Behavior on opacity { Anim {} }
                                 }
                             }
 
@@ -710,14 +659,8 @@ Item {
                                 stateOpacity: containsMouse || manualHoverOverride ? 0.02 : 0
                                 onClicked: {
                                     if (modelData.address) {
-                                        if (typeof KWinActiveWindowBridge !== "undefined") {
-                                            KWinActiveWindowBridge.focusWindow(modelData.address);
-                                        } else {
-                                            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${modelData.address}" })` : `focuswindow address:0x${modelData.address}`);
-                                        }
-                                        if (typeof KWinWorkspaceState !== "undefined") {
-                                            KWinWorkspaceState.switchTo(page.wsId, root.screen.name);
-                                        }
+                                        Kwin.focusWindow(modelData.address);
+                                        Kwin.switchToWorkspace(page.wsId, root.screen.name);
                                     }
                                     if (typeof Visibilities !== "undefined")
                                         Visibilities.setOverview(false);
@@ -802,15 +745,15 @@ Item {
 
             interval: 50
             onTriggered: {
-                if (typeof KWinWorkspaceState !== "undefined" && KWinWorkspaceState.workspaces.length > listView.currentIndex) {
-                    const wId = KWinWorkspaceState.workspaces[listView.currentIndex].index;
+                if (Kwin.workspaces.length > listView.currentIndex) {
+                    const wId = Kwin.workspaces[listView.currentIndex].index;
                     // Compared against this screen's desktop, not the global
                     // activeId: with per-output desktops the global one belongs
                     // to whichever screen is focused, so testing against it made
                     // this fire on the screen that had not moved and stay quiet
                     // on the one that had.
                     if (root.activeWsId !== wId) {
-                        KWinWorkspaceState.switchTo(wId, root.screen.name);
+                        Kwin.switchToWorkspace(wId, root.screen.name);
                     }
                 }
             }
@@ -837,8 +780,8 @@ Item {
             enabled: root._initialized
 
             NumberAnimation {
-                duration: rawSwipeOffset === 0.0 ? 300 : 0
-                easing.type: rawSwipeOffset === 0.0 ? Easing.OutCubic : Easing.Linear
+                duration: listView.rawSwipeOffset === 0.0 ? 300 : 0
+                easing.type: listView.rawSwipeOffset === 0.0 ? Easing.OutCubic : Easing.Linear
             }
         }
     }
@@ -869,11 +812,7 @@ Item {
             onWorkspaceReselected: root.requestClose()
             onCreateWorkspaceRequest: {
                 root.ignoreNextSwitch = true;
-                if (typeof KWinWorkspaceState !== "undefined") {
-                    KWinWorkspaceState.createWorkspace();
-                } else if (typeof Hypr !== "undefined") {
-                    Hypr.dispatch("workspace empty");
-                }
+                Kwin.createWorkspace();
                 ignoreTimer.restart();
             }
         }
@@ -897,9 +836,9 @@ Item {
 
         readonly property var window: {
             const addr = Visibilities.dragAddress;
-            if (!addr || typeof KWinActiveWindowBridge === "undefined")
+            if (!addr)
                 return null;
-            const all = KWinActiveWindowBridge.windowList || [];
+            const all = Kwin.windowList || [];
             for (let i = 0; i < all.length; ++i)
                 if (all[i].address === addr)
                     return all[i];
@@ -947,12 +886,7 @@ Item {
                 active: incoming.arriving
                 address: Visibilities.dragAddress
                 anchors.fill: parent
-                fallbackIcon: {
-                    const w = incoming.window;
-                    if (!w)
-                        return "";
-                    return w.iconName ? Icons.getAppIcon(w.iconName, "image-missing") : (w.class ? Icons.getAppIcon(w.class, "image-missing") : "");
-                }
+                fallbackIcon: incoming.window ? WinIcons.sourceForClient(incoming.window) : ""
                 sourceAspect: incoming.aspect
             }
         }

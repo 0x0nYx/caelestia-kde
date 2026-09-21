@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
 #include <qstring.h>
 #include <qvariant.h>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
@@ -31,7 +31,6 @@ class UtilitiesToasts : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(bool, nightLightChanged, true)
     CONFIG_GLOBAL_PROPERTY(bool, transparency, false)
     CONFIG_GLOBAL_PROPERTY(qreal, transparencyBase, 0.85)
-
 };
 
 class UtilitiesVpn : public settings::ObjectNode {
@@ -40,7 +39,6 @@ class UtilitiesVpn : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(bool, enabled, false)
     CONFIG_GLOBAL_PROPERTY(QVariantList, provider, QVariantList())
     CONFIG_GLOBAL_PROPERTY(QString, selectedProvider, QString())
-
 };
 
 class UtilitiesGameMode : public settings::ObjectNode {
@@ -58,7 +56,6 @@ class UtilitiesGameMode : public settings::ObjectNode {
 
     CONFIG_GLOBAL_PROPERTY(bool, autoEnable, true)
     CONFIG_GLOBAL_PROPERTY(QStringList, autoEnableRegexes, QStringList())
-
 };
 
 class UtilitiesConfig : public settings::ObjectNode {
@@ -83,13 +80,13 @@ class UtilitiesConfig : public settings::ObjectNode {
             vmap({ { u"id"_s, u"bluetooth"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"mic"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"settings"_s }, { u"enabled"_s, true } }),
+            vmap({ { u"id"_s, u"gameMode"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"colorpicker"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"dnd"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"vpn"_s }, { u"enabled"_s, false } }),
             vmap({ { u"id"_s, u"wallpaper"_s }, { u"enabled"_s, true } }),
             vmap({ { u"id"_s, u"badapple"_s }, { u"enabled"_s, true } }),
         }))
-
 };
 
 } // namespace caelestia::config

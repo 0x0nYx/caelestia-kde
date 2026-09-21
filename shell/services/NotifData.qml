@@ -39,7 +39,7 @@ QtObject {
     property bool hasActionIcons
     property list<var> actions
 
-    readonly property bool hasFullscreen: Hypr.hasFullscreen()
+    readonly property bool hasFullscreen: Kwin.hasFullscreen()
 
     readonly property Timer timer: Timer {
         running: true
@@ -103,7 +103,8 @@ QtObject {
 
     readonly property Connections conn: Connections {
         function onClosed(): void {
-            notif.close();
+            if (!notif.closed)
+                notif.close();
         }
 
         function onSummaryChanged(): void {
@@ -200,6 +201,8 @@ QtObject {
     }
 
     function close(): void {
+        if (closed && !notification)
+            return;
         closed = true;
         if (locks.size > 0)
             return; // a view is still animating this one; unlock() closes it later
@@ -210,7 +213,9 @@ QtObject {
         // rather than leaked.
         if (Notifs.list.includes(this))
             Notifs.list = Notifs.list.filter(n => n !== this);
-        notification?.dismiss();
+        const notifObj = notification;
+        notification = null;
+        notifObj?.dismiss();
         destroy();
     }
 

@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/4c3e20c9-5050-4cc8-8e9c-32fd0594ac8b
 
 ## Installation
 
-**Requirements:** Arch-based, Fedora, or Debian/Ubuntu - KDE Plasma 6 on Wayland
+**Requirements:** Arch-based, Fedora, or Debian/Ubuntu - KDE Plasma 6 on Wayland, Qt 6.9+
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ladybug-me/caelestia-kde/main/install.sh | sh
@@ -82,7 +82,7 @@ Settings are written to `~/.config/caelestia/shell.json`.
 | Problem | Fix |
 | --- | --- |
 | Widgets not appearing | Log out and back in, or run `caelestia shell -d` |
-| Colors not applying | Run `systemctl --user status kde-material-you-colors.service`, then re-run the installer |
+| Colors not applying | Run `caelestia scheme set -n dynamic`, or `caelestia wallpaper -f <image>`. See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#34-colors-not-applying) |
 | Install failed mid-way | Re-run `bash ./scripts/setup.sh` |
 | Full reset needed | See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 

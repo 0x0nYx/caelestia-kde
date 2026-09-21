@@ -1,9 +1,9 @@
 #include "cutils.hpp"
 
 #include <QtConcurrent/qtconcurrentrun.h>
-#include <qcryptographichash.h>
 #include <QtQuick/qquickitemgrabresult.h>
 #include <QtQuick/qquickwindow.h>
+#include <qcryptographichash.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -11,10 +11,13 @@
 #include <qloggingcategory.h>
 #include <qqmlengine.h>
 #include <qregularexpression.h>
-#include <QStandardPaths>
-#include <KWindowEffects>
+
 #include <KModifierKeyInfo>
+#include <KWindowEffects>
 #include <QCursor>
+#include <QStandardPaths>
+
+#include "util/metaenum.hpp"
 
 Q_LOGGING_CATEGORY(lcCUtils, "caelestia.cutils", QtInfoMsg)
 
@@ -97,6 +100,12 @@ void CUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
     }
 
     const QSharedPointer<const QQuickItemGrabResult> grabResult = target->grabToImage();
+    if (!grabResult) {
+        // grabToImage() returns null when the item's window is hidden or otherwise
+        // not renderable; connecting to a null result would warn and never fire.
+        qCWarning(lcCUtils) << "saveItem: failed to grab" << target;
+        return;
+    }
 
     QObject::connect(grabResult.data(), &QQuickItemGrabResult::ready, this,
         [grabResult, scaledRect, path, onSaved, onFailed, this]() {
@@ -189,7 +198,7 @@ QString CUtils::sha256(const QString& path) {
     hash.addData(&file);
     file.close();
 
-    return hash.result().toHex();
+    return QString::fromLatin1(hash.result().toHex());
 }
 
 void CUtils::enableBlurBehind(QQuickWindow* window, bool enable) {
@@ -204,6 +213,22 @@ qreal CUtils::clamp(qreal value, qreal min, qreal max) {
 
 void CUtils::setCursorPos(int x, int y) {
     QCursor::setPos(x, y);
+}
+
+QString CUtils::enumToString(const QVariant& value) {
+    const auto type = value.metaType();
+    if (!util::isSupportedEnum(type)) {
+        qCWarning(lcCUtils, "enumToString: %s is not a supported enum", type.isValid() ? type.name() : "the value");
+        return {};
+    }
+
+    const auto* key = util::enumKeyFor(util::metaEnumFor(type), value);
+    if (!key) {
+        qCWarning(lcCUtils, "enumToString: no enumerator of %s has the value %lld", type.name(), value.toLongLong());
+        return {};
+    }
+
+    return QString::fromUtf8(key);
 }
 
 #ifndef CAELESTIA_VERSION
@@ -235,7 +260,8 @@ bool CUtils::isAltPressed() const {
 }
 
 bool CUtils::isMetaPressed() const {
-    return d->keyInfo.isKeyPressed(Qt::Key_Meta) || d->keyInfo.isKeyPressed(Qt::Key_Super_L) || d->keyInfo.isKeyPressed(Qt::Key_Super_R);
+    return d->keyInfo.isKeyPressed(Qt::Key_Meta) || d->keyInfo.isKeyPressed(Qt::Key_Super_L) ||
+           d->keyInfo.isKeyPressed(Qt::Key_Super_R);
 }
 
 bool CUtils::isCtrlPressed() const {
@@ -252,13 +278,17 @@ bool CUtils::isShortcutModifierPressed(const QString& shortcutKey) const {
     }
     const QString upper = shortcutKey.toUpper();
     const bool hasAlt = upper.contains(QLatin1String("ALT"));
-    const bool hasMeta = upper.contains(QLatin1String("META")) || upper.contains(QLatin1String("SUPER")) || upper.contains(QLatin1String("WIN"));
+    const bool hasMeta = upper.contains(QLatin1String("META")) || upper.contains(QLatin1String("SUPER")) ||
+                         upper.contains(QLatin1String("WIN"));
     const bool hasCtrl = upper.contains(QLatin1String("CTRL")) || upper.contains(QLatin1String("CONTROL"));
 
     // Check primary holding modifiers
-    if (hasAlt && isAltPressed()) return true;
-    if (hasMeta && isMetaPressed()) return true;
-    if (hasCtrl && isCtrlPressed()) return true;
+    if (hasAlt && isAltPressed())
+        return true;
+    if (hasMeta && isMetaPressed())
+        return true;
+    if (hasCtrl && isCtrlPressed())
+        return true;
 
     // If none of the standard primary holding modifiers are in the shortcut, check shift if specified
     if (!hasAlt && !hasMeta && !hasCtrl) {
@@ -316,9 +346,12 @@ QQuickItem* CUtils::findChild(QQuickItem* root, const QString& name) {
 QList<QQuickItem*> CUtils::findChildren(QQuickItem* root, const QString& name) {
     QList<QQuickItem*> children;
     if (root) {
-        findChildrenDfs(root, [&name](const QQuickItem* item) {
-            return item->objectName() == name;
-        }, children);
+        findChildrenDfs(
+            root,
+            [&name](const QQuickItem* item) {
+                return item->objectName() == name;
+            },
+            children);
     }
     return children;
 }
@@ -327,9 +360,12 @@ QList<QQuickItem*> CUtils::findChildrenMatching(QQuickItem* root, const QString&
     QList<QQuickItem*> children;
     if (root) {
         const QRegularExpression re(pattern);
-        findChildrenDfs(root, [&re](const QQuickItem* item) {
-            return re.match(item->objectName()).hasMatch();
-        }, children);
+        findChildrenDfs(
+            root,
+            [&re](const QQuickItem* item) {
+                return re.match(item->objectName()).hasMatch();
+            },
+            children);
     }
     return children;
 }

@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Caelestia.Services
+import qs.utils
 
 // Icons pulled straight out of a window's own _NET_WM_ICON (XWayland) for apps
 // that have no resolvable desktop entry or themed icon — Minecraft, most Steam
@@ -88,27 +89,39 @@ Singleton {
         const wp = root.paths[root.keyFor(appClass, pid ?? 0)];
         if (wp)
             return "file://" + wp;
-        return Quickshell.iconPath(iconName, "application-x-executable");
+        return Quickshell.iconPath(iconName || "application-x-executable", "application-x-executable");
+    }
+
+    // Resolve an icon for a window card / client (e.g. overview, workspaces, windowinfo):
+    // prefer an extracted _NET_WM_ICON, then client.iconName, then client.class themed icon.
+    function sourceForClient(client: var): string {
+        if (!client)
+            return "";
+        const wp = root.paths[root.keyFor(client.class ?? "", client.pid ?? 0)];
+        if (wp)
+            return "file://" + wp;
+        return client.iconName ? Icons.getAppIcon(client.iconName, "application-x-executable")
+                               : (client.class ? Icons.getAppIcon(client.class, "application-x-executable") : "");
     }
 
     // extract() returns the path directly; the signal carries the same result
     // for any caller that did not go through request().
     Connections {
-        target: WindowIcon
-
         function onExtracted(key: string, path: string): void {
             root.register(key, path);
         }
+
+        target: WindowIcon
     }
 
     Connections {
-        target: PlasmaWindowIcon
-
         // The uuid comes back normalised, which is also how it was stored.
         function onResolved(uuid: string, path: string): void {
             const key = root._awaiting[uuid];
             if (key)
                 root.register(key, path);
         }
+
+        target: PlasmaWindowIcon
     }
 }

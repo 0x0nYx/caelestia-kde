@@ -9,17 +9,6 @@ pragma ComponentBehavior: Bound
 // //@ pragma DefaultEnv QSG_RENDER_LOOP=threaded
 // //@ pragma DefaultEnv QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
 
-import "services" as Services
-import "modules"
-import "modules/drawers"
-import "modules/background"
-import "modules/areapicker"
-import "modules/lock"
-import "modules/polkit"
-import "modules/screenshot/regionSelector"
-import "modules/overview"
-import "modules/whatsnew" as WhatsNew
-import qs.services.api
 import QtQuick
 import QtQml
 import Quickshell
@@ -28,35 +17,40 @@ import Caelestia
 import Caelestia.Config
 import qs.components.containers
 import qs.services
+import qs.services.api
 import qs.utils
+import "services" as Services
+import "modules"
+import "modules/drawers"
+import "modules/background"
+import "modules/areapicker"
+import "modules/polkit"
+import "modules/screenshot/regionSelector"
+import "modules/overview"
+import "modules/whatsnew" as WhatsNew
 
 ShellRoot {
     id: root
 
+    property var regionSelector: RegionSelector {}
+
+    // Force service initialization
+    property var _arpcInit: null
+    property var _gameModeInit: null
+    property var _updateCheckerInit: null
+    property var _autoSchemeInit: null
+
     settings.watchFiles: false
+
+    Component.onCompleted: {
+        deferredStartup.start();
+    }
 
     Binding {
         target: ShellState
         property: "shellRoot"
         value: root
     }
-
-    // Several QtCore.Settings {} elements throughout the codebase (BlurOffsets,
-    // ContentWindow, UpdateChecker) rely on QCoreApplication's organization/app
-    // identifiers to build their QSettings storage path. Quickshell's host
-    // binary never sets these, so QSettings previously failed to initialize
-    // (status code 1) with "application identifiers have not been set"
-    // warnings everywhere. Setting Qt.application.* here runs during this
-    // object's property-binding phase, which always completes (for the whole
-    // tree) before any child's componentComplete/Component.onCompleted -
-    // i.e. before any Settings {} element is finalized - so this reliably
-    // fixes it project-wide from a single place.
-    readonly property bool _appIdentifiersSet: (function() {
-        Qt.application.organization = "Caelestia";
-        Qt.application.domain = "caelestia.dots";
-        Qt.application.name = "caelestia-shell";
-        return true;
-    })()
 
     // UI translations. The catalogues live next to the shell (shell/translations,
     // installed as <shell>/translations/caelestia_<code>.qm), so resolving the
@@ -83,44 +77,62 @@ ShellRoot {
 
     Drawers {}
     // AreaPicker {}
-    Lock {
-        id: lock
-    }
     // PolkitModule {}
 
-    property var regionSelector: RegionSelector {}
-
     IpcHandler {
-        target: "region"
-
         function screenshot(): void {
-            regionSelector.screenshot()
+            regionSelector.screenshot();
         }
 
         function search(): void {
-            regionSelector.search()
+            regionSelector.search();
         }
 
         function ocr(): void {
-            regionSelector.ocr()
+            regionSelector.ocr();
         }
 
         function record(): void {
-            regionSelector.record()
+            regionSelector.record();
         }
 
         function recordWithSound(): void {
-            regionSelector.recordWithSound()
+            regionSelector.recordWithSound();
         }
+
+        target: "region"
     }
 
-    ConfigToasts {}
+    IpcHandler {
+        function lock(): void {
+            Quickshell.execDetached(["loginctl", "lock-session"]);
+            Audio.playLock();
+        }
+
+        function unlock(): void {
+            Quickshell.execDetached(["loginctl", "unlock-session"]);
+        }
+
+        target: "lock"
+    }
+
     Shortcuts {}
     ScreenCorners {}
 
-    Component.onCompleted: {
-        Qt.callLater(() => { Weather.reload(); });
-        PluginLoader.loadPlugins();
+    Timer {
+        id: deferredStartup
+
+        interval: 250
+        repeat: false
+
+        onTriggered: {
+            PluginLoader.loadPlugins();
+            bbdxCheckProcess.running = true;
+            root._arpcInit = DiscordRPC;
+            root._gameModeInit = GameMode;
+            root._updateCheckerInit = UpdateChecker;
+            root._autoSchemeInit = AutoScheme;
+        }
     }
 
     Services.StartupTasks {}
@@ -129,7 +141,7 @@ ShellRoot {
     Process {
         id: bbdxCheckProcess
 
-        running: true
+        running: false
         command: ["bash", "-c", `
             IS_ENABLED=$(kreadconfig6 --file kwinrc --group Plugins --key better_blur_dxEnabled)
             if [ "$IS_ENABLED" = "true" ]; then
@@ -184,17 +196,6 @@ ShellRoot {
     }
 
     BatteryMonitor {}
-    IdleMonitors {
-        lock: lock
-    }
+    IdleMonitors {}
     BluetoothReconnect {}
-
-    // Force service initialization
-    property var _arpcInit: DiscordRPC
-
-    property var _gameModeInit: GameMode
-
-    property var _updateCheckerInit: UpdateChecker
-
-    property var _autoSchemeInit: AutoScheme
 }

@@ -98,18 +98,24 @@ MouseArea {
         x: {
             watcher.transform; // mapToItem is not reactive so this forces updates
             const item = root.attachTo;
+            if (!item || !root.parent)
+                return 0;
             let off = root.attachSideX === Menu.Left ? 0 : item.width;
             if (root.thisSideX === Menu.Right)
                 off -= width;
-            return item.mapToItem(root.parent, off, 0).x + root.marginX;
+            const pt = item.mapToItem(root.parent, off, 0);
+            return (pt ? pt.x : 0) + root.marginX;
         }
         y: {
             watcher.transform; // mapToItem is not reactive so this forces updates
             const item = root.attachTo;
+            if (!item || !root.parent)
+                return 0;
             let off = root.attachSideY === Menu.Top ? 0 : item.height;
             if (root.thisSideY === Menu.Bottom)
                 off -= height;
-            return item.mapToItem(root.parent, 0, off).y + root.marginY;
+            const pt = item.mapToItem(root.parent, 0, off);
+            return (pt ? pt.y : 0) + root.marginY;
         }
 
         radius: Tokens.rounding.large

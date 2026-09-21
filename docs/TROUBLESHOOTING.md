@@ -15,6 +15,7 @@ This document catalogs known failure modes, error conditions, and edge cases dis
 5. [Configuration Issues](#5-configuration-issues)
 6. [Network & Proxy Issues](#6-network--proxy-issues)
 7. [KDE & Plasma Specific Issues](#7-kde--plasma-specific-issues)
+   1. [Installer Window Rules](#77-installer-window-rules)
 8. [Post-Install Issues](#8-post-install-issues)
 9. [Uninstall Issues](#9-uninstall-issues)
 10. [Update Issues](#10-update-issues)
@@ -103,8 +104,7 @@ The project enables ccache in both `installer/CMakeLists.txt` and `shell/CMakeLi
 | AUR Package | Failure Symptoms |
 |---|---|
 | `quickshell-git` | Shell won't start; autostart fails with exit 127 |
-| `caelestia-cli` | `caelestia` command not found; shell falls back to direct `quickshell` calls |
-| `kde-material-you-colors` | Colors won't sync with wallpaper |
+| `matugen` | `caelestia wallpaper` and `caelestia scheme` fail with "matugen is not installed". It is in Arch's `extra`, so it is not an AUR package; it is listed here because nothing themes without it. |
 | `darkly` | KDE theme won't apply |
 
 ### 2.2 Fedora / COPR Failures
@@ -120,7 +120,7 @@ The project enables ccache in both `installer/CMakeLists.txt` and `shell/CMakeLi
 
 **RPM Fusion requirement:** `ffmpeg` with H264 support requires RPM Fusion. The script auto-enables it, but this may fail behind a proxy or on air-gapped systems.
 
-**kde-material-you-colors on Fedora:** Installed via `uv tool install`. Requires `dbus-devel`, `dbus-glib-devel`, and `python3-devel`.
+**matugen on Fedora:** there is no package for it, and it is what generates the palette. The installer reports it when it is missing; `cargo install matugen` fixes it.
 
 ### 2.3 CRLF / dos2unix Failure
 
@@ -148,14 +148,14 @@ The installer does **not** abort on package failure — it logs and continues. C
 
 ### 3.1 Shell Doesn't Start After Login
 
-The shell autostarts via `~/.config/autostart/caelestiashell.desktop` which runs `~/.local/bin/caelestia-autostart.sh`.
+The shell starts from the systemd user unit `caelestia-shell.service`, which `caelestia install` enables once. The environment the shell needs is set by `~/.local/bin/caelestia-autostart.sh` for a source install, and by `/usr/bin/caelestia-autostart` for a packaged one; the unit runs whichever belongs to that install.
 
 | Symptom | Likely Cause |
 |---|---|
 | Blank screen at login | Shell binary launched but crashed immediately. Check `journalctl --user -xe`. |
-| Plasma desktop visible, no shell | Autostart entry didn't execute. Verify the `.desktop` file exists. |
+| Plasma desktop visible, no shell | The unit didn't start. `systemctl --user status caelestia-shell.service`, and `systemctl --user is-enabled caelestia-shell.service` for whether it is on at all. |
 | Shell appears briefly then disappears | Quickshell crashed. Run manually from a terminal. |
-| `quickshell: command not found` | Quickshell not in PATH at login. The autostart wrapper resolves the binary path. |
+| `quickshell: command not found` | Quickshell not in PATH at login. The wrapper the unit runs resolves the binary path. |
 
 **Manual start for debugging:**
 ```bash
@@ -166,17 +166,24 @@ quickshell -d -n -p ~/.config/quickshell/caelestia/shell.qml
 
 ### 3.2 Environment Variables Not Set On Login
 
-The build script appends to `~/.bashrc` and `~/.config/fish/config.fish`:
+They live in one file, `~/.config/environment.d/caelestia.conf`, which systemd
+imports into every session process and into the user manager the shell's unit runs
+under:
 
 ```bash
-export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml"
-export CAELESTIA_LIB_DIR="$HOME/.local/lib/caelestia"
+QML2_IMPORT_PATH=$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia
+CAELESTIA_LIB_DIR=$HOME/.local/lib/caelestia
+CAELESTIA_BIN_DIR=$HOME/.local/bin
+CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
 ```
 
-**Known issues:**
-- **Zsh users:** Only `.bashrc` and `fish/config.fish` are updated — add the exports to `~/.zshrc` manually
-- **Duplicate lines:** Running the installer multiple times adds duplicate exports
-- **Fish users:** The grep check may miss existing entries if they're set via a different mechanism
+**If they are missing:** re-run `scripts/08-build-shell.sh`, then log out and back
+in - systemd reads the directory at login, so a running session keeps the old
+values. `systemctl --user show-environment` lists what the user manager has.
+
+**If a session is not managed by systemd**, the file does nothing and the values
+have to be exported by hand; the shell's own autostart script sets them for the
+shell either way, so only tools started outside it are affected.
 
 ### 3.3 Window Thumbnails / Screencast Not Working
 
@@ -210,32 +217,23 @@ causing that app to freeze or crash.
 This falls back to static app icons for thumbnails instead of live video and
 avoids Caelestia's use of the protocol entirely.
 
-### 3.4 Material You Colors Not Working
+### 3.4 Colors Not Applying
 
 | Symptom | Fix |
 |---|---|
-| Colors not updating with wallpaper | Check service: `systemctl status --user kde-material-you-colors.service` |
-| Service failed to start | On Fedora, installed via `uv`. If `uv` isn't in PATH at login, the service fails. |
-| Old schemes accumulating | The installer removes old `MaterialYou*.colors`, but multiple restarts can recreate them. |
-| Colors come back as the built-in default (Mocha) | The CLI derives dynamic colors from the wallpaper it was last told about. When it has none it writes nothing, the shell keeps its own default palette and pushes that into KMY, so the whole desktop follows. The shell now re-derives from the wallpaper it is showing at every start. |
-| The service has to be restarted after every login | It was started with the session, before plasmashell existed, so it could read neither the wallpaper nor the current scheme. The unit is now ordered after `plasma-plasmashell.service` and restarts on a clean early exit too. |
+| Colors do not change with the wallpaper | `caelestia wallpaper -f <image>` generates and applies the palette. If Plasma stays on the old one, check that `plasma-apply-colorscheme --list-schemes` names `Matugen`. |
+| Two Material You entries in System Settings | Expected: `Matugen` and `Matugen Alt`. `plasma-apply-colorscheme` does nothing when handed the scheme already in effect, so the palette is applied under whichever of the two is not current. |
+| A leftover accent color wins over the palette | Plasma rewrites the focus, link and selection colors from `kdeglobals`' accent, so the palette is applied with that key removed. If it is set again - System Settings, or a theme tool of your own - the colors it drives will follow it. |
+| Colors come back as the built-in default (Mocha) | The CLI derives dynamic colors from the wallpaper it was last told about. When it has none it writes nothing, and the shell keeps its own default palette. The shell re-derives from the wallpaper it is showing at every start. |
+| Konsole keeps its own colors | The command writes `~/.local/share/konsole/Matugen.colorscheme` and points the profiles that exist at it. Konsole's built-in default profile is not a file, so a fresh account has nothing to point: create a profile once and the next change themes it. |
+| The desktop flickers between two palettes | A `kde-material-you-colors` unit from an older install is still applying a scheme of its own. See 3.7. |
 
-**Manual restart:**
-```bash
-systemctl --user restart kde-material-you-colors.service
-journalctl --user -u kde-material-you-colors.service -n 50
-```
-
-An existing install keeps the old unit until the step that writes it runs again,
-so re-run `scripts/10-autostart.sh` (or the installer/update) once to pick up the
-ordering and the restart policy.
-
-The shell re-derives the scheme from the wallpaper at every start, so a palette
-stuck on the built-in default corrects itself on the next shell restart. To do it
-without restarting the shell:
+There is no service to restart. A palette is generated and applied by the command the shell calls, so
+the way to redo it by hand is:
 
 ```bash
-~/.config/quickshell/caelestia/scripts/reseed-scheme.sh
+caelestia scheme set -n dynamic      # re-derive from the wallpaper on screen
+caelestia wallpaper -f ~/Pictures/Wallpapers/one.png
 ```
 
 ### 3.5 Screen Recording Issues
@@ -260,38 +258,54 @@ The screenshot tool uses `spectacle` (KDE's native screenshot utility) via the `
 The screen flashes, colors look briefly wrong and the shell hangs for about a
 second, repeating on a rhythm of roughly one second.
 
-The cause is `kde-material-you-colors` getting stuck. It decides on every loop
-that the palette changed, applies an identical scheme again and spawns
-`plasma-apply-colorscheme` each time. Every apply rewrites `kdeglobals` and
-makes every window repaint, which is what the flash is. Restarting the service
-clears it, which is also why it disappears when you restart it by hand.
+That was `kde-material-you-colors` getting stuck. It decided on every loop that
+the palette had changed, applied an identical scheme again and spawned
+`plasma-apply-colorscheme` each time, and every apply rewrites `kdeglobals` and
+repaints every window. Nothing here runs it any more: it is not installed, the
+installer removes its unit, and the palette is applied once per change rather than
+once per poll.
 
-The shell now watches for this and stops it at the source:
-
-- applies only count when the `plasma-apply-colorscheme` process was started by
-  `kde-material-you-colors`, so applying a scheme yourself is never mistaken for
-  the loop
-- eight applies inside ten seconds restarts the service
-- a second storm within ten minutes pauses it instead, through its own
-  `pause_mode`, and shows a toast
-
-To check by hand:
+If it is still happening, a unit from an older install is behind it:
 
 ```bash
-journalctl --user -u app-caelestiashell@autostart.service -n 50 | grep 'KMY guard'
-pgrep -af plasma-apply-colorscheme   # a new pid every second means the loop is back
+systemctl --user status kde-material-you-colors   # active means it is still applying
+systemctl --user disable --now kde-material-you-colors
+pgrep -af plasma-apply-colorscheme                # a new pid every second means something still loops
 ```
 
-If the service was paused, turn it back on once the loop has cleared. The
-switch is in Settings, under Appearance then Advanced Colors, or:
-
-```bash
-~/.config/quickshell/caelestia/scripts/sync-kmyc.sh --set pause_mode False
-systemctl --user restart kde-material-you-colors
-```
+`bash scripts/10-autostart.sh` stops that unit and deletes it, if you would rather
+not do it by hand. It also removes the `MaterialYou*.colors` files KMY left in
+System Settings.
 
 Applying once when the wallpaper or theme changes is expected and does not
 trigger any of this.
+
+---
+
+### 3.8 Workspace Tracker Effect Stops Loading After a KDE Update
+
+The workspace pills show the focused screen's desktop on every screen, swiping
+does not track the gesture, and the shell reports that the workspace tracker
+effect is not running.
+
+`kwin_workspace_tracker` is a compiled KWin effect, and KWin makes no promise
+that a binary effect keeps working across releases: it is linked against
+libkwin's internals and has to be relinked when KDE updates them. KWin then
+refuses the stale binary, so per-output desktops and the swipe offset stop
+arriving. A routine `pacman -Syu` is enough to cause it; nothing in Caelestia is
+corrupted.
+
+Rebuild it by re-running the installer or `update.sh`, then log out and back in -
+KWin only loads effects at startup:
+
+```bash
+bash update.sh                     # rebuilds and reinstalls the effect
+qdbus6 org.kde.KWin /Caelestia/Workspaces org.freedesktop.DBus.Introspectable.Introspect
+```
+
+The last command prints the effect's interface once it is loaded again, and
+fails while it is not. `bash shell/scripts/check-workspace-tracker.sh` answers the
+same question with an exit status (3 means enabled but not loaded).
 
 ---
 
@@ -399,13 +413,22 @@ On CachyOS, the installer uses the native `cachyos-rate-mirrors` command, which 
 
 ### 6.2 Git / Submodule Failures
 
-The submodule `src/dots` is critical. If `git submodule update --init --recursive` fails:
+The submodule `src/dots` is critical. If it cannot be fetched:
 
 ```text
-[ERR] Missing src/dots content. Run: git submodule update --init --recursive src/dots
+[ERR] src/dots is still empty, and the installer cannot deploy without it.
 ```
 
-This is a **hard failure** — the installer cannot proceed past config deployment.
+Step 02a checks the submodule has content and fetches it again by other means before reporting this: a normal update, then a sync of the recorded URL followed by another update, then a forced update, and finally a plain clone of the URL `.gitmodules` records. So this message means all four were attempted and every one failed, which is usually a network that cannot reach GitHub or a checkout that cannot be written to.
+
+This is a **hard failure** - the installer cannot proceed past config deployment. Fetch it by hand and re-run the step:
+
+```bash
+git -C ~/caelestia-kde submodule update --init --recursive src/dots
+bash ~/caelestia-kde/scripts/02a-submodules.sh
+```
+
+The shared folder mounted at `/mnt/hgfs/` is read-only, so an install run from there cannot fetch anything: clone the repository to a writable directory first.
 
 **Behind a proxy?**
 ```bash
@@ -462,6 +485,103 @@ The plugin injects a temporary KWin script for window tracking. If KWin scriptin
 ```bash
 qdbus6 org.kde.KWin /Scripting org.kde.kwin.Scripting.loadScript
 ```
+
+### 7.6 The Login Screen (Plasma Login and SDDM)
+
+Plasma 6.6 and newer boot into Plasma Login, KDE's fork of SDDM. The two are
+configured in different places, and the installer picks a branch at install time:
+
+| | Plasma Login | SDDM |
+|---|---|---|
+| How to tell | `command -v plasmalogin`, or `/etc/plasmalogin.conf` exists | `command -v sddm` |
+| Theme | none: its greeter is a Plasma shell, and it loads no SDDM theme | `/usr/share/sddm/themes/caelestia` |
+| Wallpaper | `[Greeter][Wallpaper][org.kde.image][General] Image` in `/etc/plasmalogin.conf`, pointing at a copy under the `plasmalogin` user's `wallpapers/` | `assets/background` inside the theme |
+| Colors | the `plasmalogin` user's own `~/.config/kdeglobals` plus the scheme files in its `~/.local/share/color-schemes/` | `theme.conf` inside the theme |
+| Sync helper | `/usr/local/bin/caelestia-greeter-sync` | `/usr/share/sddm/themes/caelestia/scripts/sync.sh` |
+
+The greeter runs as its own system user, which cannot read your home directory, so
+anything it shows has to be copied to it. That is what the sync helper does, and it
+runs after every wallpaper or color change through the posthook in
+`~/.config/caelestia/cli.json`. An install that switches display managers replaces
+its hook rather than stacking a second one.
+
+**The login screen shows Breeze colors or no background:**
+
+```bash
+# Which display manager is actually installed
+command -v plasmalogin sddm
+
+# Plasma Login: what the greeter is told to show
+kreadconfig6 --file /etc/plasmalogin.conf --group Greeter --group Wallpaper \
+    --group org.kde.image --group General --key Image
+
+# SDDM: which theme each config source selects, last one read wins
+grep -rn "Current=" /etc/sddm.conf /etc/sddm.conf.d/ /usr/lib/sddm/sddm.conf.d/ 2>/dev/null
+ls /usr/share/sddm/themes/caelestia/theme.conf
+
+# Re-copy the wallpaper and the scheme, then log out
+sudo /usr/local/bin/caelestia-greeter-sync          # Plasma Login
+sudo /usr/share/sddm/themes/caelestia/scripts/sync.sh   # SDDM
+```
+
+Both greeters read their configuration when they start, so a change is visible at
+the next logout rather than immediately.
+
+### 7.7 Installer Window Rules
+
+The installer writes three groups into `~/.config/kwinrulesrc`. `caelestia-opacity`
+gives normal windows and dialogs an inactive opacity of 95 percent,
+`caelestia-dialogs` forces centered placement on dialogs, and `caelestia-pip` keeps
+windows whose title matches `Picture(-| )in(-| )[Pp]icture` above others. Opacity is
+a per-activation-state key, so a window is dimmed only while it is not focused, and
+the dialog rule is the one that can disagree with a placement policy chosen in
+System Settings.
+
+A group only takes effect if the index names it. `[General] rules=` is the list KWin
+loads its rule groups from, and a group that is present in the file but missing from
+that list is never loaded, and is removed the next time KWin saves the file. The
+installer writes the list as the union of the entries that were already in it, every
+group the file holds and its own three names, with `count` set to the number of
+entries, so the user's own rules are named alongside ours and keep their order.
+
+To read a value back:
+
+```bash
+kreadconfig6 --file kwinrulesrc --group caelestia-opacity --key opacityinactive
+kreadconfig6 --file kwinrulesrc --group caelestia-dialogs --key placement
+kreadconfig6 --file kwinrulesrc --group caelestia-pip --key above
+kreadconfig6 --file kwinrulesrc --group General --key rules
+```
+
+To remove the rules, delete the three `[caelestia-...]` sections out of the file, or
+delete the key that switches each group on. A group that is deleted has to leave the
+index with it, or the list keeps a name whose group is gone and `count` no longer
+matches it. `uninstall.sh` removes the keys, strips the three names out of the list,
+rewrites `count`, and deletes both index keys once no name is left. KWin does not
+watch kwinrulesrc, so the reload is not optional:
+
+```bash
+kwriteconfig6 --file kwinrulesrc --group caelestia-opacity \
+    --key opacityinactiverule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-dialogs \
+    --key placementrule --delete
+kwriteconfig6 --file kwinrulesrc --group caelestia-pip --key aboverule --delete
+qdbus6 org.kde.KWin /KWin reconfigure
+```
+
+Those commands delete each group's `*rule` key, which is the action. The match keys
+are left behind, and a group that matches but carries no action is empty as far as
+KWin is concerned: it discards such a rule once a window it matches has been
+withdrawn, so the residue is harmless.
+
+A window that is already open keeps what a rule forced on it. Opacity and keep-above
+are set on the window itself, so an open window stays dimmed or pinned after the rules
+are gone, until it is closed and reopened or another rule forces the value back. Only
+windows created after the removal start clean.
+
+The installer always applies the rules; `APPLY_WINDOW_RULES=false` is an override
+for running the step by hand (`APPLY_WINDOW_RULES=false bash ./scripts/setup.sh`).
+`WINDOW_OPACITY` changes the percentage the opacity rule writes.
 
 ---
 
@@ -551,6 +671,12 @@ download against the `.sha256` published beside it:
 A mismatch is not fatal: the installer builds from source instead, which takes longer but cannot
 unpack a damaged tree into `~/.local/lib/qt6/qml`.
 
+The archive is also only used for the revision it was built from: `main` sitting on its remote
+tip, or a checkout that is exactly the released tag (an update pinned to a version). A branch, a
+stale `main`, or a checkout carrying commits of its own builds locally, because the archive would
+replace that tree with the release's. `main` that has moved on since its last release cannot be
+told apart from that release, so it is installed as the release its `version.env` names.
+
 ---
 
 ## 9. Uninstall Issues
@@ -635,7 +761,7 @@ curl -fsSL https://raw.githubusercontent.com/ladybug-me/caelestia-kde/main/insta
 qdbus6 org.kde.KWin /KWin reconfigure
 
 # Check user services
-systemctl --user list-units | grep -E 'caelestia|quickshell|kde-material-you'
+systemctl --user list-units | grep -E 'caelestia|quickshell'
 
 # Check KWin plugins
 kwriteconfig6 --file kwinrc --group Plugins --key list
@@ -704,7 +830,7 @@ systemctl --user restart plasma-plasmashell
 | Missing QML module | `export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml"` |
 | No window thumbnails | `kbuildsycoca6 --noincremental && qdbus6 org.kde.KWin /KWin reconfigure` |
 | Git submodule error | `git submodule update --init --recursive src/dots` |
-| Colors not updating | `systemctl --user restart kde-material-you-colors.service` |
+| Colors not updating | Run `caelestia scheme set -n dynamic`, and check that `plasma-apply-colorscheme --list-schemes` names Matugen |
 | Installer compiles but flashes/exits | Check `/tmp/caelestia_installer_err.log` |
 | Recording not working | Verify `gpu-screen-recorder` is installed |
 | Screenshot not working | Verify `spectacle` is installed |

@@ -31,15 +31,9 @@ Item {
     readonly property string sansFont: GlobalConfig.appearance.font.body.family || "Sans Serif"
     readonly property int alignment: Config.background.desktopLyrics.alignment
     readonly property bool autoHide: Config.background.desktopLyrics.autoHide
-    readonly property bool allWindowsFloating: {
-        if (typeof KWinActiveWindowBridge !== "undefined") {
-            const wins = KWinActiveWindowBridge.windowList || [];
-            return wins.every(w => !!w?.floating);
-        }
-        return Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(
-            t => t.lastIpcObject?.floating) ?? true;
-    }
-    readonly property bool shouldHide: autoHide && !allWindowsFloating
+    readonly property bool windowHidesLyrics: Kwin.windowHidesDesktopWidgets(root.screen ? root.screen.name : "", Config.background.visualiser.hideOnAllMonitors)
+    readonly property bool allWindowsFloating: !windowHidesLyrics
+    readonly property bool shouldHide: autoHide && windowHidesLyrics
 
     property bool hasLyrics: Lyrics.hasLyrics
     property int currentLyricIndex: -1

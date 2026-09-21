@@ -18,6 +18,14 @@ Singleton {
     property string scheme: "dynamic"
     property string flavour: "default"
     property string variant: "default"
+    // How saturated the palette is, carried by the scheme itself: 1 is what the color engine
+    // produced, 0 is a grey palette at the same tones, and 2 is the most the accents take.
+    // That range is what `caelestia scheme set -i` takes, and it is the only place the shell
+    // states it - the page below works in it rather than in its own copy of a slider's range.
+    property real intensity: 1.0
+    readonly property real maxIntensity: 2.0
+    // The same value as a position on a 0 to 1 slider, which is what a slider is.
+    readonly property real intensityFraction: intensity / maxIntensity
     property string previewScheme: ""
     property string previewFlavour: ""
     property string previewVariant: ""
@@ -201,6 +209,12 @@ Singleton {
             root.flavour = (scheme.flavour || "").trim();
             root.variant = (scheme.variant || "").trim();
             root.currentLight = scheme.mode === "light";
+
+            // Absent, null, and a value the range does not take all mean the same thing here:
+            // what is in effect is the palette the engine produced. 0 is a real setting (a grey
+            // palette), so this cannot lean on falsiness either.
+            const intensity = Number(scheme.intensity ?? NaN);
+            root.intensity = Number.isFinite(intensity) ? Math.min(root.maxIntensity, Math.max(0, intensity)) : 1.0;
         } else {
             root.previewScheme = (scheme.name || "").trim();
             root.previewFlavour = (scheme.flavour || "").trim();
@@ -217,7 +231,6 @@ Singleton {
         if (!isPreview) {
             root.schemeLoaded = true;
             root.schemeRetryCount = 0;
-            Qt.callLater(root.syncKMYC);
         }
     }
 
@@ -234,50 +247,35 @@ Singleton {
         Quickshell.execDetached(["caelestia", "scheme", "set", "--notify", "-m", mode]);
     }
 
-    function syncKMYC(): void {
-        const variantMap = {
-            "content": 0,
-            "expressive": 1,
-            "fidelity": 2,
-            "monochrome": 3,
-            "neutral": 4,
-            "tonal-spot": 5,
-            "vibrant": 6,
-            "rainbow": 7,
-            "fruit-salad": 8
-        };
-        const varNum = variantMap[root.variant] ?? 5;
-        const color = String(root.palette.m3primary_paletteKeyColor);
-        const lightMode = root.currentLight ? "True" : "False";
-
-        const scriptPath = Quickshell.shellPath("scripts/sync-kmyc.sh");
-        Quickshell.execDetached(["bash", scriptPath, color, varNum, lightMode]);
+    // Renders the palette at an intensity, given as the slider position rather than as the
+    // multiplier itself. The command writes the value into the scheme, which is what the
+    // palette and this singleton then read it back out of.
+    function setIntensity(fraction: real): void {
+        Quickshell.execDetached(["caelestia", "scheme", "set", "-i", (fraction * maxIntensity).toFixed(2)]);
     }
 
-    // The CLI derives dynamic colours from the wallpaper it was last told
+    // caelestia derives dynamic colours from the wallpaper it was last told
     // about, and a scheme it cannot derive leaves the palette on the built-in
-    // default, which is then pushed into kde-material-you-colors and keeps the
-    // whole desktop on it. Re-derive from the wallpaper on screen once per
-    // start. Delivery is the scheme.json write the loader already watches, so
-    // nothing here waits for the result.
+    // default, which keeps the whole desktop on it. Re-derive from the
+    // wallpaper on screen once per start. Delivery is the scheme.json write the
+    // loader already watches, so nothing here waits for the result.
     function reseedScheme(): void {
         Quickshell.execDetached(["bash", Quickshell.shellPath("scripts/reseed-scheme.sh")]);
     }
 
     function reloadHyprRules(): void {
         // Layer rules are Hyprland-only; KWin handles blur via effects.
-        if (typeof KWinActiveWindowBridge !== "undefined")
-            return;
+                    return;
 
         let rule, trEnabled;
-        if (Hypr.usingLua) {
+        if (Kwin.usingLua) {
             rule = `eval hl.layer_rule({ match = { namespace = "caelestia-drawers" }, %1 = %2 })`;
             trEnabled = transparency.enabled;
         } else {
             rule = "keyword layerrule %1 %2, match:namespace caelestia-drawers";
             trEnabled = transparency.enabled ? 1 : 0;
         }
-        Hypr.extras.batchMessage([rule.arg("blur").arg(trEnabled), rule.arg("ignore_alpha").arg(Math.max(0, transparency.base - 0.03))]);
+        Kwin.extras.batchMessage([rule.arg("blur").arg(trEnabled), rule.arg("ignore_alpha").arg(Math.max(0, transparency.base - 0.03))]);
     }
 
     function requestReloadHyprRules(): void {
@@ -302,7 +300,7 @@ Singleton {
             root.reloadHyprRules();
         }
 
-        target: Hypr
+        target: Kwin
     }
 
 
@@ -316,10 +314,10 @@ Singleton {
         onLoaded: root.load(text(), false)
     }
 
-    // The external caelestia CLI rewrites scheme.json atomically (os.replace),
-    // which the FileView's watcher can miss after the first replacement. The
-    // C++ SchemeLoader re-arms its own watcher for exactly this case, so reload
-    // the palette from its signal as the authoritative trigger.
+    // scheme.json is rewritten atomically (the command replaces it, it does not
+    // truncate it), which the FileView's watcher can miss after the first
+    // replacement. The C++ SchemeLoader re-arms its own watcher for exactly this
+    // case, so reload the palette from its signal as the authoritative trigger.
     Connections {
         target: SchemeLoader
 

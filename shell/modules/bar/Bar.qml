@@ -164,7 +164,7 @@ Item {
                 }
             }
             if (icon) {
-                popouts.currentName = icon.name;
+                popouts.currentName = icon.popoutName ?? icon.name;
                 popouts.currentCenter = isHorizontal ? icon.mapToItem(null, icon.width / 2, 0).x : icon.mapToItem(null, 0, icon.height / 2).y;
                 popouts.hasCurrent = true;
             } else {
@@ -245,16 +245,14 @@ Item {
         }
 
         if (ch?.id === "workspaces" && Config.bar.scrollActions.workspaces) {
-            const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
+            const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Kwin.monitorFor(screen) : Kwin.focusedMonitor);
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
             if (specialWs?.length > 0)
-                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.workspace.toggle_special("${specialWs.slice(8)}")` : `togglespecialworkspace ${specialWs.slice(8)}`);
+                Kwin.dispatch(Kwin.usingLua ? `hl.dsp.workspace.toggle_special("${specialWs.slice(8)}")` : `togglespecialworkspace ${specialWs.slice(8)}`);
             else {
-                const activeId = typeof KWinWorkspaceState !== "undefined"
-                    ? KWinWorkspaceState.activeId
-                    : Hypr.activeWsId;
+                const activeId = Kwin.activeWsId;
                 if (angleDelta.y < 0 || activeId > 1)
-                    Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "r${angleDelta.y > 0 ? "-" : "+"}1" })` : `workspace r${angleDelta.y > 0 ? "-" : "+"}1`);
+                    Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ workspace = "r${angleDelta.y > 0 ? "-" : "+"}1" })` : `workspace r${angleDelta.y > 0 ? "-" : "+"}1`);
             }
         } else if ((isHorizontal ? pos < screen.width / 2 : pos < screen.height / 2) && Config.bar.scrollActions.volume) {
             if (angleDelta.y > 0)
@@ -432,7 +430,7 @@ Item {
             DelegateChoice {
                 roleValue: "kbLayoutIndicator"
                 delegate: WrappedLoader {
-                    visible: enabled && (Hypr.kbLayout || "").length > 0
+                    visible: enabled && (Kwin.kbLayout || "").length > 0
                     sourceComponent: KbLayoutIndicator {}
                 }
             }

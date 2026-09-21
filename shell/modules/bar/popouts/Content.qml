@@ -14,6 +14,15 @@ Item {
     readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
+    // Tray menu popouts are looked up by name, and the list that opens them
+    // (Tray.qml) is filtered differently from the list that publishes them here
+    // (only items with a menu), so a positional index would drift: name them by
+    // item id via the index in the bar's own filtered list.
+    readonly property var trayItemsToIndices: SystemTray.items.values.filter(i => i.status !== Status.Passive && !GlobalConfig.bar.tray.hiddenIcons.includes(i.id)).reduce((acc, item, i) => {
+        acc[item.id] = i;
+        return acc;
+    }, {})
+
     readonly property real contentMargin: Tokens.padding.large * (currentPopout?.item?.scaleOffset ?? 1.0)
     readonly property real availableWidth: Math.max(0, ((QsWindow.window as QsWindow)?.screen?.width ?? 0) - contentMargin * 2 - Tokens.padding.extraLargeIncreased * (currentPopout?.item?.scaleOffset ?? 1.0))
     readonly property real availableHeight: Math.max(0, ((QsWindow.window as QsWindow)?.screen?.height ?? 0) - contentMargin * 2 - Tokens.padding.extraLargeIncreased * (currentPopout?.item?.scaleOffset ?? 1.0))
@@ -184,16 +193,15 @@ Item {
 
         Repeater {
             model: ScriptModel {
-                values: SystemTray.items.values.filter(i => !GlobalConfig.bar.tray.hiddenIcons.includes(i.id))
+                values: SystemTray.items.values.filter(i => i.hasMenu && i.status !== Status.Passive && !GlobalConfig.bar.tray.hiddenIcons.includes(i.id))
             }
 
             Popout {
                 id: trayMenu
 
                 required property SystemTrayItem modelData
-                required property int index
 
-                name: `traymenu${index}`
+                name: `traymenu${root.trayItemsToIndices[modelData.id]}`
                 previewKey: "trayMenu"
                 sourceComponent: trayMenuComp
 

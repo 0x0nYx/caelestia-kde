@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
-# 10-autostart.sh  Set up autostart entries for Quickshell and kde-material-you-colors.
-# Idempotent: overwrites .desktop files with correct content each run.
 
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 
-# Resolve the bundle root the same way the build script does, so this works
-# whether the installer exports it or the script is run directly.
 BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 AUTOSTART_DIR="$HOME/.config/autostart"
@@ -19,13 +16,11 @@ echo ""
 info "Setting up autostart entries"
 echo ""
 
-SHELL_CONFIG="$HOME/.config/quickshell/caelestia/shell.qml"
+SHELL_CONFIG="$(install_shell_config)"
+QML_IMPORT_PATH="$(install_qml_import_path)"
+LIB_DIR="$(install_lib_dir)"
+BIN_DIR="$(install_bin_dir)"
 
-if [[ ! -f "$SHELL_CONFIG" ]]; then
-    die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
-fi
-
-# Determine the path of quickshell to avoid PATH differences at login.
 if command -v quickshell >/dev/null 2>&1; then
     QUICKSHELL_PATH="$(command -v quickshell)"
 elif command -v qs >/dev/null 2>&1; then
@@ -38,19 +33,48 @@ else
     die "Quickshell is not installed or is not available in PATH."
 fi
 
-# Caelestia Shell autostart
-# Launch the shell built by 08-build-shell.sh directly. This avoids depending
-# on the distro's caelestia-cli version or its config-directory resolution.
-echo "  Creating Caelestia Shell autostart entry..."
-cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
+if install_is_packaged; then
+    if [[ -f "$HOME/.config/systemd/user/caelestia-shell.service" ]]; then
+        rm -f "$HOME/.config/systemd/user/caelestia-shell.service"
+        info "Removed the user's copy of the shell unit; the package's is the one to use."
+    fi
+    if [[ -f "$HOME/.local/bin/caelestia-autostart.sh" ]]; then
+        rm -f "$HOME/.local/bin/caelestia-autostart.sh"
+        info "Removed the user's copy of the shell launcher; the package's is the one to use."
+    fi
+else
+    if [[ ! -f "$SHELL_CONFIG" ]]; then
+        die "Caelestia Shell entrypoint not found: $SHELL_CONFIG (run scripts/08-build-shell.sh first)"
+    fi
+
+    echo "  Creating Caelestia Shell autostart entry..."
+    cat > "$HOME/.local/bin/caelestia-autostart.sh" << EOF
 #!/bin/bash
-export QML2_IMPORT_PATH="\$HOME/.local/lib/qt6/qml:\$HOME/.config/quickshell/caelestia"
-export CAELESTIA_LIB_DIR="\$HOME/.local/lib/caelestia"
+# Where this install's files are. environment.d carries the same values for a
+# session; they are repeated because the unit can start this outside one.
+#
+# The command the shell and its widgets call by name must be on PATH for everything
+# this spawns: 08-build-shell.sh installs it into ~/.local/bin, which a session started
+# by the display manager does not necessarily have on PATH.
+export PATH="$BIN_DIR:\$PATH"
+export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
+export CAELESTIA_LIB_DIR="$LIB_DIR"
+export CAELESTIA_BIN_DIR="$BIN_DIR"
+export CAELESTIA_SHELL_CONFIG="$SHELL_CONFIG"
 export QS_NO_RELOAD_POPUP=1
 export QS_DROP_EXPENSIVE_FONTS=1
 export QS_DISABLE_CRASH_HANDLER=1
 export QSG_RENDER_LOOP=threaded
 export QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
+# Quickshell imports its Hyprland IPC module even on KDE for API compatibility.
+# Its missing-socket warning is expected when this KDE port has no Hyprland instance.
+if [[ -z "\${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    if [[ -n "\${QT_LOGGING_RULES:-}" ]]; then
+        export QT_LOGGING_RULES="\${QT_LOGGING_RULES};quickshell.hyprland.ipc.warning=false"
+    else
+        export QT_LOGGING_RULES="quickshell.hyprland.ipc.warning=false"
+    fi
+fi
 # Self-heal Caelestia lock screen if KDE updates or kconf_update reset it
 if [ -f "\$HOME/.local/share/plasma/shells/caelestia.desktop/contents/lockscreen/LockScreen.qml" ] || [ -f "/usr/share/plasma/shells/caelestia.desktop/contents/lockscreen/LockScreen.qml" ]; then
     if command -v kreadconfig6 >/dev/null 2>&1 && command -v kwriteconfig6 >/dev/null 2>&1; then
@@ -61,54 +85,67 @@ if [ -f "\$HOME/.local/share/plasma/shells/caelestia.desktop/contents/lockscreen
         kwriteconfig6 --file kscreenlockerrc --group "Greeter" --key "Theme" --delete 2>/dev/null || true
     fi
 fi
-# No --daemonize: the autostart entry already runs under a systemd user unit,
-# which supervises the process and connects its stdout/stderr to the journal.
-# Detaching would replace that with /dev/null, and every application launched
-# from the shell inherits those descriptors - which is how the shell was
-# handing apps a stdout that goes nowhere. Vesktop deadlocks in exactly that
-# state when a call starts (issue #402); reproducible outside the shell with
+# No --daemonize: the unit supervises this process and sends its stdout/stderr to
+# the journal. Detaching would replace that with /dev/null, and every app launched
+# from the shell inherits those descriptors - which is how the shell was handing
+# apps a stdout that goes nowhere. Vesktop deadlocks in exactly that state when a
+# call starts (issue #402); reproducible outside the shell with
 # \`vesktop >/dev/null 2>&1\`.
 #
-# Dropping it also makes the old stdbuf wrapper unnecessary: journald stdio is
-# what the line-buffering hack was working around, and stdbuf leaked
-# LD_PRELOAD=libstdbuf.so into every launched app on top of that.
-exec "$QUICKSHELL_PATH" -n -p "\$HOME/.config/quickshell/caelestia/shell.qml"
+# It also makes the old stdbuf wrapper unnecessary: journald stdio is what the
+# line-buffering hack worked around, and stdbuf leaked LD_PRELOAD=libstdbuf.so into
+# every launched app besides.
+exec "$QUICKSHELL_PATH" -n -p "$SHELL_CONFIG"
 EOF
-chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
+    chmod +x "$HOME/.local/bin/caelestia-autostart.sh"
 
-# Phase 1 (DesktopServices), not 2 (Applications). The shell registers
-# org.freedesktop.Notifications, and applications decide once, when they start,
-# whether a notification server exists -- one that finds none draws its own
-# popups for the rest of the session, in its own corner, ignoring every setting
-# here. In phase 2 the shell starts alongside the user's autostarted apps with
-# no ordering between them, so which apps end up talking to it is a coin toss
-# per login. Phase 1 finishes before any of them begin.
-cat > "$AUTOSTART_DIR/caelestiashell.desktop" << EOF
-[Desktop Entry]
-Type=Application
-Name=Caelestia Shell
-Comment=Start Caelestia Shell
-Exec=$HOME/.local/bin/caelestia-autostart.sh
-Icon=quickshell
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-X-KDE-AutostartPhase=1
-X-KDE-Wayland-Interfaces=zkde_screencast_unstable_v1
+    echo "  Creating the Caelestia Shell unit..."
+    mkdir -p "$HOME/.config/systemd/user"
+    cat > "$HOME/.config/systemd/user/caelestia-shell.service" << EOF
+[Unit]
+Description=Caelestia Shell
+PartOf=graphical-session.target
+After=graphical-session.target
+Before=xdg-desktop-autostart.target
+
+[Service]
+Type=exec
+ExecStart=%h/.local/bin/caelestia-autostart.sh
+# A shell that cannot start is retried, but not in a tight loop: systemd gives up on
+# a unit that starts five times in ten seconds, and clearing that state falls to an
+# install. Upstream's unit waits the same five seconds between attempts.
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+Slice=session.slice
+
+[Install]
+WantedBy=graphical-session.target
 EOF
-ok "Quickshell autostart created."
+fi
 
-# KWin restricts privileged Wayland protocols (like zkde_screencast_unstable_v1,
-# used for live window thumbnails). For every such protocol, KWin's
-# allowInterface() calls KWin::fetchRequestedInterfaces(client->executablePath()),
-# which uses KApplicationTrader::query() to find an installed .desktop file whose
-# Exec= *first token*, resolved via QFileInfo::canonicalFilePath(), matches the
-# client's executable path *exactly* (no $PATH lookup, no symlink allowances
-# beyond what canonicalFilePath() resolves, and no wrapper scripts). A desktop
-# file with no Exec= line at all never matches anything (QProcess::splitCommand
-# returns an empty list, so the predicate always rejects it). Create a
-# user-level override at the standard XDG path, with Exec= pointing at the
-# fully-resolved quickshell binary, so KWin can find it and grant the protocol.
+if [[ -f "$AUTOSTART_DIR/caelestiashell.desktop" ]]; then
+    rm -f "$AUTOSTART_DIR/caelestiashell.desktop"
+    systemctl --user disable app-caelestiashell@autostart.service >/dev/null 2>&1 || true
+    info "Removed the retired autostart entry; the shell's unit replaced it."
+fi
+
+systemctl --user reset-failed caelestia-shell.service >/dev/null 2>&1 || true
+
+for link in "$HOME"/.config/systemd/user/*.wants/caelestia-shell.service; do
+    [[ -L "$link" ]] || continue
+    [[ -e "$link" ]] && continue
+    rm -f "$link"
+    info "Removed an enable link that named a copy of the shell unit that is gone."
+done
+
+systemctl --user daemon-reload
+if systemctl --user enable caelestia-shell.service >/dev/null 2>&1; then
+    ok "Caelestia Shell unit enabled."
+else
+    warn "Could not enable caelestia-shell.service; start the shell with 'systemctl --user start caelestia-shell.service'."
+fi
+
 echo "  Creating quickshell KDE Wayland interface declaration..."
 mkdir -p "$HOME/.local/share/applications"
 QUICKSHELL_CANONICAL_PATH="$(realpath "$QUICKSHELL_PATH")"
@@ -121,8 +158,6 @@ Exec=$QUICKSHELL_CANONICAL_PATH
 X-KDE-Wayland-Interfaces=zkde_screencast_unstable_v1,org_kde_plasma_window_management
 DESKEOF
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
-# KApplicationTrader/KService resolve through the ksycoca cache, not just the
-# desktop-file-database used above; force a rebuild so the new Exec= is seen.
 if command -v kbuildsycoca6 >/dev/null 2>&1; then
     kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
 elif command -v kbuildsycoca5 >/dev/null 2>&1; then
@@ -130,78 +165,31 @@ elif command -v kbuildsycoca5 >/dev/null 2>&1; then
 fi
 ok "Quickshell Wayland interface declaration created."
 
-#  kde-material-you-colors systemd service
-# Creates and enables a systemd user service for kde-material-you-colors.
-echo "  Deploying systemd service for KDE Material You Colors..."
+echo "  Retiring the KDE Material You Colors service..."
+rm -f "$AUTOSTART_DIR/kde-material-you-colors.desktop" 2>/dev/null || true
 
-if [[ "${APPLY_MATERIAL_YOU:-true}" == "true" ]]; then
-    # Clean up old desktop autostart entry if it exists
-    rm -f "$AUTOSTART_DIR/kde-material-you-colors.desktop" 2>/dev/null || true
-
-    # Clean up old Material You color schemes to prevent them from multiplying
-    rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors 2>/dev/null || true
-
-    mkdir -p "$HOME/.config/systemd/user"
-    # Determine the path of kde-material-you-colors
-    if command -v kde-material-you-colors >/dev/null 2>&1; then
-        KMYC_PATH=$(command -v kde-material-you-colors)
-    elif [ -f "$HOME/.local/bin/kde-material-you-colors" ]; then
-        KMYC_PATH="$HOME/.local/bin/kde-material-you-colors"
-    elif [ -f "/usr/bin/kde-material-you-colors" ]; then
-        KMYC_PATH="/usr/bin/kde-material-you-colors"
-    else
-        KMYC_PATH="$HOME/.local/bin/kde-material-you-colors"
-    fi
-
-    cat > "$HOME/.config/systemd/user/kde-material-you-colors.service" << EOF
-[Unit]
-Description=KDE Material You Colors
-PartOf=graphical-session.target
-After=graphical-session.target plasma-plasmashell.service
-
-[Service]
-Type=simple
-ExecStart=$KMYC_PATH
-# KMY reads the wallpaper and the current color scheme out of the running
-# Plasma session. Started before plasmashell exists it can see neither and
-# applies a built-in default, which is what used to leave the desktop on the
-# wrong colors until the service was restarted by hand once the session had
-# settled. Restart=always, not on-failure, because it can also give up early
-# and exit cleanly.
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=graphical-session.target
-EOF
-
+KMY_UNIT="$HOME/.config/systemd/user/kde-material-you-colors.service"
+if [[ -e "$KMY_UNIT" ]]; then
+    systemctl --user disable --now kde-material-you-colors.service >/dev/null 2>&1 || true
+    rm -f "$KMY_UNIT"
     systemctl --user daemon-reload
-    systemctl --user enable --now kde-material-you-colors.service 2>/dev/null || true
-    ok "kde-material-you-colors systemd service enabled."
+    ok "kde-material-you-colors no longer applies the scheme; its service was removed."
 else
-    skip "Skipping kde-material-you-colors systemd service."
+    skip "kde-material-you-colors service is not installed."
 fi
 
-# Live window thumbnails.
-#
-# KWin only advertises its privileged Wayland interfaces to clients whose
-# desktop file requests them: it resolves the client's /proc/<pid>/exe, then
-# looks for an installed .desktop whose Exec resolves to that same binary and
-# reads X-KDE-Wayland-Interfaces from it. Quickshell's packaged entry has no
-# Exec line at all, so the shell matches nothing and zkde_screencast_unstable_v1
-# is never offered — the dock hover popup and window switcher then fall back to
-# drawing the app icon instead of a live preview.
-#
-# Note this cannot live on the autostart entry above: KWin matches on the
-# resolved executable, and that entry's Exec is the wrapper script rather than
-# the quickshell binary, so it never matches.
+rm -f "$HOME/.local/share/color-schemes/MaterialYou"*.colors 2>/dev/null || true
+
+if [[ -f "$HOME/.config/caelestia/status_icons_order.txt" ]]; then
+    skip "Status icon order file left to the shell, which migrates it into bar.statusIcons."
+fi
+
 if [[ -f "$BUNDLE_DIR/assets/org.quickshell.desktop" ]]; then
     echo "  Requesting KWin screencast interface for window previews..."
     mkdir -p "$HOME/.local/share/applications"
     sed "s|^Exec=.*|Exec=$QUICKSHELL_CANONICAL_PATH|" \
         "$BUNDLE_DIR/assets/org.quickshell.desktop" \
         > "$HOME/.local/share/applications/org.quickshell.desktop" 2>/dev/null || true
-    # KWin reads this through KService, which needs its cache rebuilt.
     kbuildsycoca6 >/dev/null 2>&1 || true
     echo "  [OK]  Window preview interface requested."
 fi
