@@ -2,6 +2,8 @@
 
 set -uo pipefail
 
+# shellcheck source=scripts/lib/log.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/log.sh"
 # shellcheck source=scripts/lib/toolchain.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/toolchain.sh"
 # shellcheck source=scripts/lib/privileges.sh
@@ -10,10 +12,6 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/sc
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
 # shellcheck source=scripts/lib/darkly.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/darkly.sh"
-
-
-log()  { printf '  [INFO]  %s\n' "$*"; }
-err()  { printf '  [ERR]   %s\n' "$*" >&2; }
 
 darkly_rpm_asset_url() {
     local release_json ver url
@@ -29,7 +27,7 @@ darkly_rpm_asset_url() {
     return 1
 }
 
-log "Installing Fedora packages..."
+info "Installing Fedora packages..."
 
 INSTALL_FISH="${INSTALL_FISH:-true}"
 INSTALL_PAPIRUS="${INSTALL_PAPIRUS:-true}"
@@ -95,13 +93,13 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
     PACKAGES+=("${COPR_SHELL[@]}")
 fi
 
-log "Installing packages (group: $PACKAGE_GROUP)..."
+info "Installing packages (group: $PACKAGE_GROUP)..."
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
     if [[ "$INSTALL_FISH" == "true" ]]; then
         PACKAGES+=(fish)
     else
-        log "Skipping Fish installation by user choice."
+        info "Skipping Fish installation by user choice."
     fi
 fi
 
@@ -109,12 +107,12 @@ if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
     if [[ "$INSTALL_PAPIRUS" == "true" ]]; then
         PACKAGES+=(papirus-icon-theme)
     else
-        log "Skipping Papirus icon theme installation by user choice."
+        info "Skipping Papirus icon theme installation by user choice."
     fi
 fi
 
 if ! rpm -q rpmfusion-free-release >/dev/null 2>&1; then
-    log "Enabling RPM Fusion for H264 hardware codecs..."
+    info "Enabling RPM Fusion for H264 hardware codecs..."
     caelestia_sudo dnf install -y "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" || true
     caelestia_sudo dnf swap -y ffmpeg-free ffmpeg --allowerasing || true
 fi
@@ -139,9 +137,9 @@ FAILED_PKGS=()
 mapfile -t MISSING_PKGS < <(filter_missing "${BATCH_PKGS[@]}")
 
 if (( ${#MISSING_PKGS[@]} > 0 )); then
-    log "Installing packages via dnf (batch mode)..."
+    info "Installing packages via dnf (batch mode)..."
     if ! caelestia_sudo dnf install -y "${MISSING_PKGS[@]}"; then
-        log "Batch install had failures. Retrying standard packages individually..."
+        info "Batch install had failures. Retrying standard packages individually..."
         for pkg in "${MISSING_PKGS[@]}"; do
             if ! package_present "$pkg"; then
                 if ! caelestia_sudo dnf install -y "$pkg"; then
@@ -152,7 +150,7 @@ if (( ${#MISSING_PKGS[@]} > 0 )); then
         done
     fi
 else
-    log "All standard packages for group $PACKAGE_GROUP are already installed."
+    info "All standard packages for group $PACKAGE_GROUP are already installed."
 fi
 
 for pkg in "${COPR_PKGS[@]}"; do
@@ -162,7 +160,13 @@ for pkg in "${COPR_PKGS[@]}"; do
     done
     if [[ "$_needed" == "no" ]]; then continue; fi
 
-    if rpm -q "$pkg" >/dev/null 2>&1 || command -v "$pkg" >/dev/null 2>&1; then
+    if package_present "$pkg" || command -v "$pkg" >/dev/null 2>&1; then
+        continue
+    fi
+
+    # libcava is the one target the package manager cannot report: the prebuilt SDK
+    # provides it without being a package, and asking dnf for it just fails.
+    if [[ "$pkg" == "libcava" ]] && cava_sdk_installed; then
         continue
     fi
 
@@ -170,7 +174,7 @@ for pkg in "${COPR_PKGS[@]}"; do
         continue
     fi
 
-    log "dnf failed to install $pkg. Attempting copr fallback..."
+    info "dnf failed to install $pkg. Attempting copr fallback..."
     COPR_FAILED="yes"
     case "$pkg" in
         quickshell-git|quickshell)
@@ -194,11 +198,8 @@ for pkg in "${COPR_PKGS[@]}"; do
             fi
             ;;
         libcava)
-            if cava_sdk_installed; then
-                log "CAVA SDK already installed."
-                COPR_FAILED="no"
-            elif install_cava_sdk fedora; then
-                log "Installed prebuilt CAVA SDK from release."
+            if cava_sdk_installed || install_cava_sdk fedora; then
+                info "CAVA SDK ready."
                 COPR_FAILED="no"
             elif caelestia_sudo dnf copr enable -y celestelove/libcava && caelestia_sudo dnf install -y libcava-devel; then
                 COPR_FAILED="no"
@@ -215,7 +216,7 @@ for pkg in "${COPR_PKGS[@]}"; do
         continue
     fi
 
-    log "Copr fallback failed or not defined for $pkg. Attempting manual build..."
+    info "Copr fallback failed or not defined for $pkg. Attempting manual build..."
     case "$pkg" in
         app2unit)
             tmpdir="$(mktemp -d)"
@@ -247,7 +248,7 @@ for pkg in "${COPR_PKGS[@]}"; do
             ;;
         starship)
             if curl -sS https://starship.rs/install.sh | sh -s -- -y; then  # ci:allow-curl-pipe
-                log "starship installed successfully."
+                info "starship installed successfully."
             else
                 err "Manual build for $pkg failed."
                 FAILED_PKGS+=("$pkg")
@@ -262,7 +263,7 @@ done
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "themes" ]]; then
 
-log "Downloading and installing required custom fonts (parallel)..."
+info "Downloading and installing required custom fonts (parallel)..."
 mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
 
 curl -sL "https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsRounded%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf" -o "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/MaterialSymbolsRounded.ttf" &
@@ -282,13 +283,13 @@ unzip -qo "/tmp/JetBrainsMono.zip" -d "${XDG_DATA_HOME:-$HOME/.local/share}/font
 
 fc-cache -f
 
-log "Installing Darkly KDE Theme from COPR..."
+info "Installing Darkly KDE Theme from COPR..."
 if [[ "$INSTALL_DARKLY" == "true" ]]; then
-    if ! command -v darkly >/dev/null 2>&1 && ! rpm -q darkly >/dev/null 2>&1; then
+    if ! command -v darkly >/dev/null 2>&1 && ! package_present darkly; then
         if ! caelestia_sudo dnf install -y darkly 2>/dev/null; then
-            log "Enabling Darkly COPR (deltacopy/darkly)..."
+            info "Enabling Darkly COPR (deltacopy/darkly)..."
             if ! (caelestia_sudo dnf copr enable -y deltacopy/darkly && caelestia_sudo dnf install -y darkly); then
-                log "COPR install failed; falling back to prebuilt RPM from GitHub releases..."
+                info "COPR install failed; falling back to prebuilt RPM from GitHub releases..."
                 _darkly_rpm="$(darkly_rpm_asset_url || true)"
                 if [[ -n "$_darkly_rpm" ]]; then
                     if ! caelestia_sudo dnf install -y "$_darkly_rpm"; then
@@ -304,12 +305,12 @@ if [[ "$INSTALL_DARKLY" == "true" ]]; then
     fi
 
     if ! darkly_gtk_installed; then
-        log "Installing Darkly GTK theme..."
+        info "Installing Darkly GTK theme..."
         caelestia_sudo dnf install -y sassc || true
         install_darkly_gtk_theme || FAILED_PKGS+=("darkly-gtk")
     fi
 else
-    log "Skipping Darkly package installation by user choice."
+    info "Skipping Darkly package installation by user choice."
 fi
 
 fi  # end of PACKAGE_GROUP themes/all block
@@ -320,7 +321,7 @@ fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
-log "Installing Caelestia CLI wrapper..."
+info "Installing Caelestia CLI wrapper..."
 if ! command -v caelestia >/dev/null 2>&1; then
     caelestia_sudo dnf install -y python3-pip python3-build python3-installer python3-hatchling python3-hatch-vcs || true
     tmpdir="$(mktemp -d)"
@@ -373,4 +374,4 @@ if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
     done
 fi
 
-log "Fedora package installation complete."
+info "Fedora package installation complete."
