@@ -6656,7 +6656,7 @@
   <context>
     <name>Notifs</name>
     <message>
-      <location filename="../services/Notifs.qml" line="+144"/>
+      <location filename="../services/Notifs.qml" line="+150"/>
       <source>Do not disturb enabled</source>
       <translation>Nicht stören aktiviert</translation>
     </message>
