@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 if [[ -z "${CAELESTIA_INSTALL_KIND_SOURCED:-}" ]]; then
 CAELESTIA_INSTALL_KIND_SOURCED=1
-_CAELESTIA_INSTALL_KIND_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)"
 
 install_kind() {
     case "${CAELESTIA_INSTALL_KIND:-}" in
@@ -11,7 +10,16 @@ install_kind() {
             ;;
     esac
 
-    case "$_CAELESTIA_INSTALL_KIND_DIR" in
+    # Where this file was sourced from is the whole answer: a package's copy lives under
+    # /usr. An unresolvable directory is reported rather than answered as "source", which
+    # is what an empty string would otherwise have quietly meant.
+    local lib_dir
+    if ! lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"; then
+        printf '[ERR]   cannot resolve the directory %s was sourced from\n' "${BASH_SOURCE[0]}" >&2
+        return 1
+    fi
+
+    case "$lib_dir" in
         /usr/*) printf 'package\n' ;;
         *) printf 'source\n' ;;
     esac
