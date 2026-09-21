@@ -30,20 +30,23 @@ linguist_tools_available() {
     command -v lrelease >/dev/null 2>&1 || [[ -x "$fallback" ]]
 }
 
+# install_linguist_tools <arch|fedora|debian>
+#
+# Takes the distro for the same reason install_cava_sdk does: "whichever manager is on
+# PATH" answers for the wrong package universe on a machine with a second one installed.
 install_linguist_tools() {
+    local distro="${1:-}"
+
     if linguist_tools_available; then
         return 0
     fi
 
-    if command -v pacman >/dev/null 2>&1; then
-        caelestia_sudo pacman -S --needed --noconfirm qt6-tools
-    elif command -v dnf >/dev/null 2>&1; then
-        caelestia_sudo dnf install -y qt6-qttools-devel
-    elif command -v apt-get >/dev/null 2>&1; then
-        caelestia_sudo apt-get install -y qt6-l10n-tools qt6-tools-dev
-    else
-        return 1
-    fi
+    case "$distro" in
+        arch) caelestia_sudo pacman -S --needed --noconfirm qt6-tools ;;
+        fedora) caelestia_sudo dnf install -y qt6-qttools-devel ;;
+        debian) caelestia_sudo apt-get install -y qt6-l10n-tools qt6-tools-dev ;;
+        *) return 1 ;;
+    esac
 }
 
 # install_cava_sdk <arch|fedora|debian>

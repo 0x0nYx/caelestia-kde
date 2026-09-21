@@ -6,6 +6,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-fs.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/packages.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/update-state.sh"
 
@@ -364,7 +365,7 @@ if [[ "$SHELL_PREBUILT" -eq 1 ]]; then
 else
     if ! linguist_tools_available; then
         info "Installing Qt Linguist tools for UI translations..."
-        install_linguist_tools || warn "Linguist tools install failed; the shell will stay in English."
+        install_linguist_tools "$BASE_DISTRO" || warn "Linguist tools install failed; the shell will stay in English."
     fi
 
     info "Configuring CMake..."
