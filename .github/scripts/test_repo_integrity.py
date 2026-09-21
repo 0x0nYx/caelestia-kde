@@ -758,21 +758,26 @@ class InstallerTests(unittest.TestCase):
     def test_every_step_script_is_wired_into_a_step_list(self) -> None:
         """A numbered scripts/*.sh must be run by a step list, and every listed step must exist.
 
-        Two lists run step scripts: the full install (installer/tui/Runner.cpp) and the
-        user's half of a packaged install (src/bin/caelestia). A script in neither is dead
-        weight that every other check still reports as covered; a list entry with no file
-        fails at install time instead of here. The step numbers are not an order: the TUI
-        runs 00-backup-themes after 02a-submodules, deliberately.
+        Three lists run step scripts: the full install (installer/tui/Runner.cpp), the
+        user's half of a packaged install (src/bin/caelestia), and the subset
+        08-build-shell.sh runs on its own when a checkout updates itself. A script in none
+        of them is dead weight that every other check still reports as covered; a list
+        entry with no file fails at install time instead of here. The step numbers are not
+        an order: the TUI runs 00-backup-themes after 02a-submodules, deliberately.
         """
         runner_text = (ROOT / "installer" / "tui" / "Runner.cpp").read_text(encoding="utf-8")
         packaged_text = (ROOT / "src" / "bin" / "caelestia").read_text(encoding="utf-8")
+        update_text = (ROOT / "scripts" / "08-build-shell.sh").read_text(encoding="utf-8")
 
         runner_steps = set(re.findall(r"scripts/([0-9][0-9a-z]*-[A-Za-z0-9._-]+\.sh)", runner_text))
         packaged_steps = set(
             re.findall(r"^\s+([0-9][0-9a-z]*-[A-Za-z0-9._-]+\.sh)$", packaged_text, re.MULTILINE)
         )
-        listed = runner_steps | packaged_steps
-        self.assertTrue(listed, "No step scripts found in Runner.cpp or src/bin/caelestia")
+        update_steps = set(
+            re.findall(r"scripts/([0-9][0-9a-z]*-[A-Za-z0-9._-]+\.sh)", update_text)
+        )
+        listed = runner_steps | packaged_steps | update_steps
+        self.assertTrue(listed, "No step scripts found in Runner.cpp, src/bin/caelestia or 08-build-shell.sh")
 
         scripts_dir = ROOT / "scripts"
         numbered = {
