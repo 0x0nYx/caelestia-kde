@@ -450,19 +450,38 @@ void GlobalShortcut::updateShortcut() {
         return;
     }
 
-    // Run all steal commands concurrently and bind only after the last one finishes
+    // Run all steal commands concurrently and bind only after the last one has
+    // settled. finished() is not emitted for a process that never started, so
+    // FailedToStart has to be counted through errorOccurred as well: without
+    // that, a gdbus that cannot be spawned leaves the count above zero forever,
+    // the new sequence is never bound, and the shortcut the user just set is
+    // silently lost -- with the KDE binding it replaced already stolen and
+    // cleared above.
     auto pending = std::make_shared<QAtomicInt>(stealCmds.size());
+    const auto settle = [this, pending, newSeqs, myGeneration]() {
+        if (pending->fetchAndSubRelaxed(1) == 1 && m_registerGeneration == myGeneration) {
+            KGlobalAccel::self()->setShortcut(m_action, newSeqs, KGlobalAccel::NoAutoloading);
+        }
+    };
+
     for (const QStringList& args : stealCmds) {
-        auto* proc = new QProcess();
-        connect(
-            proc, &QProcess::finished, proc, [this, pending, newSeqs, myGeneration, proc](int, QProcess::ExitStatus) {
-                proc->deleteLater();
-                if (pending->fetchAndSubRelaxed(1) == 1) {
-                    if (m_registerGeneration == myGeneration) {
-                        KGlobalAccel::self()->setShortcut(m_action, newSeqs, KGlobalAccel::NoAutoloading);
-                    }
-                }
-            });
+        // Parented, so a command that never reaches either handler is still
+        // cleaned up with the dispatcher rather than leaked for the session.
+        auto* proc = new QProcess(this);
+        connect(proc, &QProcess::finished, proc, [proc, settle](int, QProcess::ExitStatus) {
+            proc->deleteLater();
+            settle();
+        });
+        // Only FailedToStart is handled here: every other error is followed by
+        // finished(), and counting both would settle a single command twice.
+        connect(proc, &QProcess::errorOccurred, proc, [proc, settle, args](QProcess::ProcessError err) {
+            if (err != QProcess::FailedToStart) {
+                return;
+            }
+            qWarning() << "[Caelestia] could not run gdbus to release a conflicting shortcut:" << args;
+            proc->deleteLater();
+            settle();
+        });
         proc->start(QStringLiteral("gdbus"), args);
     }
 }
