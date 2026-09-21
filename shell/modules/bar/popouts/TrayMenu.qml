@@ -20,8 +20,11 @@ StackView {
     property real fontScale: 1.0
     property bool _isSidebarOpen: false
 
-    implicitWidth: currentItem?.implicitWidth ?? 0
-    implicitHeight: currentItem?.implicitHeight ?? 0
+    // A submenu holding nothing but separators has no height of its own. Report the
+    // popout padding negated so the surrounding box collapses with it, instead of
+    // leaving an empty frame where a menu should be.
+    implicitWidth: (currentItem as SubMenu)?.hasChildren ? currentItem.implicitWidth : -Tokens.padding.extraLargeIncreased * root.scaleOffset
+    implicitHeight: (currentItem as SubMenu)?.hasChildren ? currentItem.implicitHeight : -Tokens.padding.extraLargeIncreased * root.scaleOffset
 
     initialItem: SubMenu {
         handle: root.trayItem
@@ -50,6 +53,7 @@ StackView {
         id: menu
 
         required property QsMenuHandle handle
+        readonly property bool hasChildren: menuOpener.children.values.some(e => !e.isSeparator)
         property bool isSubMenu
         property bool shown
         property int groupRebuildCount: 0

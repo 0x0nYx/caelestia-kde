@@ -82,7 +82,7 @@ Item {
                 const loader = rep.itemAt(i) as WrappedLoader;
                 if (loader?.enabled && loader.id === "tray") {
                     const tray = loader.item as Tray;
-                    if (Config.bar.popouts.tray || !tray.pinned) {
+                    if (tray && (Config.bar.popouts.tray || !tray.pinned)) {
                         tray.expanded = false;
                         tray.pinned = false;
                     }
