@@ -5,9 +5,16 @@ set -uo pipefail
 BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/log.sh"
+
+# The tree can be half gone by the time this runs, so the distro helper is treated
+# as optional: without it there is no way to name a base, and the question below
+# asks the user instead.
 # shellcheck source=scripts/lib/toolchain.sh
 if [[ -f "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/toolchain.sh" ]]; then
     source "$(dirname "${BASH_SOURCE[0]}")/scripts/lib/toolchain.sh"
+    BASE_DISTRO="$(detect_base_distro)"
+else
+    BASE_DISTRO="${BASE_DISTRO:-unknown}"
 fi
 
 section() {
@@ -17,12 +24,6 @@ section() {
     echo "  $title"
     echo "-------------------------------------------------------------"
 }
-
-if declare -f detect_base_distro >/dev/null 2>&1; then
-    BASE_DISTRO="${BASE_DISTRO:-$(detect_base_distro)}"
-else
-    BASE_DISTRO="${BASE_DISTRO:-unknown}"
-fi
 
 if [[ "$BASE_DISTRO" == "unknown" ]]; then
     echo "Could not detect distribution. Select base:"
@@ -765,14 +766,17 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
     # Only user-level utilities, standalone apps, custom fonts, and shell tools.
     # NEVER include core libraries, development headers, compiler toolchains,
     # desktop environment services, or base system components (e.g. pipewire,
-    # networkmanager, qt6-*, kf6-*, cmake, python, spectacle, bash).
+    # networkmanager, qt6-*, kf6-*, cmake, python, bash).
+    # fish is absent on purpose even though the installer offers it: it may be the
+    # user's login shell, and removing it locks them out of the machine.
     ARCH_PACKAGES=(
         quickshell matugen
         foot eza fastfetch starship btop
         fuzzel swappy satty gpu-screen-recorder slurp grim
         wl-clipboard cliphist wl-clip-persist app2unit libcava
         brightnessctl ddcutil tesseract tesseract-data-eng
-        bat ripgrep lazygit
+        bat ripgrep lazygit jq trash-cli inotify-tools
+        imagemagick sassc xdg-utils xdg-user-dirs spectacle
         adw-gtk-theme papirus-icon-theme darkly darkly-bin
         ttf-jetbrains-mono-nerd ttf-material-symbols-variable
         ttf-rubik-vf ttf-cascadia-code-nerd
@@ -784,7 +788,8 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         fuzzel swappy satty gpu-screen-recorder gpu-screen-recorder-ui slurp grim
         wl-clipboard cliphist wl-clip-persist app2unit libcava libcava-devel
         brightnessctl ddcutil tesseract tesseract-langpack-eng
-        bat ripgrep
+        bat ripgrep jq trash-cli inotify-tools
+        ImageMagick sassc xdg-utils xdg-user-dirs spectacle
         adw-gtk3-theme papirus-icon-theme darkly darkly-gtk
         google-rubik-fonts
     )
@@ -795,6 +800,8 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         fuzzel swappy satty gpu-screen-recorder slurp grim
         wl-clipboard cliphist wl-clip-persist app2unit cava libcava
         brightnessctl ddcutil tesseract-ocr tesseract-ocr-eng
+        jq yq trash-cli inotify-tools
+        imagemagick sassc xdg-utils kde-spectacle
         adw-gtk3 adw-gtk3-theme papirus-icon-theme darkly
     )
 
@@ -819,8 +826,16 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         echo
         read -r -p "Proceed? [y/N]: " _pkg_confirm
         if [[ "${_pkg_confirm,,}" == "y" || "${_pkg_confirm,,}" == "yes" ]]; then
-            sudo dnf remove -y "${FEDORA_PACKAGES[@]}" 2>/dev/null || \
-                warn "Some packages could not be removed. Check manually."
+            _installed=()
+            for _pkg in "${FEDORA_PACKAGES[@]}"; do
+                if rpm -q "$_pkg" >/dev/null 2>&1; then
+                    _installed+=("$_pkg")
+                fi
+            done
+            if [[ ${#_installed[@]} -gt 0 ]]; then
+                sudo dnf remove -y "${_installed[@]}" 2>/dev/null || \
+                    warn "Some packages could not be removed automatically. Check manually."
+            fi
             ok "Fedora packages removed"
         else
             skip "Package removal skipped"
@@ -831,8 +846,16 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         echo
         read -r -p "Proceed? [y/N]: " _pkg_confirm
         if [[ "${_pkg_confirm,,}" == "y" || "${_pkg_confirm,,}" == "yes" ]]; then
-            sudo apt-get remove -y "${DEBIAN_PACKAGES[@]}" 2>/dev/null || \
-                warn "Some packages could not be removed. Check manually."
+            _installed=()
+            for _pkg in "${DEBIAN_PACKAGES[@]}"; do
+                if dpkg -s "$_pkg" >/dev/null 2>&1; then
+                    _installed+=("$_pkg")
+                fi
+            done
+            if [[ ${#_installed[@]} -gt 0 ]]; then
+                sudo apt-get remove -y "${_installed[@]}" 2>/dev/null || \
+                    warn "Some packages could not be removed automatically. Check manually."
+            fi
             ok "Debian packages removed"
         else
             skip "Package removal skipped"
