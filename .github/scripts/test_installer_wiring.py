@@ -170,6 +170,28 @@ class InstallStepSafetyTests(unittest.TestCase):
             "the scheme.json wait must run after the shell is restarted, not before",
         )
 
+    def test_the_tui_build_configures_from_a_clean_directory(self) -> None:
+        """cmake refuses a CMakeCache.txt that names another source directory.
+
+        One checkout routinely has two names - ~/Desktop/caelestia-kwin and
+        /mnt/c/.../caelestia-kwin are the same tree - so a cache left behind by the other
+        name made the build fail with "the current CMakeCache.txt directory is different
+        than the directory where CMakeCache.txt was created", and the installer stopped
+        there. Nothing clears that cache, so the directory has to go before cmake runs.
+        """
+        script = (ROOT / "scripts" / "setup.sh").read_text(encoding="utf-8")
+
+        wipe_at = script.find('rm -rf "$BUILD_DIR"')
+        configure_at = script.find('cmake -DCMAKE_BUILD_TYPE=Release "$BUNDLE_DIR/installer/tui"')
+
+        self.assertNotEqual(wipe_at, -1, "setup.sh should clear the TUI build directory")
+        self.assertNotEqual(configure_at, -1, "setup.sh should still configure the TUI build")
+        self.assertLess(
+            wipe_at,
+            configure_at,
+            "the TUI build directory must be cleared before cmake configures into it",
+        )
+
 
 class ScriptNumberingTests(unittest.TestCase):
     def test_install_step_scripts_have_consistent_numbers(self) -> None:

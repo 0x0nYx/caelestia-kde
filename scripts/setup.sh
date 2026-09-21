@@ -201,6 +201,12 @@ else
 
         BUILD_DIR="$BUNDLE_DIR/installer/build"
         BUILD_LOG="/tmp/caelestia_build.log"
+        # Configure from a clean directory: cmake bakes absolute source paths into
+        # CMakeCache.txt and refuses to configure over a cache naming a different tree.
+        # One checkout routinely has two names here - ~/Desktop/caelestia-kwin and
+        # /mnt/c/.../caelestia-kwin are the same tree - and reusing that cache fails the
+        # build outright instead of falling back to anything.
+        rm -rf "$BUILD_DIR"
         mkdir -p "$BUILD_DIR"
         (
             cd "$BUILD_DIR" || exit 1
