@@ -5,6 +5,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-kind.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/js.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 
 BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
 
@@ -22,7 +23,7 @@ patch_breeze_login_wallpaper() {
     if ! install_is_packaged &&
         [[ -f /usr/share/sddm/themes/breeze/theme.conf ]] &&
         command -v sudo >/dev/null 2>&1; then
-        sudo sed -i "s|^background=.*|background=$image|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
+        caelestia_sudo sed -i "s|^background=.*|background=$image|" /usr/share/sddm/themes/breeze/theme.conf 2>/dev/null || true
     fi
 }
 

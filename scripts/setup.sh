@@ -15,6 +15,8 @@ export PATH="$HOME/.local/bin:$PATH"
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/caelestia-setup.lock"
 flock -n 9 || { echo "Another Caelestia setup is already running."; exit 1; }
 
+# shellcheck source=scripts/lib/privileges.sh
+source "$SCRIPTS_DIR/lib/privileges.sh"
 # shellcheck source=scripts/lib/toolchain.sh
 source "$SCRIPTS_DIR/lib/toolchain.sh"
 
@@ -26,28 +28,17 @@ run_arch_pacman_install() {
         return 0
     fi
 
-    if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
-        pacman -Sy --noconfirm >/dev/null 2>&1 || echo "[WARN]  Failed to refresh pacman sources before install. Continuing..."
-        pacman "${pacman_args[@]}" "${pkgs[@]}" && return 0
-
-        echo "[WARN]  pacman install failed. Refreshing sources and retrying once..."
-        pacman -Sy --noconfirm >/dev/null 2>&1 || true
-        pacman "${pacman_args[@]}" "${pkgs[@]}"
-        return $?
-    fi
-
-    sudo pacman -Sy --noconfirm >/dev/null 2>&1 || echo "[WARN]  Failed to refresh pacman sources before install. Continuing..."
-    sudo pacman "${pacman_args[@]}" "${pkgs[@]}" && return 0
+    caelestia_sudo pacman -Sy --noconfirm >/dev/null 2>&1 || echo "[WARN]  Failed to refresh pacman sources before install. Continuing..."
+    caelestia_sudo pacman "${pacman_args[@]}" "${pkgs[@]}" && return 0
 
     echo "[WARN]  pacman install failed. Refreshing sources and retrying once..."
-    sudo pacman -Sy --noconfirm >/dev/null 2>&1 || true
-    sudo pacman "${pacman_args[@]}" "${pkgs[@]}"
+    caelestia_sudo pacman -Sy --noconfirm >/dev/null 2>&1 || true
+    caelestia_sudo pacman "${pacman_args[@]}" "${pkgs[@]}"
 }
 
 export BASE_DISTRO="$(detect_base_distro)"
 
 normalize_line_endings_first() {
-    export BASE_DISTRO="$(detect_base_distro)"
     local -a crlf_files=()
     local convert_choice=""
 
@@ -74,10 +65,10 @@ normalize_line_endings_first() {
                             run_arch_pacman_install dos2unix || return 1
                             ;;
                         fedora)
-                            sudo dnf install -y dos2unix || return 1
+                            caelestia_sudo dnf install -y dos2unix || return 1
                             ;;
                         debian)
-                            sudo apt-get update && sudo apt-get install -y dos2unix || return 1
+                            caelestia_sudo apt-get update && caelestia_sudo apt-get install -y dos2unix || return 1
                             ;;
                         *)
                             echo "[WARN]  Could not detect distro for automatic dos2unix installation."
@@ -200,9 +191,9 @@ else
             if [[ "$BASE_DISTRO" == "arch" ]]; then
                 run_arch_pacman_install base-devel cmake
             elif [[ "$BASE_DISTRO" == "fedora" ]]; then
-                sudo dnf install -y gcc-c++ cmake make
+                caelestia_sudo dnf install -y gcc-c++ cmake make
             elif [[ "$BASE_DISTRO" == "debian" ]]; then
-                sudo apt-get update && sudo apt-get install -y build-essential g++ cmake make
+                caelestia_sudo apt-get update && caelestia_sudo apt-get install -y build-essential g++ cmake make
             else
                 echo "Could not auto-install build tools. Please install manually: ${MISSING_PKGS[*]}"
                 exit 1
