@@ -45,6 +45,42 @@ detect_base_distro() {
     printf '%s\n' "$detected"
 }
 
+# Asks this distro's package manager whether $1 is installed. The sparsest of the
+# three probes is deliberate: every caller only wants "is it already here".
+package_present() {
+    local pkg="$1"
+    if command -v pacman >/dev/null 2>&1; then
+        pacman -Qq "$pkg" >/dev/null 2>&1
+    elif command -v rpm >/dev/null 2>&1; then
+        rpm -q "$pkg" >/dev/null 2>&1
+    elif command -v dpkg >/dev/null 2>&1; then
+        dpkg -s "$pkg" >/dev/null 2>&1
+    else
+        return 1
+    fi
+}
+
+# The Darkly GTK theme either arrives as a package or is built from source by
+# darkly-gtk's install.sh, which only drops theme directories - so ask both.
+darkly_gtk_installed() {
+    package_present darkly-gtk && return 0
+    [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" ]] ||
+    [[ -d "$HOME/.themes/Darkly" ]] ||
+    [[ -d "/usr/share/themes/Darkly" ]]
+}
+
+# The SDK unpacks into /usr and every caller that unpacks it needs escalation for
+# that, so callers check this first: re-unpacking what is already there asks for a
+# password the update does not otherwise need. Same probe as 08-build-shell.sh's
+# toolchain stamp, so the two agree on when libcava is present.
+cava_sdk_installed() {
+    if command -v pkg-config >/dev/null 2>&1; then
+        pkg-config --exists libcava 2>/dev/null && return 0
+        pkg-config --exists cava 2>/dev/null && return 0
+    fi
+    [[ -f /usr/include/cava/cavacore.h ]]
+}
+
 linguist_tools_available() {
     local fallback="${CAELESTIA_LRELEASE_FALLBACK:-/usr/lib/qt6/bin/lrelease}"
 
