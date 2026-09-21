@@ -4,10 +4,8 @@ set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
-# shellcheck source=scripts/lib/package-install.sh
-source "$(dirname "${BASH_SOURCE[0]}")/lib/package-install.sh"
-
-export BASE_DISTRO="$(detect_base_distro)"
+# shellcheck source=scripts/lib/packages.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib/packages.sh"
 
 echo
 echo ""

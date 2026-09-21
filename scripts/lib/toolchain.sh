@@ -1,84 +1,27 @@
 #!/usr/bin/env bash
-detect_base_distro() {
-    local detected="unknown"
+# The build toolchain's own dependencies: the Qt Linguist tools the translations step
+# needs, and the prebuilt CAVA SDK the shell links against. Nothing here knows which
+# distro it is on beyond the name its caller passes in.
 
-    if [[ -n "${BASE_DISTRO:-}" ]]; then
-        printf '%s\n' "$BASE_DISTRO"
-        return 0
-    fi
-
-    if [[ -f /etc/os-release ]]; then
-        # shellcheck disable=SC1091
-        . /etc/os-release
-        case "${ID:-}" in
-            arch|cachyos|endeavouros|manjaro|artix)
-                detected="arch"
-                ;;
-            fedora|nobara|bazzite|rhel|centos|almalinux|rocky)
-                detected="fedora"
-                ;;
-            debian|ubuntu|pop|mint|kali|raspbian|elementary|zorin|deepin|devuan)
-                detected="debian"
-                ;;
-            *)
-                if echo "${ID_LIKE:-}" | grep -iq "arch"; then
-                    detected="arch"
-                elif echo "${ID_LIKE:-}" | grep -iq "fedora"; then
-                    detected="fedora"
-                elif echo "${ID_LIKE:-}" | grep -iq -E "debian|ubuntu"; then
-                    detected="debian"
-                fi
-                ;;
-        esac
-    fi
-
-    if [[ "$detected" == "unknown" ]]; then
-        if command -v pacman >/dev/null 2>&1; then
-            detected="arch"
-        elif command -v dnf >/dev/null 2>&1; then
-            detected="fedora"
-        elif command -v apt-get >/dev/null 2>&1; then
-            detected="debian"
-        fi
-    fi
-
-    printf '%s\n' "$detected"
-}
-
-# Asks this distro's package manager whether $1 is installed. The sparsest of the
-# three probes is deliberate: every caller only wants "is it already here".
-package_present() {
-    local pkg="$1"
-    if command -v pacman >/dev/null 2>&1; then
-        pacman -Qq "$pkg" >/dev/null 2>&1
-    elif command -v rpm >/dev/null 2>&1; then
-        rpm -q "$pkg" >/dev/null 2>&1
-    elif command -v dpkg >/dev/null 2>&1; then
-        dpkg -s "$pkg" >/dev/null 2>&1
-    else
-        return 1
-    fi
-}
-
-# The Darkly GTK theme either arrives as a package or is built from source by
-# darkly-gtk's install.sh, which only drops theme directories - so ask both.
-darkly_gtk_installed() {
-    package_present darkly-gtk && return 0
-    [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" ]] ||
-    [[ -d "$HOME/.themes/Darkly" ]] ||
-    [[ -d "/usr/share/themes/Darkly" ]]
-}
-
-# The SDK unpacks into /usr and every caller that unpacks it needs escalation for
-# that, so callers check this first: re-unpacking what is already there asks for a
-# password the update does not otherwise need. Same probe as 08-build-shell.sh's
-# toolchain stamp, so the two agree on when libcava is present.
-cava_sdk_installed() {
+# What the shell build can link against, in the same words 08-build-shell.sh stores
+# in its toolchain stamp: a pkg-config version, "sdk" for the prebuilt headers, or
+# "none". One probe, so the stamp and the guard cannot disagree.
+cava_state() {
+    local version=""
     if command -v pkg-config >/dev/null 2>&1; then
-        pkg-config --exists libcava 2>/dev/null && return 0
-        pkg-config --exists cava 2>/dev/null && return 0
+        version="$(pkg-config --modversion libcava 2>/dev/null || pkg-config --modversion cava 2>/dev/null || true)"
     fi
-    [[ -f /usr/include/cava/cavacore.h ]]
+    if [[ -n "$version" ]]; then
+        printf '%s\n' "$version"
+    elif [[ -f /usr/include/cava/cavacore.h ]]; then
+        printf 'sdk\n'
+    else
+        printf 'none\n'
+    fi
+}
+
+cava_sdk_installed() {
+    [[ "$(cava_state)" != "none" ]]
 }
 
 linguist_tools_available() {
@@ -103,13 +46,14 @@ install_linguist_tools() {
     fi
 }
 
+# install_cava_sdk <arch|fedora|debian>
+#
+# Unpacks the prebuilt SDK into /usr, which needs escalation. Callers that cannot
+# know the SDK is missing should ask cava_sdk_installed first: this asks for a
+# password, and asking for one to re-unpack what is already there is a password for
+# nothing.
 install_cava_sdk() {
-    local arch="${CAELESTIA_TARGET_ARCH:-}"
-    if [[ -z "$arch" ]]; then
-        arch="$(uname -m 2>/dev/null || echo "x86_64")"
-    fi
-
-    local distro="${1:-$(detect_base_distro)}"
+    local distro="${1:-}"
 
     local asset_suffix
     case "$distro" in
@@ -118,6 +62,11 @@ install_cava_sdk() {
         debian|ubuntu) asset_suffix="ubuntu" ;;
         *) return 1 ;;
     esac
+
+    local arch="${CAELESTIA_TARGET_ARCH:-}"
+    if [[ -z "$arch" ]]; then
+        arch="$(uname -m 2>/dev/null || echo "x86_64")"
+    fi
 
     local url="https://github.com/ladybug-me/cava/releases/download/continuous/cava-${arch}-${asset_suffix}.tar.gz"
     local tar_cmd=(tar -C /usr -xzf - --exclude='bin')

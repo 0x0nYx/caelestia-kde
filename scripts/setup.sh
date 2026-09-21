@@ -17,8 +17,8 @@ flock -n 9 || { echo "Another Caelestia setup is already running."; exit 1; }
 
 # shellcheck source=scripts/lib/privileges.sh
 source "$SCRIPTS_DIR/lib/privileges.sh"
-# shellcheck source=scripts/lib/toolchain.sh
-source "$SCRIPTS_DIR/lib/toolchain.sh"
+# shellcheck source=scripts/lib/packages.sh
+source "$SCRIPTS_DIR/lib/packages.sh"
 
 run_arch_pacman_install() {
     local -a pkgs=("$@")
@@ -35,8 +35,6 @@ run_arch_pacman_install() {
     caelestia_sudo pacman -Sy --noconfirm >/dev/null 2>&1 || true
     caelestia_sudo pacman "${pacman_args[@]}" "${pkgs[@]}"
 }
-
-export BASE_DISTRO="$(detect_base_distro)"
 
 normalize_line_endings_first() {
     local -a crlf_files=()

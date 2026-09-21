@@ -58,11 +58,11 @@ else
 fi
 
 caelestia_toolchain_stamp() {
-    local cmake_ver qt_ver cava_state
+    local cmake_ver qt_ver cava
     cmake_ver="$(cmake --version | head -n1 | grep -oE '[0-9]+\.[0-9]+' | head -n1)"
     qt_ver="$(pkg-config --modversion Qt6Core 2>/dev/null | grep -oE '^[0-9]+\.[0-9]+' || true)"
-    cava_state="$(pkg-config --modversion libcava 2>/dev/null || pkg-config --modversion cava 2>/dev/null || { [[ -f /usr/include/cava/cavacore.h ]] && echo "sdk"; } || echo "none")"
-    printf 'bundle:%s cmake:%s qt6core:%s gen:%s cava:%s\n' "$BUNDLE_DIR" "$cmake_ver" "$qt_ver" "$CMAKE_GENERATOR" "$cava_state"
+    cava="$(cava_state)"
+    printf 'bundle:%s cmake:%s qt6core:%s gen:%s cava:%s\n' "$BUNDLE_DIR" "$cmake_ver" "$qt_ver" "$CMAKE_GENERATOR" "$cava"
 }
 
 caelestia_normalise_stamp() {
