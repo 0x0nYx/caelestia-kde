@@ -7,19 +7,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 # shellcheck source=scripts/lib/packages.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/packages.sh"
 
-BUNDLE_DIR="${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+BUNDLE_DIR="${BUNDLE_DIR:?BUNDLE_DIR not set}"
 
 echo
 
 info "Ensuring Python tooling for konsave backups"
 if ! command -v python3 >/dev/null 2>&1 || ! python3 -m pip --version >/dev/null 2>&1; then
-    package_distro="$BASE_DISTRO"
-
-    if [[ "$package_distro" == "arch" ]]; then
+    if [[ "$BASE_DISTRO" == "arch" ]]; then
         caelestia_sudo pacman -S --needed --noconfirm python python-pip
-    elif [[ "$package_distro" == "fedora" ]]; then
+    elif [[ "$BASE_DISTRO" == "fedora" ]]; then
         caelestia_sudo dnf install -y python3 python3-pip
-    elif [[ "$package_distro" == "debian" ]]; then
+    elif [[ "$BASE_DISTRO" == "debian" ]]; then
         caelestia_sudo apt-get update && caelestia_sudo apt-get install -y python3 python3-pip python3-venv
     else
         warn "Could not determine the distro for Python tooling installation."
@@ -32,9 +30,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 if command -v matugen >/dev/null 2>&1; then
     ok "matugen is installed."
 else
-    package_distro="$BASE_DISTRO"
-
-    if [[ "$package_distro" == "fedora" ]]; then
+    if [[ "$BASE_DISTRO" == "fedora" ]]; then
         info "Installing matugen for Fedora..."
         if caelestia_sudo dnf install -y matugen 2>/dev/null; then
             ok "matugen is installed via dnf."
