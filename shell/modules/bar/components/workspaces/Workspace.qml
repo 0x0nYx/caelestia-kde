@@ -43,7 +43,7 @@ GridLayout {
     readonly property int ws: groupOffset + index + 1
     readonly property int maxIcons: Config.bar.workspaces.maxWindowIcons
     readonly property bool isOccupied: occupied[ws] ?? false
-    readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows
+    readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows && (Config.bar.workspaces.maxWindowIcons > 0)
     property var kwinWindowList: Kwin.windowList
 
     // Cache window-icon lists per layout so the Repeater only rebuilds
