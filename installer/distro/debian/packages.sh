@@ -8,6 +8,8 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/sc
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
 # shellcheck source=scripts/lib/packages.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
+# shellcheck source=scripts/lib/darkly.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/darkly.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -172,7 +174,9 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             caelestia_sudo apt-get install -y quickshell || { err "Failed to install quickshell from PPA."; FAILED_PKGS+=("$pkg"); }
             ;;
         libcava)
-            if install_cava_sdk debian; then
+            if cava_sdk_installed; then
+                log "CAVA SDK already installed."
+            elif install_cava_sdk debian; then
                 log "Installed prebuilt CAVA SDK from release."
             else
                 log "Attempting to install cava from PPA..."

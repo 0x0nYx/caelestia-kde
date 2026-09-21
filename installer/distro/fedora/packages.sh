@@ -8,6 +8,8 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/sc
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/privileges.sh"
 # shellcheck source=scripts/lib/packages.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
+# shellcheck source=scripts/lib/darkly.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/darkly.sh"
 
 
 log()  { printf '  [INFO]  %s\n' "$*"; }
@@ -192,7 +194,10 @@ for pkg in "${COPR_PKGS[@]}"; do
             fi
             ;;
         libcava)
-            if install_cava_sdk fedora; then
+            if cava_sdk_installed; then
+                log "CAVA SDK already installed."
+                COPR_FAILED="no"
+            elif install_cava_sdk fedora; then
                 log "Installed prebuilt CAVA SDK from release."
                 COPR_FAILED="no"
             elif caelestia_sudo dnf copr enable -y celestelove/libcava && caelestia_sudo dnf install -y libcava-devel; then

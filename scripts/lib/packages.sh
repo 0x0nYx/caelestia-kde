@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The package layer: which distro this is, whether a package is installed, and how a
 # package gets installed. BASE_DISTRO is resolved once, here, and exported - every
-# caller reads the same answer instead of asking a second time. Callers source
-# log.sh first (the progress lines are its) and privileges.sh (escalation).
+# caller reads the same answer instead of asking a second time. Callers source log.sh
+# first: install_if_missing reports through its info/ok/skip/warn, and package_install
+# warns when there is no manager to use. privileges.sh provides caelestia_sudo.
 if [[ -z "${CAELESTIA_PACKAGES_SOURCED:-}" ]]; then
 CAELESTIA_PACKAGES_SOURCED=1
 
@@ -148,35 +149,6 @@ install_if_missing() {
         record_failed_package "$pkg"
     done
     return 1
-}
-
-# Upstream's install.sh only drops theme directories - it is not a package, so the
-# directories are the whole answer.
-darkly_gtk_installed() {
-    [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/themes/Darkly" ]] ||
-    [[ -d "$HOME/.themes/Darkly" ]] ||
-    [[ -d "/usr/share/themes/Darkly" ]]
-}
-
-# Clones and builds the Darkly GTK theme. Returns non-zero when it did not land, so
-# the caller can record the failure next to its own. The sassc build dependency is
-# the caller's business: each distro asks for it the way it asks for everything else.
-install_darkly_gtk_theme() {
-    local tmpdir status=0
-    tmpdir="$(mktemp -d)"
-
-    if git clone --depth 1 https://github.com/wrymt/darkly-gtk "$tmpdir"; then
-        (cd "$tmpdir" || exit 1; ./install.sh -l) || {
-            err "Failed to install Darkly GTK theme."
-            status=1
-        }
-    else
-        err "Failed to clone Darkly GTK theme."
-        status=1
-    fi
-
-    rm -rf "$tmpdir"
-    return "$status"
 }
 
 fi
