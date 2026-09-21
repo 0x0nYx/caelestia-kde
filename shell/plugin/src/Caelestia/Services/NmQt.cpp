@@ -20,6 +20,7 @@
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 #include <QFile>
+#include <QFileInfo>
 #include <QHash>
 #include <QHostAddress>
 #include <QJSEngine>
@@ -34,6 +35,19 @@ Q_LOGGING_CATEGORY(lcNmQt, "caelestia.services.nmqt", QtInfoMsg)
 namespace caelestia::services {
 
 namespace {
+
+// NetworkManager reports container and VM veth pairs (Docker, Podman, ...) as type
+// Ethernet too, so they would otherwise be listed beside real NICs. A physical
+// interface always has /sys/class/net/<iface>/device; veth, bridge and tun never do.
+// Where /sys/class/net does not exist at all, keep every interface rather than hide
+// real hardware.
+bool isPhysicalInterface(const QString& name) {
+    static const bool sysClassNetPresent = QFileInfo(QStringLiteral("/sys/class/net")).isDir();
+    if (!sysClassNetPresent) {
+        return true;
+    }
+    return QFileInfo::exists(QStringLiteral("/sys/class/net/%1/device").arg(name));
+}
 
 QString keyMgmtToString(NetworkManager::WirelessSecuritySetting::KeyMgmt k) {
     switch (k) {
@@ -1243,6 +1257,10 @@ void NmQt::refreshEthernetDevices() {
             continue;
 
         if (dev->type() != NetworkManager::Device::Ethernet)
+            continue;
+
+        // Container and VM virtual interfaces report as Ethernet as well.
+        if (!isPhysicalInterface(dev->interfaceName()))
             continue;
 
         QVariantMap info;
