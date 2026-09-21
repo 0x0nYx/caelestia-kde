@@ -173,9 +173,13 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
     info "Running standalone update mode... ensuring prerequisites."
 
     if [[ -f "$BUNDLE_DIR/scripts/02a-submodules.sh" ]]; then
-        bash "$BUNDLE_DIR/scripts/02a-submodules.sh" || warn "02a-submodules.sh reported warnings"
+        bash "$BUNDLE_DIR/scripts/02a-submodules.sh" || die "Failed to initialize submodules"
     fi
 
+    # A checkout that predates `installer/` being in the sparse-checkout rules needs
+    # the path adding before anything can read it. src/bin/caelestia-update owns that
+    # list and writes it before it checks the tree out; this is the fallback for the
+    # copies it already deployed, so keep the path name in step with it.
     if [[ ! -d "$BUNDLE_DIR/installer" && -d "$BUNDLE_DIR/.git" ]]; then
         if [[ -f "$BUNDLE_DIR/.git/info/sparse-checkout" ]]; then
             if ! grep -q '^installer/' "$BUNDLE_DIR/.git/info/sparse-checkout" 2>/dev/null; then
@@ -190,7 +194,9 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
 
     if [[ -f "$BUNDLE_DIR/scripts/02-all-packages.sh" && -d "$BUNDLE_DIR/installer" ]]; then
         info "Checking core, shell, theme, and utility dependencies..."
-        PACKAGE_GROUP="${PACKAGE_GROUP:-all}" bash "$BUNDLE_DIR/scripts/02-all-packages.sh" || warn "02-all-packages.sh reported warnings"
+        bash "$BUNDLE_DIR/scripts/02-all-packages.sh" || warn "02-all-packages.sh reported warnings"
+    else
+        warn "Skipping the dependency check: scripts/02-all-packages.sh or installer/ is missing."
     fi
 
     info "Deleting yet-another-monochrome-icon-set for lag free update..."
