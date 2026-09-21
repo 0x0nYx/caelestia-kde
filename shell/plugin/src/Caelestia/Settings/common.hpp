@@ -32,6 +32,20 @@ private:
     Q_DISABLE_COPY_MOVE(WriteScope)
 };
 
+// Marks reads that come from inside the settings layer rather than from QML, so the
+// generated getters do not warn about reading a global option through an overlay.
+class InternalRead {
+public:
+    explicit InternalRead(Node* node);
+    ~InternalRead();
+
+private:
+    Node* const m_root;
+    const bool m_previous;
+
+    Q_DISABLE_COPY_MOVE(InternalRead)
+};
+
 class DiagnosticType : public QObject {
     Q_OBJECT
     QML_ELEMENT
