@@ -10,8 +10,15 @@ install_kind() {
             ;;
     esac
 
+    # Where this file was sourced from is the whole answer: a package's copy lives under
+    # /usr. An unresolvable directory is reported rather than answered as "source", which
+    # is what an empty string would otherwise have quietly meant.
     local lib_dir
-    lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    if ! lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"; then
+        printf '[ERR]   cannot resolve the directory %s was sourced from\n' "${BASH_SOURCE[0]}" >&2
+        return 1
+    fi
+
     case "$lib_dir" in
         /usr/*) printf 'package\n' ;;
         *) printf 'source\n' ;;
@@ -19,7 +26,12 @@ install_kind() {
 }
 
 install_is_packaged() {
-    [[ "$(install_kind)" == "package" ]]
+    # install_kind reports failure when it cannot tell where it was sourced from, and a
+    # failure is not an answer: passing it on keeps the caller from reading "not a
+    # package" into a question that was never answered.
+    local kind
+    kind="$(install_kind)" || return 1
+    [[ "$kind" == "package" ]]
 }
 
 install_lib_dir() {
