@@ -35,7 +35,7 @@ Item {
     readonly property bool allWindowsFloating: !windowHidesLyrics
     readonly property bool shouldHide: autoHide && windowHidesLyrics
 
-    property bool hasLyrics: Lyrics.hasLyrics
+    readonly property bool hasLyrics: Lyrics.hasLyrics
     property int currentLyricIndex: -1
     readonly property bool isCurrentActive: currentLyricIndex >= 0
 
@@ -201,7 +201,6 @@ Item {
 
     Connections {
         function onHasLyricsChanged() {
-            root.hasLyrics = Lyrics.hasLyrics;
             root.forceUpdate();
         }
 

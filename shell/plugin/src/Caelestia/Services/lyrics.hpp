@@ -1,11 +1,11 @@
 #pragma once
 
-#include "lyriccandidate.hpp"
-
 #include <qhash.h>
 #include <qjsonobject.h>
 #include <qnetworkaccessmanager.h>
 #include <qnetworkreply.h>
+
+#include "lyriccandidate.hpp"
 
 namespace caelestia::services {
 
@@ -28,7 +28,10 @@ class Lyrics : public QObject {
     Q_PROPERTY(caelestia::services::LyricCandidate selectedCandidate READ selectedCandidate WRITE setSelectedCandidate
             NOTIFY selectedCandidateChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
-    Q_PROPERTY(bool hasLyrics READ hasLyrics NOTIFY lyricsChanged)
+    // Has to be the dedicated signal: setLines() emits lyricsChanged before it updates
+    // m_hasLyrics, and clearLines() emits only hasLyricsChanged, so wiring this to
+    // lyricsChanged leaves QML reading a stale value.
+    Q_PROPERTY(bool hasLyrics READ hasLyrics NOTIFY hasLyricsChanged)
     Q_PROPERTY(qreal offset READ offset WRITE setOffset NOTIFY offsetChanged)
     Q_PROPERTY(QString trackArtist READ trackArtist NOTIFY trackChanged)
     Q_PROPERTY(QString trackTitle READ trackTitle NOTIFY trackChanged)
