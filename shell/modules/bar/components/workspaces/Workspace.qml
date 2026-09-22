@@ -12,13 +12,14 @@ import qs.utils
 GridLayout {
     id: root
 
-    required property int index
+    /// The desktop this pill stands for. The strip decides which ones exist, so
+    /// a pill never derives its own id from a position in a layout.
+    required property int ws
     required property int activeWsId
     /// Name of the screen this bar is on. Window icons are limited to it: the
     /// desktop is shared across screens, but the pill is not.
     required property string screenName
     required property var occupied
-    required property int groupOffset
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
@@ -40,7 +41,6 @@ GridLayout {
     // Unanimated prop for others to use as reference
     readonly property real size: ((isHorizontal ? implicitWidth : implicitHeight) + (hasWindows ? Tokens.padding.extraSmall : 0)) * revealProgress
 
-    readonly property int ws: groupOffset + index + 1
     readonly property int maxIcons: Config.bar.workspaces.maxWindowIcons
     readonly property bool isOccupied: occupied[ws] ?? false
     readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows && (Config.bar.workspaces.maxWindowIcons > 0)
