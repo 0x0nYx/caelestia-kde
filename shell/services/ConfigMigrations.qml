@@ -153,6 +153,20 @@ Singleton {
         }
     }
 
+    // The clock format used to be a boolean, `useTwelveHourClock`. It is a ClockFormat
+    // enum now, so that following the locale is a value the user can go back to rather
+    // than only a default they get once, and the boolean is retired. A boolean still in
+    // the config decides its enum, otherwise a config that asked for a 12-hour clock
+    // would come back to Auto, which guesses from the locale and can guess the other way.
+    function migrateClockFormat(): void {
+        const services = GlobalConfig.services;
+
+        if (services.isOverride("useTwelveHourClock")) {
+            services.clockFormat = services.useTwelveHourClock ? ClockFormat.TwelveHour : ClockFormat.TwentyFourHour;
+            services.resetOption("useTwelveHourClock");
+        }
+    }
+
     // Pinned apps on the dock now have their own configuration property `bar.dock.pinnedApps`.
     // If the dock pinned list was not explicitly set, migrate any customized `launcher.favouriteApps`.
     function migrateDockPinned(): void {
@@ -167,6 +181,7 @@ Singleton {
         root.migrateWorkspaceDisplay();
         root.migrateQuickToggles();
         root.migrateTemperatureUnits();
+        root.migrateClockFormat();
         root.migrateDockPinned();
         orderReader.running = true;
     }

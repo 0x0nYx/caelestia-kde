@@ -50,7 +50,7 @@ Singleton {
     property int locationSearchToken: 0
 
     function formatTemp(temp, compact = false) {
-        const unit = GlobalConfig.services.weatherUnits;
+        const unit = GlobalConfig.services.weatherUnit;
         const value = temp === undefined || temp === null || isNaN(temp) ? "--" : Math.round(Units.toTemperature(temp, unit));
         return Units.formatTemp(value, unit, compact);
     }

@@ -1,11 +1,13 @@
 #pragma once
 
+#include <qlocale.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
 
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
+#include "enums.hpp"
 
 namespace caelestia::config {
 
@@ -16,12 +18,8 @@ class ServiceConfig : public settings::ObjectNode {
     CONFIG_NODE(ServiceConfig, settings::ObjectNode)
 
     CONFIG_GLOBAL_PROPERTY(QString, weatherLocation, QString())
-    // Guess based on locale
-    CONFIG_GLOBAL_ENUM_PROPERTY(TemperatureUnit, weatherUnits,
-        QLocale().measurementSystem() == QLocale::ImperialUSSystem ||
-                QLocale().measurementSystem() == QLocale::ImperialUKSystem
-            ? TemperatureUnit::Fahrenheit
-            : TemperatureUnit::Celsius)
+    // Auto guesses based on the locale, see weatherUnit below for the resolved value
+    CONFIG_GLOBAL_ENUM_PROPERTY(TemperatureUnit, weatherUnits, TemperatureUnit::Auto)
     // Always Celsius by default cause apparently even imperial system users don't use it for sensor temps?
     CONFIG_GLOBAL_ENUM_PROPERTY(TemperatureUnit, sensorUnits, TemperatureUnit::Celsius)
     // Binary (KiB/MiB/GiB) or decimal (KB/MB/GB) data sizes
@@ -32,9 +30,28 @@ class ServiceConfig : public settings::ObjectNode {
         QLocale().measurementSystem() == QLocale::ImperialUSSystem ||
             QLocale().measurementSystem() == QLocale::ImperialUKSystem)
     CONFIG_GLOBAL_PROPERTY(bool, useFahrenheitPerformance, false)
-    // Attempt to guess based on locale
-    CONFIG_GLOBAL_PROPERTY(
-        bool, useTwelveHourClock, QLocale().timeFormat(QLocale::ShortFormat).toLower().contains(u"a"_s))
+    // Superseded by clockFormat. Kept for one release so an existing shell.json can be
+    // migrated - see services/ConfigMigrations.qml. The default no longer means anything:
+    // only a value the user wrote is read, and it is read once.
+    CONFIG_GLOBAL_PROPERTY(bool, useTwelveHourClock, false)
+    // Auto follows the locale, see twelveHourClock below for the resolved value
+    CONFIG_GLOBAL_ENUM_PROPERTY(ClockFormat, clockFormat, ClockFormat::Auto)
+
+public:
+    // The clock format and the temperature units with Auto already resolved. Read only,
+    // and outside the schema: they are what every reader of the settings above wants,
+    // and Auto only means anything to whoever resolves it. Resolving here rather than
+    // per reader keeps the C++ services and the QML helpers from disagreeing about what
+    // Auto means, and keeps a locale change from needing a written value to take effect.
+    Q_PROPERTY(bool twelveHourClock READ twelveHourClock NOTIFY clockFormatChanged)
+    Q_PROPERTY(caelestia::config::TemperatureUnit::Enum weatherUnit READ weatherUnit NOTIFY weatherUnitsChanged)
+    Q_PROPERTY(caelestia::config::TemperatureUnit::Enum sensorUnit READ sensorUnit NOTIFY sensorUnitsChanged)
+
+    [[nodiscard]] bool twelveHourClock() const;
+    [[nodiscard]] TemperatureUnit::Enum weatherUnit() const;
+    [[nodiscard]] TemperatureUnit::Enum sensorUnit() const;
+
+private:
     CONFIG_GLOBAL_PROPERTY(QString, gpuType, QString())
     CONFIG_GLOBAL_PROPERTY(int, visualiserBars, 60)
     CONFIG_GLOBAL_PROPERTY(qreal, audioIncrement, 0.1)

@@ -6,6 +6,11 @@ import Caelestia.Config
 QtObject {
     id: root
 
+    // Whether the shell shows a 12-hour clock. The configured ClockFormat is resolved in
+    // the config itself, so an Auto setting follows the locale without the shell having to
+    // guess here - see ServiceConfig in the plugin.
+    readonly property bool twelveHourClock: GlobalConfig.services.twelveHourClock
+
     // Converts a temperature in Celsius to the given TemperatureUnit
     function toTemperature(celsius: real, unit: int): real {
         if (Number(unit) === TemperatureUnit.Fahrenheit)
@@ -29,7 +34,7 @@ QtObject {
 
     // Converts and formats a sensor temperature in Celsius using the configured sensor units
     function formatSensorTemp(celsius: real): string {
-        const unit = GlobalConfig.services.sensorUnits;
+        const unit = GlobalConfig.services.sensorUnit;
         return root.formatTemp(Math.round(root.toTemperature(celsius, unit)), unit);
     }
 
