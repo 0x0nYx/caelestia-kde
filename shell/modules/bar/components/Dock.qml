@@ -680,14 +680,12 @@ Item {
                         visible: delegateItem.badge?.countVisible ?? false
                         color: Colours.palette.m3error
                         radius: Tokens.rounding.full
-                        implicitWidth: asDot ? dotSize : Math.max(badgeHeight, badgeLabel.implicitWidth + Tokens.padding.extraSmall)
-                        implicitHeight: asDot ? dotSize : badgeHeight
-                        width: implicitWidth
-                        height: implicitHeight
+                        width: asDot ? dotSize : Math.max(badgeHeight, badgeLabel.implicitWidth + Tokens.padding.extraSmall)
+                        height: asDot ? dotSize : badgeHeight
                         anchors.right: icon.right
                         anchors.top: icon.top
-                        anchors.rightMargin: -Math.round(dotSize * 0.25)
-                        anchors.topMargin: -Math.round(dotSize * 0.25)
+                        anchors.rightMargin: -Math.round(height * 0.25)
+                        anchors.topMargin: -Math.round(height * 0.25)
 
                         Text {
                             id: badgeLabel
