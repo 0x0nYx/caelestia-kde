@@ -4,12 +4,14 @@ namespace caelestia::settings {
 
 Node::Node(Node* fallback, QObject* parent, bool globalOnly)
     : QObject(parent)
+    , m_globalOnly(globalOnly || (parentNode() && parentNode()->m_globalOnly))
     , m_rootNode(parentNode() ? parentNode()->rootNode() : this)
     , m_fallbackNode(fallback)
-    , m_globalOnly(globalOnly || (parentNode() && parentNode()->m_globalOnly))
     , m_writeOrigin(WriteOrigin::Qml)
+    , m_internalRead(false)
     , m_batcher(m_rootNode == this ? new ChangeBatcher(this) : nullptr) {
-    if (fallback)
+    // Overlays must not mirror the global layer: it is a one way read
+    if (fallback && !m_globalOnly)
         QObject::connect(fallback, &Node::optionChanged, this, &Node::onFallbackNotify);
 }
 
@@ -74,6 +76,8 @@ QVariant Node::value(const QString& key) const {
         return QVariant();
     }
 
+    // Generated getters warn on global reads, this silences them as the warning is only for QML reads
+    const InternalRead guard(m_rootNode);
     return metaObject()->property(desc->metaIndex).read(this);
 }
 
@@ -89,14 +93,21 @@ bool Node::setValue(const QString& key, const QVariant& value) {
         return false;
     }
 
-    // Type mismatch, conversion should happen before this function is called
-    if (desc->type != value.metaType()) {
-        qCWarning(lcSettings, "Type mismatch for %s, expected %s got %s", qUtf8Printable(pathFor(key)),
-            desc->type.name(), value.metaType().name());
-        return false;
+    // Type mismatch, conversion should happen before this function is called.
+    // An option that accepts several types is also written from QML, which hands a
+    // list over as a QVariantList whatever the option asks for, so convert to an
+    // allowed type rather than dropping a write the user meant.
+    auto coerced = value;
+    if (!desc->accepts(coerced.metaType())) {
+        const auto target = desc->coercionTarget(coerced.metaType());
+        if (!target.isValid() || !coerced.convert(target)) {
+            qCWarning(lcSettings, "Type mismatch for %s, expected %s got %s", qUtf8Printable(pathFor(key)),
+                qUtf8Printable(desc->typeString()), value.metaType().name());
+            return false;
+        }
     }
 
-    return metaObject()->property(desc->metaIndex).write(this, value);
+    return metaObject()->property(desc->metaIndex).write(this, coerced);
 }
 
 void Node::resetToDefaults() {
@@ -111,7 +122,7 @@ void Node::resetToDefaults() {
         if (desc.isNode)
             value(desc.key).value<Node*>()->resetToDefaults();
         else if (!desc.globalOnly() || !m_fallbackNode) // Skip resetting global options on overlays
-            setValue(desc.key, m_fallbackNode ? m_fallbackNode->value(desc.key) : desc.defaultValue(this));
+            setValue(desc.key, m_fallbackNode ? m_fallbackNode->value(desc.key) : desc.defaultValue());
     }
 }
 
@@ -119,10 +130,30 @@ const Quarantine* Node::quarantine() const {
     return m_quarantine.get();
 }
 
-bool Node::forwardGlobalWrite(const QString& key, const QVariant& value) {
+bool Node::rejectInvalidWrite(const QString& key, const QVariant& value) const {
+    const auto* desc = schema().get(key);
+    if (!desc || desc->accepts(value.metaType()))
+        return false;
+
+    qCWarning(lcSettings, "Type mismatch for %s, expected %s got %s", qUtf8Printable(pathFor(key)),
+        qUtf8Printable(desc->typeString()), value.metaType().name());
+    return true;
+}
+
+void Node::warnGlobalRead(const QString& key) const {
+    if (!m_fallbackNode || m_rootNode->m_internalRead)
+        return;
+
+    qCWarning(lcSettings,
+        "Global option %s was read from an overlay layer. "
+        "This should not be used, read global options from the global layer instead.",
+        qUtf8Printable(pathFor(key)));
+}
+
+bool Node::rejectGlobalWrite(const QString& key) {
     const auto* desc = schema().get(key);
     if (!desc) {
-        qCCritical(lcSettings, "Attempted to forward a write for an unknown key %s, something is seriously wrong...",
+        qCCritical(lcSettings, "Attempted to check a write for an unknown key %s, something is seriously wrong...",
             qUtf8Printable(pathFor(key)));
         return false;
     }
@@ -133,22 +164,35 @@ bool Node::forwardGlobalWrite(const QString& key, const QVariant& value) {
     if ((!m_globalOnly && !desc->globalOnly()) || !fromUser || !m_fallbackNode)
         return false;
 
-    if (origin == WriteOrigin::QmlReset) {
+    // Overlays cannot write the global layer, whatever the origin
+    if (origin == WriteOrigin::QmlReset)
         qCWarning(lcSettings,
-            "Attempted to reset global property %s, ignoring. "
-            "This should not be used, reset global properties from the global layer instead.",
+            "Attempted to reset global option %s from an overlay layer, ignoring. "
+            "This should not be used, reset global options from the global layer instead.",
             qUtf8Printable(pathFor(key)));
-        return true;
-    }
+    else
+        qCWarning(lcSettings,
+            "Attempted to write global option %s from an overlay layer, ignoring. "
+            "This should not be used, write global options from the global layer instead.",
+            qUtf8Printable(pathFor(key)));
 
-    qCWarning(lcSettings,
-        "Forwarding write of global property %s to the global layer. "
-        "This should not be used, write global properties from the global layer instead.",
-        qUtf8Printable(pathFor(key)));
+    return true;
+}
 
-    const WriteScope scope(m_fallbackNode, origin);
-    m_fallbackNode->setValue(key, value);
+void Node::warnGlobalSync(QList<Diagnostic>& diagnostics, const QString& path) {
+    qCWarning(lcSettings, "Global option definition %s found in overlay file, ignoring.", qUtf8Printable(path));
+    diagnostics << Diagnostic{
+        .type = DiagnosticType::GlobalOption,
+        .option = path,
+        .message = QStringLiteral("Global options should not be defined in overlay files"),
+    };
+}
 
+bool Node::rejectGlobalSync(QList<Diagnostic>& diagnostics) const {
+    if (!m_globalOnly || !m_fallbackNode)
+        return false;
+
+    warnGlobalSync(diagnostics, path());
     return true;
 }
 
@@ -227,6 +271,11 @@ QString Node::keyOf(const Node* child) const {
 
 void Node::onFallbackNotify(const QString& key) {
     if (m_overrides.contains(key))
+        return;
+
+    // Don't mirror global options onto overlays
+    const auto* desc = schema().get(key);
+    if (desc && desc->globalOnly())
         return;
 
     const WriteScope scope(this, WriteOrigin::Layer);

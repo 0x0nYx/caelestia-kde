@@ -42,6 +42,12 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(int, maxWindowIcons, 5)
     CONFIG_PROPERTY(bool, activeTrail, false)
     CONFIG_PROPERTY(bool, monitorCenter, false)
+    // Hide the workspaces that are not on this bar's monitor. Only means anything while
+    // showUnoccupied is off: with it on, every workspace is shown regardless.
+    CONFIG_PROPERTY(bool, perMonitor, true)
+    // Superseded by perMonitor above, which is per bar rather than one setting for all of
+    // them. Kept for one release so an existing shell.json can be migrated - see
+    // services/ConfigMigrations.qml.
     CONFIG_GLOBAL_PROPERTY(bool, perMonitorWorkspaces, true)
     // Was a boolean called `useIcon`; upstream's name and shape are kept so a
     // shell.json written for either shell means the same thing here.
@@ -57,7 +63,7 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, occupiedLabel, u" 󰮯"_s)
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
     CONFIG_PROPERTY(QString, capitalisation, u"preserve"_s)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, specialWorkspaceIcons, QVariantList())
+    CONFIG_GLOBAL_LIST(IconRuleList, specialWorkspaceIcons, {})
     // Windows the bar's workspace pills leave out of their icon lists. Tags are
     // Hyprland's, and the default below is upstream's; KWin has none, so on KDE the
     // same entries are matched against the window's app id instead - which is what
@@ -68,12 +74,11 @@ class BarWorkspaces : public settings::ObjectNode {
             u"hide_in_bar"_s,
             u"xwl_popup"_s,
         }))
-    CONFIG_GLOBAL_PROPERTY(QVariantList, windowIcons,
-        { vmap({
-            { u"regex"_s, u"steam(_app_(default|[0-9]+))?"_s },
-            { u"icon"_s, u"sports_esports"_s },
-        }) })
-    CONFIG_GLOBAL_PROPERTY(QVariantList, wsIcons, QVariantList())
+    CONFIG_GLOBAL_LIST(IconRuleList, windowIcons,
+        DEFAULT_ARG({
+            ICON_RULE_REGEX("steam(_app_(default|[0-9]+))?", "", "sports_esports"),
+        }))
+    CONFIG_GLOBAL_LIST(IconRuleList, wsIcons, {})
 };
 
 class BarGreeter : public settings::ObjectNode {
@@ -114,13 +119,22 @@ class BarGreeter : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, slideshowRandom, false)
 };
 
+class BarTrayIconSub : public settings::ObjectNode {
+    CONFIG_NODE(BarTrayIconSub, settings::ObjectNode)
+
+    CONFIG_PROPERTY(QString, id, {})
+    CONFIG_PROPERTY(QString, icon, {})
+    CONFIG_PROPERTY(QString, image, {})
+};
+CONFIG_LIST_TYPE(BarTrayIconSub, BarTrayIconSubList)
+
 class BarTray : public settings::ObjectNode {
     CONFIG_NODE(BarTray, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, background, false)
     CONFIG_PROPERTY(bool, recolour, false)
     CONFIG_PROPERTY(bool, compact, true)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, iconSubs, QVariantList())
+    CONFIG_GLOBAL_LIST(BarTrayIconSubList, iconSubs, {})
     CONFIG_GLOBAL_PROPERTY(QStringList, hiddenIcons, QStringList())
 };
 

@@ -24,7 +24,7 @@ PageBase {
     ]
 
     function formatHour(h: int): string {
-        if (GlobalConfig.services.useTwelveHourClock) {
+        if (Units.twelveHourClock) {
             const period = h >= 12 ? "PM" : "AM";
             const hour12 = (h % 12 === 0) ? 12 : (h % 12);
             return `${hour12}:00 ${period}`;

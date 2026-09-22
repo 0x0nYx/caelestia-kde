@@ -14,7 +14,9 @@ using settings::vmap;
 class UtilitiesToasts : public settings::ObjectNode {
     CONFIG_NODE(UtilitiesToasts, settings::ObjectNode)
 
-    CONFIG_PROPERTY(QString, fullscreen, u"off"_s)
+    // Whether a toast is shown over a fullscreen window is a policy for the shell, not for a
+    // screen: the setting and the toasts that obey it have to be in the same layer.
+    CONFIG_GLOBAL_PROPERTY(QString, fullscreen, u"off"_s)
     CONFIG_GLOBAL_PROPERTY(bool, configLoaded, false)
     CONFIG_GLOBAL_PROPERTY(bool, chargingChanged, true)
     CONFIG_GLOBAL_PROPERTY(bool, gameModeChanged, true)
@@ -33,11 +35,23 @@ class UtilitiesToasts : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(qreal, transparencyBase, 0.85)
 };
 
+class UtilitiesVpnProvider : public settings::ObjectNode {
+    CONFIG_NODE(UtilitiesVpnProvider, settings::ObjectNode)
+
+    CONFIG_PROPERTY(QString, id, {})
+    CONFIG_PROPERTY(QString, name, {})
+    CONFIG_PROPERTY(QString, displayName, {})
+    CONFIG_PROPERTY(QString, interface, {})
+    CONFIG_PROPERTY(QStringList, connectCmd, {})
+    CONFIG_PROPERTY(QStringList, disconnectCmd, {})
+};
+CONFIG_LIST_TYPE(UtilitiesVpnProvider, UtilitiesVpnProviderList)
+
 class UtilitiesVpn : public settings::ObjectNode {
     CONFIG_NODE(UtilitiesVpn, settings::ObjectNode)
 
     CONFIG_GLOBAL_PROPERTY(bool, enabled, false)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, provider, QVariantList())
+    CONFIG_GLOBAL_LIST(UtilitiesVpnProviderList, provider, {})
     CONFIG_GLOBAL_PROPERTY(QString, selectedProvider, QString())
 };
 

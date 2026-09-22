@@ -35,7 +35,9 @@ QString FileSystemEntry::parentDir() const {
 };
 
 QString FileSystemEntry::suffix() const {
-    return m_fileInfo.completeSuffix();
+    // Last suffix only, so "a.tar.gz" reports "gz": the file dialog matches this
+    // against its filter list, and completeSuffix() would never match one.
+    return m_fileInfo.suffix();
 };
 
 qint64 FileSystemEntry::size() const {

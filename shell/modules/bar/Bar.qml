@@ -65,7 +65,7 @@ Item {
             let localPos = mapToItem(layout, x, y);
             if (localPos.x >= 0 && localPos.x <= layout.width && localPos.y >= 0 && localPos.y <= layout.height) {
                 let ch = layout.childAt(localPos.x, localPos.y);
-                if (ch && ch.hasOwnProperty("id")) return ch; 
+                if (ch && ch.hasOwnProperty("id")) return ch;
             }
         }
         return null;
@@ -82,7 +82,7 @@ Item {
                 const loader = rep.itemAt(i) as WrappedLoader;
                 if (loader?.enabled && loader.id === "tray") {
                     const tray = loader.item as Tray;
-                    if (Config.bar.popouts.tray || !tray.pinned) {
+                    if (tray && (Config.bar.popouts.tray || !tray.pinned)) {
                         tray.expanded = false;
                         tray.pinned = false;
                     }
@@ -191,7 +191,7 @@ Item {
             }
         } else if (id === "dock") {
             if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "greeter" || popouts.currentName === "greetercontext" || popouts.currentName === "activewindow")) return;
-            
+
             const item = ch.item;
             if (item && typeof item.handleHover === "function") {
                 const relPos = pos - top;
@@ -236,7 +236,7 @@ Item {
 
     function handleWheel(pos: real, angleDelta: point): void {
         const ch = getLoaderAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as WrappedLoader;
-        
+
         if (ch?.id === "dock") {
             if (ch.item && typeof ch.item.handleWheel === "function") {
                 ch.item.handleWheel(angleDelta);
@@ -245,7 +245,7 @@ Item {
         }
 
         if (ch?.id === "workspaces" && Config.bar.scrollActions.workspaces) {
-            const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Kwin.monitorFor(screen) : Kwin.focusedMonitor);
+            const mon = (Config.bar.workspaces.perMonitor ? Kwin.monitorFor(screen) : Kwin.focusedMonitor);
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
             if (specialWs?.length > 0)
                 Kwin.dispatch(Kwin.usingLua ? `hl.dsp.workspace.toggle_special("${specialWs.slice(8)}")` : `togglespecialworkspace ${specialWs.slice(8)}`);
@@ -277,7 +277,7 @@ Item {
         anchors.top: !isHorizontal ? parent.top : undefined
         anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
         anchors.horizontalCenter: !isHorizontal ? parent.horizontalCenter : undefined
-        
+
         anchors.leftMargin: isHorizontal ? root.vPadding : 0
         anchors.topMargin: !isHorizontal ? root.vPadding : 0
 
@@ -342,7 +342,7 @@ Item {
         anchors.bottom: !isHorizontal ? parent.bottom : undefined
         anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
         anchors.horizontalCenter: !isHorizontal ? parent.horizontalCenter : undefined
-        
+
         anchors.rightMargin: isHorizontal ? root.vPadding : 0
         anchors.bottomMargin: !isHorizontal ? root.vPadding : 0
 
@@ -521,13 +521,13 @@ Item {
         asynchronous: false
         Layout.alignment: root.isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
 
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
 
         Layout.preferredWidth: implicitWidth
         Layout.preferredHeight: implicitHeight

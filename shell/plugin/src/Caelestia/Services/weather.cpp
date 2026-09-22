@@ -50,7 +50,7 @@ Weather::Weather(QObject* parent)
             emit weatherChanged();
             emit forecastChanged();
         });
-        connect(svcCfg, &config::ServiceConfig::useTwelveHourClockChanged, this, [this]() {
+        connect(svcCfg, &config::ServiceConfig::clockFormatChanged, this, [this]() {
             emit weatherChanged();
         });
     }
@@ -163,7 +163,7 @@ bool Weather::loading() const {
 QString Weather::formatTemp(const QVariant& tempVal) const {
     const auto* cfg = config::ConfigSingleton::instance();
     const auto* svcCfg = cfg ? cfg->services() : nullptr;
-    const auto unit = svcCfg ? svcCfg->weatherUnits() : config::TemperatureUnit::Celsius;
+    const auto unit = svcCfg ? svcCfg->weatherUnit() : config::TemperatureUnit::Celsius;
 
     const auto placeholder = [unit]() -> QString {
         switch (unit) {
@@ -548,7 +548,7 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
 
     const auto* cfg = config::ConfigSingleton::instance();
     const auto* svcCfg = cfg ? cfg->services() : nullptr;
-    const bool use12h = svcCfg ? svcCfg->useTwelveHourClock() : false;
+    const bool use12h = svcCfg ? svcCfg->twelveHourClock() : false;
     const QString timeFormat = use12h ? QStringLiteral("h:mm AP") : QStringLiteral("h:mm");
 
     const auto dailyMax = daily.value(QStringLiteral("temperature_2m_max")).toArray();

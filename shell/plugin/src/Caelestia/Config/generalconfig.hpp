@@ -20,13 +20,27 @@ class GeneralApps : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(QStringList, explorer, { u"xdg-open"_s })
 };
 
+class GeneralIdleTimeout : public settings::ObjectNode {
+    CONFIG_NODE(GeneralIdleTimeout, settings::ObjectNode)
+
+    CONFIG_PROPERTY(bool, enabled, true)
+    CONFIG_PROPERTY(int, timeout, 300)
+    // A single command or a list of them, so a schedule can name one action or a chain
+    CONFIG_PROPERTY(QVariant, idleAction, {}, .allowedTypes = settings::unionTypes<QString, QStringList>())
+    CONFIG_PROPERTY(QVariant, returnAction, {}, .allowedTypes = settings::unionTypes<QString, QStringList>())
+    CONFIG_PROPERTY(bool, inhibitWhenAudio, false)
+    CONFIG_PROPERTY(bool, inhibitWhenCharging, false)
+    CONFIG_PROPERTY(bool, respectInhibitors, true)
+};
+CONFIG_LIST_TYPE(GeneralIdleTimeout, GeneralIdleTimeoutList)
+
 class GeneralIdle : public settings::ObjectNode {
     CONFIG_NODE(GeneralIdle, settings::ObjectNode)
 
     CONFIG_GLOBAL_PROPERTY(bool, lockBeforeSleep, true)
     CONFIG_GLOBAL_PROPERTY(bool, inhibitWhenAudio, true)
     CONFIG_GLOBAL_PROPERTY(bool, inhibitWhenCharging, false)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, timeouts,
+    CONFIG_GLOBAL_LIST(GeneralIdleTimeoutList, timeouts,
         DEFAULT_ARG({
             vmap({
                 { u"timeout"_s, 180 },
@@ -45,10 +59,21 @@ class GeneralIdle : public settings::ObjectNode {
         }))
 };
 
+class GeneralBatteryWarnLevel : public settings::ObjectNode {
+    CONFIG_NODE(GeneralBatteryWarnLevel, settings::ObjectNode)
+
+    CONFIG_PROPERTY(int, level, -1)
+    CONFIG_PROPERTY(QString, title, {})
+    CONFIG_PROPERTY(QString, message, {})
+    CONFIG_PROPERTY(QString, icon, {})
+    CONFIG_PROPERTY(bool, critical, false)
+};
+CONFIG_LIST_TYPE(GeneralBatteryWarnLevel, GeneralBatteryWarnList)
+
 class GeneralBattery : public settings::ObjectNode {
     CONFIG_NODE(GeneralBattery, settings::ObjectNode)
 
-    CONFIG_GLOBAL_PROPERTY(QVariantList, warnLevels,
+    CONFIG_GLOBAL_LIST(GeneralBatteryWarnList, warnLevels,
         DEFAULT_ARG({
             vmap({
                 { u"level"_s, 20 },

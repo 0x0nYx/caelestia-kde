@@ -8,7 +8,7 @@ import Caelestia.Services
 Scope {
     id: root
 
-    readonly property list<var> warnLevels: [...GlobalConfig.general.battery.warnLevels].sort((a, b) => b.level - a.level)
+    readonly property list<var> warnLevels: [...GlobalConfig.general.battery.warnLevels.values].sort((a, b) => b.level - a.level)
 
     Connections {
         function onOnBatteryChanged(): void {

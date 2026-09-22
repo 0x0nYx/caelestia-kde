@@ -15,7 +15,7 @@ PageBase {
 
     readonly property int editIndex: nState.editingVpnIndex
     readonly property bool editing: editIndex >= 0
-    readonly property VPN.Provider existing: editing ? (VPN.providers[editIndex] ?? null) : null
+    readonly property var existing: editing ? (VPN.providers[editIndex] ?? null) : null
 
     function splitCmd(arr: var): string {
         return arr?.join(" ") ?? "";
@@ -47,7 +47,7 @@ PageBase {
         };
 
         if (editing) {
-            const needsReload = existing.providerId === VPN.selectedProvider && VPN.connected && (existing.name !== name || existing.iface !== data.interface || !arrEq(existing.connectCmd, data.connectCmd) || !arrEq(existing.disconnectCmd, data.disconnectCmd));
+            const needsReload = existing.id === VPN.selectedProvider && VPN.connected && (existing.name !== name || existing.interface !== data.interface || !arrEq(existing.connectCmd, data.connectCmd) || !arrEq(existing.disconnectCmd, data.disconnectCmd));
             if (needsReload)
                 VPN.disconnect();
             VPN.updateProvider(editIndex, data);
@@ -80,7 +80,7 @@ PageBase {
         if (existing) {
             nameField.text = existing.name;
             displayField.text = existing.displayName;
-            interfaceField.text = existing.iface;
+            interfaceField.text = existing.interface;
             connectField.text = splitCmd(existing.connectCmd);
             disconnectField.text = splitCmd(existing.disconnectCmd);
         }
@@ -184,9 +184,9 @@ PageBase {
                 icon: "delete_forever"
                 text: qsTr("Delete")
                 onClicked: {
-                    if (root.existing.providerId === VPN.selectedProvider && VPN.connected)
+                    if (root.existing.id === VPN.selectedProvider && VPN.connected)
                         VPN.disconnect();
-                    VPN.deleteProvider(root.existing.index);
+                    VPN.deleteProvider(root.editIndex);
                     root.nState.closeSubPage();
                 }
             }
