@@ -12,21 +12,22 @@ PageBase {
     property bool idleSuspendEnabledState: false
     property int idleSuspendMinutesState: 10
 
-    function cloneEntry(entry: var): var {
-        const out = {};
-        for (const k in entry)
-            out[k] = entry[k];
-        return out;
+    // The suspend entry of the idle timeouts, or null when the user has not added one.
+    // The list is a config node now, so entries are read and written in place instead of
+    // being copied out and written back as a whole.
+    function suspendTimeout(): var {
+        return GlobalConfig.general.idle.timeouts.values.find(t => IdleActions.isSuspendIdleAction(t.idleAction)) ?? null;
     }
 
-    function clonedIdleTimeouts(): var {
-        const source = GlobalConfig.general.idle.timeouts ?? [];
-        const copy = [];
-
-        for (const entry of source)
-            copy.push(root.cloneEntry(entry));
-
-        return copy;
+    // The props for a suspend entry, used when the user turns the suspend timeout on
+    // without one in the config.
+    function suspendProps(timeoutSeconds: int): var {
+        return {
+            "timeout": timeoutSeconds,
+            "idleAction": ["suspendThenHibernate"],
+            "enabled": true,
+            "respectInhibitors": true
+        };
     }
 
     function refreshIdleSuspendState(): void {
@@ -38,54 +39,24 @@ PageBase {
     function setSuspendTimeoutMinutes(minutes: int): void {
         const sanitizedMinutes = Math.max(1, Math.min(180, Math.round(minutes)));
         const timeoutSeconds = sanitizedMinutes * 60;
-        const updated = root.clonedIdleTimeouts();
-        let found = false;
+        const suspend = root.suspendTimeout();
 
-        for (let i = 0; i < updated.length; i++) {
-            if (!IdleActions.isSuspendIdleAction(updated[i].idleAction))
-                continue;
+        if (suspend)
+            suspend.timeout = timeoutSeconds;
+        else
+            GlobalConfig.general.idle.timeouts.insert(root.suspendProps(timeoutSeconds));
 
-            updated[i].timeout = timeoutSeconds;
-            if (updated[i].enabled === undefined)
-                updated[i].enabled = true;
-            found = true;
-        }
-
-        if (!found) {
-            updated.push({
-                timeout: timeoutSeconds,
-                idleAction: ["suspendThenHibernate"],
-                enabled: true,
-                respectInhibitors: true
-            });
-        }
-
-        GlobalConfig.general.idle.timeouts = updated;
         root.refreshIdleSuspendState();
     }
 
     function setSuspendTimeoutEnabled(enabled: bool): void {
-        const updated = root.clonedIdleTimeouts();
-        let found = false;
+        const suspend = root.suspendTimeout();
 
-        for (let i = 0; i < updated.length; i++) {
-            if (!IdleActions.isSuspendIdleAction(updated[i].idleAction))
-                continue;
+        if (suspend)
+            suspend.enabled = enabled;
+        else if (enabled)
+            GlobalConfig.general.idle.timeouts.insert(root.suspendProps(root.idleSuspendMinutesState * 60));
 
-            updated[i].enabled = enabled;
-            found = true;
-        }
-
-        if (!found && enabled) {
-            updated.push({
-                timeout: 600,
-                idleAction: ["suspendThenHibernate"],
-                enabled: true,
-                respectInhibitors: true
-            });
-        }
-
-        GlobalConfig.general.idle.timeouts = updated;
         root.refreshIdleSuspendState();
     }
 
