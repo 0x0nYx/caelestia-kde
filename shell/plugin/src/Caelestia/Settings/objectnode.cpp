@@ -58,14 +58,13 @@ QJsonValue ObjectNode::toJson(bool sparse) const {
         if (sparse && !isOverride(desc.key))
             continue;
 
-        const auto codec = ValueCodec::codecFor(desc.type);
-        if (!codec) { // This should not happen
+        if (!desc.codec) { // This should not happen
             qCCritical(lcSettings, "No codec found for type %s, not serialising %s", desc.type.name(),
                 qUtf8Printable(pathFor(desc.key)));
             continue;
         }
 
-        json.insert(desc.key, codec->encode(val));
+        json.insert(desc.key, desc.codec->encode(val));
     }
 
     if (m_quarantine)
@@ -147,14 +146,13 @@ QSet<QString> ObjectNode::loadFromJson(const QJsonObject& json, QList<Diagnostic
             SKIP;
         }
 
-        const auto codec = ValueCodec::codecFor(desc->type);
-        if (!codec) { // This should not happen
+        if (!desc->codec) { // This should not happen
             qCCritical(lcSettings, "No codec found for type %s, not loading %s", desc->type.name(),
                 qUtf8Printable(pathFor(key)));
             SKIP;
         }
 
-        auto val = codec->decode(v);
+        auto val = desc->codec->decode(v);
         if (val.error) {
             const auto path = pathFor(key);
             qCWarning(
