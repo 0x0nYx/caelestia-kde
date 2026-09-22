@@ -119,13 +119,22 @@ class BarGreeter : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, slideshowRandom, false)
 };
 
+class BarTrayIconSub : public settings::ObjectNode {
+    CONFIG_NODE(BarTrayIconSub, settings::ObjectNode)
+
+    CONFIG_PROPERTY(QString, id, {})
+    CONFIG_PROPERTY(QString, icon, {})
+    CONFIG_PROPERTY(QString, image, {})
+};
+CONFIG_LIST_TYPE(BarTrayIconSub, BarTrayIconSubList)
+
 class BarTray : public settings::ObjectNode {
     CONFIG_NODE(BarTray, settings::ObjectNode)
 
     CONFIG_PROPERTY(bool, background, false)
     CONFIG_PROPERTY(bool, recolour, false)
     CONFIG_PROPERTY(bool, compact, true)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, iconSubs, QVariantList())
+    CONFIG_GLOBAL_LIST(BarTrayIconSubList, iconSubs, {})
     CONFIG_GLOBAL_PROPERTY(QStringList, hiddenIcons, QStringList())
 };
 

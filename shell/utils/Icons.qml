@@ -116,9 +116,9 @@ Singleton {
     }
 
     function getAppCategoryIcon(name: string, fallback: string): string {
-        for (const iconRule of GlobalConfig.bar.workspaces.windowIcons.values)
-            if (matchIconRule(name, iconRule))
-                return iconRule.icon;
+        const match = matchIconRuleList(name, GlobalConfig.bar.workspaces.windowIcons);
+        if (match)
+            return match;
 
         const categories = DesktopEntries.heuristicLookup(name)?.categories;
 
@@ -126,6 +126,7 @@ Singleton {
             for (const [key, value] of Object.entries(categoryIcons))
                 if (categories.includes(key))
                     return value;
+
         return fallback;
     }
 
@@ -259,7 +260,7 @@ Singleton {
     }
 
     function getTrayIcon(id: string, icon: string): string {
-        for (const sub of GlobalConfig.bar.tray.iconSubs)
+        for (const sub of GlobalConfig.bar.tray.iconSubs.values)
             if (sub.id === id)
                 return sub.image ? Qt.resolvedUrl(sub.image) : Quickshell.iconPath(sub.icon);
 

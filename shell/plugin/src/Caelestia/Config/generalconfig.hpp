@@ -26,6 +26,8 @@ class GeneralIdle : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(bool, lockBeforeSleep, true)
     CONFIG_GLOBAL_PROPERTY(bool, inhibitWhenAudio, true)
     CONFIG_GLOBAL_PROPERTY(bool, inhibitWhenCharging, false)
+    // Left a plain list on purpose: the power page replaces the whole list to edit the
+    // suspend timeout, and a typed list cannot be assigned or appended to.
     CONFIG_GLOBAL_PROPERTY(QVariantList, timeouts,
         DEFAULT_ARG({
             vmap({
@@ -45,10 +47,21 @@ class GeneralIdle : public settings::ObjectNode {
         }))
 };
 
+class GeneralBatteryWarnLevel : public settings::ObjectNode {
+    CONFIG_NODE(GeneralBatteryWarnLevel, settings::ObjectNode)
+
+    CONFIG_PROPERTY(int, level, -1)
+    CONFIG_PROPERTY(QString, title, {})
+    CONFIG_PROPERTY(QString, message, {})
+    CONFIG_PROPERTY(QString, icon, {})
+    CONFIG_PROPERTY(bool, critical, false)
+};
+CONFIG_LIST_TYPE(GeneralBatteryWarnLevel, GeneralBatteryWarnList)
+
 class GeneralBattery : public settings::ObjectNode {
     CONFIG_NODE(GeneralBattery, settings::ObjectNode)
 
-    CONFIG_GLOBAL_PROPERTY(QVariantList, warnLevels,
+    CONFIG_GLOBAL_LIST(GeneralBatteryWarnList, warnLevels,
         DEFAULT_ARG({
             vmap({
                 { u"level"_s, 20 },

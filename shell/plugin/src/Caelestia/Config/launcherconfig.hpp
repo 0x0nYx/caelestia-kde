@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
@@ -22,8 +22,19 @@ class LauncherUseFuzzy : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(bool, wallpapers, false)
     CONFIG_GLOBAL_PROPERTY(bool, emoji, false)
     CONFIG_GLOBAL_PROPERTY(bool, clipboard, false)
-
 };
+
+class LauncherAction : public settings::ObjectNode {
+    CONFIG_NODE(LauncherAction, settings::ObjectNode)
+
+    CONFIG_PROPERTY(bool, enabled, true)
+    CONFIG_PROPERTY(QString, name, {})
+    CONFIG_PROPERTY(QString, icon, {})
+    CONFIG_PROPERTY(QString, description, {})
+    CONFIG_PROPERTY(QStringList, command, {})
+    CONFIG_PROPERTY(bool, dangerous, false)
+};
+CONFIG_LIST_TYPE(LauncherAction, LauncherActionList)
 
 class LauncherConfig : public settings::ObjectNode {
     CONFIG_NODE(LauncherConfig, settings::ObjectNode)
@@ -48,7 +59,7 @@ class LauncherConfig : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(QStringList, favouriteEmojis, QStringList())
     CONFIG_GLOBAL_PROPERTY(QStringList, favouriteClips, QStringList())
     CONFIG_SUBOBJECT(LauncherUseFuzzy, useFuzzy)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, actions,
+    CONFIG_GLOBAL_LIST(LauncherActionList, actions,
         DEFAULT_ARG({
             vmap({
                 { u"name"_s, u"Calculator"_s },
@@ -169,7 +180,6 @@ class LauncherConfig : public settings::ObjectNode {
                 { u"command"_s, QStringList{ u"autocomplete"_s, u"animations"_s } },
             }),
         }))
-
 };
 
 } // namespace caelestia::config

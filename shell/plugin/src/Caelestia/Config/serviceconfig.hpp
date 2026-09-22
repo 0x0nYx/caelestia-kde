@@ -14,6 +14,14 @@ namespace caelestia::config {
 using Qt::StringLiterals::operator""_s;
 using settings::vmap;
 
+class PlayerAlias : public settings::ObjectNode {
+    CONFIG_NODE(PlayerAlias, settings::ObjectNode)
+
+    CONFIG_PROPERTY(QString, from, {})
+    CONFIG_PROPERTY(QString, to, {})
+};
+CONFIG_LIST_TYPE(PlayerAlias, PlayerAliasList)
+
 class ServiceConfig : public settings::ObjectNode {
     CONFIG_NODE(ServiceConfig, settings::ObjectNode)
 
@@ -77,7 +85,7 @@ private:
     CONFIG_GLOBAL_PROPERTY(QString, autoSchemeLightTime, u"07:00"_s)
     CONFIG_GLOBAL_PROPERTY(QString, autoSchemeDarkTime, u"19:00"_s)
     CONFIG_GLOBAL_PROPERTY(QString, defaultPlayer, u"Spotify"_s)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, playerAliases,
+    CONFIG_GLOBAL_LIST(PlayerAliasList, playerAliases,
         { vmap({ { u"from"_s, u"com.github.th_ch.youtube_music"_s }, { u"to"_s, u"YT Music"_s } }) })
     CONFIG_GLOBAL_PROPERTY(QString, lyricsBackend, u"Auto"_s)
     CONFIG_GLOBAL_PROPERTY(QStringList, bluetoothAutoReconnectDevices, QStringList())
