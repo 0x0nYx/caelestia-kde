@@ -40,7 +40,35 @@ class ListEntry : public settings::ObjectNode {
 
 CONFIG_LIST_TYPE(ListEntry, EntryList)
 
+// An icon rule matched against a name: by exact name, or by a regex which takes priority.
+// Typed rather than a plain list so a rule the shell cannot read is reported at load
+// instead of silently never matching.
+class IconRule : public settings::ObjectNode {
+    CONFIG_NODE(IconRule, settings::ObjectNode)
+
+    CONFIG_PROPERTY(QString, name, QString())
+    CONFIG_PROPERTY(QString, regex, QString())
+    CONFIG_PROPERTY(QString, flags, QString())
+    CONFIG_PROPERTY(QString, icon, QString())
+};
+CONFIG_LIST_TYPE(IconRule, IconRuleList)
+
 } // namespace caelestia::config
 
 // Shorthand for declaring an ID'd entry (bar entries/status icons, quick toggles, etc)
 #define LIST_ENTRY(id, enabled) caelestia::settings::vmap({ { u"id"_s, u## #id##_s }, { u"enabled"_s, enabled } })
+
+// Shorthand for declaring an icon rule matched by name
+#define ICON_RULE_EXACT(name, icon)                                                                                    \
+    caelestia::settings::vmap({                                                                                        \
+        { u"name"_s, QStringLiteral(name) },                                                                           \
+        { u"icon"_s, QStringLiteral(icon) },                                                                           \
+    })
+
+// Shorthand for declaring an icon rule matched by regex
+#define ICON_RULE_REGEX(regex, flags, icon)                                                                            \
+    caelestia::settings::vmap({                                                                                        \
+        { u"regex"_s, QStringLiteral(regex) },                                                                         \
+        { u"flags"_s, QStringLiteral(flags) },                                                                         \
+        { u"icon"_s, QStringLiteral(icon) },                                                                           \
+    })

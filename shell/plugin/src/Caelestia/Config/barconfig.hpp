@@ -57,7 +57,7 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, occupiedLabel, u" 󰮯"_s)
     CONFIG_PROPERTY(QString, activeLabel, u"󰮯 "_s)
     CONFIG_PROPERTY(QString, capitalisation, u"preserve"_s)
-    CONFIG_GLOBAL_PROPERTY(QVariantList, specialWorkspaceIcons, QVariantList())
+    CONFIG_GLOBAL_LIST(IconRuleList, specialWorkspaceIcons, {})
     // Windows the bar's workspace pills leave out of their icon lists. Tags are
     // Hyprland's, and the default below is upstream's; KWin has none, so on KDE the
     // same entries are matched against the window's app id instead - which is what
@@ -68,12 +68,11 @@ class BarWorkspaces : public settings::ObjectNode {
             u"hide_in_bar"_s,
             u"xwl_popup"_s,
         }))
-    CONFIG_GLOBAL_PROPERTY(QVariantList, windowIcons,
-        { vmap({
-            { u"regex"_s, u"steam(_app_(default|[0-9]+))?"_s },
-            { u"icon"_s, u"sports_esports"_s },
-        }) })
-    CONFIG_GLOBAL_PROPERTY(QVariantList, wsIcons, QVariantList())
+    CONFIG_GLOBAL_LIST(IconRuleList, windowIcons,
+        DEFAULT_ARG({
+            ICON_RULE_REGEX("steam(_app_(default|[0-9]+))?", "", "sports_esports"),
+        }))
+    CONFIG_GLOBAL_LIST(IconRuleList, wsIcons, {})
 };
 
 class BarGreeter : public settings::ObjectNode {
