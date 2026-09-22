@@ -462,6 +462,19 @@ Item {
                         }
                     }
 
+                    StyledRect {
+                        anchors.fill: parent
+                        radius: Tokens.rounding.medium
+                        color: Colours.palette.m3error
+                        opacity: (delegateItem.badge?.urgent ?? false) ? 0.35 : 0
+
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultEffects
+                            }
+                        }
+                    }
+
                     StateLayer {
                         id: stateLayer
 
@@ -614,6 +627,13 @@ Item {
                         return modelData.toplevels.length > 0;
                     }
 
+                    readonly property var badge: {
+                        const dummy = LauncherEntry.revision;
+                        if (!modelData || !(Config.bar.dock.showBadges ?? true))
+                            return null;
+                        return LauncherEntry.forApp(modelData.id);
+                    }
+
 
 
                     IconImage {
@@ -647,6 +667,63 @@ Item {
                         sourceComponent: CircularIndicator {
                             running: true
                             strokeWidth: 2
+                        }
+                    }
+
+                    StyledRect {
+                        id: countBadge
+
+                        readonly property int badgeHeight: Math.max(12, Math.round((icon.implicitSize || 0) * 0.55))
+                        readonly property int dotSize: Math.max(6, Math.round(badgeHeight * 0.75))
+                        readonly property bool asDot: (delegateItem.badge?.count ?? 0) <= 0
+
+                        visible: delegateItem.badge?.countVisible ?? false
+                        color: Colours.palette.m3error
+                        radius: Tokens.rounding.full
+                        implicitWidth: asDot ? dotSize : Math.max(badgeHeight, badgeLabel.implicitWidth + Tokens.padding.extraSmall)
+                        implicitHeight: asDot ? dotSize : badgeHeight
+                        width: implicitWidth
+                        height: implicitHeight
+                        anchors.right: icon.right
+                        anchors.top: icon.top
+                        anchors.rightMargin: -Math.round(dotSize * 0.25)
+                        anchors.topMargin: -Math.round(dotSize * 0.25)
+
+                        Text {
+                            id: badgeLabel
+
+                            anchors.centerIn: parent
+                            visible: !countBadge.asDot
+                            text: {
+                                const count = delegateItem.badge?.count ?? 0;
+                                if (count > 9999)
+                                    return "9k+";
+                                if (count > 999)
+                                    return `${Math.floor(count / 1000)}k`;
+                                return `${count}`;
+                            }
+                            color: Colours.palette.m3onError
+                            font: Tokens.font.label.builders.small.size(Math.max(6, Math.round(countBadge.badgeHeight * 0.62))).weight(Font.DemiBold).build()
+                        }
+                    }
+
+                    StyledRect {
+                        id: progressBar
+
+                        visible: delegateItem.badge?.progressVisible ?? false
+                        anchors.top: icon.bottom
+                        anchors.topMargin: 1
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: icon.implicitSize
+                        height: 3
+                        radius: Tokens.rounding.full
+                        color: Qt.alpha(Colours.palette.m3onSurface, 0.15)
+
+                        StyledRect {
+                            width: Math.round(parent.width * (delegateItem.badge?.progress ?? 0))
+                            height: parent.height
+                            radius: parent.radius
+                            color: Colours.palette.m3primary
                         }
                     }
 

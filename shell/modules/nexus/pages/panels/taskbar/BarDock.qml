@@ -74,6 +74,14 @@ PageBase {
 
         ToggleRow {
             Layout.fillWidth: true
+            text: qsTr("Show app badges")
+            subtext: qsTr("Show the count, progress and urgency an app publishes for its dock icon")
+            checked: Config.bar.dock.showBadges
+            onToggled: GlobalConfig.bar.dock.showBadges = checked
+        }
+
+        ToggleRow {
+            Layout.fillWidth: true
             text: qsTr("Filter by current desktop")
             subtext: qsTr("Only show applications and windows belonging to the active virtual desktop")
             checked: Config.bar.dock.currentDesktopOnly
