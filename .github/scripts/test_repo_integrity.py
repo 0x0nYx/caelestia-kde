@@ -865,6 +865,53 @@ class SubmoduleTests(unittest.TestCase):
                 f"Submodule path '{sub_path}' does not exist - run git submodule update --init"
             )
 
+    @unittest.skipUnless(shutil.which("git"), "git is required for submodule checks")
+    def test_gitlinks_and_gitmodules_agree(self) -> None:
+        """Every gitlink in the tree is declared in .gitmodules, and the other way round.
+
+        An undeclared gitlink cannot be resolved: `git submodule update` stops with
+        "No url found for submodule path ...", which is how v2.4.3's source tarball
+        was never built. A declared path with no gitlink is the same drift seen from
+        the other side. The check reads the index, so it holds in a checkout that has
+        no submodules initialized.
+        """
+        result = subprocess.run(
+            ["git", "ls-files", "--stage"],
+            capture_output=True, text=True, cwd=ROOT,
+        )
+        if result.returncode != 0:
+            self.skipTest("git ls-files failed - not a git checkout")
+
+        gitlinks = {
+            path.strip()
+            for meta, _, path in (line.partition("\t") for line in result.stdout.splitlines())
+            if meta.startswith("160000 ")
+        }
+
+        gitmodules = ROOT / ".gitmodules"
+        declared = set()
+        if gitmodules.is_file():
+            declared = {
+                path.strip()
+                for path in re.findall(
+                    r"^\s*path\s*=\s*(.+)$", gitmodules.read_text(encoding="utf-8"), re.MULTILINE
+                )
+            }
+
+        undeclared = sorted(gitlinks - declared)
+        self.assertEqual(
+            undeclared, [],
+            "gitlink(s) with no .gitmodules entry: "
+            f"{', '.join(undeclared)} - remove them (git rm --cached <path>) or declare them",
+        )
+
+        unbacked = sorted(declared - gitlinks)
+        self.assertEqual(
+            unbacked, [],
+            "path(s) declared in .gitmodules without a gitlink in the tree: "
+            f"{', '.join(unbacked)}",
+        )
+
 
 class WorkflowYamlTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("python3"), "python3 required for YAML parse")

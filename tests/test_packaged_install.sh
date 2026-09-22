@@ -187,11 +187,22 @@ test_the_release_tarball_is_the_thing_the_package_sources() {
 
     assert_contains "$workflow" 'tar -C dist -czf "$ARTIFACT" "caelestia-kde-$PKGVER"' "the archive should carry the directory makepkg extracts to"
 
-    assert_contains "$workflow" 'submodules: recursive' "the job should check the submodules out to inline them"
+    # The checkout must not fan out over every gitlink: one that has no .gitmodules
+    # entry stopped the whole job at v2.4.3 and the release went out without its
+    # source, so the job takes the submodule paths from .gitmodules itself and
+    # refuses to tar a tree whose submodules did not land.
+    assert_not_contains "$workflow" 'submodules: recursive' "the checkout must not recurse over every gitlink"
+    assert_contains "$workflow" 'git config -f .gitmodules --get-regexp' "the job should read the submodule paths from .gitmodules"
+    assert_contains "$workflow" 'git submodule update --init --recursive --depth 1 --force "$path"' "and inline each declared submodule"
+    assert_contains "$workflow" 'is declared in .gitmodules but is not a submodule' "while an entry with no gitlink is reported, not fatal"
+    assert_contains "$workflow" 'is empty; the PKGBUILD refuses a tarball without it' "failing instead of shipping a tarball prepare() rejects"
+
+    assert_contains "$workflow" "--exclude '/dist'" "the staging directory must stay out of itself"
     assert_contains "$workflow" "--exclude 'shell/assets/fonts'" "and leave the fonts out"
     assert_contains "$workflow" 'git rev-parse HEAD > "dist/$ROOT/REVISION"' "and write the revision"
 
     assert_contains "$workflow" 'sha256sum "$ARTIFACT" | tee "$ARTIFACT.sha256"' "the job should publish the hash the PKGBUILD needs"
+    assert_contains "$workflow" '>> "$GITHUB_STEP_SUMMARY"' "and put it where the release steps say to read it"
 }
 
 test_the_revision_survives_a_tree_without_git() {
