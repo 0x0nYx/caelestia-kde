@@ -617,8 +617,14 @@ class ShellSurfaceTests(unittest.TestCase):
             "the binding has to read the revision counter, or a badge never updates",
         )
 
-        for key in ("countVisible", "count", "progressVisible", "progress", "urgent"):
-            self.assertIn(key, dock, f"a tile must be able to render {key}")
+        for read in (
+            "badge?.count ?? 0",
+            "badge?.countVisible ?? false",
+            "badge?.progress ?? 0",
+            "badge?.progressVisible ?? false",
+            "badge?.urgent ?? false",
+        ):
+            self.assertIn(read, dock, f"a tile must read {read} from the entry")
 
         for wire in ("count-visible", "progress-visible"):
             self.assertNotIn(
