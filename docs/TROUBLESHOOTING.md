@@ -166,9 +166,9 @@ quickshell -d -n -p ~/.config/quickshell/caelestia/shell.qml
 
 ### 3.2 Environment Variables Not Set On Login
 
-They live in one file, `~/.config/environment.d/caelestia.conf`, which systemd
-imports into every session process and into the user manager the shell's unit runs
-under:
+They live in two locations:
+1. `~/.config/environment.d/caelestia.conf`: read by systemd for every session process and for the user manager the shell's unit runs under.
+2. `~/.config/plasma-workspace/env/caelestia.sh`: sourced by KDE Plasma on session startup for KWin, `kscreenlocker_greet`, and graphical applications.
 
 ```bash
 QML2_IMPORT_PATH=$HOME/.local/lib/qt6/qml:$HOME/.config/quickshell/caelestia
@@ -178,12 +178,7 @@ CAELESTIA_SHELL_CONFIG=$HOME/.config/quickshell/caelestia/shell.qml
 ```
 
 **If they are missing:** re-run `scripts/08-build-shell.sh`, then log out and back
-in - systemd reads the directory at login, so a running session keeps the old
-values. `systemctl --user show-environment` lists what the user manager has.
-
-**If a session is not managed by systemd**, the file does nothing and the values
-have to be exported by hand; the shell's own autostart script sets them for the
-shell either way, so only tools started outside it are affected.
+in. `systemctl --user show-environment` lists what the systemd user manager has.
 
 ### 3.3 Window Thumbnails / Screencast Not Working
 
@@ -493,7 +488,7 @@ configured in different places, and the installer picks a branch at install time
 
 | | Plasma Login | SDDM |
 |---|---|---|
-| How to tell | `command -v plasmalogin`, or `/etc/plasmalogin.conf` exists | `command -v sddm` |
+| How to tell | `plasmalogin.service` is active/enabled | `sddm.service` is active/enabled |
 | Theme | none: its greeter is a Plasma shell, and it loads no SDDM theme | `/usr/share/sddm/themes/caelestia` |
 | Wallpaper | `[Greeter][Wallpaper][org.kde.image][General] Image` in `/etc/plasmalogin.conf`, pointing at a copy under the `plasmalogin` user's `wallpapers/` | `assets/background` inside the theme |
 | Colors | the `plasmalogin` user's own `~/.config/kdeglobals` plus the scheme files in its `~/.local/share/color-schemes/` | `theme.conf` inside the theme |
