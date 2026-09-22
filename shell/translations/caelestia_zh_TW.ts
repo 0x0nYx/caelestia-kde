@@ -92,7 +92,7 @@
   <context>
     <name>Actions</name>
     <message>
-      <location filename="../modules/launcher/services/Actions.qml" line="+31"/>
+      <location filename="../modules/launcher/services/Actions.qml" line="+34"/>
       <source>Unnamed</source>
       <translation>未命名</translation>
     </message>
@@ -1570,23 +1570,23 @@
   <context>
     <name>AudioPopout</name>
     <message>
-      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+36"/>
+      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+39"/>
       <source>Output device</source>
       <translation>輸出裝置</translation>
     </message>
     <message>
-      <location line="+15"/>
-      <location line="+19"/>
+      <location line="+16"/>
+      <location line="+20"/>
       <source>Unknown</source>
       <translation>未知</translation>
     </message>
     <message>
-      <location line="-13"/>
+      <location line="-14"/>
       <source>Input device</source>
       <translation>輸入裝置</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location line="+20"/>
       <source>Volume (%1)</source>
       <translation>音量（%1）</translation>
     </message>
@@ -2557,13 +2557,13 @@
     </message>
     <message>
       <location line="+12"/>
-      <source>Per-monitor workspaces</source>
-      <translation>每顯示器工作區</translation>
+      <source>Per monitor</source>
+      <translation type="unfinished">Per monitor</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>Show each monitor&apos;s workspaces independently</source>
-      <translation>獨立顯示每個顯示器的工作區</translation>
+      <source>Hide workspaces not on the current monitor</source>
+      <translation type="unfinished">Hide workspaces not on the current monitor</translation>
     </message>
   </context>
   <context>
@@ -3862,7 +3862,7 @@
   <context>
     <name>DesktopLyrics</name>
     <message>
-      <location filename="../modules/background/DesktopLyrics.qml" line="+287"/>
+      <location filename="../modules/background/DesktopLyrics.qml" line="+286"/>
       <source>Loading lyrics...</source>
       <translation>載入歌詞中...</translation>
     </message>
@@ -4983,6 +4983,12 @@
     <name>LanguageAndRegion</name>
     <message>
       <location filename="../modules/nexus/pages/LanguageAndRegion.qml" line="+45"/>
+      <location line="+44"/>
+      <source>Auto</source>
+      <translation type="unfinished">Auto</translation>
+    </message>
+    <message>
+      <location line="-40"/>
       <source>°C</source>
       <translation type="unfinished">°C</translation>
     </message>
@@ -5008,22 +5014,22 @@
     </message>
     <message>
       <location line="+9"/>
-      <location line="+56"/>
+      <location line="+62"/>
       <source>System language</source>
       <translation>系統語言</translation>
     </message>
     <message>
-      <location line="-45"/>
-      <source>24-hour</source>
-      <translation>24 小時制</translation>
-    </message>
-    <message>
-      <location line="+3"/>
+      <location line="-47"/>
       <source>12-hour</source>
       <translation>12 小時制</translation>
     </message>
     <message>
       <location line="+4"/>
+      <source>24-hour</source>
+      <translation>24 小時制</translation>
+    </message>
+    <message>
+      <location line="+5"/>
       <source>Language &amp; region</source>
       <translation>語言與地區</translation>
     </message>
@@ -5691,7 +5697,7 @@
   <context>
     <name>LyricList</name>
     <message>
-      <location filename="../modules/dashboard/media/LyricList.qml" line="+213"/>
+      <location filename="../modules/dashboard/media/LyricList.qml" line="+203"/>
       <source>Loading lyrics...</source>
       <translation>載入歌詞中...</translation>
     </message>
@@ -6160,12 +6166,12 @@
     </message>
     <message>
       <location line="+80"/>
-      <location line="+145"/>
+      <location line="+146"/>
       <source>Connected</source>
       <translation>已連線</translation>
     </message>
     <message>
-      <location line="-145"/>
+      <location line="-146"/>
       <source>Available</source>
       <translation>可用</translation>
     </message>
@@ -6185,7 +6191,7 @@
       <translation>未配置 VPN 服務商</translation>
     </message>
     <message>
-      <location line="+68"/>
+      <location line="+69"/>
       <source>Tap to select</source>
       <translation>單擊選擇</translation>
     </message>
@@ -8027,7 +8033,7 @@
   <context>
     <name>PowerPage</name>
     <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+94"/>
+      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
       <source>Power</source>
       <translation>電源</translation>
     </message>
@@ -9904,7 +9910,7 @@
   <context>
     <name>TrayMenu</name>
     <message>
-      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+331"/>
+      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+335"/>
       <source>Back</source>
       <translation>返回</translation>
     </message>
@@ -9912,7 +9918,7 @@
   <context>
     <name>Units</name>
     <message>
-      <location filename="../services/Units.qml" line="+21"/>
+      <location filename="../services/Units.qml" line="+26"/>
       <source>%1°</source>
       <comment>temperature</comment>
       <translation type="unfinished">%1°</translation>
@@ -10661,7 +10667,7 @@
   <context>
     <name>VPN</name>
     <message>
-      <location filename="../services/VPN.qml" line="+273"/>
+      <location filename="../services/VPN.qml" line="+209"/>
       <source>VPN connection failed</source>
       <translation>VPN 連線失敗</translation>
     </message>
@@ -10707,7 +10713,7 @@
       <translation>VPN 錯誤</translation>
     </message>
     <message>
-      <location line="+225"/>
+      <location line="+196"/>
       <location line="+69"/>
       <source>Could not start %1. Is it installed?</source>
       <translation>無法啟動 %1。是否已安裝？</translation>
