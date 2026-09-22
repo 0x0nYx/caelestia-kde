@@ -42,6 +42,12 @@ class BarWorkspaces : public settings::ObjectNode {
     CONFIG_PROPERTY(int, maxWindowIcons, 5)
     CONFIG_PROPERTY(bool, activeTrail, false)
     CONFIG_PROPERTY(bool, monitorCenter, false)
+    // Hide the workspaces that are not on this bar's monitor. Only means anything while
+    // showUnoccupied is off: with it on, every workspace is shown regardless.
+    CONFIG_PROPERTY(bool, perMonitor, true)
+    // Superseded by perMonitor above, which is per bar rather than one setting for all of
+    // them. Kept for one release so an existing shell.json can be migrated - see
+    // services/ConfigMigrations.qml.
     CONFIG_GLOBAL_PROPERTY(bool, perMonitorWorkspaces, true)
     // Was a boolean called `useIcon`; upstream's name and shape are kept so a
     // shell.json written for either shell means the same thing here.

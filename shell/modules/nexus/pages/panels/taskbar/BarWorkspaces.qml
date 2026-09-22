@@ -136,10 +136,10 @@ while (count > v) {
 
         ToggleRow {
             last: true
-            text: qsTr("Per-monitor workspaces")
-            subtext: qsTr("Show each monitor's workspaces independently")
-            checked: GlobalConfig.bar.workspaces.perMonitorWorkspaces
-            onToggled: GlobalConfig.bar.workspaces.perMonitorWorkspaces = checked
+            text: qsTr("Per monitor")
+            subtext: qsTr("Hide workspaces not on the current monitor")
+            checked: Config.bar.workspaces.perMonitor
+            onToggled: GlobalConfig.bar.workspaces.perMonitor = checked
         }
     }
 }
