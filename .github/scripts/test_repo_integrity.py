@@ -601,6 +601,73 @@ class ShellSurfaceTests(unittest.TestCase):
             "the CLI needs the wallpaper before it can derive dynamic colors",
         )
 
+    def test_dock_badges_are_read_through_the_service(self) -> None:
+        dock = (
+            ROOT / "shell" / "modules" / "bar" / "components" / "Dock.qml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "LauncherEntry.forApp(modelData.id)",
+            dock,
+            "a tile has to ask the service for the badge published for its app",
+        )
+        self.assertIn(
+            "LauncherEntry.revision",
+            dock,
+            "the binding has to read the revision counter, or a badge never updates",
+        )
+
+        for key in ("countVisible", "count", "progressVisible", "progress", "urgent"):
+            self.assertIn(key, dock, f"a tile must be able to render {key}")
+
+        for wire in ("count-visible", "progress-visible"):
+            self.assertNotIn(
+                wire,
+                dock,
+                "the wire property names belong to the service, which renames them once; "
+                "a second reader of the raw protocol is a second thing to get wrong",
+            )
+
+    def test_the_launcher_entry_service_owns_the_unity_name(self) -> None:
+        service = (
+            ROOT / "shell" / "plugin" / "src" / "Caelestia" / "Services" / "launcherentry.cpp"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "com.canonical.Unity.LauncherEntry",
+            service,
+            "the service has to watch the interface apps emit on",
+        )
+        self.assertIn(
+            "registerService",
+            service,
+            "the service has to own com.canonical.Unity, which is what apps watch",
+        )
+        self.assertIn(
+            'bus.connect(QString(), QString(),',
+            service,
+            "apps emit from a connection and a path of their own, so both have to be wildcards",
+        )
+        self.assertIn(
+            'QStringLiteral("://")',
+            service,
+            "a published app id arrives as an application:// URI and has to be reduced to an id",
+        )
+        self.assertIn(
+            'QStringLiteral(".desktop")',
+            service,
+            "the desktop suffix is optional on the wire, so both forms have to land on one key",
+        )
+
+        module = (
+            ROOT / "shell" / "plugin" / "src" / "Caelestia" / "Services" / "CMakeLists.txt"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "launcherentry.cpp",
+            module,
+            "a service left out of the module's sources is never compiled or registered",
+        )
+
 
 class WhatsNewEntryTests(unittest.TestCase):
     """The release notes are data, and nothing validates them at runtime.
