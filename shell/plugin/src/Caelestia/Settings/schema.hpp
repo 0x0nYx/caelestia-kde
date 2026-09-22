@@ -58,6 +58,9 @@ public:
 
     [[nodiscard]] QString typeString() const;
     [[nodiscard]] bool accepts(const QMetaType& valueType) const;
+    // The allowed type a value of this type can be converted to, or an invalid type when
+    // none fits. QML hands a JS array over as a QVariantList whatever an option asks for.
+    [[nodiscard]] QMetaType coercionTarget(const QMetaType& valueType) const;
 };
 
 #undef ANNOTATION

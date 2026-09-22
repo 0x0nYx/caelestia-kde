@@ -69,6 +69,14 @@ bool Descriptor::accepts(const QMetaType& valueType) const {
     return annotation.allowedTypes.contains(valueType);
 }
 
+QMetaType Descriptor::coercionTarget(const QMetaType& valueType) const {
+    for (const auto& allowed : annotation.allowedTypes)
+        if (allowed != valueType && QMetaType::canConvert(valueType, allowed))
+            return allowed;
+
+    return {};
+}
+
 Schema Schema::build(const QMetaObject* meta, int baseOffset, bool includeReadOnly) {
     Schema schema;
     schema.m_descriptors.reserve(meta->propertyCount() - baseOffset);

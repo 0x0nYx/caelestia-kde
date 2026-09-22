@@ -93,11 +93,21 @@ bool Node::setValue(const QString& key, const QVariant& value) {
         return false;
     }
 
-    // Type mismatch, conversion should happen before this function is called
-    if (rejectInvalidWrite(key, value))
-        return false;
+    // Type mismatch, conversion should happen before this function is called.
+    // An option that accepts several types is also written from QML, which hands a
+    // list over as a QVariantList whatever the option asks for, so convert to an
+    // allowed type rather than dropping a write the user meant.
+    auto coerced = value;
+    if (!desc->accepts(coerced.metaType())) {
+        const auto target = desc->coercionTarget(coerced.metaType());
+        if (!target.isValid() || !coerced.convert(target)) {
+            qCWarning(lcSettings, "Type mismatch for %s, expected %s got %s", qUtf8Printable(pathFor(key)),
+                qUtf8Printable(desc->typeString()), value.metaType().name());
+            return false;
+        }
+    }
 
-    return metaObject()->property(desc->metaIndex).write(this, value);
+    return metaObject()->property(desc->metaIndex).write(this, coerced);
 }
 
 void Node::resetToDefaults() {
