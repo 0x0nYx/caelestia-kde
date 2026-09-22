@@ -70,6 +70,15 @@ bool Descriptor::accepts(const QMetaType& valueType) const {
 }
 
 QMetaType Descriptor::coercionTarget(const QMetaType& valueType) const {
+    // QML hands a JS array over as a QVariantList whatever the option asks for, so a list
+    // written from QML is the one mismatch worth converting away. Everything else is a
+    // genuine type error and is reported as one.
+    if (valueType.id() != QMetaType::QVariantList)
+        return {};
+
+    if (annotation.allowedTypes.isEmpty())
+        return type != valueType && QMetaType::canConvert(valueType, type) ? type : QMetaType();
+
     for (const auto& allowed : annotation.allowedTypes)
         if (allowed != valueType && QMetaType::canConvert(valueType, allowed))
             return allowed;
