@@ -29,31 +29,17 @@ QString normaliseAppId(QString id) {
     return id;
 }
 
-QVariantMap restingEntry() {
-    return {
-        { QStringLiteral("known"), false },
-        { QStringLiteral("count"), 0 },
-        { QStringLiteral("countVisible"), false },
-        { QStringLiteral("progress"), 0.0 },
-        { QStringLiteral("progressVisible"), false },
-        { QStringLiteral("urgent"), false },
-    };
-}
-
 QVariantMap resolveEntry(const QVariantMap& properties) {
-    QVariantMap entry = restingEntry();
-    entry[QStringLiteral("known")] = true;
-
     const qlonglong count = properties.value(QStringLiteral("count")).toLongLong();
     const double progress = properties.value(QStringLiteral("progress")).toDouble();
 
-    entry[QStringLiteral("count")] = QVariant(count > 0 ? count : 0);
-    entry[QStringLiteral("countVisible")] = properties.value(QStringLiteral("count-visible")).toBool();
-    entry[QStringLiteral("progress")] = QVariant(std::isfinite(progress) ? qBound(0.0, progress, 1.0) : 0.0);
-    entry[QStringLiteral("progressVisible")] = properties.value(QStringLiteral("progress-visible")).toBool();
-    entry[QStringLiteral("urgent")] = properties.value(QStringLiteral("urgent")).toBool();
-
-    return entry;
+    return {
+        { QStringLiteral("count"), QVariant(count > 0 ? count : 0) },
+        { QStringLiteral("countVisible"), properties.value(QStringLiteral("count-visible")).toBool() },
+        { QStringLiteral("progress"), QVariant(std::isfinite(progress) ? qBound(0.0, progress, 1.0) : 0.0) },
+        { QStringLiteral("progressVisible"), properties.value(QStringLiteral("progress-visible")).toBool() },
+        { QStringLiteral("urgent"), properties.value(QStringLiteral("urgent")).toBool() },
+    };
 }
 
 } // namespace
@@ -94,8 +80,16 @@ int LauncherEntry::revision() const {
 }
 
 QVariantMap LauncherEntry::forApp(const QString& desktopId) const {
-    const auto found = m_entries.constFind(normaliseAppId(desktopId));
-    return found == m_entries.constEnd() ? restingEntry() : *found;
+    const QString appId = normaliseAppId(desktopId);
+
+    const Source* newest = nullptr;
+    for (auto sender = m_sources.constBegin(); sender != m_sources.constEnd(); ++sender) {
+        const auto source = sender->constFind(appId);
+        if (source != sender->constEnd() && (!newest || newest->stamp < source->stamp))
+            newest = &*source;
+    }
+
+    return newest ? resolveEntry(newest->properties) : QVariantMap();
 }
 
 void LauncherEntry::onUpdate(const QString& appUri, const QVariantMap& properties) {
@@ -113,7 +107,8 @@ void LauncherEntry::onUpdate(const QString& appUri, const QVariantMap& propertie
         source.properties.insert(property.key(), property.value());
     source.stamp = ++m_stamp;
 
-    resolve();
+    ++m_revision;
+    emit changed();
 }
 
 void LauncherEntry::onServiceUnregistered(const QString& service) {
@@ -121,32 +116,6 @@ void LauncherEntry::onServiceUnregistered(const QString& service) {
         return;
 
     m_watcher->removeWatchedService(service);
-    resolve();
-}
-
-void LauncherEntry::resolve() {
-    QHash<QString, QPair<quint64, QString>> newest;
-    for (auto sender = m_sources.constBegin(); sender != m_sources.constEnd(); ++sender) {
-        for (auto source = sender->constBegin(); source != sender->constEnd(); ++source) {
-            const auto current = newest.constFind(source.key());
-            if (current == newest.constEnd() || current->first < source->stamp)
-                newest.insert(source.key(), { source->stamp, sender.key() });
-        }
-    }
-
-    QHash<QString, QVariantMap> entries;
-    entries.reserve(newest.size());
-    for (auto entry = newest.constBegin(); entry != newest.constEnd(); ++entry) {
-        const auto sender = m_sources.constFind(entry.value().second);
-        if (sender == m_sources.constEnd())
-            continue;
-
-        const auto source = sender->constFind(entry.key());
-        if (source != sender->constEnd())
-            entries.insert(entry.key(), resolveEntry(source->properties));
-    }
-
-    m_entries = entries;
 
     ++m_revision;
     emit changed();

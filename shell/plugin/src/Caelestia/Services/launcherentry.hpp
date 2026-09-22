@@ -37,10 +37,7 @@ private:
         quint64 stamp = 0;
     };
 
-    void resolve();
-
     QHash<QString, QHash<QString, Source>> m_sources;
-    QHash<QString, QVariantMap> m_entries;
     QDBusServiceWatcher* m_watcher = nullptr;
     quint64 m_stamp = 0;
     int m_revision = 0;
