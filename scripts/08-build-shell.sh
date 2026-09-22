@@ -15,6 +15,7 @@ SHELL_DIR="$BUNDLE_DIR/shell"
 
 write_shell_environment() {
     local env_d="$HOME/.config/environment.d"
+    local plasma_env_d="$HOME/.config/plasma-workspace/env"
     local rc
 
     info "Writing the shell environment to $env_d/caelestia.conf"
@@ -28,6 +29,20 @@ CAELESTIA_BIN_DIR=$(install_bin_dir)
 CAELESTIA_SHELL_CONFIG=$(install_shell_config)
 EOF
     ok "Shell environment written."
+
+    info "Writing the Plasma session environment to $plasma_env_d/caelestia.sh"
+    mkdir -p "$plasma_env_d"
+    cat > "$plasma_env_d/caelestia.sh" << EOF
+#!/bin/sh
+# Written by Caelestia. Sourced by KDE Plasma during session startup for KWin,
+# kscreenlocker_greet, and graphical session processes.
+export QML2_IMPORT_PATH="$(install_qml_import_path)\${QML2_IMPORT_PATH:+:\$QML2_IMPORT_PATH}"
+export CAELESTIA_LIB_DIR="$(install_lib_dir)"
+export CAELESTIA_BIN_DIR="$(install_bin_dir)"
+export CAELESTIA_SHELL_CONFIG="$(install_shell_config)"
+EOF
+    chmod +x "$plasma_env_d/caelestia.sh"
+    ok "Plasma session environment written."
 
     for rc in "$HOME/.bashrc" "$HOME/.config/fish/config.fish" "$HOME/.zshrc"; do
         [[ -f "$rc" ]] || continue

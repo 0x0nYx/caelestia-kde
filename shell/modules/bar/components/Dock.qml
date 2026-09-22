@@ -124,17 +124,17 @@ Item {
     function saveNewOrder(): void {
         const newArr = [];
         const newFavs = [];
-        
+
         for (let i = 0; i < root.currentOrder.length; ++i) {
             const mData = root.currentOrder[i];
             if (!mData) continue;
-            
+
             if (mData.isPinned) {
                 newFavs.push(mData.id);
             }
             newArr.push(mData);
         }
-        
+
         // Only update if arrays are different length or different order
         const currentFavs = GlobalConfig.bar.dock.pinnedApps || [];
         let changed = currentFavs.length !== newFavs.length;
@@ -146,7 +146,7 @@ Item {
                 }
             }
         }
-        
+
         if (changed) {
             GlobalConfig.bar.dock.pinnedApps = newFavs;
         }
@@ -233,10 +233,10 @@ Item {
 
         implicitWidth: bar.isHorizontal ? (__computedContentWidth + padding * 2) : bar.thickness
         implicitHeight: bar.isHorizontal ? bar.thickness : (__computedContentWidth + padding * 2)
-        
+
         width: bar.isHorizontal ? Math.min(implicitWidth, maxHorizontalSize) : implicitWidth
         height: !bar.isHorizontal ? Math.min(implicitHeight, maxVerticalSize) : implicitHeight
-        
+
         property string currentZone: {
             if (!bar) return "middle";
             if (bar.leftEntries.some(e => e.id === "dock")) return "left";
@@ -247,11 +247,11 @@ Item {
         // Actual space available from the dock's position to the next zone boundary
         property real availableSize: {
             if (!bar) return 9999;
-            
+
             const W = bar.isHorizontal ? bar.width : bar.height;
             const spacing = Tokens.spacing.medium;
             const pad = bar.vPadding;
-            
+
             let otherSize = 0;
             if (root.parent && root.parent.parent) {
                 const layout = root.parent.parent;
@@ -262,7 +262,7 @@ Item {
                     }
                 }
             }
-            
+
             let result = 0;
             if (currentZone === "left") {
                 const M = bar.middleZoneSize;
@@ -270,7 +270,7 @@ Item {
                 let maxZone = W - 2*pad;
                 if (M > 0) maxZone = W / 2 - M / 2 - spacing - pad;
                 else if (R > 0) maxZone = W - R - spacing - 2*pad;
-                
+
                 result = Math.max(0, maxZone - otherSize);
             } else if (currentZone === "right") {
                 const L = bar.leftZoneSize;
@@ -278,7 +278,7 @@ Item {
                 let maxZone = W - 2*pad;
                 if (M > 0) maxZone = W / 2 - M / 2 - spacing - pad;
                 else if (L > 0) maxZone = W - L - spacing - 2*pad;
-                
+
                 result = Math.max(0, maxZone - otherSize);
             } else {
                 const L = bar.leftZoneSize;
@@ -286,10 +286,10 @@ Item {
                 let maxZone = W - 2*pad;
                 if (L > 0) maxZone -= (L + spacing);
                 if (R > 0) maxZone -= (R + spacing);
-                
+
                 result = Math.max(0, maxZone - otherSize);
             }
-            
+
             return result;
         }
 
@@ -310,7 +310,7 @@ Item {
 
         Item {
             id: layout
-            
+
             anchors.fill: parent
 
             WheelHandler {
@@ -368,7 +368,7 @@ Item {
                 moveDisplaced: Transition {
                     NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
                 }
-                
+
                 model: DelegateModel {
                     id: visualModel
 
@@ -462,6 +462,19 @@ Item {
                         }
                     }
 
+                    StyledRect {
+                        anchors.fill: parent
+                        radius: Tokens.rounding.medium
+                        color: Colours.palette.m3error
+                        opacity: (delegateItem.badge?.urgent ?? false) ? 0.35 : 0
+
+                        Behavior on opacity {
+                            Anim {
+                                type: Anim.DefaultEffects
+                            }
+                        }
+                    }
+
                     StateLayer {
                         id: stateLayer
 
@@ -488,23 +501,23 @@ Item {
                         drag.axis: bar.isHorizontal ? Drag.XAxis : Drag.YAxis
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         cursorShape: Qt.PointingHandCursor
-                        
+
                         onPressed: mouse => {
                             held = true;
                             root.isDragging = true;
                             stateLayer.press(mouse.x, mouse.y);
                         }
-                        
+
                         onClicked: mouse => {
                             if (mouse.button === Qt.LeftButton) {
                                 if (modelData.isPinned) {
                                     bounceAnim.start();
                                 }
-                                
+
                                 if (modelData.toplevels.length > 0) {
                                     let activeIdx = -1;
                                     let activeAddr = "";
-                                    
+
                                     if (Kwin.activeWindow) {
                                         activeAddr = Kwin.activeWindow.address ? String(Kwin.activeWindow.address) : "";
                                     } else if (root.activeTop && root.activeTop.address) {
@@ -520,9 +533,9 @@ Item {
                                             break;
                                         }
                                     }
-                                    
+
                                     const isKWin = (Kwin.windowList.length > 0);
-                                    
+
                                     if (modelData.toplevels.length === 1) {
                                         let addr = String(modelData.toplevels[0].address);
                                         if (activeIdx === 0) {
@@ -550,7 +563,7 @@ Item {
                                     let newLaunching = Object.assign({}, root.launchingApps);
                                     newLaunching[modelData.appClass || modelData.id] = true;
                                     root.launchingApps = newLaunching;
-                                    
+
                                     const subCmd = modelData.entry.runInTerminal
                                         ? [...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command]
                                         : modelData.entry.command;
@@ -566,7 +579,7 @@ Item {
                                 bar.popouts.hasCurrent = true;
                             }
                         }
-                        
+
                         onReleased: {
                             held = false;
                             root.isDragging = false;
@@ -574,7 +587,7 @@ Item {
                             delegateItem.y = 0;
                             root.saveNewOrder();
                         }
-                        
+
                         onCanceled: {
                             held = false;
                             root.isDragging = false;
@@ -614,6 +627,13 @@ Item {
                         return modelData.toplevels.length > 0;
                     }
 
+                    readonly property var badge: {
+                        const dummy = LauncherEntry.revision;
+                        if (!modelData || !(Config.bar.dock.showBadges ?? true))
+                            return null;
+                        return LauncherEntry.forApp(modelData.id);
+                    }
+
 
 
                     IconImage {
@@ -624,7 +644,7 @@ Item {
                         source: modelData ? WinIcons.sourceFor(modelData.entry, modelData.appClass, modelData.iconName, modelData.pid ?? 0) : ""
                         asynchronous: true
                         visible: !(Config.bar.dock.recolourIcons ?? false)
-                        
+
                         SequentialAnimation {
                             id: bounceAnim
 
@@ -650,6 +670,61 @@ Item {
                         }
                     }
 
+                    StyledRect {
+                        id: countBadge
+
+                        readonly property int badgeHeight: Math.max(12, Math.round((icon.implicitSize || 0) * 0.55))
+                        readonly property int dotSize: Math.max(6, Math.round(badgeHeight * 0.75))
+                        readonly property bool asDot: (delegateItem.badge?.count ?? 0) <= 0
+
+                        visible: delegateItem.badge?.countVisible ?? false
+                        color: Colours.palette.m3error
+                        radius: Tokens.rounding.full
+                        width: asDot ? dotSize : Math.max(badgeHeight, badgeLabel.implicitWidth + Tokens.padding.extraSmall)
+                        height: asDot ? dotSize : badgeHeight
+                        anchors.right: icon.right
+                        anchors.top: icon.top
+                        anchors.rightMargin: -Math.round(height * 0.25)
+                        anchors.topMargin: -Math.round(height * 0.25)
+
+                        Text {
+                            id: badgeLabel
+
+                            anchors.centerIn: parent
+                            visible: !countBadge.asDot
+                            text: {
+                                const count = delegateItem.badge?.count ?? 0;
+                                if (count > 9999)
+                                    return "9k+";
+                                if (count > 999)
+                                    return `${Math.floor(count / 1000)}k`;
+                                return `${count}`;
+                            }
+                            color: Colours.palette.m3onError
+                            font: Tokens.font.label.builders.small.size(Math.max(6, Math.round(countBadge.badgeHeight * 0.62))).weight(Font.DemiBold).build()
+                        }
+                    }
+
+                    StyledRect {
+                        id: progressBar
+
+                        visible: delegateItem.badge?.progressVisible ?? false
+                        anchors.top: icon.bottom
+                        anchors.topMargin: 1
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: icon.implicitSize
+                        height: 3
+                        radius: Tokens.rounding.full
+                        color: Qt.alpha(Colours.palette.m3onSurface, 0.15)
+
+                        StyledRect {
+                            width: Math.round(parent.width * (delegateItem.badge?.progress ?? 0))
+                            height: parent.height
+                            radius: parent.radius
+                            color: Colours.palette.m3primary
+                        }
+                    }
+
                     ListView {
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -657,10 +732,10 @@ Item {
                         spacing: 2
                         orientation: ListView.Horizontal
                         interactive: false
-                        
+
                         height: 2
                         width: contentWidth
-                        
+
                         remove: Transition {
                             NumberAnimation { property: "scale"; from: 1; to: 0; duration: 250; easing.type: Easing.InBack }
                             NumberAnimation { property: "y"; from: 0; to: -15; duration: 250; easing.type: Easing.InBack }
@@ -671,24 +746,24 @@ Item {
                         removeDisplaced: Transition {
                             NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
                         }
-                        
+
                         model: {
                             const dummy = root.modelUpdateTrigger;
                             if (!modelData) return 0;
                             return Math.min(2, modelData.toplevels.length);
                         }
-                        
+
                         delegate: Rectangle {
                             required property int index
 
                             width: (index === 0 && delegateItem.isActive) ? 16 : 2
-    
+
                                 height: 2
-    
+
                                 radius: 1
-    
+
                                 color: delegateItem.isActive ? Colours.palette.m3primary : Colours.palette.m3onSurface
-    
+
                                 scale: 0
                                 y: -15
                                 Component.onCompleted: {
@@ -717,15 +792,15 @@ Item {
         const adjustedPos = isHorizontal ? relPos - container.x - padding : relPos - container.y - padding;
         const scrolled = isHorizontal ? listView.contentX : listView.contentY;
         const visibleSpan = isHorizontal ? listView.width : listView.height;
-        
+
         // Only close if cursor is completely outside dock bounds
         if (adjustedPos < 0 || adjustedPos > visibleSpan) {
             bar.popouts.hasCurrent = false;
             return;
         }
-        
+
         const index = Math.floor((adjustedPos + scrolled) / itemWidthWithSpacing);
-        
+
         if (index >= 0 && index < modelDataArray.length) {
             bar.popouts.currentName = "dockhover";
             const centerOffset = index * itemWidthWithSpacing + itemSize / 2 - scrolled;
@@ -733,10 +808,10 @@ Item {
                 bar.popouts.hasCurrent = false;
                 return;
             }
-            const absoluteCenter = isHorizontal 
-                ? container.mapToItem(null, padding + centerOffset, 0).x 
+            const absoluteCenter = isHorizontal
+                ? container.mapToItem(null, padding + centerOffset, 0).x
                 : container.mapToItem(null, 0, padding + centerOffset).y;
-            
+
             bar.popouts.currentCenter = absoluteCenter;
             bar.popouts.dockModel = modelDataArray[index];
             bar.popouts.hasCurrent = true;
@@ -756,7 +831,7 @@ Item {
         let apps = [];
 
         const pinnedIds = GlobalConfig.bar.dock.pinnedApps || [];
-        
+
         for (const pid of pinnedIds) {
             for (const entry of DesktopEntries.applications.values) {
                 if (Strings.testRegexList([pid], entry.id)) {
@@ -774,19 +849,19 @@ Item {
                 }
             }
         }
-        
+
         for (const toplevel of root._toplevels) {
             const ipc = toplevel;
             if (!ipc) continue;
             const appClass = ipc.class || ipc.initialClass;
             if (!appClass) continue;
-            
+
             if (appClass.toLowerCase().includes("xwaylandvideobridge")) continue;
-            
+
             let found = false;
             for (const app of apps) {
                 const isToplevelSteamGame = appClass.toLowerCase().startsWith("steam_app_");
-                
+
                 if (isToplevelSteamGame) {
                     if (app.appClass.toLowerCase() === appClass.toLowerCase()) {
                         app.toplevels.push(toplevel);
@@ -798,8 +873,8 @@ Item {
                     if (isAppSteamGame) continue;
 
                     const baseId = app.id.toLowerCase().replace(".desktop", "");
-                    if (app.appClass.toLowerCase() === appClass.toLowerCase() || 
-                        app.id.toLowerCase().includes(appClass.toLowerCase()) || 
+                    if (app.appClass.toLowerCase() === appClass.toLowerCase() ||
+                        app.id.toLowerCase().includes(appClass.toLowerCase()) ||
                         appClass.toLowerCase().includes(baseId)) {
                         app.toplevels.push(toplevel);
                         found = true;
@@ -807,12 +882,12 @@ Item {
                     }
                 }
             }
-            
+
             if (!found) {
                 const isToplevelSteamGame = appClass.toLowerCase().startsWith("steam_app_");
                 let entry = null;
                 let iconName = appClass;
-                
+
                 if (isToplevelSteamGame) {
                     const appId = appClass.substring(10);
                     iconName = `steam_icon_${appId}`;
@@ -849,7 +924,7 @@ Item {
                 });
             }
         }
-        
+
         let newLaunching = Object.assign({}, root.launchingApps);
         let launchingChanged = false;
 
@@ -865,7 +940,7 @@ Item {
                 }
             }
         }
-        
+
         if (launchingChanged) {
             root.launchingApps = newLaunching;
         }
@@ -879,7 +954,7 @@ Item {
         if (existingOrder.length > 0 && pinnedOrderMatches) {
             const orderedApps = [];
             const remainingApps = [...apps];
-            
+
             for (let i = 0; i < existingOrder.length; i++) {
                 const prevItem = existingOrder[i];
                 if (!prevItem) continue;
@@ -888,11 +963,11 @@ Item {
                     orderedApps.push(remainingApps.splice(idx, 1)[0]);
                 }
             }
-            
+
             for (let i = 0; i < remainingApps.length; i++) {
                 orderedApps.push(remainingApps[i]);
             }
-            
+
             apps = orderedApps;
         }
 
@@ -907,7 +982,7 @@ Item {
                 }
             }
         }
-        
+
         if (changed) {
             for (let i = dockModel.count - 1; i >= 0; i--) {
                 let found = false;
@@ -918,7 +993,7 @@ Item {
                     dockModel.remove(i);
                 }
             }
-            
+
             for (let i = 0; i < apps.length; i++) {
                 let found = false;
                 for (let j = 0; j < dockModel.count; j++) {
@@ -928,7 +1003,7 @@ Item {
                     dockModel.append({ appId: apps[i].id });
                 }
             }
-            
+
             for (let i = 0; i < apps.length; i++) {
                 let currentId = apps[i].id;
                 if (dockModel.get(i).appId !== currentId) {
@@ -942,7 +1017,7 @@ Item {
                 }
             }
         }
-        
+
         const map = {};
         for (const app of apps) {
             map[app.id] = app;

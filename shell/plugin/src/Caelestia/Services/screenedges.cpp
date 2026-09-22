@@ -188,6 +188,7 @@ void ScreenEdges::recoverFromCrash() {
     const QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     file.close();
 
+    bool restored = false;
     if (doc.isArray()) {
         const QJsonArray entries = doc.array();
         for (const QJsonValue& val : entries) {
@@ -195,10 +196,19 @@ void ScreenEdges::recoverFromCrash() {
             if (stolen.corner != 0) {
                 qDebug() << "[Caelestia] Crash recovery: restoring screen corner" << stolen.corner;
                 restoreCorner(stolen);
+                restored = true;
             }
         }
     }
     QFile::remove(stolenEdgesPath());
+
+    // restoreCorner() only rewrites kwinrc, and KWin does not re-read that on
+    // its own, so the corners the previous run reserved would stay reserved
+    // until something else happened to reconfigure. The recovery file is gone
+    // by the time we reach here, so this push is the last chance to apply it.
+    if (restored) {
+        scheduleReconfigure();
+    }
 }
 
 void ScreenEdges::claim(int corner) {

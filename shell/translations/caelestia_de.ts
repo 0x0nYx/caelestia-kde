@@ -92,7 +92,7 @@
   <context>
     <name>Actions</name>
     <message>
-      <location filename="../modules/launcher/services/Actions.qml" line="+31"/>
+      <location filename="../modules/launcher/services/Actions.qml" line="+34"/>
       <source>Unnamed</source>
       <translation>Unbenannt</translation>
     </message>
@@ -1053,6 +1053,26 @@
       <translation>Shell Neustart erforderlich</translation>
     </message>
     <message>
+      <location line="+8"/>
+      <source>Ambient color mode</source>
+      <translation type="unfinished">Ambient color mode</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Ambient glow is unavailable in light mode</source>
+      <translation type="unfinished">Ambient glow is unavailable in light mode</translation>
+    </message>
+    <message>
+      <location line="+0"/>
+      <source>Ambient light glow in window info panel</source>
+      <translation type="unfinished">Ambient light glow in window info panel</translation>
+    </message>
+    <message>
+      <location line="+8"/>
+      <source>Ambient glow opacity</source>
+      <translation type="unfinished">Ambient glow opacity</translation>
+    </message>
+    <message>
       <location line="+55"/>
       <source>Background Blur</source>
       <translation>Hintergrundunschärfe</translation>
@@ -1550,23 +1570,23 @@
   <context>
     <name>AudioPopout</name>
     <message>
-      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+36"/>
+      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+39"/>
       <source>Output device</source>
       <translation>Ausgabegerät</translation>
     </message>
     <message>
-      <location line="+15"/>
-      <location line="+19"/>
+      <location line="+16"/>
+      <location line="+20"/>
       <source>Unknown</source>
       <translation>Unbekannt</translation>
     </message>
     <message>
-      <location line="-13"/>
+      <location line="-14"/>
       <source>Input device</source>
       <translation>Eingabegerät</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location line="+20"/>
       <source>Volume (%1)</source>
       <translation>Volume (%1)</translation>
     </message>
@@ -1844,6 +1864,16 @@
       <location line="+1"/>
       <source>Recolor application icons using the system theme</source>
       <translation>App-Icons mithilfe des System-Themes neu färben</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Show app badges</source>
+      <translation type="unfinished">Show app badges</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Show the count, progress and urgency an app publishes for its dock icon</source>
+      <translation type="unfinished">Show the count, progress and urgency an app publishes for its dock icon</translation>
     </message>
     <message>
       <location line="+7"/>
@@ -2537,13 +2567,13 @@
     </message>
     <message>
       <location line="+12"/>
-      <source>Per-monitor workspaces</source>
-      <translation>Arbeitsbereiche pro Monitor</translation>
+      <source>Per monitor</source>
+      <translation type="unfinished">Per monitor</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>Show each monitor&apos;s workspaces independently</source>
-      <translation>Zeige jeden Monitor&apos;s Arbeitsbereiche unabhängig</translation>
+      <source>Hide workspaces not on the current monitor</source>
+      <translation type="unfinished">Hide workspaces not on the current monitor</translation>
     </message>
   </context>
   <context>
@@ -3842,7 +3872,7 @@
   <context>
     <name>DesktopLyrics</name>
     <message>
-      <location filename="../modules/background/DesktopLyrics.qml" line="+287"/>
+      <location filename="../modules/background/DesktopLyrics.qml" line="+286"/>
       <source>Loading lyrics...</source>
       <translation>Lade Songtexte...</translation>
     </message>
@@ -4073,93 +4103,83 @@
     <name>Entries</name>
     <message>
       <location filename="../modules/whatsnew/Entries.qml" line="+23"/>
-      <source>Window Switcher Add-ons</source>
-      <translation>Fensterwechsel-Add-ons</translation>
+      <source>Window Rules Out of the Box</source>
+      <translation type="unfinished">Window Rules Out of the Box</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The window switcher now runs on a KWin-native backend, and window previews are cached so they appear instantly. Its own page under Settings -&gt; Panels -&gt; Window Switcher adds filtering by current desktop, minimized windows, windows from all screens, a live preview on the workspace, and a switch to turn it off entirely.</source>
-      <translation>Der Fensterschalter läuft nun auf einem KWin-nativen Backend, und Fenstervorschauen werden zwischengespeichert, so dass sie sofort angezeigt werden. Eigene Seite unter Einstellungen -&gt; Panels -&gt; Fensterschalter fügt Filter nach der aktuellen Arbeitsfläche hinzu, minimierte Fenster, Fenster von allen Bildschirmen, eine Live-Vorschau auf dem Arbeitsbereich und ein Schalter zum Ausschalten.</translation>
+      <source>The installer now writes three KWin rules: unfocused windows and dialogs dim to 95 percent, dialogs open centered, and picture-in-picture windows stay above others. Only Caelestia&apos;s own groups are written, so your rules keep their names and their order. Edit or remove them under System Settings -&gt; Window Rules, or let uninstall.sh take them out again.</source>
+      <translation type="unfinished">The installer now writes three KWin rules: unfocused windows and dialogs dim to 95 percent, dialogs open centered, and picture-in-picture windows stay above others. Only Caelestia&apos;s own groups are written, so your rules keep their names and their order. Edit or remove them under System Settings -&gt; Window Rules, or let uninstall.sh take them out again.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Notifications on Any Screen</source>
-      <translation>Benachrichtigungen auf jedem Bildschirm</translation>
+      <source>Right-Click Any App</source>
+      <translation type="unfinished">Right-Click Any App</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>Notification popups can now follow the screen they belong to instead of always using the focused one, and the shell can stay quiet while a fullscreen app is focused. Both live in Settings -&gt; Services -&gt; Notifications, as &apos;Display on screen&apos; and &apos;Show in fullscreen&apos;.</source>
-      <translation>Benachrichtigungs-Popups können nun dem Bildschirm, zu dem sie gehören, folgen anstatt immer das fokussierte zu verwenden und die Shell kann ruhig bleiben, während eine Vollbild-App fokussiert ist. Beide live in den Einstellungen -&gt; Dienste -&gt; Benachrichtigungen, als &apos;Anzeige auf dem Bildschirm&apos; und &apos;Im Vollbild&apos; anzeigen.</translation>
+      <source>An app in the launcher or its app browser now opens a context menu on right click: pin it to the dock, add it to the desktop, hide it from the launcher, or open it in the menu editor. The dock&apos;s pinned list is its own setting now (bar.dock.pinnedApps) instead of borrowing the launcher&apos;s favorites, and an existing list is carried over.</source>
+      <translation type="unfinished">An app in the launcher or its app browser now opens a context menu on right click: pin it to the dock, add it to the desktop, hide it from the launcher, or open it in the menu editor. The dock&apos;s pinned list is its own setting now (bar.dock.pinnedApps) instead of borrowing the launcher&apos;s favorites, and an existing list is carried over.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>GIF Recording</source>
-      <translation>GIF-Aufnahme</translation>
+      <source>Status Icons You Can Arrange</source>
+      <translation type="unfinished">Status Icons You Can Arrange</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The screen recorder can capture a region straight to an animated GIF. Choose Record GIF from the recorder menu - it is enabled by default and can be switched off under Settings -&gt; Utilities -&gt; Utilities panel.</source>
-      <translation>Der Bildschirmrekorder kann eine Region direkt zu einem animierten GIF erfassen. Wählen Sie Eintrag GIF aus dem Record Menü - es ist standardmäßig aktiviert und kann unter Einstellungen -&gt; Utilities -&gt; Utilities ausgeschaltet werden.</translation>
+      <source>The bar&apos;s status icons are an ordered list now instead of a wall of switches: add one, switch it off, or drag it into place under Settings -&gt; Panels -&gt; Taskbar -&gt; Status icons, and the bar draws them in that order. The clock can show seconds, and the workspace indicator can hide the ones that are empty and inactive.</source>
+      <translation type="unfinished">The bar&apos;s status icons are an ordered list now instead of a wall of switches: add one, switch it off, or drag it into place under Settings -&gt; Panels -&gt; Taskbar -&gt; Status icons, and the bar draws them in that order. The clock can show seconds, and the workspace indicator can hide the ones that are empty and inactive.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>SDDM Theme Out of the Box</source>
-      <translation>SDDM-Theme außerhalb der Box</translation>
+      <source>Game Mode at a Tap</source>
+      <translation type="unfinished">Game Mode at a Tap</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The Material You login screen, with wallpaper and color sync, is now installed by default, so the greeter matches your desktop from the first boot. It remains optional in the installer for anyone who prefers the stock theme.</source>
-      <translation>Das Material, das Sie einloggen, mit Hintergrundbild und Farbsynchronisation, ist nun standardmäßig installiert, so dass der grünere mit Ihrem Desktop ab dem ersten Booten übereinstimmt. Es bleibt im Installer optional für jeden, der das Aktienthema bevorzugt.</translation>
+      <source>The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -&gt; Services -&gt; Game mode.</source>
+      <translation type="unfinished">The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -&gt; Services -&gt; Game mode.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Audio-Reactive Desktop Shapes</source>
-      <translation>Audio-reaktive Desktop-Formen</translation>
+      <source>Color Intensity</source>
+      <translation type="unfinished">Color Intensity</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The media visualiser is now a set of audio-reactive material shapes, and it can live on the wallpaper as well as in the dashboard. Turn on &apos;Desktop media shapes&apos; under Settings -&gt; Desktop -&gt; Desktop Addons and let it auto-hide while a window is open.</source>
-      <translation>Der Media-Visualisierer ist jetzt eine Reihe von audio-reaktiven Material-Formen, und er kann sowohl auf dem Hintergrund als auch im Dashboard leben. Aktivieren Sie &apos;Desktop Medien Formen&apos; unter Einstellungen -&gt; Desktop -&gt; Desktop Addons und lassen Sie es automatisch ausblenden, während ein Fenster geöffnet ist.</translation>
+      <source>Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and &apos;caelestia scheme set -i&apos; sets it from the command line.</source>
+      <translation type="unfinished">Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and &apos;caelestia scheme set -i&apos; sets it from the command line.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Chinese Translations</source>
-      <translation>Chinesische Übersetzungen</translation>
+      <source>Dock App Badges</source>
+      <translation type="unfinished">Dock App Badges</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The shell now ships Simplified and Traditional Chinese catalogues, so the interface follows your language instead of staying English. Pick one from Settings -&gt; Language &amp; region.</source>
-      <translation>Die Shell verschickt jetzt vereinfachte und traditionelle chinesische Kataloge, so dass die Schnittstelle Ihrer Sprache folgt statt Englisch zu bleiben. Wählen Sie eine aus Einstellungen -&gt; Sprache &amp; Region.</translation>
+      <source>Dock icons can now display the count, progress, and urgency published by running applications. Configure it under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</source>
+      <translation type="unfinished">Dock icons can now display the count, progress, and urgency published by running applications. Configure it under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>A New Name and Look</source>
-      <translation>Ein neuer Name und Aussehen</translation>
+      <source>Ambient Glow</source>
+      <translation type="unfinished">Ambient Glow</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The project is now caelestia-kde. The repository, its references and the artwork have been renamed and brought onto one palette and one logo. Your configuration and settings are untouched.</source>
-      <translation>Das Projekt ist nun caelestia-kde, das Repository, seine Referenzen und das Kunstwerk wurden umbenannt und auf eine Palette und ein Logo gebracht. Ihre Konfiguration und Einstellungen bleiben unberührt.</translation>
+      <source>Shell surfaces and window previews can now cast a subtle, dynamic ambient glow derived from the window content. Enable it under Settings -&gt; Appearance.</source>
+      <translation type="unfinished">Shell surfaces and window previews can now cast a subtle, dynamic ambient glow derived from the window content. Enable it under Settings -&gt; Appearance.</translation>
     </message>
     <message>
       <location line="+6"/>
-      <source>Dock Desktop Filtering &amp; Live Previews</source>
-      <translation type="unfinished">Dock Desktop Filtering &amp; Live Previews</translation>
+      <source>Lock Screen Password Reveal</source>
+      <translation type="unfinished">Lock Screen Password Reveal</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</source>
-      <translation type="unfinished">The taskbar dock now supports filtering applications and open windows to the active virtual desktop, alongside live window highlighting on your workspace when hovering over dock thumbnails. Configure both under Settings -&gt; Panels -&gt; Taskbar -&gt; Dock.</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Color Engine &amp; Theme Automation</source>
-      <translation type="unfinished">Color Engine &amp; Theme Automation</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</source>
-      <translation type="unfinished">Caelestia now features a high-performance native color pipeline using matugen. Kde-material-you-color has been removed. Color variants automatically switching to Tonal Spot under certain conditions has been fixed.</translation>
+      <source>Click or tap the lock icon inside the greeter&apos;s password pill to reveal your typed password before unlocking.</source>
+      <translation type="unfinished">Click or tap the lock icon inside the greeter&apos;s password pill to reveal your typed password before unlocking.</translation>
     </message>
   </context>
   <context>
@@ -5003,6 +5023,12 @@
     <name>LanguageAndRegion</name>
     <message>
       <location filename="../modules/nexus/pages/LanguageAndRegion.qml" line="+45"/>
+      <location line="+44"/>
+      <source>Auto</source>
+      <translation type="unfinished">Auto</translation>
+    </message>
+    <message>
+      <location line="-40"/>
       <source>°C</source>
       <translation>°C</translation>
     </message>
@@ -5028,22 +5054,22 @@
     </message>
     <message>
       <location line="+9"/>
-      <location line="+56"/>
+      <location line="+62"/>
       <source>System language</source>
       <translation>Systemsprache</translation>
     </message>
     <message>
-      <location line="-45"/>
-      <source>24-hour</source>
-      <translation>24 Stunden</translation>
-    </message>
-    <message>
-      <location line="+3"/>
+      <location line="-47"/>
       <source>12-hour</source>
       <translation>12 Stunden</translation>
     </message>
     <message>
       <location line="+4"/>
+      <source>24-hour</source>
+      <translation>24 Stunden</translation>
+    </message>
+    <message>
+      <location line="+5"/>
       <source>Language &amp; region</source>
       <translation>Sprache &amp; Region</translation>
     </message>
@@ -5711,7 +5737,7 @@
   <context>
     <name>LyricList</name>
     <message>
-      <location filename="../modules/dashboard/media/LyricList.qml" line="+213"/>
+      <location filename="../modules/dashboard/media/LyricList.qml" line="+203"/>
       <source>Loading lyrics...</source>
       <translation>Lade Songtexte...</translation>
     </message>
@@ -6180,12 +6206,12 @@
     </message>
     <message>
       <location line="+80"/>
-      <location line="+145"/>
+      <location line="+146"/>
       <source>Connected</source>
       <translation>Verbunden</translation>
     </message>
     <message>
-      <location line="-145"/>
+      <location line="-146"/>
       <source>Available</source>
       <translation>Verfügbar</translation>
     </message>
@@ -6205,7 +6231,7 @@
       <translation>Keine VPN-Anbieter konfiguriert</translation>
     </message>
     <message>
-      <location line="+68"/>
+      <location line="+69"/>
       <source>Tap to select</source>
       <translation>Zum Auswählen tippen</translation>
     </message>
@@ -6696,7 +6722,7 @@
   <context>
     <name>Notifs</name>
     <message>
-      <location filename="../services/Notifs.qml" line="+144"/>
+      <location filename="../services/Notifs.qml" line="+150"/>
       <source>Do not disturb enabled</source>
       <translation>Nicht stören aktiviert</translation>
     </message>
@@ -8047,7 +8073,7 @@
   <context>
     <name>PowerPage</name>
     <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+94"/>
+      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
       <source>Power</source>
       <translation>Macht</translation>
     </message>
@@ -8130,7 +8156,7 @@
   <context>
     <name>Preview</name>
     <message>
-      <location filename="../modules/windowinfo/Preview.qml" line="+72"/>
+      <location filename="../modules/windowinfo/Preview.qml" line="+85"/>
       <source>No active client</source>
       <translation>Kein aktiver Client</translation>
     </message>
@@ -9924,7 +9950,7 @@
   <context>
     <name>TrayMenu</name>
     <message>
-      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+331"/>
+      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+335"/>
       <source>Back</source>
       <translation>Zurück</translation>
     </message>
@@ -9932,7 +9958,7 @@
   <context>
     <name>Units</name>
     <message>
-      <location filename="../services/Units.qml" line="+21"/>
+      <location filename="../services/Units.qml" line="+26"/>
       <source>%1°</source>
       <comment>temperature</comment>
       <translation>%1°</translation>
@@ -10681,7 +10707,7 @@
   <context>
     <name>VPN</name>
     <message>
-      <location filename="../services/VPN.qml" line="+273"/>
+      <location filename="../services/VPN.qml" line="+209"/>
       <source>VPN connection failed</source>
       <translation>VPN-Verbindung fehlgeschlagen</translation>
     </message>
@@ -10727,7 +10753,7 @@
       <translation>VPN-Fehler</translation>
     </message>
     <message>
-      <location line="+225"/>
+      <location line="+196"/>
       <location line="+69"/>
       <source>Could not start %1. Is it installed?</source>
       <translation>Konnte %1nicht starten. Ist es installiert?</translation>

@@ -50,7 +50,7 @@ Weather::Weather(QObject* parent)
             emit weatherChanged();
             emit forecastChanged();
         });
-        connect(svcCfg, &config::ServiceConfig::useTwelveHourClockChanged, this, [this]() {
+        connect(svcCfg, &config::ServiceConfig::clockFormatChanged, this, [this]() {
             emit weatherChanged();
         });
     }
@@ -163,7 +163,7 @@ bool Weather::loading() const {
 QString Weather::formatTemp(const QVariant& tempVal) const {
     const auto* cfg = config::ConfigSingleton::instance();
     const auto* svcCfg = cfg ? cfg->services() : nullptr;
-    const auto unit = svcCfg ? svcCfg->weatherUnits() : config::TemperatureUnit::Celsius;
+    const auto unit = svcCfg ? svcCfg->weatherUnit() : config::TemperatureUnit::Celsius;
 
     const auto placeholder = [unit]() -> QString {
         switch (unit) {
@@ -548,7 +548,7 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
 
     const auto* cfg = config::ConfigSingleton::instance();
     const auto* svcCfg = cfg ? cfg->services() : nullptr;
-    const bool use12h = svcCfg ? svcCfg->useTwelveHourClock() : false;
+    const bool use12h = svcCfg ? svcCfg->twelveHourClock() : false;
     const QString timeFormat = use12h ? QStringLiteral("h:mm AP") : QStringLiteral("h:mm");
 
     const auto dailyMax = daily.value(QStringLiteral("temperature_2m_max")).toArray();
@@ -573,8 +573,15 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
     }
 
     // Parse 7-day forecast
+    //
+    // Each field arrives as its own array, and nothing makes them the same
+    // length: a truncated or partially-written reply leaves `time` longer than
+    // the rest, and reading past the end of one yields an Undefined value that
+    // silently becomes 0. Walk the shortest of them instead.
+    const qsizetype dailyCount =
+        qMin(dailyTimes.size(), qMin(dailyMax.size(), qMin(dailyMin.size(), dailyCodes.size())));
     QVariantList forecastList;
-    for (qsizetype i = 0; i < dailyTimes.size(); ++i) {
+    for (qsizetype i = 0; i < dailyCount; ++i) {
         const double maxC = dailyMax.at(i).toDouble();
         const double minC = dailyMin.at(i).toDouble();
         const int code = dailyCodes.at(i).toInt();
@@ -600,8 +607,13 @@ void Weather::parseWeatherJson(const QJsonObject& json) {
     const auto hourlyPrecip = hourly.value(QStringLiteral("precipitation_probability")).toArray();
     const auto hourlyCodes = hourly.value(QStringLiteral("weather_code")).toArray();
 
+    // The same cross-array assumption as the daily block above, and the same
+    // guard against it.
+    const qsizetype hourlyCount =
+        qMin(hourlyTimes.size(), qMin(hourlyTemps.size(), qMin(hourlyPrecip.size(), hourlyCodes.size())));
+
     const QDateTime now = QDateTime::currentDateTime();
-    for (qsizetype i = 0; i < hourlyTimes.size(); ++i) {
+    for (qsizetype i = 0; i < hourlyCount; ++i) {
         const QString timeStr = hourlyTimes.at(i).toString();
         const QDateTime dt = QDateTime::fromString(timeStr, Qt::ISODate);
         if (dt.isValid() && dt < now) {

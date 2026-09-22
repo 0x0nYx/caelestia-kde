@@ -42,6 +42,10 @@ PageBase {
     // Temperature units (there must be one for each value of the TemperatureUnit enum)
     readonly property list<MenuItem> tempItems: [
         MenuItem {
+            text: qsTr("Auto")
+            value: TemperatureUnit.Auto
+        },
+        MenuItem {
             text: qsTr("°C")
             value: TemperatureUnit.Celsius
         },
@@ -79,13 +83,19 @@ PageBase {
                 }))
     ]
 
-    // Clock format (index 0 = 24-hour, 1 = 12-hour — matches Time.useTwelveHourClock)
+    // Clock formats (there must be one for each value of the ClockFormat enum)
     readonly property list<MenuItem> clockItems: [
         MenuItem {
-            text: qsTr("24-hour")
+            text: qsTr("Auto")
+            value: ClockFormat.Auto
         },
         MenuItem {
             text: qsTr("12-hour")
+            value: ClockFormat.TwelveHour
+        },
+        MenuItem {
+            text: qsTr("24-hour")
+            value: ClockFormat.TwentyFourHour
         }
     ]
 
@@ -411,9 +421,11 @@ PageBase {
             last: true
             label: qsTr("Clock format")
             subtext: qsTr("How times are shown across the shell")
+            // Last row on the page, so the list has to open upwards or it clips.
+            menuOnTop: true
             menuItems: root.clockItems
-            active: root.clockItems[GlobalConfig.services.useTwelveHourClock ? 1 : 0]
-            onSelected: item => GlobalConfig.services.useTwelveHourClock = root.clockItems.indexOf(item) === 1
+            active: root.clockItems.find(i => i.value === GlobalConfig.services.clockFormat)
+            onSelected: item => GlobalConfig.services.clockFormat = item.value
         }
     }
 }

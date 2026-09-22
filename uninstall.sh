@@ -594,6 +594,12 @@ else
         ok "Removed the Caelestia environment file"
     fi
 
+    if [[ -f "$HOME/.config/plasma-workspace/env/caelestia.sh" ]]; then
+        rm -f "$HOME/.config/plasma-workspace/env/caelestia.sh"
+        rmdir "$HOME/.config/plasma-workspace/env" 2>/dev/null || true
+        ok "Removed the Caelestia Plasma session environment script"
+    fi
+
     if [[ -f "$HOME/.config/fish/config.fish" ]]; then
         sed -i '/QML2_IMPORT_PATH\|CAELESTIA_LIB_DIR/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
         ok "Removed Caelestia env vars from fish config"

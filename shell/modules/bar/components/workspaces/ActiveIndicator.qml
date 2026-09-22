@@ -10,18 +10,16 @@ StyledRect {
     id: root
 
     required property int activeWsId
-    required property Repeater workspaces
+    /// The strip's live pills, in strip order.
+    required property var workspaces
     required property Item mask
     required property bool fullscreen
     property string screenName: ""
 
-    readonly property int currentWsIdx: {
-        let i = activeWsId - 1;
-        const count = workspaces.count > 0 ? workspaces.count : Config.bar.workspaces.shown;
-        while (i < 0)
-            i += count;
-        return i % count;
-    }
+    // Index of the active pill in the strip. The strip decides which desktops are
+    // on it, so the pill is found by the desktop it stands for rather than by
+    // arithmetic on the desktop id.
+    readonly property int currentWsIdx: workspaces.findIndex(p => p?.ws === activeWsId)
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property real rawScale: !isNaN(Config.bar.scale) ? Config.bar.scale : 1.0
@@ -30,7 +28,7 @@ StyledRect {
     readonly property int expandAmt: rawScale < 0.8 ? 2 : 0
     readonly property int offsetAmt: rawScale < 0.8 ? 1 : 0
 
-    property var currentItem: workspaces.count > 0 ? workspaces.itemAt(currentWsIdx) : null
+    property var currentItem: workspaces[currentWsIdx] ?? null
     property real rawSwipeOffset: Kwin.swipeOffsetByOutput?.[screenName] ?? Kwin.swipeOffset ?? 0.0
     // isSwiping stays true for a short settle period after swipeOffset returns to 0
     // to let the SmoothedAnimation reach its target before EAnim kicks back in.
@@ -41,9 +39,9 @@ StyledRect {
         if (!isSwiping) return basePos;
         let startIdx = currentWsIdx;
         let endIdx = rawSwipeOffset > 0 ? startIdx + 1 : startIdx - 1;
-        if (endIdx < 0 || endIdx >= workspaces.count) endIdx = startIdx;
-        let startItem = workspaces.itemAt(startIdx);
-        let endItem = workspaces.itemAt(endIdx);
+        if (endIdx < 0 || endIdx >= workspaces.length) endIdx = startIdx;
+        let startItem = workspaces[startIdx];
+        let endItem = workspaces[endIdx];
         if (!startItem || !endItem) return basePos;
         let startPos = isHorizontal ? startItem.x : startItem.y;
         let endPos = isHorizontal ? endItem.x : endItem.y;
@@ -53,9 +51,9 @@ StyledRect {
         if (!isSwiping) return baseSize;
         let startIdx = currentWsIdx;
         let endIdx = rawSwipeOffset > 0 ? startIdx + 1 : startIdx - 1;
-        if (endIdx < 0 || endIdx >= workspaces.count) endIdx = startIdx;
-        let startItem = workspaces.itemAt(startIdx);
-        let endItem = workspaces.itemAt(endIdx);
+        if (endIdx < 0 || endIdx >= workspaces.length) endIdx = startIdx;
+        let startItem = workspaces[startIdx];
+        let endItem = workspaces[endIdx];
         if (!startItem || !endItem) return baseSize;
         let startSize = (startItem as Workspace).size;
         let endSize = (endItem as Workspace).size;
@@ -73,7 +71,7 @@ StyledRect {
     property real size: {
         const s = Math.abs(leading - trailing) + currentSize;
         if (Config.bar.workspaces.activeTrail && lastWs > currentWsIdx) {
-            const ws = workspaces.itemAt(lastWs) as Workspace;
+            const ws = workspaces[lastWs];
             return ws ? Math.min((isHorizontal ? ws.x : ws.y) + ws.size - offset, s) : 0;
         }
         return s;

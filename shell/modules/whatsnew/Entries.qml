@@ -50,6 +50,27 @@ QtObject {
             "icon": "tune",
             "title": qsTr("Color Intensity"),
             "description": qsTr("Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and 'caelestia scheme set -i' sets it from the command line.")
+        },
+        {
+            "id": "dock_app_badges",
+            "revision": 24,
+            "icon": "badge",
+            "title": qsTr("Dock App Badges"),
+            "description": qsTr("Dock icons can now display the count, progress, and urgency published by running applications. Configure it under Settings -> Panels -> Taskbar -> Dock.")
+        },
+        {
+            "id": "ambient_glow",
+            "revision": 25,
+            "icon": "flare",
+            "title": qsTr("Ambient Glow"),
+            "description": qsTr("Shell surfaces and window previews can now cast a subtle, dynamic ambient glow derived from the window content. Enable it under Settings -> Appearance.")
+        },
+        {
+            "id": "lockscreen_password_reveal",
+            "revision": 26,
+            "icon": "visibility",
+            "title": qsTr("Lock Screen Password Reveal"),
+            "description": qsTr("Click or tap the lock icon inside the greeter's password pill to reveal your typed password before unlocking.")
         }
     ]
 

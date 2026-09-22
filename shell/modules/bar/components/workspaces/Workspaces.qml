@@ -26,30 +26,27 @@ Item {
         // Removed manual monitorCenter logic as it's handled natively by Bar.qml layout zones
 
         readonly property bool onSpecial: false
-        property int workspaceCount: {
-            if (Kwin.workspaces.length > 0) {
-                return Kwin.workspaces.length;
-            }
-            return Config.bar.workspaces.shown;
-        }
-        property int activeWsId: Kwin.activeWorkspaceFor(root.screen.name)
+        readonly property bool isHorizontal: root.bar.isHorizontal
+        // Force QML dependency tracker to bind to windowList correctly
+        property var kwinWindowList: Kwin.windowList
+
+        readonly property int desktopCount: Math.max(1, Kwin.workspaces.length)
+        readonly property int activeWsId: Kwin.activeWorkspaceFor(root.screen.name)
+        readonly property int shown: Math.max(1, Config.bar.workspaces.shown)
+        // Desktops are global in KDE. With perMonitor on, only windows on this
+        // screen make a desktop count as occupied -- counting the others would
+        // report a desktop as busy because of a window the user cannot see from
+        // here. The option asks for the all-screens view instead.
         readonly property var occupied: {
-            let occ = {};
-            const count = container.workspaceCount;
-            for (let i = 1; i <= count; ++i) {
+            const occ = {};
+            for (let i = 1; i <= container.desktopCount; ++i) {
                 occ[i] = false;
             }
             const kwinList = container.kwinWindowList;
             if (kwinList) {
                 for (let i = 0; i < kwinList.length; ++i) {
                     const w = kwinList[i];
-                    // KDE's virtual desktops span every screen, so a desktop is
-                    // "occupied" globally the moment anything is on it anywhere.
-                    // This bar belongs to one screen, and saying a desktop is
-                    // busy because of a window the user cannot see from here is
-                    // not useful -- it reports a full desktop as full and an
-                    // empty one as full too.
-                    if (w.output !== root.screen.name)
+                    if (Config.bar.workspaces.perMonitor && w.output !== root.screen.name)
                         continue;
                     if (w.workspace && typeof w.workspace.id === "number") {
                         occ[w.workspace.id] = true;
@@ -58,11 +55,39 @@ Item {
             }
             return occ;
         }
-        readonly property int groupOffset: Math.floor((activeWsId - 1) / container.workspaceCount) * container.workspaceCount
+        // The desktops the strip shows, in order. With showUnoccupied the strip
+        // is a window of `shown` desktops that pages with the active one;
+        // otherwise it carries the occupied desktops and the active one, still
+        // windowed around the active one so a long list cannot grow forever.
+        readonly property var wsIds: {
+            if (Config.bar.workspaces.showUnoccupied) {
+                const ids = [];
+                const start = Math.floor((container.activeWsId - 1) / container.shown) * container.shown;
+                for (let i = 0; i < container.shown; ++i) {
+                    const id = start + i + 1;
+                    if (id <= container.desktopCount)
+                        ids.push(id);
+                }
+                return ids;
+            }
+            const ids = [];
+            for (let id = 1; id <= container.desktopCount; ++id) {
+                if (container.occupied[id] || id === container.activeWsId)
+                    ids.push(id);
+            }
+            const currentIdx = ids.indexOf(container.activeWsId);
+            if (currentIdx < 0)
+                return [];
+            const end = Math.max(currentIdx + 1, Math.min(container.shown, ids.length));
+            return ids.slice(Math.max(0, end - container.shown), end);
+        }
+        // The live pills, in the same order. Repeater.itemAt is not a tracked
+        // property, so the count is read to invalidate this when it changes.
+        readonly property var pills: {
+            void workspaces.count;
+            return container.wsIds.map((_, i) => workspaces.itemAt(i)).filter(p => p);
+        }
         property real blur: onSpecial ? 1 : 0
-        readonly property bool isHorizontal: root.bar.isHorizontal
-        // Force QML dependency tracker to bind to windowList correctly
-        property var kwinWindowList: Kwin.windowList
 
         implicitWidth: isHorizontal ? (layout.implicitWidth + Tokens.padding.small) : barThickness
         implicitHeight: isHorizontal ? barThickness : (layout.implicitHeight + Tokens.padding.small)
@@ -90,12 +115,31 @@ Item {
             Loader {
                 asynchronous: true
                 active: Config.bar.workspaces.occupiedBg
-                anchors.fill: parent
-                anchors.margins: Tokens.padding.extraSmall
+                // Same box as the pills, so their coordinates can be used as is.
+                anchors.fill: layout
                 sourceComponent: OccupiedBg {
-                    workspaces: workspaces
-                    occupied: container.occupied
-                    groupOffset: container.groupOffset
+                    workspaces: container.pills
+                    wsSpacing: Math.floor(Tokens.spacing.small)
+                    isHorizontal: container.isHorizontal
+                }
+            }
+            // Markers only mean something while the strip hides desktops: they
+            // stand in the gap where a hidden desktop sits.
+            Loader {
+                asynchronous: true
+                active: opacity > 0
+                opacity: Config.bar.workspaces.showUnoccupied ? 0 : 1
+                anchors.fill: layout
+                sourceComponent: GapMarkers {
+                    workspaces: container.pills
+                    wsSpacing: Math.floor(Tokens.spacing.small)
+                    isHorizontal: container.isHorizontal
+                }
+
+                Behavior on opacity {
+                    Anim {
+                        type: Anim.DefaultEffects
+                    }
                 }
             }
             GridLayout {
@@ -111,11 +155,18 @@ Item {
                 Repeater {
                     id: workspaces
 
-                    model: container.workspaceCount
+                    model: container.wsIds
 
                     Workspace {
+                        // The role has to be declared on the delegate itself: a
+                        // delegate that supports required properties takes the
+                        // model's roles as required properties, so an undeclared
+                        // `modelData` in the binding resolves to the enclosing
+                        // screen instead.
+                        required property int modelData
+
+                        ws: modelData
                         activeWsId: container.activeWsId
-                        groupOffset: container.groupOffset
                         occupied: container.occupied
                         screenName: root.screen.name
                     }
@@ -128,7 +179,7 @@ Item {
                 active: Config.bar.workspaces.activeIndicator
                 sourceComponent: ActiveIndicator {
                     activeWsId: container.activeWsId
-                    workspaces: workspaces
+                    workspaces: container.pills
                     mask: layout
                     fullscreen: root.fullscreen
                     screenName: root.screen.name
@@ -137,7 +188,10 @@ Item {
             MouseArea {
                 anchors.fill: layout
                 onClicked: event => {
-                    const ws = (layout.childAt(event.x, event.y) as Workspace)?.ws;
+                    // The pills hold icon children, so hit test the strip's own
+                    // list rather than whatever child is under the pointer.
+                    const pill = container.pills.find(p => container.isHorizontal ? event.x >= p.x && event.x <= p.x + p.width : event.y >= p.y && event.y <= p.y + p.height);
+                    const ws = pill?.ws;
                     if (!ws)
                         return;
                     if (container.activeWsId !== ws)

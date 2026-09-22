@@ -110,8 +110,25 @@ PYEOF
     fi
 }
 
+is_plasmalogin_active() {
+    if systemctl is-active plasmalogin.service &>/dev/null || \
+       systemctl is-enabled plasmalogin.service &>/dev/null || \
+       [[ "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)" == *"plasmalogin"* ]]; then
+        return 0
+    fi
+    if systemctl is-active sddm.service &>/dev/null || \
+       systemctl is-enabled sddm.service &>/dev/null || \
+       [[ "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)" == *"sddm"* ]]; then
+        return 1
+    fi
+    if [[ -e /etc/plasmalogin.conf ]] && ! command -v sddm >/dev/null 2>&1; then
+        return 0
+    fi
+    return 1
+}
+
 DISPLAY_MANAGER="sddm"
-if command -v plasmalogin >/dev/null 2>&1 || [[ -e /etc/plasmalogin.conf ]]; then
+if is_plasmalogin_active; then
     DISPLAY_MANAGER="plasmalogin"
 fi
 

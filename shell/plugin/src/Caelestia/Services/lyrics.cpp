@@ -1,15 +1,15 @@
 #include "lyrics.hpp"
 
-#include "../Config/rootnodes.hpp"
-#include "../Config/serviceconfig.hpp"
-#include "../Config/userpaths.hpp"
-
 #include <qdiriterator.h>
 #include <qfileinfo.h>
 #include <qjsonarray.h>
 #include <qnetworkcookiejar.h>
 #include <qsavefile.h>
 #include <qurlquery.h>
+
+#include "../Config/rootnodes.hpp"
+#include "../Config/serviceconfig.hpp"
+#include "../Config/userpaths.hpp"
 
 Q_LOGGING_CATEGORY(lcLyrics, "caelestia.lyrics", QtInfoMsg)
 
@@ -304,6 +304,10 @@ void Lyrics::setLines(QVector<LyricLine> lines, LyricsBackend::Backend source) {
 }
 
 void Lyrics::clearLines() {
+    if (!m_hasLyrics) {
+        return;
+    }
+
     // Doesn't actually clear lines, set a flag instead so anims can run
     m_hasLyrics = false;
     emit hasLyricsChanged();

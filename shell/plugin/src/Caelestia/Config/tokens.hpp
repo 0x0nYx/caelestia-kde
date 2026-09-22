@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../Settings/objectnode.hpp"
-#include "common.hpp"
-
-#include <limits>
 #include <qlist.h>
 #include <qqmlengine.h>
+
+#include <limits>
+
+#include "../Settings/objectnode.hpp"
+#include "common.hpp"
 
 namespace caelestia::config {
 
@@ -39,7 +40,6 @@ class RoundingTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, extraLargeIncreased, 32)
     CONFIG_PROPERTY(int, extraExtraLarge, 48)
     CONFIG_PROPERTY(int, full, std::numeric_limits<int>::max())
-
 };
 
 class SpacingTokens : public settings::ObjectNode {
@@ -53,7 +53,6 @@ class SpacingTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, extraLarge, 28)
     CONFIG_PROPERTY(int, extraLargeIncreased, 32)
     CONFIG_PROPERTY(int, extraExtraLarge, 48)
-
 };
 
 class PaddingTokens : public settings::ObjectNode {
@@ -67,7 +66,6 @@ class PaddingTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, extraLarge, 28)
     CONFIG_PROPERTY(int, extraLargeIncreased, 32)
     CONFIG_PROPERTY(int, extraExtraLarge, 48)
-
 };
 
 class FontSizeTokens : public settings::ObjectNode {
@@ -83,7 +81,6 @@ class FontSizeTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, monoSmall, 12)
     CONFIG_PROPERTY(int, monoMedium, 14)
     CONFIG_PROPERTY(int, monoLarge, 16)
-
 };
 
 class AnimDurationTokens : public settings::ObjectNode {
@@ -99,7 +96,6 @@ class AnimDurationTokens : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(int, expressiveFastEffects, 150)
     CONFIG_GLOBAL_PROPERTY(int, expressiveDefaultEffects, 200)
     CONFIG_GLOBAL_PROPERTY(int, expressiveSlowEffects, 300)
-
 };
 
 class AppearanceTokens : public settings::ObjectNode {
@@ -121,8 +117,8 @@ class BarTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, trayMenuWidth, 300)
     CONFIG_PROPERTY(int, batteryWidth, 250)
     CONFIG_PROPERTY(int, networkWidth, 320)
+    CONFIG_PROPERTY(int, audioWidth, 320)
     CONFIG_PROPERTY(int, kbLayoutWidth, 320)
-
 };
 
 class DashboardTokens : public settings::ObjectNode {
@@ -152,7 +148,6 @@ class DashboardTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, perfBattWidthSingle, 400)
     CONFIG_PROPERTY(int, perfBattHeight, 160)
     CONFIG_PROPERTY(int, perfPlaceholderWidth, 700)
-
 };
 
 class LauncherTokens : public settings::ObjectNode {
@@ -170,7 +165,6 @@ class LauncherTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, browseSidebarWidth, 200)
     CONFIG_PROPERTY(int, browseTileWidth, 96)
     CONFIG_PROPERTY(int, browseTileHeight, 92)
-
 };
 
 class NotifsTokens : public settings::ObjectNode {
@@ -179,7 +173,6 @@ class NotifsTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, width, 430)
     CONFIG_GLOBAL_PROPERTY(int, image, 42)
     CONFIG_PROPERTY(int, badge, 20)
-
 };
 
 class OsdTokens : public settings::ObjectNode {
@@ -187,21 +180,18 @@ class OsdTokens : public settings::ObjectNode {
 
     CONFIG_PROPERTY(int, sliderWidth, 30)
     CONFIG_PROPERTY(int, sliderHeight, 150)
-
 };
 
 class SessionTokens : public settings::ObjectNode {
     CONFIG_NODE(SessionTokens, settings::ObjectNode)
 
     CONFIG_PROPERTY(int, button, 80)
-
 };
 
 class SidebarTokens : public settings::ObjectNode {
     CONFIG_NODE(SidebarTokens, settings::ObjectNode)
 
     CONFIG_PROPERTY(int, width, 430)
-
 };
 
 class UtilitiesTokens : public settings::ObjectNode {
@@ -209,7 +199,6 @@ class UtilitiesTokens : public settings::ObjectNode {
 
     CONFIG_PROPERTY(int, width, 430)
     CONFIG_PROPERTY(int, toastWidth, 430)
-
 };
 
 class LockTokens : public settings::ObjectNode {
@@ -226,7 +215,6 @@ class LockTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, fetch4LinesHeight, 600)
     CONFIG_PROPERTY(int, fetch3LinesHeight, 500)
     CONFIG_PROPERTY(int, showColourBoxRowHeight, 570)
-
 };
 
 class WInfoTokens : public settings::ObjectNode {
@@ -234,7 +222,6 @@ class WInfoTokens : public settings::ObjectNode {
 
     CONFIG_PROPERTY(qreal, heightMult, 0.7)
     CONFIG_PROPERTY(qreal, detailsWidth, 500)
-
 };
 
 class NexusTokens : public settings::ObjectNode {
@@ -255,7 +242,6 @@ class NexusTokens : public settings::ObjectNode {
     CONFIG_PROPERTY(int, maxDialogHeight, 600)
     CONFIG_PROPERTY(int, textFieldWidth, 250)
     CONFIG_PROPERTY(int, smallTextFieldWidth, 100)
-
 };
 
 class SizeTokens : public settings::ObjectNode {

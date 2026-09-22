@@ -40,7 +40,8 @@ LazyLoader {
         readonly property bool selectionValid: {
             if (loader.selectFolder) return true;
             const file = folderContents.currentItem?.modelData;
-            return (file && !file.isDir && (filters.includes("*") || filters.includes(file.suffix))) ?? false;
+            // Case-insensitive: a filter for "png" has to accept "IMG.PNG".
+            return (file && !file.isDir && (filters.includes("*") || filters.some(f => f.toLowerCase() === file.suffix.toLowerCase()))) ?? false;
         }
 
         function accepted(path: string): void {

@@ -79,24 +79,32 @@ Singleton {
             Office: "content_paste"
         })
 
-    // Checks if a name matches an icon config. Icon configs can have the following keys:
-    // - name: The exact name of the icon
-    // - regex: A regex to match against the name (takes priority over name)
-    // - flags: The regex flags (only used if regex is set)
-    // - icon: The icon to use
-    function matchIconConfig(name: string, iconConfig: var): bool {
-        if (!iconConfig.icon)
+    // Checks if a name matches an icon rule. See the IconRule type in the config module.
+    function matchIconRule(name: string, iconRule: var): bool {
+        if (!iconRule.icon)
             return false;
 
-        if (iconConfig.regex) {
-            const re = new RegExp(iconConfig.regex, iconConfig.flags ?? "");
+        if (iconRule.regex) {
+            const re = new RegExp(iconRule.regex, iconRule.flags ?? "");
             if (re.test(name))
                 return true;
-        } else if (iconConfig.name === name) {
+        } else if (iconRule.name === name) {
             return true;
         }
 
         return false;
+    }
+
+    // The icon of the first rule in the list that matches, or an empty string
+    function matchIconRuleList(name: string, rules: var): string {
+        if (!rules)
+            return "";
+
+        for (const iconRule of rules.values)
+            if (matchIconRule(name, iconRule))
+                return iconRule.icon;
+
+        return "";
     }
 
     function getAppIcon(name: string, fallback: string): string {
@@ -108,9 +116,9 @@ Singleton {
     }
 
     function getAppCategoryIcon(name: string, fallback: string): string {
-        for (const iconConfig of GlobalConfig.bar.workspaces.windowIcons)
-            if (matchIconConfig(name, iconConfig))
-                return iconConfig.icon;
+        const match = matchIconRuleList(name, GlobalConfig.bar.workspaces.windowIcons);
+        if (match)
+            return match;
 
         const categories = DesktopEntries.heuristicLookup(name)?.categories;
 
@@ -118,6 +126,7 @@ Singleton {
             for (const [key, value] of Object.entries(categoryIcons))
                 if (categories.includes(key))
                     return value;
+
         return fallback;
     }
 
@@ -213,9 +222,9 @@ Singleton {
     function getSpecialWsIcon(name: string): string {
         name = name.toLowerCase().slice("special:".length);
 
-        for (const iconConfig of GlobalConfig.bar.workspaces.specialWorkspaceIcons)
-            if (matchIconConfig(name, iconConfig))
-                return iconConfig.icon;
+        const rule = matchIconRuleList(name, GlobalConfig.bar.workspaces.specialWorkspaceIcons);
+        if (rule)
+            return rule;
 
         if (name === "special")
             return "star";
@@ -233,9 +242,9 @@ Singleton {
     function getSpecialWsMaterialIcon(name: string): string {
         name = name.toLowerCase().slice("special:".length);
 
-        for (const iconConfig of GlobalConfig.bar.workspaces.specialWorkspaceIcons)
-            if (matchIconConfig(name, iconConfig))
-                return iconConfig.icon;
+        const rule = matchIconRuleList(name, GlobalConfig.bar.workspaces.specialWorkspaceIcons);
+        if (rule)
+            return rule;
 
         if (name === "special")
             return "star";
@@ -251,7 +260,7 @@ Singleton {
     }
 
     function getTrayIcon(id: string, icon: string): string {
-        for (const sub of GlobalConfig.bar.tray.iconSubs)
+        for (const sub of GlobalConfig.bar.tray.iconSubs.values)
             if (sub.id === id)
                 return sub.image ? Qt.resolvedUrl(sub.image) : Quickshell.iconPath(sub.icon);
 
