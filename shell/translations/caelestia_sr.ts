@@ -92,7 +92,7 @@
   <context>
     <name>Actions</name>
     <message>
-      <location filename="../modules/launcher/services/Actions.qml" line="+31"/>
+      <location filename="../modules/launcher/services/Actions.qml" line="+34"/>
       <source>Unnamed</source>
       <translation type="unfinished">Unnamed</translation>
     </message>
@@ -1570,23 +1570,23 @@
   <context>
     <name>AudioPopout</name>
     <message>
-      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+36"/>
+      <location filename="../modules/bar/popouts/AudioPopout.qml" line="+39"/>
       <source>Output device</source>
       <translation type="unfinished">Output device</translation>
     </message>
     <message>
-      <location line="+15"/>
-      <location line="+19"/>
+      <location line="+16"/>
+      <location line="+20"/>
       <source>Unknown</source>
       <translation type="unfinished">Unknown</translation>
     </message>
     <message>
-      <location line="-13"/>
+      <location line="-14"/>
       <source>Input device</source>
       <translation type="unfinished">Input device</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location line="+20"/>
       <source>Volume (%1)</source>
       <translation type="unfinished">Volume (%1)</translation>
     </message>
@@ -2557,13 +2557,13 @@
     </message>
     <message>
       <location line="+12"/>
-      <source>Per-monitor workspaces</source>
-      <translation type="unfinished">Per-monitor workspaces</translation>
+      <source>Per monitor</source>
+      <translation type="unfinished">Per monitor</translation>
     </message>
     <message>
       <location line="+1"/>
-      <source>Show each monitor&apos;s workspaces independently</source>
-      <translation type="unfinished">Show each monitor&apos;s workspaces independently</translation>
+      <source>Hide workspaces not on the current monitor</source>
+      <translation type="unfinished">Hide workspaces not on the current monitor</translation>
     </message>
   </context>
   <context>
@@ -3862,7 +3862,7 @@
   <context>
     <name>DesktopLyrics</name>
     <message>
-      <location filename="../modules/background/DesktopLyrics.qml" line="+287"/>
+      <location filename="../modules/background/DesktopLyrics.qml" line="+286"/>
       <source>Loading lyrics...</source>
       <translation type="unfinished">Loading lyrics...</translation>
     </message>
@@ -4983,6 +4983,12 @@
     <name>LanguageAndRegion</name>
     <message>
       <location filename="../modules/nexus/pages/LanguageAndRegion.qml" line="+45"/>
+      <location line="+44"/>
+      <source>Auto</source>
+      <translation type="unfinished">Auto</translation>
+    </message>
+    <message>
+      <location line="-40"/>
       <source>°C</source>
       <translation type="unfinished">°C</translation>
     </message>
@@ -5008,22 +5014,22 @@
     </message>
     <message>
       <location line="+9"/>
-      <location line="+56"/>
+      <location line="+62"/>
       <source>System language</source>
       <translation type="unfinished">System language</translation>
     </message>
     <message>
-      <location line="-45"/>
-      <source>24-hour</source>
-      <translation type="unfinished">24-hour</translation>
-    </message>
-    <message>
-      <location line="+3"/>
+      <location line="-47"/>
       <source>12-hour</source>
       <translation type="unfinished">12-hour</translation>
     </message>
     <message>
       <location line="+4"/>
+      <source>24-hour</source>
+      <translation type="unfinished">24-hour</translation>
+    </message>
+    <message>
+      <location line="+5"/>
       <source>Language &amp; region</source>
       <translation type="unfinished">Language &amp; region</translation>
     </message>
@@ -5691,7 +5697,7 @@
   <context>
     <name>LyricList</name>
     <message>
-      <location filename="../modules/dashboard/media/LyricList.qml" line="+213"/>
+      <location filename="../modules/dashboard/media/LyricList.qml" line="+203"/>
       <source>Loading lyrics...</source>
       <translation type="unfinished">Loading lyrics...</translation>
     </message>
@@ -6160,12 +6166,12 @@
     </message>
     <message>
       <location line="+80"/>
-      <location line="+145"/>
+      <location line="+146"/>
       <source>Connected</source>
       <translation type="unfinished">Connected</translation>
     </message>
     <message>
-      <location line="-145"/>
+      <location line="-146"/>
       <source>Available</source>
       <translation type="unfinished">Available</translation>
     </message>
@@ -6185,7 +6191,7 @@
       <translation type="unfinished">No VPN providers configured</translation>
     </message>
     <message>
-      <location line="+68"/>
+      <location line="+69"/>
       <source>Tap to select</source>
       <translation type="unfinished">Tap to select</translation>
     </message>
@@ -8027,7 +8033,7 @@
   <context>
     <name>PowerPage</name>
     <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+94"/>
+      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
       <source>Power</source>
       <translation type="unfinished">Power</translation>
     </message>
@@ -9904,7 +9910,7 @@
   <context>
     <name>TrayMenu</name>
     <message>
-      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+331"/>
+      <location filename="../modules/bar/popouts/TrayMenu.qml" line="+335"/>
       <source>Back</source>
       <translation type="unfinished">Back</translation>
     </message>
@@ -9912,7 +9918,7 @@
   <context>
     <name>Units</name>
     <message>
-      <location filename="../services/Units.qml" line="+21"/>
+      <location filename="../services/Units.qml" line="+26"/>
       <source>%1°</source>
       <comment>temperature</comment>
       <translation type="unfinished">%1°</translation>
@@ -10661,7 +10667,7 @@
   <context>
     <name>VPN</name>
     <message>
-      <location filename="../services/VPN.qml" line="+273"/>
+      <location filename="../services/VPN.qml" line="+209"/>
       <source>VPN connection failed</source>
       <translation type="unfinished">VPN connection failed</translation>
     </message>
@@ -10707,7 +10713,7 @@
       <translation type="unfinished">VPN error</translation>
     </message>
     <message>
-      <location line="+225"/>
+      <location line="+196"/>
       <location line="+69"/>
       <source>Could not start %1. Is it installed?</source>
       <translation type="unfinished">Could not start %1. Is it installed?</translation>
