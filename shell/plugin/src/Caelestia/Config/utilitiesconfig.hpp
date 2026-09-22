@@ -14,7 +14,9 @@ using settings::vmap;
 class UtilitiesToasts : public settings::ObjectNode {
     CONFIG_NODE(UtilitiesToasts, settings::ObjectNode)
 
-    CONFIG_PROPERTY(QString, fullscreen, u"off"_s)
+    // Whether a toast is shown over a fullscreen window is a policy for the shell, not for a
+    // screen: the setting and the toasts that obey it have to be in the same layer.
+    CONFIG_GLOBAL_PROPERTY(QString, fullscreen, u"off"_s)
     CONFIG_GLOBAL_PROPERTY(bool, configLoaded, false)
     CONFIG_GLOBAL_PROPERTY(bool, chargingChanged, true)
     CONFIG_GLOBAL_PROPERTY(bool, gameModeChanged, true)
