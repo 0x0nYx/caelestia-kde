@@ -12,7 +12,7 @@ Singleton {
     /// fires first, and this is the question callers ask instead of scanning the
     /// list themselves.
     readonly property int suspendSeconds: {
-        const entries = GlobalConfig.general.idle.timeouts ?? [];
+        const entries = GlobalConfig.general.idle.timeouts.values;
         let shortest = 0;
 
         for (const entry of entries) {
