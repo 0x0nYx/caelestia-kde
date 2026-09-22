@@ -30,7 +30,7 @@ void ObjectNode::resetOption(const QString& key) {
     if (desc->isNode)
         value(key).value<Node*>()->resetToDefaults();
     else
-        setValue(key, fallbackNode() ? fallbackNode()->value(key) : desc->defaultValue(this));
+        setValue(key, fallbackNode() ? fallbackNode()->value(key) : desc->defaultValue());
 }
 
 Descriptor ObjectNode::descriptorFor(const QString& key) const {
@@ -188,7 +188,7 @@ void ObjectNode::resetUnvisited(const QSet<QString>& visited) {
         if ((m_globalOnly || desc.globalOnly()) && fallbackNode())
             continue;
 
-        setValue(desc.key, fallbackNode() ? fallbackNode()->value(desc.key) : desc.defaultValue(this));
+        setValue(desc.key, fallbackNode() ? fallbackNode()->value(desc.key) : desc.defaultValue());
     }
 }
 

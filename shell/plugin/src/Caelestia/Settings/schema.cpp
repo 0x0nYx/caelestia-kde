@@ -46,12 +46,6 @@ const ValueCodec* resolveCodec(Descriptor& desc) {
 
 } // namespace
 
-QVariant DefaultSpec::resolve(const Node* self) const {
-    if (func)
-        return func(self);
-    return value;
-}
-
 QString Descriptor::typeString() const {
     if (annotation.allowedTypes.isEmpty())
         return QString::fromUtf8(type.name());
@@ -73,10 +67,6 @@ bool Descriptor::accepts(const QMetaType& valueType) const {
         return type == valueType;
 
     return annotation.allowedTypes.contains(valueType);
-}
-
-QVariant Descriptor::defaultValue(const Node* self) const {
-    return annotation.defaultValue.resolve(self);
 }
 
 Schema Schema::build(const QMetaObject* meta, int baseOffset, bool includeReadOnly) {
