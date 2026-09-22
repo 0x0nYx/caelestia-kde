@@ -365,7 +365,8 @@ PageBase {
                 id: provider
 
                 required property var modelData
-                readonly property bool isSelected: modelData.providerId === VPN.selectedProvider
+                required property int index
+                readonly property bool isSelected: modelData.id === VPN.selectedProvider
                 readonly property bool isConnected: isSelected && VPN.connected
 
                 anchors.left: providerList.list.contentItem.left
@@ -377,7 +378,7 @@ PageBase {
                     radius: Tokens.rounding.extraSmall
                     onClicked: {
                         if (!provider.isSelected)
-                            VPN.setActiveProvider(provider.modelData.index);
+                            VPN.setActiveProvider(provider.index);
                     }
                 }
 
@@ -414,7 +415,7 @@ PageBase {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: provider.modelData.displayName
+                            text: provider.modelData.displayName || provider.modelData.name
                             font: Tokens.font.body.medium
                             elide: Text.ElideRight
                         }
@@ -492,7 +493,7 @@ PageBase {
 
                                 StyledText {
                                     Layout.alignment: Qt.AlignRight
-                                    text: provider.modelData.iface
+                                    text: provider.modelData.interface
                                     color: Colours.palette.m3onSurfaceVariant
                                     font: Tokens.font.label.small
                                     elide: Text.ElideRight
@@ -542,7 +543,7 @@ PageBase {
                         isRound: true
                         icon: "edit"
                         onClicked: {
-                            root.nState.editingVpnIndex = provider.modelData.index;
+                            root.nState.editingVpnIndex = provider.index;
                             root.nState.openSubPage(4); // Add/edit provider sub-page
                         }
                     }
