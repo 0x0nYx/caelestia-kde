@@ -73,6 +73,8 @@ qml_module(caelestia-services
         globalshortcut.hpp
         krohnkiteconfig.cpp
         krohnkiteconfig.hpp
+        launcherentry.cpp
+        launcherentry.hpp
         windowscreencast.cpp
         windowscreencast.hpp
         windowstream.cpp
