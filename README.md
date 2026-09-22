@@ -13,7 +13,7 @@
 </div>
 
 <!-- markdownlint-disable-next-line MD034 -- a bare URL is what GitHub turns into an inline video player -->
-https://github.com/user-attachments/assets/4c3e20c9-5050-4cc8-8e9c-32fd0594ac8b
+https://github.com/user-attachments/assets/38b24e7f-fdd9-43db-872b-8c0ac23a44fd
 
 > [!NOTE]
 > This repo is the KDE Plasma port of [`caelestia-dots/shell`](https://github.com/caelestia-dots/shell).
