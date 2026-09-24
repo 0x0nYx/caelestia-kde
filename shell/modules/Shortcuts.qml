@@ -298,7 +298,7 @@ Scope {
     CustomShortcut {
         name: "foot"
         description: qsTr("Launch Terminal")
-        onPressed: Launch.exec(["foot"])
+        onPressed: Launch.exec([...GlobalConfig.general.apps.terminal])
     }
     CustomShortcut {
         name: "firefox"
