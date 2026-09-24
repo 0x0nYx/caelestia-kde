@@ -1,8 +1,9 @@
 #pragma once
 
+#include <qstring.h>
+
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
-#include <qstring.h>
 
 namespace caelestia::config {
 
@@ -105,7 +106,6 @@ class AiConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, enableOpencodeGo, false)
     CONFIG_PROPERTY(QString, opencodeGoUrl, u"https://opencode.ai/zen/go/v1"_s)
     CONFIG_PROPERTY(QString, defaultOpencodeGoModel, u""_s)
-
 };
 
 } // namespace caelestia::config
