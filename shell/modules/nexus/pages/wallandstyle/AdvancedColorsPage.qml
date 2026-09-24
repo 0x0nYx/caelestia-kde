@@ -24,6 +24,22 @@ PageBase {
     ]
     readonly property list<string> autoSchemeValues: ["solar", "fixed"]
 
+    // The two modes `caelestia scheme set -m` takes, the same pair the launcher's
+    // Light and Dark commands are, so the page and the launcher stay two views of
+    // one switch.
+    readonly property list<MenuItem> modeItems: [
+        MenuItem {
+            text: qsTr("Light")
+            icon: "light_mode"
+            value: "light"
+        },
+        MenuItem {
+            text: qsTr("Dark")
+            icon: "dark_mode"
+            value: "dark"
+        }
+    ]
+
     /// Where the intensity handle is, 0 to 1. A change is a run of the color engine, the whole
     /// theme fan out and a re-apply of the Plasma scheme, so the value in effect only moves once
     /// that lands, seconds later: a handle bound to it would snap back under whoever is dragging
@@ -128,6 +144,25 @@ PageBase {
                 to: 23
                 onMoved: h => GlobalConfig.services.autoSchemeDarkTime = root.withHour(GlobalConfig.services.autoSchemeDarkTime, h)
             }
+        }
+
+        SectionHeader {
+            text: qsTr("Theme mode")
+        }
+
+        // The schedule above owns the mode while it is on, so a manual pick here
+        // would only stand until its next boundary. The row waits instead, with
+        // the reason in its subtext, the way the intensity row below handles a
+        // named scheme.
+        SelectRow {
+            first: true
+            last: true
+            enabled: !GlobalConfig.services.autoSchemeEnabled
+            label: qsTr("Mode")
+            subtext: enabled ? qsTr("Switch the color scheme between light and dark") : qsTr("Managed by the automatic light and dark schedule")
+            menuItems: root.modeItems
+            active: root.modeItems.find(i => i.value === (Colours.light ? "light" : "dark"))
+            onSelected: item => Colours.setMode(item.value)
         }
 
         SectionHeader {
