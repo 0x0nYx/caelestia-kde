@@ -187,7 +187,10 @@ QtObject {
                 { label: qsTr("Default Apps"), keywords: ["browser", "email", "default"] },
                 { label: qsTr("File Types"), keywords: ["associations", "extensions", "open with"] },
                 { label: qsTr("All Apps"), keywords: ["installed", "list", "uninstall"], subPageIdx: 1 },
-                { label: qsTr("Favorites & Hidden"), keywords: ["pinned", "dock", "launcher", "ignore"], subPageIdx: 1 }
+                { label: qsTr("Favorites & Hidden"), keywords: ["pinned", "dock", "launcher", "ignore"], subPageIdx: 1 },
+                // AppInfo is sub-page 2 and opens only from a row in All Apps, so it has
+                // no entry: it is listed in audit_search_coverage.py's CONTEXT_DEPENDENT
+                // with the same reason. Nothing here may carry subPageIdx 2.
             ]
         },
         {
