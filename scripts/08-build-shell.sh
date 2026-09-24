@@ -239,6 +239,15 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
     if [[ -f "$BUNDLE_DIR/scripts/10-autostart.sh" ]]; then
         bash "$BUNDLE_DIR/scripts/10-autostart.sh" || warn "10-autostart.sh failed"
     fi
+
+    # The default wallpaper pack is a step of its own in a full install, but an
+    # update only runs 03-deploy-configs, this script and 09-system-tweaks, so
+    # fetch it from here to keep updates supplied with it. The script is
+    # idempotent: it exits on its own once the pack is already present.
+    info "Downloading the default wallpaper pack..."
+    if [[ -f "$BUNDLE_DIR/scripts/03a-wallpapers.sh" ]]; then
+        bash "$BUNDLE_DIR/scripts/03a-wallpapers.sh" || warn "03a-wallpapers.sh failed"
+    fi
 fi
 
 info "Building the Caelestia shell..."
