@@ -321,32 +321,10 @@ fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
-info "Installing Caelestia CLI wrapper..."
+# This repo's own caelestia CLI (src/bin/caelestia) is installed to ~/.local/bin by
+# scripts/08-build-shell.sh later in the build, so there is nothing to install here.
 if ! command -v caelestia >/dev/null 2>&1; then
-    caelestia_sudo dnf install -y python3-pip python3-build python3-installer python3-hatchling python3-hatch-vcs || true
-    tmpdir="$(mktemp -d)"
-    (
-        cd "$tmpdir" || exit 1
-        curl -sL "https://github.com/caelestia-dots/cli/releases/download/v1.0.8/caelestia-1.0.8.tar.gz" -o caelestia.tar.gz
-        tar -xzf caelestia.tar.gz
-        cd caelestia-1.0.8 || exit 1
-        python3 -m build --wheel --no-isolation
-        if ! caelestia_sudo pip3 install dist/*.whl --break-system-packages; then
-            pip3 install dist/*.whl --user --break-system-packages
-            if [[ -f "$HOME/.local/bin/caelestia" ]]; then
-                caelestia_sudo ln -sf "$HOME/.local/bin/caelestia" /usr/local/bin/caelestia || true
-            fi
-        fi
-
-        mkdir -p ~/.config/fish/completions/
-        cp ./completions/caelestia.fish ~/.config/fish/completions/ 2>/dev/null || true
-    )
-    rm -rf "$tmpdir"
-fi
-
-if ! command -v caelestia >/dev/null 2>&1 && [[ ! -f "$HOME/.local/bin/caelestia" ]]; then
-    err "Failed to install Caelestia CLI wrapper."
-    FAILED_PKGS+=("caelestia")
+    warn "No caelestia CLI found on PATH yet; it is installed to ~/.local/bin later in the build."
 fi
 
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
