@@ -69,6 +69,16 @@ sha256sums=("$_source_sum"
 prepare() {
     cd "$srcdir/$pkgname-$pkgver"
 
+    # makepkg accepts a SKIP hash and builds whatever the download produced, which is how
+    # this PKGBUILD ships before the release hash exists. Refuse instead: the staging
+    # script fills both _source_url and _source_sum, so a SKIP reaching here means the
+    # published hash was never put in, and the tarball is the whole shell.
+    if [[ "$_source_sum" == "SKIP" && "${CAELESTIA_ALLOW_UNVERIFIED_SOURCE:-0}" != "1" ]]; then
+        echo "No source checksum: put the release's sha256 in the first sha256sums entry" >&2
+        echo "(see packaging/aur/README.md), or set CAELESTIA_ALLOW_UNVERIFIED_SOURCE=1 to build anyway." >&2
+        return 1
+    fi
+
     local sub
     for sub in src/dots src/yet-another-monochrome-icon-set; do
         if [[ -z "$(ls -A "$sub" 2>/dev/null)" ]]; then
