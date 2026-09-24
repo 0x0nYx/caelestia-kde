@@ -601,6 +601,14 @@ exit $status`]
         }
 
         ToggleRow {
+            visible: GlobalConfig.ai.enableClaudeCode
+            text: qsTr("Let the CLI run its own tools")
+            subtext: qsTr("Off by default; the assistant's own tools do not need it")
+            checked: GlobalConfig.ai.claudeCodeSkipPermissions
+            onToggled: GlobalConfig.ai.claudeCodeSkipPermissions = checked
+        }
+
+        ToggleRow {
             last: true
             text: qsTr("Claude API")
             subtext: qsTr("Pay-per-token API with an Anthropic key")

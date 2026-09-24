@@ -42,6 +42,10 @@ class AiConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, defaultClaudeCodeModel, u"default"_s)
     // Effort / thinking level passed to `claude --effort` ("default" = don't pass).
     CONFIG_PROPERTY(QString, claudeCodeEffort, u"default"_s)
+    // Let the CLI run its own tools without asking. Off by default: the assistant drives
+    // its own tools, which the tool-use setting gates, and this only adds the CLI's own
+    // unchecked tool access on top of them.
+    CONFIG_PROPERTY(bool, claudeCodeSkipPermissions, false)
 
     // Multiple Claude accounts, each backed by its own CLAUDE_CONFIG_DIR.
     // claudeAccountsJson: JSON array of {"id","name"} (the default ~/.claude login
