@@ -104,7 +104,7 @@ test_the_greeter_step_selects_without_installing_the_theme() {
     assert_contains "$pkgbuild" 'usr/share/sddm/themes/caelestia' "the package should install the theme"
     assert_contains "$pkgbuild" 'scripts/sync.sh' "and the helper the posthook runs"
     assert_contains "$pkgbuild" 'etc/sddm.conf.d/zz-caelestia.conf' "and the drop-in that selects it"
-    assert_contains "$pkgbuild" 'usr/lib/udev/rules.d/80-uinput.rules' "and the udev rule the system block writes for a checkout"
+    assert_contains "$pkgbuild" 'usr/lib/udev/rules.d/70-uinput.rules' "and the udev rule the system block writes for a checkout"
 }
 
 test_a_failing_step_stops_the_run() {

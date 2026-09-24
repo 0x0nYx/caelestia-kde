@@ -7,6 +7,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib/log.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/privileges.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/install-fs.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/packages.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/download.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/toolchain.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/lib/update-state.sh"
 
@@ -288,7 +289,7 @@ checkout_may_use_prebuilt() {
 }
 
 try_download_prebuilt_shell() {
-    local arch qt_abi tag tmp_archive url checksum expected actual asset candidate
+    local arch qt_abi tag tmp_archive url checksum_status asset candidate
     arch="$(uname -m)"
     [[ "$arch" == "x86_64" ]] || return 1
     [[ -f /etc/arch-release ]] || return 1
@@ -301,7 +302,7 @@ try_download_prebuilt_shell() {
     info "Downloading prebuilt shell artifacts (${tag}, Qt ${qt_abi})..."
     for asset in "caelestia-kde-${arch}-qt${qt_abi}.tar.gz" "caelestia-shell-${arch}-qt${qt_abi}.tar.gz"; do
         candidate="https://github.com/ladybug-me/caelestia-kde/releases/download/${tag}/${asset}"
-        if curl -fL --connect-timeout 10 --progress-bar "$candidate" -o "$tmp_archive"; then
+        if fetch_asset "$candidate" "$tmp_archive" --progress-bar; then
             url="$candidate"
             break
         fi
@@ -312,21 +313,17 @@ try_download_prebuilt_shell() {
         return 1
     fi
 
-    checksum="$(mktemp)"
-    if curl -fsSL --connect-timeout 10 "$url.sha256" -o "$checksum"; then
-        expected="$(cut -d' ' -f1 < "$checksum")"
-        actual="$(sha256sum "$tmp_archive" | cut -d' ' -f1)"
-        if [[ -z "$expected" || "$expected" != "$actual" ]]; then
-            warn "Checksum mismatch for $url"
-            warn "Expected ${expected:-<empty>}, got $actual - falling back to a local build."
-            rm -f "$tmp_archive" "$checksum"
-            return 1
-        fi
-        ok "Prebuilt shell artifacts match the published checksum."
-    else
+    checksum_status=0
+    verify_download "$url" "$tmp_archive" || checksum_status=$?
+    if [[ "$checksum_status" -eq 1 ]]; then
+        warn "Checksum mismatch for $url - falling back to a local build."
+        rm -f "$tmp_archive"
+        return 1
+    elif [[ "$checksum_status" -eq 2 ]]; then
         warn "No published checksum for $url - extracting without verification."
+    else
+        ok "Prebuilt shell artifacts match the published checksum."
     fi
-    rm -f "$checksum"
 
     info "Extracting prebuilt shell artifacts..."
     mkdir -p "$HOME/.local" "$HOME/.config"
@@ -427,7 +424,7 @@ ws_built_effect() {
 ws_signature() {
     local built="$1" installed="$2"
     printf '%s %s\n' \
-        "$(sha256sum "$built" | cut -d' ' -f1)" \
+        "$(file_sha256 "$built")" \
         "$(stat -c '%s:%Y' "$installed" 2>/dev/null || echo missing)"
 }
 

@@ -3,6 +3,9 @@
 # needs, and the prebuilt CAVA SDK the shell links against. Nothing here knows which
 # distro it is on beyond the name its caller passes in.
 
+source "$(dirname "${BASH_SOURCE[0]}")/download.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/log.sh"
+
 # What the shell build can link against, in the same words 08-build-shell.sh stores
 # in its toolchain stamp: a pkg-config version, "sdk" for the prebuilt headers, or
 # "none". One probe, so the stamp and the guard cannot disagree.
@@ -72,7 +75,24 @@ install_cava_sdk() {
     fi
 
     local url="https://github.com/ladybug-me/cava/releases/download/continuous/cava-${arch}-${asset_suffix}.tar.gz"
-    local tar_cmd=(tar -C /usr -xzf - --exclude='bin')
+    local archive status=0
+    archive="$(mktemp)"
+
+    if ! fetch_asset "$url" "$archive" 2>/dev/null; then
+        rm -f "$archive"
+        return 1
+    fi
+
+    verify_download "$url" "$archive" || status=$?
+    if [[ "$status" -eq 1 ]]; then
+        warn "Checksum mismatch for $url - not unpacking it."
+        rm -f "$archive"
+        return 1
+    elif [[ "$status" -eq 2 ]]; then
+        warn "No published checksum for $url - unpacking without verification."
+    fi
+
+    local tar_cmd=(tar --exclude='bin' -C /usr -xzf "$archive")
     if [[ "$EUID" -ne 0 ]]; then
         if command -v caelestia_sudo >/dev/null 2>&1; then
             tar_cmd=(caelestia_sudo "${tar_cmd[@]}")
@@ -81,5 +101,8 @@ install_cava_sdk() {
         fi
     fi
 
-    curl -fsSL "$url" | "${tar_cmd[@]}" 2>/dev/null
+    local status=0
+    "${tar_cmd[@]}" 2>/dev/null || status=$?
+    rm -f "$archive"
+    return "$status"
 }

@@ -125,7 +125,7 @@ Current=caelestia
 DROPIN
 
     install -d "$pkgdir/usr/lib/udev/rules.d"
-    echo 'KERNEL=="uinput", GROUP="input", MODE="0660"' > "$pkgdir/usr/lib/udev/rules.d/80-uinput.rules"
+    echo 'KERNEL=="uinput", MODE="0600", OPTIONS+="static_node=uinput", TAG+="uaccess"' > "$pkgdir/usr/lib/udev/rules.d/70-uinput.rules"
 
     install -d "$pkgdir/etc/xdg/quickshell/caelestia/assets/icons"
     cp -r src/yet-another-monochrome-icon-set \

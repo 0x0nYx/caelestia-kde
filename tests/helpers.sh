@@ -4,7 +4,6 @@ CAELESTIA_TEST_HELPERS_SOURCED=1
 
 CAELESTIA_TEST_FAILURES=0
 CAELESTIA_TEST_COUNT=0
-CAELESTIA_TEST_TMPDIRS=()
 
 fail() {
     CAELESTIA_TEST_FAILURES=$((CAELESTIA_TEST_FAILURES + 1))
@@ -76,17 +75,7 @@ assert_not_contains() {
 new_tmpdir() {
     local dir
     dir="$(mktemp -d "${TMPDIR:-/tmp}/caelestia-test.XXXXXX")"
-    CAELESTIA_TEST_TMPDIRS+=("$dir")
     printf '%s\n' "$dir"
-}
-
-cleanup_tmpdirs() {
-    local dir
-    for dir in "${CAELESTIA_TEST_TMPDIRS[@]:-}"; do
-        [[ -n "$dir" ]] && rm -rf -- "$dir"
-    done
-    CAELESTIA_TEST_TMPDIRS=()
-    return 0
 }
 
 stub_bin() {
@@ -128,8 +117,6 @@ run_tests() {
         printf '  %s\n' "$fn"
         "$fn"
     done < <(declare -F | awk '{ print $3 }' | grep '^test_' | sort)
-
-    cleanup_tmpdirs
 
     if [[ "$CAELESTIA_TEST_FAILURES" -gt 0 ]]; then
         printf '  %s assertion(s) failed across %s test(s)\n' \

@@ -4,6 +4,7 @@
 #include "Input.hpp"
 #include "Term.hpp"
 #include "UI.hpp"
+#include "Sudo.hpp"
 #include <cerrno>
 #include <chrono>
 #include <csignal>
@@ -525,9 +526,7 @@ void execute() {
         int st2 = 0;
         waitpid(child, &st2, 0);
         Term::restore();
-        if (!g_sudo_bin_dir.empty() && run_shell("rm -rf \"" + g_sudo_bin_dir + "\"") != 0) {
-          cerr << "[installer] warning: could not remove the sudo shim directory " << g_sudo_bin_dir << endl;
-        }
+        Sudo::cleanup();
         exit(130);
       }
 
