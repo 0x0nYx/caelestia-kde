@@ -424,8 +424,8 @@
   <context>
     <name>AiAssistant</name>
     <message>
-      <location filename="../modules/sidebar/AiAssistant.qml" line="+789"/>
-      <location line="+1352"/>
+      <location filename="../modules/sidebar/AiAssistant.qml" line="+792"/>
+      <location line="+1358"/>
       <source>Rate limited - retrying in %1s…</source>
       <translation>معدل محدود - إعادة المحاولة في %1s…</translation>
     </message>
@@ -493,7 +493,7 @@
       <translation>تخزين في مفتاح الجلسة الخاص بك، ليس في shell.json. متغير البيئة %1 يتجاوزه.</translation>
     </message>
     <message>
-      <location line="+92"/>
+      <location line="+96"/>
       <source>API key saved</source>
       <translation>تم حفظ مفتاح API</translation>
     </message>
@@ -514,18 +514,18 @@
     </message>
     <message>
       <location line="+31"/>
-      <location line="+525"/>
+      <location line="+545"/>
       <source>Checking…</source>
       <translation>التحقق…</translation>
     </message>
     <message>
-      <location line="-523"/>
-      <location line="+500"/>
+      <location line="-543"/>
+      <location line="+520"/>
       <source>Not installed</source>
       <translation>لم يتم تثبيته</translation>
     </message>
     <message>
-      <location line="-491"/>
+      <location line="-511"/>
       <source>Daemon not running - start it with: sudo systemctl start ollama</source>
       <translation>دايمون لا يعمل - ابدأ ب : sudo systemctl يبدأ فلاما</translation>
     </message>
@@ -545,7 +545,7 @@
       <translation>تسجيل الدخول؟ يمكنك إغلاق هذه النافذة.</translation>
     </message>
     <message>
-      <location line="+69"/>
+      <location line="+81"/>
       <location line="+40"/>
       <source>Installed.</source>
       <translation>مثبت.</translation>
@@ -573,38 +573,48 @@
     </message>
     <message>
       <location line="+8"/>
-      <location line="+138"/>
+      <location line="+146"/>
       <source>Status</source>
       <translation>الحالة</translation>
     </message>
     <message>
-      <location line="-129"/>
+      <location line="-137"/>
       <source>Download Ollama</source>
       <translation>تحميل أولاما</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+5"/>
-      <location line="+147"/>
+      <location line="+155"/>
       <location line="+19"/>
       <source>Installing…</source>
       <translation>تثبيت…</translation>
     </message>
     <message>
-      <location line="-160"/>
+      <location line="-168"/>
       <source>Claude</source>
       <translation>كلود</translation>
     </message>
     <message>
       <location line="+5"/>
-      <location line="+106"/>
+      <location line="+114"/>
       <source>Claude Code</source>
       <translation>كود كلود</translation>
     </message>
     <message>
-      <location line="-105"/>
+      <location line="-113"/>
       <source>Uses the Claude CLI and your Claude login</source>
       <translation>يستخدم كلود CLI ودخل كلود الخاص بك</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Off by default; the assistant&apos;s own tools do not need it</source>
+      <translation type="unfinished">Off by default; the assistant&apos;s own tools do not need it</translation>
     </message>
     <message>
       <location line="+7"/>
@@ -1252,7 +1262,7 @@
       <translation>وجود ديسكورد الغني</translation>
     </message>
     <message>
-      <location line="+34"/>
+      <location line="+43"/>
       <source>Broadcast settings</source>
       <translation>إعدادات البث</translation>
     </message>
@@ -1934,7 +1944,7 @@
       <translation>لصق الرمز المميز أدناه وحفظه لتمكين عنصر واجهة المستخدم</translation>
     </message>
     <message>
-      <location line="+49"/>
+      <location line="+53"/>
       <source>Configuration</source>
       <translation>الإعدادات</translation>
     </message>
@@ -2633,7 +2643,7 @@
   <context>
     <name>BatteryMonitor</name>
     <message>
-      <location filename="../modules/BatteryMonitor.qml" line="+17"/>
+      <location filename="../modules/BatteryMonitor.qml" line="+19"/>
       <source>Charger unplugged</source>
       <translation>الشاحن غير موصول</translation>
     </message>
@@ -2661,16 +2671,6 @@
       <location line="+0"/>
       <source>Battery level is low</source>
       <translation>مستوى البطارية منخفض</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Hibernating in 5 seconds</source>
-      <translation>تنقية في 5 ثوان</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Hibernating to prevent data loss</source>
-      <translation>التلاعب لمنع فقدان البيانات</translation>
     </message>
   </context>
   <context>
@@ -7106,7 +7106,7 @@
   <context>
     <name>PageCompRegistry</name>
     <message>
-      <location filename="../modules/nexus/PageCompRegistry.qml" line="+354"/>
+      <location filename="../modules/nexus/PageCompRegistry.qml" line="+346"/>
       <source>Page under construction</source>
       <translation>الصفحة قيد الإنشاء</translation>
     </message>
@@ -7560,31 +7560,6 @@
     </message>
     <message>
       <location line="+4"/>
-      <source>Power</source>
-      <translation>القوة</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery indicators, idle suspend</source>
-      <translation>مؤشرات البطارية، تعليق الخمول</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery Status</source>
-      <translation>حالة البطارية</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Power Saving</source>
-      <translation>توفير الطاقة</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Screen Timeout</source>
-      <translation>مهلة الشاشة</translation>
-    </message>
-    <message>
-      <location line="+4"/>
       <source>Session</source>
       <translation>الجلسة</translation>
     </message>
@@ -7664,7 +7639,7 @@
       <translation>المفضلة و المخفية</translation>
     </message>
     <message>
-      <location line="+4"/>
+      <location line="+7"/>
       <source>Services</source>
       <translation>الخدمات</translation>
     </message>
@@ -7778,6 +7753,11 @@
       <location line="+3"/>
       <source>Claude Code</source>
       <translation>كود كلود</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -8055,102 +8035,6 @@
       <location line="+2"/>
       <source>Opens the power, restart, and logout menu</source>
       <translation>يفتح قائمة الطاقة وإعادة التشغيل وتسجيل الخروج</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerDevil</name>
-    <message>
-      <location filename="../services/PowerDevil.qml" line="+53"/>
-      <source>KDE&apos;s suspend timer was not updated</source>
-      <translation type="unfinished">KDE&apos;s suspend timer was not updated</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Its own timer in System Settings &gt; Power Management can still suspend before the timeout set here.</source>
-      <translation type="unfinished">Its own timer in System Settings &gt; Power Management can still suspend before the timeout set here.</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerPage</name>
-    <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
-      <source>Power</source>
-      <translation>القوة</translation>
-    </message>
-    <message>
-      <location line="+10"/>
-      <source>Idle &amp; sleep</source>
-      <translation>الخمول والنوم</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Idle suspend</source>
-      <translation>تعليق الخمول</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Suspend the system after inactivity</source>
-      <translation>تعليق النظام بعد عدم النشاط</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Idle suspend timer</source>
-      <translation>إيقاف مؤقت الخمول</translation>
-    </message>
-    <message>
-      <location line="+2"/>
-      <source>Suspend after %1 minute(s) of inactivity</source>
-      <translation>تعليق بعد %1 دقيقة من عدم النشاط</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Enable idle suspend to apply a timer</source>
-      <translation>تمكين تعليق الخمول لتطبيق المؤقت</translation>
-    </message>
-    <message>
-      <location line="+12"/>
-      <source>Lock before sleep</source>
-      <translation>قفل قبل السكون</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Lock the session before suspending</source>
-      <translation>قفل الجلسة قبل تعليق</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Inhibit while audio</source>
-      <translation>منع أثناء الصوت</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while audio is playing</source>
-      <translation>منع الإجراءات العاطلة أثناء تشغيل الصوت</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Inhibit while charging</source>
-      <translation>منع أثناء الشحن</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while charging</source>
-      <translation>منع إجراءات الخمول أثناء الشحن</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Battery warnings</source>
-      <translation>تحذيرات البطارية</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Critical battery level</source>
-      <translation>مستوى البطارية الحرج</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Percentage at which the critical warning fires</source>
-      <translation>النسبة المئوية للإنذار الحرج</translation>
     </message>
   </context>
   <context>

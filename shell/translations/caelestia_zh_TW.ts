@@ -424,8 +424,8 @@
   <context>
     <name>AiAssistant</name>
     <message>
-      <location filename="../modules/sidebar/AiAssistant.qml" line="+789"/>
-      <location line="+1352"/>
+      <location filename="../modules/sidebar/AiAssistant.qml" line="+792"/>
+      <location line="+1358"/>
       <source>Rate limited - retrying in %1s…</source>
       <translation>觸發限流——%1 秒後重試…</translation>
     </message>
@@ -493,7 +493,7 @@
       <translation>儲存在你的會話金鑰環中，而非 shell.json。%1 環境變數會覆蓋它。</translation>
     </message>
     <message>
-      <location line="+92"/>
+      <location line="+96"/>
       <source>API key saved</source>
       <translation type="unfinished">API key saved</translation>
     </message>
@@ -514,18 +514,18 @@
     </message>
     <message>
       <location line="+31"/>
-      <location line="+525"/>
+      <location line="+545"/>
       <source>Checking…</source>
       <translation>正在檢查…</translation>
     </message>
     <message>
-      <location line="-523"/>
-      <location line="+500"/>
+      <location line="-543"/>
+      <location line="+520"/>
       <source>Not installed</source>
       <translation>未安裝</translation>
     </message>
     <message>
-      <location line="-491"/>
+      <location line="-511"/>
       <source>Daemon not running - start it with: sudo systemctl start ollama</source>
       <translation type="unfinished">Daemon not running - start it with: sudo systemctl start ollama</translation>
     </message>
@@ -545,7 +545,7 @@
       <translation>登入完成了？可以關閉此視窗。</translation>
     </message>
     <message>
-      <location line="+69"/>
+      <location line="+81"/>
       <location line="+40"/>
       <source>Installed.</source>
       <translation>已安裝。</translation>
@@ -573,38 +573,48 @@
     </message>
     <message>
       <location line="+8"/>
-      <location line="+138"/>
+      <location line="+146"/>
       <source>Status</source>
       <translation>狀態</translation>
     </message>
     <message>
-      <location line="-129"/>
+      <location line="-137"/>
       <source>Download Ollama</source>
       <translation type="unfinished">Download Ollama</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+5"/>
-      <location line="+147"/>
+      <location line="+155"/>
       <location line="+19"/>
       <source>Installing…</source>
       <translation>正在安裝…</translation>
     </message>
     <message>
-      <location line="-160"/>
+      <location line="-168"/>
       <source>Claude</source>
       <translation type="unfinished">Claude</translation>
     </message>
     <message>
       <location line="+5"/>
-      <location line="+106"/>
+      <location line="+114"/>
       <source>Claude Code</source>
       <translation type="unfinished">Claude Code</translation>
     </message>
     <message>
-      <location line="-105"/>
+      <location line="-113"/>
       <source>Uses the Claude CLI and your Claude login</source>
       <translation>使用 Claude CLI 與你的 Claude 登入</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Off by default; the assistant&apos;s own tools do not need it</source>
+      <translation type="unfinished">Off by default; the assistant&apos;s own tools do not need it</translation>
     </message>
     <message>
       <location line="+7"/>
@@ -1252,7 +1262,7 @@
       <translation>Discord 富媒體狀態</translation>
     </message>
     <message>
-      <location line="+34"/>
+      <location line="+43"/>
       <source>Broadcast settings</source>
       <translation>廣播設定</translation>
     </message>
@@ -1934,7 +1944,7 @@
       <translation type="unfinished">Paste a token below and save it to enable the widget</translation>
     </message>
     <message>
-      <location line="+49"/>
+      <location line="+53"/>
       <source>Configuration</source>
       <translation>配置</translation>
     </message>
@@ -2633,7 +2643,7 @@
   <context>
     <name>BatteryMonitor</name>
     <message>
-      <location filename="../modules/BatteryMonitor.qml" line="+17"/>
+      <location filename="../modules/BatteryMonitor.qml" line="+19"/>
       <source>Charger unplugged</source>
       <translation>充電器已拔出</translation>
     </message>
@@ -2661,16 +2671,6 @@
       <location line="+0"/>
       <source>Battery level is low</source>
       <translation>電量偏低</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Hibernating in 5 seconds</source>
-      <translation>5 秒後將休眠</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Hibernating to prevent data loss</source>
-      <translation>即將休眠以防止資料丟失</translation>
     </message>
   </context>
   <context>
@@ -7106,7 +7106,7 @@
   <context>
     <name>PageCompRegistry</name>
     <message>
-      <location filename="../modules/nexus/PageCompRegistry.qml" line="+354"/>
+      <location filename="../modules/nexus/PageCompRegistry.qml" line="+346"/>
       <source>Page under construction</source>
       <translation>此頁面正在建設中</translation>
     </message>
@@ -7560,31 +7560,6 @@
     </message>
     <message>
       <location line="+4"/>
-      <source>Power</source>
-      <translation>電源</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery indicators, idle suspend</source>
-      <translation>電池指示器與空閒掛起</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery Status</source>
-      <translation>電池狀態</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Power Saving</source>
-      <translation>省電</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Screen Timeout</source>
-      <translation>螢幕超時</translation>
-    </message>
-    <message>
-      <location line="+4"/>
       <source>Session</source>
       <translation>會話</translation>
     </message>
@@ -7664,7 +7639,7 @@
       <translation>收藏與隱藏</translation>
     </message>
     <message>
-      <location line="+4"/>
+      <location line="+7"/>
       <source>Services</source>
       <translation>服務</translation>
     </message>
@@ -7778,6 +7753,11 @@
       <location line="+3"/>
       <source>Claude Code</source>
       <translation type="unfinished">Claude Code</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -8055,102 +8035,6 @@
       <location line="+2"/>
       <source>Opens the power, restart, and logout menu</source>
       <translation>開啟電源、重啟與登出選單</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerDevil</name>
-    <message>
-      <location filename="../services/PowerDevil.qml" line="+53"/>
-      <source>KDE&apos;s suspend timer was not updated</source>
-      <translation type="unfinished">KDE&apos;s suspend timer was not updated</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Its own timer in System Settings &gt; Power Management can still suspend before the timeout set here.</source>
-      <translation type="unfinished">Its own timer in System Settings &gt; Power Management can still suspend before the timeout set here.</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerPage</name>
-    <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
-      <source>Power</source>
-      <translation>電源</translation>
-    </message>
-    <message>
-      <location line="+10"/>
-      <source>Idle &amp; sleep</source>
-      <translation>空閒與睡眠</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Idle suspend</source>
-      <translation>空閒掛起</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Suspend the system after inactivity</source>
-      <translation>空閒後掛起系統</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Idle suspend timer</source>
-      <translation>空閒掛起定時器</translation>
-    </message>
-    <message>
-      <location line="+2"/>
-      <source>Suspend after %1 minute(s) of inactivity</source>
-      <translation>空閒 %1 分鐘後掛起</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Enable idle suspend to apply a timer</source>
-      <translation>啟用空閒掛起以應用定時器</translation>
-    </message>
-    <message>
-      <location line="+12"/>
-      <source>Lock before sleep</source>
-      <translation>睡眠前鎖定</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Lock the session before suspending</source>
-      <translation>掛起前鎖定會話</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Inhibit while audio</source>
-      <translation>播放音訊時停用掛起</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while audio is playing</source>
-      <translation>播放音訊時阻止空閒操作</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Inhibit while charging</source>
-      <translation>充電時停用掛起</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while charging</source>
-      <translation>充電時阻止空閒操作</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Battery warnings</source>
-      <translation>電池警告</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Critical battery level</source>
-      <translation>電池電量臨界值</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Percentage at which the critical warning fires</source>
-      <translation>觸發危急警告的百分比</translation>
     </message>
   </context>
   <context>

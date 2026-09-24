@@ -424,8 +424,8 @@
   <context>
     <name>AiAssistant</name>
     <message>
-      <location filename="../modules/sidebar/AiAssistant.qml" line="+789"/>
-      <location line="+1352"/>
+      <location filename="../modules/sidebar/AiAssistant.qml" line="+792"/>
+      <location line="+1358"/>
       <source>Rate limited - retrying in %1s…</source>
       <translation>Taxa limitada - tentando novamente em %1s…</translation>
     </message>
@@ -493,7 +493,7 @@
       <translation>Armazenado em sua chave de sessão, não no shell.json. A variável de ambiente %1 substitui ela.</translation>
     </message>
     <message>
-      <location line="+92"/>
+      <location line="+96"/>
       <source>API key saved</source>
       <translation>Chave de API salva</translation>
     </message>
@@ -514,18 +514,18 @@
     </message>
     <message>
       <location line="+31"/>
-      <location line="+525"/>
+      <location line="+545"/>
       <source>Checking…</source>
       <translation>Verificando…</translation>
     </message>
     <message>
-      <location line="-523"/>
-      <location line="+500"/>
+      <location line="-543"/>
+      <location line="+520"/>
       <source>Not installed</source>
       <translation>Não instalado</translation>
     </message>
     <message>
-      <location line="-491"/>
+      <location line="-511"/>
       <source>Daemon not running - start it with: sudo systemctl start ollama</source>
       <translation>Daemon não executado - inicie-o com: sudo systemctl start ollama</translation>
     </message>
@@ -545,7 +545,7 @@
       <translation>Login concluído? Você pode fechar esta janela.</translation>
     </message>
     <message>
-      <location line="+69"/>
+      <location line="+81"/>
       <location line="+40"/>
       <source>Installed.</source>
       <translation>Instalado.</translation>
@@ -573,38 +573,48 @@
     </message>
     <message>
       <location line="+8"/>
-      <location line="+138"/>
+      <location line="+146"/>
       <source>Status</source>
       <translation>SItuação</translation>
     </message>
     <message>
-      <location line="-129"/>
+      <location line="-137"/>
       <source>Download Ollama</source>
       <translation>Baixar Ollama</translation>
     </message>
     <message>
       <location line="+1"/>
       <location line="+5"/>
-      <location line="+147"/>
+      <location line="+155"/>
       <location line="+19"/>
       <source>Installing…</source>
       <translation>Instalando…</translation>
     </message>
     <message>
-      <location line="-160"/>
+      <location line="-168"/>
       <source>Claude</source>
       <translation>Mortal</translation>
     </message>
     <message>
       <location line="+5"/>
-      <location line="+106"/>
+      <location line="+114"/>
       <source>Claude Code</source>
       <translation>Código Claude</translation>
     </message>
     <message>
-      <location line="-105"/>
+      <location line="-113"/>
       <source>Uses the Claude CLI and your Claude login</source>
       <translation>Usa o Claude CLI e o seu login Claude</translation>
+    </message>
+    <message>
+      <location line="+7"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Off by default; the assistant&apos;s own tools do not need it</source>
+      <translation type="unfinished">Off by default; the assistant&apos;s own tools do not need it</translation>
     </message>
     <message>
       <location line="+7"/>
@@ -1252,7 +1262,7 @@
       <translation>Rich Presence do Discord</translation>
     </message>
     <message>
-      <location line="+34"/>
+      <location line="+43"/>
       <source>Broadcast settings</source>
       <translation>Configurações de transmissão</translation>
     </message>
@@ -1934,7 +1944,7 @@
       <translation>Cole um token abaixo e salve para ativar o widget</translation>
     </message>
     <message>
-      <location line="+49"/>
+      <location line="+53"/>
       <source>Configuration</source>
       <translation>Configuração</translation>
     </message>
@@ -2633,7 +2643,7 @@
   <context>
     <name>BatteryMonitor</name>
     <message>
-      <location filename="../modules/BatteryMonitor.qml" line="+17"/>
+      <location filename="../modules/BatteryMonitor.qml" line="+19"/>
       <source>Charger unplugged</source>
       <translation>Carregador desconectado</translation>
     </message>
@@ -2661,16 +2671,6 @@
       <location line="+0"/>
       <source>Battery level is low</source>
       <translation>O nível da bateria está baixo</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Hibernating in 5 seconds</source>
-      <translation>Hibernando em 5 segundos</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Hibernating to prevent data loss</source>
-      <translation>Hibernar para prevenir perda de dados</translation>
     </message>
   </context>
   <context>
@@ -7106,7 +7106,7 @@
   <context>
     <name>PageCompRegistry</name>
     <message>
-      <location filename="../modules/nexus/PageCompRegistry.qml" line="+354"/>
+      <location filename="../modules/nexus/PageCompRegistry.qml" line="+346"/>
       <source>Page under construction</source>
       <translation>Página em construção</translation>
     </message>
@@ -7560,31 +7560,6 @@
     </message>
     <message>
       <location line="+4"/>
-      <source>Power</source>
-      <translation>Liga/Desliga</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery indicators, idle suspend</source>
-      <translation>Indicadores de bateria, suspensão ociosa</translation>
-    </message>
-    <message>
-      <location line="+3"/>
-      <source>Battery Status</source>
-      <translation>Estado da bateria</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Power Saving</source>
-      <translation>Economia de energia</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Screen Timeout</source>
-      <translation>Tempo limite da tela</translation>
-    </message>
-    <message>
-      <location line="+4"/>
       <source>Session</source>
       <translation>Sessão</translation>
     </message>
@@ -7664,7 +7639,7 @@
       <translation>Favoritos e Ocultos</translation>
     </message>
     <message>
-      <location line="+4"/>
+      <location line="+7"/>
       <source>Services</source>
       <translation>Serviços</translation>
     </message>
@@ -7778,6 +7753,11 @@
       <location line="+3"/>
       <source>Claude Code</source>
       <translation>Código Claude</translation>
+    </message>
+    <message>
+      <location line="+1"/>
+      <source>Let the CLI run its own tools</source>
+      <translation type="unfinished">Let the CLI run its own tools</translation>
     </message>
     <message>
       <location line="+1"/>
@@ -8055,102 +8035,6 @@
       <location line="+2"/>
       <source>Opens the power, restart, and logout menu</source>
       <translation>Abre o menu de energia, reinicia e desconecta</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerDevil</name>
-    <message>
-      <location filename="../services/PowerDevil.qml" line="+53"/>
-      <source>KDE&apos;s suspend timer was not updated</source>
-      <translation>KDE&apos;s o temporizador de suspensão não foi atualizado</translation>
-    </message>
-    <message>
-      <location line="+0"/>
-      <source>Its own timer in System Settings &gt; Power Management can still suspend before the timeout set here.</source>
-      <translation>Seu próprio temporizador em Configurações do Sistema &gt; Gestão de Energia ainda pode suspender antes do tempo limite definido aqui.</translation>
-    </message>
-  </context>
-  <context>
-    <name>PowerPage</name>
-    <message>
-      <location filename="../modules/nexus/pages/PowerPage.qml" line="+65"/>
-      <source>Power</source>
-      <translation>Liga/Desliga</translation>
-    </message>
-    <message>
-      <location line="+10"/>
-      <source>Idle &amp; sleep</source>
-      <translation>Inativo e sono</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Idle suspend</source>
-      <translation>Suspensão suspensa</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Suspend the system after inactivity</source>
-      <translation>Suspender o sistema após inatividade</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Idle suspend timer</source>
-      <translation>Tempo de suspensão ocioso</translation>
-    </message>
-    <message>
-      <location line="+2"/>
-      <source>Suspend after %1 minute(s) of inactivity</source>
-      <translation>Suspender após %1 minuto(s) de inatividade</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Enable idle suspend to apply a timer</source>
-      <translation>Ativar suspensão ociosa para aplicar um cronômetro</translation>
-    </message>
-    <message>
-      <location line="+12"/>
-      <source>Lock before sleep</source>
-      <translation>Bloquear antes de dormir</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Lock the session before suspending</source>
-      <translation>Bloquear a sessão antes de suspender</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Inhibit while audio</source>
-      <translation>Inibir durante o áudio</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while audio is playing</source>
-      <translation>Prevenir ações inativas enquanto o áudio estiver reproduzindo</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source>Inhibit while charging</source>
-      <translation>Inibir durante carregamento</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Prevent idle actions while charging</source>
-      <translation>Prevenir ações inativas durante o carregamento</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Battery warnings</source>
-      <translation>Alertas de bateria</translation>
-    </message>
-    <message>
-      <location line="+6"/>
-      <source>Critical battery level</source>
-      <translation>Nível crítico de bateria</translation>
-    </message>
-    <message>
-      <location line="+1"/>
-      <source>Percentage at which the critical warning fires</source>
-      <translation>Porcentagem na qual o aviso crítico dispara</translation>
     </message>
   </context>
   <context>
