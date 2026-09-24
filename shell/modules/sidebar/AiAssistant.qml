@@ -591,15 +591,18 @@ Item {
         root.keyringKeys = Object.assign({}, m);
 
         const attr = root.keyringAttr(which);
-        // The key goes in on stdin so it never appears in the process list.
+        // The key travels in the child's environment, not on its command line: a command
+        // line is readable through /proc by every user on the machine, an environment is
+        // not.
         const script = key === ""
             ? "secret-tool clear service caelestia key " + JSON.stringify(attr)
-            : "printf %s \"$1\" | secret-tool store --label=" + JSON.stringify("Caelestia " + which + " API key") +
+            : "printf %s \"$CAELESTIA_AI_KEY\" | secret-tool store --label=" + JSON.stringify("Caelestia " + which + " API key") +
               " service caelestia key " + JSON.stringify(attr);
-        const cmd = key === "" ? ["sh", "-c", script] : ["sh", "-c", script, "--", key];
         try {
             const o = Qt.createQmlObject('import QtQuick\nimport Quickshell.Io\nProcess { id: sp; command: ' +
-                JSON.stringify(cmd) + '\n onExited: code => sp.destroy() }', root, "keyringStore");
+                JSON.stringify(["sh", "-c", script]) +
+                '\n environment: ({ CAELESTIA_AI_KEY: ' + JSON.stringify(key) + ' })\n' +
+                ' onExited: code => sp.destroy() }', root, "keyringStore");
             o.running = true;
         } catch (e) {}
     }

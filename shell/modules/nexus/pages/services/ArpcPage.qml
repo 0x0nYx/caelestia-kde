@@ -20,11 +20,20 @@ PageBase {
     isSubPage: true
 
     function saveToken(token) {
+        // The token goes to the child's environment, not its command line: /proc shows a
+        // command line to every user on the machine, and an environment is only readable
+        // by the process's own user.
+        saveTokenProc.environment = ({ CAELESTIA_STEAMGRIDDB_KEY: token });
         if (!token) {
-            Quickshell.execDetached(["secret-tool", "clear", "service", "caelestia-shell", "account", "steamgriddb"]);
+            saveTokenProc.command = ["secret-tool", "clear", "service", "caelestia-shell", "account", "steamgriddb"];
         } else {
-            Quickshell.execDetached(["bash", "-c", "secret-tool store --label=\"Caelestia SteamGridDB Key\" service caelestia-shell account steamgriddb <<< \"$1\"", "--", token]);
+            saveTokenProc.command = ["bash", "-c", "printf %s \"$CAELESTIA_STEAMGRIDDB_KEY\" | secret-tool store --label=\"Caelestia SteamGridDB Key\" service caelestia-shell account steamgriddb"];
         }
+        saveTokenProc.running = true;
+    }
+
+    property Process saveTokenProc: Process {
+        id: saveTokenProc
     }
 
     property Process readTokenProc: Process {

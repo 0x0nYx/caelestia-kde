@@ -133,11 +133,15 @@ PageBase {
         root.lastKeyStoreError = "";
 
         const attr = "caelestia-ai-" + p;
+        // The key goes to the child's environment rather than its command line: /proc
+        // shows a command line to every user on the machine, and an environment is only
+        // readable by the process's own user.
         const script = key === ""
             ? "secret-tool clear service caelestia key " + JSON.stringify(attr)
-            : "printf %s \"$1\" | secret-tool store --label=" + JSON.stringify("Caelestia " + p + " API key") +
+            : "printf %s \"$CAELESTIA_AI_KEY\" | secret-tool store --label=" + JSON.stringify("Caelestia " + p + " API key") +
               " service caelestia key " + JSON.stringify(attr);
-        keyStoreProc.command = key === "" ? ["sh", "-c", script] : ["sh", "-c", script, "--", key];
+        keyStoreProc.environment = ({ CAELESTIA_AI_KEY: key });
+        keyStoreProc.command = ["sh", "-c", script];
         keyStoreProc.running = true;
     }
 
