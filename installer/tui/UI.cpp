@@ -79,6 +79,67 @@ bool is_caelestia_installed() {
     return false;
 }
 
+// Runs `<sudo> -S true` with the candidate on its stdin. No shell, and an absolute
+// binary when there is one: `sh -c "sudo ..."` would run whichever `sudo` the PATH
+// offers first, and the PATH is the one thing the caller decides.
+bool sudo_accepts_password(const string& password) {
+    string sudo_path;
+    for (const char* candidate : {"/usr/bin/sudo", "/bin/sudo"}) {
+        if (access(candidate, X_OK) == 0) {
+            sudo_path = candidate;
+            break;
+        }
+    }
+    if (sudo_path.empty())
+        return false;
+
+    int pipe_fds[2];
+    if (pipe(pipe_fds) != 0)
+        return false;
+
+    pid_t child = fork();
+    if (child < 0) {
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+        return false;
+    }
+    if (child == 0) {
+        close(pipe_fds[1]);
+        if (dup2(pipe_fds[0], STDIN_FILENO) < 0)
+            _exit(127);
+        close(pipe_fds[0]);
+        int devnull = open("/dev/null", O_WRONLY);
+        if (devnull >= 0) {
+            dup2(devnull, STDOUT_FILENO);
+            dup2(devnull, STDERR_FILENO);
+            close(devnull);
+        }
+        execl(sudo_path.c_str(), "sudo", "-S", "true", static_cast<char*>(nullptr));
+        _exit(127);
+    }
+
+    close(pipe_fds[0]);
+    // A sudo that has already given up closes the read end, and the write below would
+    // take the installer down with SIGPIPE.
+    struct sigaction previous {};
+    struct sigaction ignore {};
+    ignore.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &ignore, &previous);
+
+    const string line = password + "\n";
+    ssize_t written = write(pipe_fds[1], line.data(), line.size());
+    close(pipe_fds[1]);
+    sigaction(SIGPIPE, &previous, nullptr);
+
+    int status = 0;
+    if (waitpid(child, &status, 0) < 0)
+        return false;
+    // A short write leaves sudo waiting for the rest of the line, so only a complete
+    // one plus a zero exit counts as "this password works".
+    return written == static_cast<ssize_t>(line.size()) && WIFEXITED(status) &&
+           WEXITSTATUS(status) == 0;
+}
+
 } // anonymous namespace
 
 namespace UI {
@@ -283,18 +344,12 @@ namespace UI {
                 Draw::text(left + 2, top + 5, "Verifying...                                 ", "warning");
                 cout << Draw::sync_end() << flush;
 
-                FILE* pipe = popen("sudo -S true 2>/dev/null", "w");
-                if (pipe) {
-                    fprintf(pipe, "%s\n", candidate.c_str());
-                    fflush(pipe);
-                    int status = pclose(pipe);
-                    if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-                        if (Sudo::prepare(candidate))
-                            return true;
-                        error_msg = "Could not prepare secure sudo helpers.";
-                        pw.clear();
-                        return false;
-                    }
+                if (sudo_accepts_password(candidate)) {
+                    if (Sudo::prepare(candidate))
+                        return true;
+                    error_msg = "Could not prepare secure sudo helpers.";
+                    pw.clear();
+                    return false;
                 }
                 attempts++;
                 if (attempts >= 3) {
