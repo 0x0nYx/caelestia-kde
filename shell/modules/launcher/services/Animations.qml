@@ -75,23 +75,10 @@ Searcher {
                     list.visibilities.launcher = false;
                 }
 
-                // Animation switching is Hyprland-only; no-op on KDE.
-console.log("Animations: animation switching is not supported on KDE");
-return;
-            
-
-                // Remove existing dofile from hypr-user.lua
-                let script = "sed -i '/dofile(\".*\\/animations\\/.*\\.lua\")/d' ~/.config/caelestia/hypr-user.lua\n";
-
-                // Add new dofile if not default
-                if (path !== "default") {
-                    script += `echo "dofile(\\"${path}\\")" >> ~/.config/caelestia/hypr-user.lua\n`;
-                }
-
-                // Reload hyprland
-                script += "hyprctl reload\n";
-
-                Quickshell.execDetached(["sh", "-c", script]);
+                // Animation switching rewrote Hyprland's hypr-user.lua and reloaded
+                // the compositor, which this shell does not run under: the pack can
+                // still be browsed, but there is nothing to switch on KDE.
+                console.warn("Animations: animation switching is not supported on KDE");
             }
         }
     }
