@@ -64,25 +64,28 @@ Item {
 
         let targetDir = (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/caelestia/plugins/" + id;
 
+        // The id, the path and the branch come out of the index this store fetches, so
+        // they are handed to the script as arguments: spliced into the script text, a
+        // `$(...)` in that index would run instead of naming a directory.
         let script = `set -e
 TMP_DIR=$(mktemp -d)
 cd "$TMP_DIR"
 git init -q
 git remote add origin https://github.com/ladybug-me/caelestia-kde-plugins.git
 git config core.sparseCheckout true
-echo "${actualRepoPath}/*" >> .git/info/sparse-checkout
-git fetch -q --depth 1 --filter=blob:none origin "${installBranch}"
-git reset --hard -q "origin/${installBranch}"
-mkdir -p "$(dirname "${targetDir}")"
-rm -rf "${targetDir}"
-mv "${actualRepoPath}" "${targetDir}"
+echo "$2/*" >> .git/info/sparse-checkout
+git fetch -q --depth 1 --filter=blob:none origin "$3"
+git reset --hard -q "origin/$3"
+mkdir -p "$(dirname "$4")"
+rm -rf "$4"
+mv "$2" "$4"
 rm -rf "$TMP_DIR"
 echo "DONE"`;
 
         installProc.pendingId = id;
         installProc.pendingTargetDir = targetDir;
         installProc.pendingRestart = (restart === "true" || restart === true);
-        installProc.command = ["bash", "-c", script];
+        installProc.command = ["bash", "-c", script, "--", id, actualRepoPath, installBranch, targetDir];
         installProc.running = true;
     }
 
