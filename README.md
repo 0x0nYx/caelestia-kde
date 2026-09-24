@@ -123,7 +123,8 @@ assets/        the logo and screenshots used by the docs
 - [Bali10050](https://github.com/Bali10050/Darkly) - Darkly Qt
 - [wrymt](https://github.com/wrymt/darkly-gtk) - Darkly GTK
 - [Haidir](https://bitbucket.org/dirn-typo/yet-another-monochrome-icon-set) - icon set
-
+- [dim-ghub](https://github.com/dim-ghub/caelestia-shell) - v2.0.0 features
+  
 ## License
 
 GPL-3.0-or-later - see [LICENSE](LICENSE).
