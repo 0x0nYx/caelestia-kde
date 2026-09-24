@@ -72,6 +72,7 @@ ItemList {
             } else {
                 // Active network: open its detail/settings sub-page.
                 root.nState.selectedNetworkSsid = modelData.ssid;
+                root.nState.selectedNetworkUuid = "";
                 root.nState.networkDetailsFromSaved = false;
                 root.nState.openSubPage(3);
             }
