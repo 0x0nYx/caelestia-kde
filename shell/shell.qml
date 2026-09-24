@@ -196,6 +196,5 @@ ShellRoot {
     }
 
     BatteryMonitor {}
-    IdleMonitors {}
     BluetoothReconnect {}
 }

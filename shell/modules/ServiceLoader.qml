@@ -25,7 +25,6 @@ Scope {
             Brightness;
             Weather.reload();
             WorkspaceTrackerGuard;
-            PowerDevil;
 
             if (GlobalConfig.utilities.vpn.enabled)
                 VPN;
