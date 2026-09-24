@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Create GitHub App Token
         id: app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         with:
           client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
@@ -37,7 +37,7 @@ jobs:
           permission-pull-requests: write
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # A scheduled run has no branch of its own and would check out the
           # default branch, uploading sources that are behind dev.
@@ -58,7 +58,7 @@ jobs:
           test -s shell/translations/caelestia_en.ts
 
       - name: Synchronize with Crowdin
-        uses: crowdin/github-action@v2
+        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
         with:
           upload_sources: true
           upload_translations: true
@@ -96,14 +96,14 @@ jobs:
     steps:
       - name: Create GitHub App Token
         id: app-token
-        uses: actions/create-github-app-token@v3
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         with:
           client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           permission-contents: write
 
       - name: Checkout Localization Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: i18n/crowdin
           token: ${{ steps.app-token.outputs.token }}
