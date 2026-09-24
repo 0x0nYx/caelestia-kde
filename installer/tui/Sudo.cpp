@@ -38,6 +38,21 @@ bool write_file_excl(const string& path, const string& content, int mode) {
     return written == static_cast<ssize_t>(content.size());
 }
 
+// Single-quotes a value for one of the generated shell scripts. The shim directory
+// comes from XDG_RUNTIME_DIR or from mkdtemp, and a quote in that path would otherwise
+// end the string the script thinks it is reading.
+string shell_single_quote(const string& value) {
+    string quoted = "'";
+    for (char c : value) {
+        if (c == '\'')
+            quoted += "'\\''";
+        else
+            quoted += c;
+    }
+    quoted += "'";
+    return quoted;
+}
+
 // The session runtime directory first: it is 0700, owned by the user, and systemd
 // removes it at logout, so an installer that is killed outright cannot leave the
 // password file in /tmp until the next boot.
@@ -64,8 +79,9 @@ bool make_shim_dir(string& out) {
 }
 
 bool write_shim_files(const string& password) {
-    const string askpass = "#!/bin/bash\ncat " + g_sudo_bin_dir + "/pass.txt\n";
-    const string wrapper = "#!/bin/bash\nexport SUDO_ASKPASS=" + g_sudo_bin_dir +
+    const string dir = shell_single_quote(g_sudo_bin_dir);
+    const string askpass = "#!/bin/bash\ncat " + dir + "/pass.txt\n";
+    const string wrapper = "#!/bin/bash\nexport SUDO_ASKPASS=" + dir +
                            "/askpass.sh\nexec /usr/bin/sudo -A \"$@\"\n";
     return write_password_file_secure(g_sudo_bin_dir + "/pass.txt", password) &&
            write_file_excl(g_sudo_bin_dir + "/askpass.sh", askpass, 0700) &&
@@ -112,7 +128,9 @@ bool take_idle_inhibitor() {
     ifstream old_pid(pid_file);
     pid_t pid = 0;
     old_pid >> pid;
-    if (pid > 0 && is_systemd_inhibit(pid))
+    // The file is ours to rewrite, but the pid in it is only a number: never signal
+    // this process or its parent, whatever the file says.
+    if (pid > 0 && pid != getpid() && pid != getppid() && is_systemd_inhibit(pid))
         kill(pid, SIGKILL);
     release_kde_inhibit(cookie_file);
 
