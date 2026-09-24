@@ -269,6 +269,7 @@ QtObject {
             category: "assistant",
             settings: [
                 { label: qsTr("Claude Code"), keywords: ["claude", "cli", "subscription", "login"] },
+                { label: qsTr("Let the CLI run its own tools"), keywords: ["claude", "permissions", "tools", "bypass", "dangerous"] },
                 { label: qsTr("Accounts"), keywords: ["claude", "account", "login", "switch"] },
                 { label: qsTr("Providers"), keywords: ["ollama", "openai", "chatgpt", "gemini", "openrouter", "api key"] }
             ]
