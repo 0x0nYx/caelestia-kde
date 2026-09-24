@@ -82,11 +82,17 @@ PageBase {
         return list;
     }
 
+    // Perceptual weighting (the "redmean" approximation) rather than plain RGB
+    // euclidean distance, which weighs all channels equally even though the eye
+    // is most sensitive to green and least to blue: browns sorted as red and
+    // teals swapped with greens. The weights are the classic compuphase ones,
+    // restated on 0-1 components, and stay dependency-free.
     function colorDistance(c1: color, c2: color): real {
+        const rMean = (c1.r + c2.r) / 2;
         const dr = c1.r - c2.r;
         const dg = c1.g - c2.g;
         const db = c1.b - c2.b;
-        return Math.sqrt(dr * dr + dg * dg + db * db);
+        return Math.sqrt((2 + rMean) * dr * dr + 4 * dg * dg + (3 - rMean) * db * db);
     }
 
     function toggleSortColor(color: color) {
@@ -104,9 +110,19 @@ PageBase {
         const newDistances = {};
 
         for (const w of walls) {
-            if (w.parentDir === baseDir) {
-                newDistances[w.path] = colorDistance(root.wallpaperColors[w.path] ?? "black", root.sortColor);
-            }
+            if (w.parentDir !== baseDir)
+                continue;
+
+            // Only walls whose dominant colour has landed get a distance; the
+            // rest keep the 999999 tail slot in wallsList. The old "?? black"
+            // stamp gave every unloaded wallpaper the same distance-to-black,
+            // ranking it above real matches until its analyser ran and the
+            // debounced re-sort moved it.
+            const dominant = root.wallpaperColors[w.path];
+            if (dominant === undefined)
+                continue;
+
+            newDistances[w.path] = colorDistance(dominant, root.sortColor);
         }
 
         root.colorDistances = newDistances;
