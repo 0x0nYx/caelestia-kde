@@ -247,14 +247,6 @@ QtObject {
             }
         },
         Component {
-            // Power
-            StackPage {
-                Component {
-                    PowerPage {}
-                }
-            }
-        },
-        Component {
             // Session
             StackPage {
                 Component {

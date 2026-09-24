@@ -153,18 +153,6 @@ QtObject {
             ]
         },
         {
-            label: qsTr("Power"),
-            key: "power",
-            icon: "battery_charging_full",
-            description: qsTr("Battery indicators, idle suspend"),
-            category: "controls",
-            settings: [
-                { label: qsTr("Battery Status"), keywords: ["percentage", "charging", "health"] },
-                { label: qsTr("Power Saving"), keywords: ["suspend", "sleep", "idle"] },
-                { label: qsTr("Screen Timeout"), keywords: ["dim", "turn off screen"] }
-            ]
-        },
-        {
             label: qsTr("Session"),
             key: "session",
             icon: "power_settings_new",
