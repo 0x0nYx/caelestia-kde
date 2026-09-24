@@ -15,6 +15,9 @@ PageBase {
     id: root
 
     readonly property string ssid: nState.selectedNetworkSsid
+    // The specific saved profile this page acts on; empty when opened for the
+    // active network from the network list.
+    readonly property string uuid: nState.selectedNetworkUuid
     readonly property var ap: Nmcli.findNetwork(root.ssid)
     readonly property var details: Nmcli.wirelessDeviceDetails
     readonly property bool isActive: !!Nmcli.active && Nmcli.active.ssid === root.ssid
@@ -24,7 +27,7 @@ PageBase {
     function loadAutoconnect(): void {
         if (!root.ssid)
             return;
-        Nmcli.getIpv4Config(root.ssid, cfg => {
+        Nmcli.getIpv4Config(root.uuid || root.ssid, cfg => {
             if (cfg)
                 root.autoconnect = cfg.autoconnect;
         });
@@ -55,7 +58,7 @@ PageBase {
         ButtonRow {
             Layout.bottomMargin: Tokens.spacing.large - parent.spacing
             Layout.alignment: Qt.AlignHCenter
-            Layout.minimumWidth: Math.round(root.cappedWidth * (root.isActive ? 0.7 : 0.5))
+            Layout.minimumWidth: Math.round(root.cappedWidth * (root.isActive || root.ap ? 0.7 : 0.5))
             spacing: Tokens.spacing.small
 
             ButtonBase {
@@ -71,7 +74,11 @@ PageBase {
                 implicitHeight: forgetLayout.implicitHeight + Tokens.padding.medium * 2
 
                 onClicked: {
-                    Nmcli.forgetNetwork(root.ssid);
+                    // Forget only this profile — several can share the SSID.
+                    if (root.uuid)
+                        Nmcli.forgetNetworkByUuid(root.uuid);
+                    else
+                        Nmcli.forgetNetwork(root.ssid);
                     root.nState.closeSubPage();
                 }
 
@@ -92,6 +99,50 @@ PageBase {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("Forget")
                         color: forgetBtn.onColour
+                    }
+                }
+            }
+
+            ButtonBase {
+                id: connectBtn
+
+                visible: !root.isActive && !!root.ap
+                fillWidth: true
+                shapeMorph: true
+                isRound: true
+                inactiveColour: Colours.palette.m3primaryContainer
+                inactiveOnColour: Colours.palette.m3onPrimaryContainer
+
+                implicitWidth: connectLayout.implicitWidth + Tokens.padding.extraLarge * 2
+                implicitHeight: connectLayout.implicitHeight + Tokens.padding.medium * 2
+
+                onClicked: {
+                    // Connect to this exact profile when one is selected;
+                    // fall back to the SSID when opened for the active network.
+                    if (root.uuid)
+                        Nmcli.connectToNetworkByUuid(root.uuid);
+                    else
+                        Nmcli.connectToNetwork(root.ssid, "", root.ap?.bssid ?? "", null);
+                    root.nState.closeSubPage();
+                }
+
+                ColumnLayout {
+                    id: connectLayout
+
+                    anchors.centerIn: parent
+                    spacing: 0
+
+                    MaterialIcon {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "wifi"
+                        color: connectBtn.onColour
+                        fontStyle: Tokens.font.icon.medium
+                    }
+
+                    StyledText {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: qsTr("Connect")
+                        color: connectBtn.onColour
                     }
                 }
             }
@@ -202,13 +253,13 @@ PageBase {
             checked: root.autoconnect
             onToggled: {
                 root.autoconnect = checked;
-                Nmcli.setAutoconnect(root.ssid, checked, () => {});
+                Nmcli.setAutoconnect(root.uuid || root.ssid, checked, () => {});
             }
         }
 
         Ipv4ConfigSection {
             Layout.fillWidth: true
-            connectionName: root.ssid
+            connectionName: root.uuid || root.ssid
         }
     }
 }

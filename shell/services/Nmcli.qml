@@ -42,6 +42,9 @@ Singleton {
 
     property list<string> savedConnections: NmQt.savedConnections
     property list<string> savedConnectionSsids: NmQt.savedConnectionSsids
+    // One entry per saved wireless profile (ssid, id, uuid, path, security,
+    // active) — profiles sharing an SSID stay distinguishable.
+    readonly property var savedConnectionProfiles: NmQt.savedConnectionProfiles
 
     readonly property var activeProcesses: []
 
@@ -307,6 +310,8 @@ Singleton {
         }
     }
 
+    function connectToNetworkByUuid(uuid: string, callback: var): void { NmQt.connectToNetworkByUuid(uuid, callback); }
+
     function connectWireless(ssid: string, password: string, bssid: string, callback: var, retryCount: int): void {
         connectToNetwork(ssid, password, bssid, callback);
     }
@@ -346,6 +351,7 @@ Singleton {
 
     function hasSavedProfile(ssid: string): bool { return NmQt.hasSavedProfile(ssid); }
     function forgetNetwork(ssid: string, callback: var): void { NmQt.forgetNetwork(ssid, callback); }
+    function forgetNetworkByUuid(uuid: string, callback: var): void { NmQt.forgetNetworkByUuid(uuid, callback); }
 
     function disconnect(interfaceName: string, callback: var): void {
         NmQt.disconnectFromNetwork();

@@ -17,6 +17,9 @@ QtObject {
     property DesktopEntry selectedApp
     property int editingVpnIndex: -1
     property string selectedNetworkSsid
+    // UUID of the specific saved profile the network detail page acts on;
+    // empty when the page was opened for the active network instead.
+    property string selectedNetworkUuid
     property string selectedEthernetInterface
     property bool networkDetailsFromSaved
 
