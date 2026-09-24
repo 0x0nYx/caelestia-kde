@@ -437,7 +437,19 @@ PageBase {
         Process {
             id: installProc
 
-            command: ["sh", "-c", "curl -fsSL https://claude.ai/install.sh | bash"]
+            // Downloaded to a file and then run, rather than piped into bash: a transfer
+            // that stops halfway would otherwise execute whatever arrived, and nothing
+            // would be left behind to look at.
+            command: ["sh", "-c", `
+f="$(mktemp)"
+if curl -fsSL --connect-timeout 10 --max-time 60 https://claude.ai/install.sh -o "$f"; then
+    bash "$f"
+    status=$?
+else
+    status=1
+fi
+rm -f "$f"
+exit $status`]
             stdout: SplitParser {
                 onRead: line => root.installStatus = line
             }
