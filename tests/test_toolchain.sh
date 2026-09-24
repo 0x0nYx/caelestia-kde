@@ -183,4 +183,49 @@ test_install_cava_sdk_fails_on_unknown_distro() {
     assert_status 1 "$status" "an unknown distro should be reported as a failure"
 }
 
+test_install_cava_sdk_extraction_ignores_the_archive_ownership() {
+    local tmp stub log status
+    tmp="$(new_tmpdir)"
+    stub="$tmp/bin"
+    log="$tmp/calls.log"
+    stub_bin "$stub" uname "echo x86_64"
+    recording_stub "$stub" curl "$log"
+    recording_stub "$stub" tar "$log"
+    stub_bin "$stub" caelestia_sudo "printf 'caelestia_sudo %s\n' \"\$*\" >> '$log'
+\"\$@\""
+
+    with_path "$stub" "" install_cava_sdk arch
+    status=$?
+
+    assert_status 0 "$status" "installing the cava sdk should still succeed"
+    assert_contains "$(calls_to "$log" tar)" "--no-same-owner" \
+        "unpacking into /usr must not take ownership from the archive"
+    assert_contains "$(calls_to "$log" tar)" "--no-same-permissions" \
+        "nor the mode bits that go with it"
+}
+
+test_archive_entries_are_safe_accepts_a_plain_archive() {
+    local tmp archive
+    tmp="$(new_tmpdir)"
+    archive="$tmp/plain.tar.gz"
+    printf 'payload\n' > "$tmp/payload"
+    tar -C "$tmp" -czf "$archive" payload
+
+    if ! archive_entries_are_safe "$archive"; then
+        fail "an archive of ordinary files should be accepted"
+    fi
+}
+
+test_archive_entries_are_safe_rejects_a_setuid_entry() {
+    local tmp archive
+    tmp="$(new_tmpdir)"
+    archive="$tmp/setuid.tar.gz"
+    printf 'payload\n' > "$tmp/payload"
+    tar -C "$tmp" --mode=4755 -czf "$archive" payload
+
+    if archive_entries_are_safe "$archive"; then
+        fail "an archive carrying a setuid entry must be refused"
+    fi
+}
+
 run_tests

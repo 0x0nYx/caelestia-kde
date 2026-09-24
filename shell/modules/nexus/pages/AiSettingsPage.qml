@@ -133,11 +133,15 @@ PageBase {
         root.lastKeyStoreError = "";
 
         const attr = "caelestia-ai-" + p;
+        // The key goes to the child's environment rather than its command line: /proc
+        // shows a command line to every user on the machine, and an environment is only
+        // readable by the process's own user.
         const script = key === ""
             ? "secret-tool clear service caelestia key " + JSON.stringify(attr)
-            : "printf %s \"$1\" | secret-tool store --label=" + JSON.stringify("Caelestia " + p + " API key") +
+            : "printf %s \"$CAELESTIA_AI_KEY\" | secret-tool store --label=" + JSON.stringify("Caelestia " + p + " API key") +
               " service caelestia key " + JSON.stringify(attr);
-        keyStoreProc.command = key === "" ? ["sh", "-c", script] : ["sh", "-c", script, "--", key];
+        keyStoreProc.environment = ({ CAELESTIA_AI_KEY: key });
+        keyStoreProc.command = ["sh", "-c", script];
         keyStoreProc.running = true;
     }
 
@@ -437,7 +441,19 @@ PageBase {
         Process {
             id: installProc
 
-            command: ["sh", "-c", "curl -fsSL https://claude.ai/install.sh | bash"]
+            // Downloaded to a file and then run, rather than piped into bash: a transfer
+            // that stops halfway would otherwise execute whatever arrived, and nothing
+            // would be left behind to look at.
+            command: ["sh", "-c", `
+f="$(mktemp)"
+if curl -fsSL --connect-timeout 10 --max-time 60 https://claude.ai/install.sh -o "$f"; then
+    bash "$f"
+    status=$?
+else
+    status=1
+fi
+rm -f "$f"
+exit $status`]
             stdout: SplitParser {
                 onRead: line => root.installStatus = line
             }
@@ -582,6 +598,14 @@ PageBase {
             subtext: qsTr("Uses the Claude CLI and your Claude login")
             checked: GlobalConfig.ai.enableClaudeCode
             onToggled: GlobalConfig.ai.enableClaudeCode = checked
+        }
+
+        ToggleRow {
+            visible: GlobalConfig.ai.enableClaudeCode
+            text: qsTr("Let the CLI run its own tools")
+            subtext: qsTr("Off by default; the assistant's own tools do not need it")
+            checked: GlobalConfig.ai.claudeCodeSkipPermissions
+            onToggled: GlobalConfig.ai.claudeCodeSkipPermissions = checked
         }
 
         ToggleRow {

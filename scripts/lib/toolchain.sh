@@ -89,10 +89,18 @@ install_cava_sdk() {
         rm -f "$archive"
         return 1
     elif [[ "$status" -eq 2 ]]; then
-        warn "No published checksum for $url - unpacking without verification."
+        warn "No published checksum for $url - unpacking without verification (SHA-256 $(file_sha256 "$archive"))."
     fi
 
-    local tar_cmd=(tar --exclude='bin' -C /usr -xzf "$archive")
+    # The archive is unpacked as root and tar takes the mode and the owner from it, so
+    # the entries themselves have to be safe when there is no published hash to check.
+    if ! archive_entries_are_safe "$archive"; then
+        warn "Refusing to unpack $url: the archive has setuid, setgid or escaping entries."
+        rm -f "$archive"
+        return 1
+    fi
+
+    local tar_cmd=(tar --no-same-owner --no-same-permissions --exclude='bin' -C /usr -xzf "$archive")
     if [[ "$EUID" -ne 0 ]]; then
         if command -v caelestia_sudo >/dev/null 2>&1; then
             tar_cmd=(caelestia_sudo "${tar_cmd[@]}")

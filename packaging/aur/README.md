@@ -159,7 +159,8 @@ Updating for a release:
    does not exist until the tag is pushed and `build-source` has attached it. Push the
    tag, then take the hash from that job's summary (`sha256sum` is printed beside the
    size) or download the `.sha256` it attaches, and put it in. A `SKIP` in the meantime
-   is what the file ships with, and a wrong hash stops the build with "Integrity checks
+   is what the file ships with: `prepare()` refuses to build while it is there, and a
+   wrong hash stops the build with "Integrity checks
    (sha256) differ";
 3. the other two `sha256sums` entries are the files beside the PKGBUILD, so run
    `makepkg -g` to refresh them if any of them changed;

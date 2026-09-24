@@ -363,7 +363,7 @@ Item {
                 prompt += "The user has started typing: \"" + draft + "\"\n\n";
         }
 
-        var cmd = [claudeCodeBinPath(), "-p", prompt, "--output-format", "json", "--dangerously-skip-permissions"];
+        var cmd = [claudeCodeBinPath(), "-p", prompt, "--output-format", "json"];
         var qml =
             "import QtQuick\n" +
             "import Quickshell.Io\n" +
@@ -591,15 +591,18 @@ Item {
         root.keyringKeys = Object.assign({}, m);
 
         const attr = root.keyringAttr(which);
-        // The key goes in on stdin so it never appears in the process list.
+        // The key travels in the child's environment, not on its command line: a command
+        // line is readable through /proc by every user on the machine, an environment is
+        // not.
         const script = key === ""
             ? "secret-tool clear service caelestia key " + JSON.stringify(attr)
-            : "printf %s \"$1\" | secret-tool store --label=" + JSON.stringify("Caelestia " + which + " API key") +
+            : "printf %s \"$CAELESTIA_AI_KEY\" | secret-tool store --label=" + JSON.stringify("Caelestia " + which + " API key") +
               " service caelestia key " + JSON.stringify(attr);
-        const cmd = key === "" ? ["sh", "-c", script] : ["sh", "-c", script, "--", key];
         try {
             const o = Qt.createQmlObject('import QtQuick\nimport Quickshell.Io\nProcess { id: sp; command: ' +
-                JSON.stringify(cmd) + '\n onExited: code => sp.destroy() }', root, "keyringStore");
+                JSON.stringify(["sh", "-c", script]) +
+                '\n environment: ({ CAELESTIA_AI_KEY: ' + JSON.stringify(key) + ' })\n' +
+                ' onExited: code => sp.destroy() }', root, "keyringStore");
             o.running = true;
         } catch (e) {}
     }
@@ -955,6 +958,12 @@ Item {
         return b;
     }
 
+    // The CLI's own tools run without a prompt only when the user asks for that: the
+    // assistant drives its own tools, and those are gated by the tool-use setting.
+    function claudeCodePermissionArgs() {
+        return GlobalConfig.ai.claudeCodeSkipPermissions ? ["--dangerously-skip-permissions"] : [];
+    }
+
     // ---- Claude accounts (multi-login via CLAUDE_CONFIG_DIR) ----
     // The default ~/.claude login is always present as an implicit "Default" (id "").
     // Additional accounts each get their own config dir under ~/.config/caelestia/claude/<id>.
@@ -1091,7 +1100,7 @@ Item {
         var safeMsg = firstMessage.substring(0, 200);
         var prompt = "Output ONLY a concise 2-4 word title for the following message. No quotes, no trailing punctuation, no explanation.\n\nMessage: " + safeMsg;
 
-        var cmd = [claudeCodeBinPath(), "-p", prompt, "--output-format", "json", "--dangerously-skip-permissions"];
+        var cmd = [claudeCodeBinPath(), "-p", prompt, "--output-format", "json"];
         var commandStr = JSON.stringify(cmd);
         var cwdStr = JSON.stringify(claudeCodeCwd());
         var chatIdStr = JSON.stringify(chatId);
@@ -1160,7 +1169,7 @@ Item {
                 promptToSend = transcript;
         }
 
-        var cmd = [bin, "-p", promptToSend, "--output-format", "stream-json", "--verbose", "--include-partial-messages", "--dangerously-skip-permissions"];
+        var cmd = [bin, "-p", promptToSend, "--output-format", "stream-json", "--verbose", "--include-partial-messages"].concat(claudeCodePermissionArgs());
 
         var mdl = GlobalConfig.ai.defaultClaudeCodeModel || "default";
         if (mdl && mdl !== "default") {

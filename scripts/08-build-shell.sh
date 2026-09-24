@@ -320,9 +320,18 @@ try_download_prebuilt_shell() {
         rm -f "$tmp_archive"
         return 1
     elif [[ "$checksum_status" -eq 2 ]]; then
-        warn "No published checksum for $url - extracting without verification."
+        warn "No published checksum for $url - extracting without verification (SHA-256 $(file_sha256 "$tmp_archive"))."
     else
         ok "Prebuilt shell artifacts match the published checksum."
+    fi
+
+    # Nothing above compared the archive against a published hash for the first two
+    # cases, and this extraction writes into $HOME/.config and $HOME/.local, so refuse an
+    # archive carrying setuid or escaping entries even when there is no hash to check.
+    if ! archive_entries_are_safe "$tmp_archive"; then
+        warn "Refusing to extract $url: the archive has setuid, setgid or escaping entries."
+        rm -f "$tmp_archive"
+        return 1
     fi
 
     info "Extracting prebuilt shell artifacts..."

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <qstring.h>
+
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
-#include <qstring.h>
 
 namespace caelestia::config {
 
@@ -42,6 +43,10 @@ class AiConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, defaultClaudeCodeModel, u"default"_s)
     // Effort / thinking level passed to `claude --effort` ("default" = don't pass).
     CONFIG_PROPERTY(QString, claudeCodeEffort, u"default"_s)
+    // Let the CLI run its own tools without asking. Off by default: the assistant drives
+    // its own tools, which the tool-use setting gates, and this only adds the CLI's own
+    // unchecked tool access on top of them.
+    CONFIG_PROPERTY(bool, claudeCodeSkipPermissions, false)
 
     // Multiple Claude accounts, each backed by its own CLAUDE_CONFIG_DIR.
     // claudeAccountsJson: JSON array of {"id","name"} (the default ~/.claude login
@@ -101,7 +106,6 @@ class AiConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, enableOpencodeGo, false)
     CONFIG_PROPERTY(QString, opencodeGoUrl, u"https://opencode.ai/zen/go/v1"_s)
     CONFIG_PROPERTY(QString, defaultOpencodeGoModel, u""_s)
-
 };
 
 } // namespace caelestia::config

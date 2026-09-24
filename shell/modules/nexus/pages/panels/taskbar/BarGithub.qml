@@ -47,10 +47,14 @@ PageBase {
     readonly property color githubStatusColour: githubProblem ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
 
     function saveToken(token: string): void {
+        // The token goes to the child's environment, not its command line: /proc shows a
+        // command line to every user on the machine, and an environment is only readable
+        // by the process's own user.
+        saveProc.environment = ({ CAELESTIA_GITHUB_TOKEN: token });
         if (!token) {
             saveProc.command = ["secret-tool", "clear", "service", "caelestia-shell", "account", "github"];
         } else {
-            saveProc.command = ["bash", "-c", "secret-tool store --label=\"Caelestia GitHub Token\" service caelestia-shell account github <<< \"$1\"", "--", token];
+            saveProc.command = ["bash", "-c", "printf %s \"$CAELESTIA_GITHUB_TOKEN\" | secret-tool store --label=\"Caelestia GitHub Token\" service caelestia-shell account github"];
         }
         saveProc.running = true;
     }

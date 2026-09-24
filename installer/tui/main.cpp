@@ -7,6 +7,7 @@
 #include <fstream>
 #include <csignal>
 #include <cstdlib>
+#include <filesystem>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -224,7 +225,12 @@ int main(int argc, char** argv) {
         string cache_dir = xdg_cache_dir() + "/caelestia-kde";
         // Best effort: the cache is scratch space, and a failed removal only costs
         // the next run the disk space it was asked to free.
-        (void)run_shell("rm -rf \"" + cache_dir + "\"");
+        //
+        // std::filesystem rather than `rm -rf`: the path is built from
+        // XDG_CACHE_HOME, and inside the shell's double quotes a `$`, a backtick or a
+        // quote in that variable would be a command, not a character.
+        std::error_code remove_error;
+        std::filesystem::remove_all(cache_dir, remove_error);
     }
 
     // Secure cleanup of sudo credentials
