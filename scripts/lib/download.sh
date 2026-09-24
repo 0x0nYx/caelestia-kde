@@ -29,4 +29,25 @@ verify_download() {
     [[ "$expected" == "$(file_sha256 "$file")" ]]
 }
 
+# Refuse an archive that could escape where it is unpacked or leave a setuid binary
+# behind. Extraction runs as root for the SDK, and tar restores the mode and the owner
+# from the archive, so the entries are the thing to check when no hash is published.
+archive_entries_are_safe() {
+    local archive="$1" listing line mode name
+    listing="$(tar -tvzf "$archive" 2>/dev/null)" || return 1
+
+    while IFS= read -r line; do
+        [[ -n "$line" ]] || continue
+        mode="${line%% *}"
+        name="${line##* }"
+        case "$mode" in
+            *s*|*S*) return 1 ;;
+        esac
+        case "$name" in
+            /*|../*|*/../*|*/..) return 1 ;;
+        esac
+    done <<< "$listing"
+    return 0
+}
+
 fi
