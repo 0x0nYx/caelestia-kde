@@ -124,6 +124,7 @@ assets/        the logo and screenshots used by the docs
 - [wrymt](https://github.com/wrymt/darkly-gtk) - Darkly GTK
 - [Haidir](https://bitbucket.org/dirn-typo/yet-another-monochrome-icon-set) - icon set
 - [dim-ghub](https://github.com/dim-ghub/caelestia-shell) - v2.0.0 features
+- [dharmx](https://github.com/dharmx/walls) - default wallpapers
   
 ## License
 
