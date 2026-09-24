@@ -144,9 +144,6 @@ test_a_tree_that_is_not_a_checkout_builds_locally() {
     fi
 }
 
-# try_download_prebuilt_installer reports the fetched binary by printing its path, and the
-# caller captures that as the path to install. A warning printed on the same stream becomes
-# part of the "path", which is how install.sh came to run `mv` on a warning sentence.
 INSTALLER_SOURCE="$(awk '
     $0 ~ "^try_download_prebuilt_installer\\(\\) \\{" { capture = 1 }
     capture { print }
@@ -157,8 +154,6 @@ if [[ -z "$INSTALLER_SOURCE" ]]; then
     fail "could not find try_download_prebuilt_installer in scripts/setup.sh"
 fi
 
-# Drives the real function with the network and the checksum check stubbed out, so the
-# assertions are about what the function prints rather than about the release.
 installer_stdout_with_status() {
     local status="$1"
     bash -c "

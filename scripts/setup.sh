@@ -132,8 +132,6 @@ try_download_prebuilt_installer() {
     fi
 
     verify_download "$url" "$tmp_bin" || status=$?
-    # These go to stderr: the caller reads stdout as the path to the fetched binary, so a
-    # warning on that stream becomes part of the path and `mv` runs on a sentence.
     if [[ "$status" -eq 1 ]]; then
         echo "[WARN]  Checksum mismatch for the prebuilt installer - compiling locally." >&2
     elif [[ "$status" -eq 2 ]]; then
@@ -178,9 +176,6 @@ if [[ -z "${CAELESTIA_FORCE_BUILD_INSTALLER:-}" ]] && command -v curl >/dev/null
     PREBUILT_BIN="$(try_download_prebuilt_installer || true)"
 fi
 
-# The function reports its result by printing a path, so anything else that reached stdout
-# would arrive here as one. A path that is not an executable is not a binary to install, and
-# saying so beats letting `mv` fail on a sentence.
 if [[ -n "$PREBUILT_BIN" && ! -x "$PREBUILT_BIN" ]]; then
     echo "[WARN]  The prebuilt installer download did not produce a binary; compiling locally." >&2
     PREBUILT_BIN=""
