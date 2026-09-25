@@ -3,13 +3,13 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Quickshell
 import Caelestia
 import Caelestia.Config
 import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.services
-import qs.utils
 import qs.modules.launcher.services
 
 Item {
@@ -32,7 +32,7 @@ Item {
     function triggerSessionCommand(command: list<string>): void {
         root.visibilities.launcher = false;
         if (!SessionManager.exec(command))
-            Launch.exec(command);
+            Quickshell.execDetached(command);
     }
 
     implicitWidth: listWrapper.width + padding * 2
@@ -203,7 +203,7 @@ Item {
                     } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
                         if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}calc `))
                             currentItem.onClicked();
-                        else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}clipboard `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}animations `))
+                        else if (text.startsWith(`${GlobalConfig.launcher.actionPrefix}emoji `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}clipboard `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}image `) || text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `))
                             currentItem.clicked();
                         else
                             currentItem.modelData.onClicked(list.currentList);

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Caelestia
 import Caelestia.Config
 import Caelestia.Services
@@ -135,7 +136,7 @@ Column {
 
         function exec(): void {
             if (!SessionManager.exec(command))
-                Launch.exec(command);
+                Quickshell.execDetached(command);
         }
 
         implicitWidth: Tokens.sizes.session.button
