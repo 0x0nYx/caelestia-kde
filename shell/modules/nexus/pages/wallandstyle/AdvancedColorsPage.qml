@@ -24,9 +24,6 @@ PageBase {
     ]
     readonly property list<string> autoSchemeValues: ["solar", "fixed"]
 
-    // The two modes `caelestia scheme set -m` takes, the same pair the launcher's
-    // Light and Dark commands are, so the page and the launcher stay two views of
-    // one switch.
     readonly property list<MenuItem> modeItems: [
         MenuItem {
             text: qsTr("Light")
