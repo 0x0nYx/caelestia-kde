@@ -321,11 +321,6 @@ fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
-# This repo's own caelestia CLI (src/bin/caelestia) is installed to ~/.local/bin by
-# scripts/08-build-shell.sh later in the build, so there is nothing to install here. A
-# caelestia found on PATH at this point is an older install's legacy python CLI, which
-# sits in a system directory that precedes ~/.local/bin and would shadow the new one.
-
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     caelestia_sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
