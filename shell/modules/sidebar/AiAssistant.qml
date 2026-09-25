@@ -1517,6 +1517,8 @@ Item {
     }
 
     function saveHistory() {
+        if (!GlobalConfig.ai.saveChatHistory)
+            return;
         var msgs = [];
         for (var i = 0; i < chatHistory.count; i++) {
             var msg = chatHistory.get(i);

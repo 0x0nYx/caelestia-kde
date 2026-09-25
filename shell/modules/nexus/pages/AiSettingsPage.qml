@@ -865,5 +865,17 @@ exit $status`]
                     root.addAndLogin();
             }
         }
+
+        SectionHeader {
+            text: qsTr("History")
+        }
+        ToggleRow {
+            first: true
+            last: true
+            text: qsTr("Save chat history")
+            subtext: qsTr("Keep conversations between sessions; the sidebar's clear button removes what was already saved")
+            checked: GlobalConfig.ai.saveChatHistory
+            onToggled: GlobalConfig.ai.saveChatHistory = checked
+        }
     }
 }
