@@ -90,7 +90,7 @@ KeybindsModel::KeybindsModel(QObject* parent)
 }
 
 QVariantList KeybindsModel::keybinds() const {
-    return QVariantList(); // Dummy list to satisfy QML length check
+    return query(QString());
 }
 
 bool KeybindsModel::initialized() const {
