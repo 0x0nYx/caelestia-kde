@@ -75,9 +75,6 @@ Searcher {
                     list.visibilities.launcher = false;
                 }
 
-                // Animation switching rewrote Hyprland's hypr-user.lua and reloaded
-                // the compositor, which this shell does not run under: the pack can
-                // still be browsed, but there is nothing to switch on KDE.
                 console.warn("Animations: animation switching is not supported on KDE");
             }
         }
