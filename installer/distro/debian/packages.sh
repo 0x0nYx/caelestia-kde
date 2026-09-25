@@ -414,34 +414,6 @@ fi  # end of PACKAGE_GROUP themes/all block
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
-info "Installing Caelestia CLI wrapper..."
-if ! command -v caelestia >/dev/null 2>&1; then
-    caelestia_sudo apt-get install -y python3-pip python3-build python3-installer python3-hatchling python3-hatch-vcs || true
-    tmpdir="$(mktemp -d)"
-    (
-        cd "$tmpdir" || exit 1
-        curl -sL "https://github.com/caelestia-dots/cli/releases/download/v1.0.8/caelestia-1.0.8.tar.gz" -o caelestia.tar.gz
-        tar -xzf caelestia.tar.gz
-        cd caelestia-1.0.8 || exit 1
-        python3 -m build --wheel --no-isolation
-        if ! caelestia_sudo pip3 install dist/*.whl --break-system-packages 2>/dev/null; then
-            pip3 install dist/*.whl --user --break-system-packages 2>/dev/null || pip3 install dist/*.whl --user
-            if [[ -f "$HOME/.local/bin/caelestia" ]]; then
-                caelestia_sudo ln -sf "$HOME/.local/bin/caelestia" /usr/local/bin/caelestia || true
-            fi
-        fi
-
-        mkdir -p ~/.config/fish/completions/
-        cp ./completions/caelestia.fish ~/.config/fish/completions/ 2>/dev/null || true
-    )
-    rm -rf "$tmpdir"
-fi
-
-if ! command -v caelestia >/dev/null 2>&1 && [[ ! -f "$HOME/.local/bin/caelestia" ]]; then
-    err "Failed to install Caelestia CLI wrapper."
-    FAILED_PKGS+=("caelestia")
-fi
-
 if command -v sassc >/dev/null 2>&1 && ! command -v sass >/dev/null 2>&1; then
     caelestia_sudo ln -sf /usr/bin/sassc /usr/local/bin/sass || true
 fi
