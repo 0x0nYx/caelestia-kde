@@ -37,6 +37,12 @@ EOF
 #!/bin/sh
 # Written by Caelestia. Sourced by KDE Plasma during session startup for KWin,
 # kscreenlocker_greet, and graphical session processes.
+#
+# The command directory goes on PATH because a checkout's command lives in
+# ~/.local/bin, which a session does not carry on every distribution: without
+# this, a terminal here cannot run `caelestia update` by name. A package's
+# /usr/bin is already on PATH, so this only matters for a checkout.
+export PATH="$(install_bin_dir)\${PATH:+:\$PATH}"
 export QML2_IMPORT_PATH="$(install_qml_import_path)\${QML2_IMPORT_PATH:+:\$QML2_IMPORT_PATH}"
 export CAELESTIA_LIB_DIR="$(install_lib_dir)"
 export CAELESTIA_BIN_DIR="$(install_bin_dir)"
