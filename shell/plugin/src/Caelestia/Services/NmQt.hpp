@@ -3,7 +3,9 @@
 
 #include <qqmlintegration.h>
 
+#include <NetworkManagerQt/Connection>
 #include <NetworkManagerQt/Device>
+#include <NetworkManagerQt/WirelessDevice>
 #include <QDateTime>
 #include <QJSValue>
 #include <QObject>
@@ -52,6 +54,8 @@ class NmQt : public QObject {
     Q_PROPERTY(QVariantMap ethernetDeviceDetails READ ethernetDeviceDetails NOTIFY ethernetDeviceDetailsChanged)
 
     // -- Saved connection security (ssid -> key-mgmt, e.g. "wpa-psk") --
+    // The SSID-keyed projection of the same field every profile entry already
+    // carries, kept for parity with the per-SSID API surface.
     Q_PROPERTY(QVariantMap savedConnectionSecurity READ savedConnectionSecurity NOTIFY savedConnectionSecurityChanged)
 
     QML_ELEMENT
@@ -133,7 +137,7 @@ public:
     /// Disconnect a VPN connection.
     Q_INVOKABLE void disconnectVpn(const QString& connectionName, QJSValue callback = {});
 
-    /// Reload the saved-connections lists.
+    /// Reload the saved-connections lists. Optionally invoke callback(profiles).
     Q_INVOKABLE void loadSavedConnections(QJSValue callback = {});
 
     /// Reload the VPN connections list.
@@ -148,14 +152,15 @@ public:
     /// Retrieve detailed info for an ethernet device.
     Q_INVOKABLE void getEthernetDeviceDetails(const QString& interfaceName, QJSValue callback = {});
 
-    /// Read IPv4 settings of a saved connection (matched by name or SSID).
-    Q_INVOKABLE void getIpv4Config(const QString& connectionName, QJSValue callback = {});
+    /// Read IPv4 settings of a saved connection. The identifier is matched by
+    /// UUID, connection id, or SSID.
+    Q_INVOKABLE void getIpv4Config(const QString& connectionId, QJSValue callback = {});
 
-    /// Write IPv4 settings to a saved connection.
-    Q_INVOKABLE void setIpv4Config(const QString& connectionName, const QVariantMap& config, QJSValue callback = {});
+    /// Write IPv4 settings to a saved connection (same identifier forms).
+    Q_INVOKABLE void setIpv4Config(const QString& connectionId, const QVariantMap& config, QJSValue callback = {});
 
-    /// Toggle autoconnect on a saved connection.
-    Q_INVOKABLE void setAutoconnect(const QString& connectionName, bool enabled, QJSValue callback = {});
+    /// Toggle autoconnect on a saved connection (same identifier forms).
+    Q_INVOKABLE void setAutoconnect(const QString& connectionId, bool enabled, QJSValue callback = {});
 
     /// Create and activate a hidden WiFi network.
     Q_INVOKABLE void addHiddenNetwork(
@@ -220,6 +225,11 @@ private:
     void refreshVpnConnections();
     void refreshWirelessDeviceDetails(const QString& interfaceName = {});
     void refreshEthernetDeviceDetails(const QString& interfaceName = {});
+
+    /// Activate an already-saved profile on the wireless device and report the
+    /// outcome through the callback. Shared by the SSID and UUID connect paths.
+    void activateProfile(const NetworkManager::Connection::Ptr& conn, const NetworkManager::WirelessDevice::Ptr& device,
+        const QString& ssid, QJSValue callback);
 
     /// Build a QVariantMap for a single access point.
     static QVariantMap buildApMap(

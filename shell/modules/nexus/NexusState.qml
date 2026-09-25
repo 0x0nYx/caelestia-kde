@@ -61,6 +61,16 @@ QtObject {
         subPageIdxStack.pop();
     }
 
+    // The network detail sub-page is shared by the live list and the saved
+    // list, so it is opened through one call that sets the whole selection: a
+    // caller cannot leave a stale profile UUID behind it.
+    function openNetworkDetail(ssid: string, uuid: string, fromSaved: bool): void {
+        selectedNetworkSsid = ssid;
+        selectedNetworkUuid = uuid;
+        networkDetailsFromSaved = fromSaved;
+        openSubPage(3);
+    }
+
     onCurrentPageIdxChanged: {
         subPageIdxStack.length = 0;
         pendingSubPageIdx = -1;

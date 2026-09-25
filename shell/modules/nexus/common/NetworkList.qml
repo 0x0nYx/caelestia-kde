@@ -70,11 +70,9 @@ ItemList {
                 currentSelected = true;
                 root.networkSelected(modelData);
             } else {
-                // Active network: open its detail/settings sub-page.
-                root.nState.selectedNetworkSsid = modelData.ssid;
-                root.nState.selectedNetworkUuid = "";
-                root.nState.networkDetailsFromSaved = false;
-                root.nState.openSubPage(3);
+                // Active network: open its detail/settings sub-page. No saved
+                // profile is selected, so the page acts on the SSID alone.
+                root.nState.openNetworkDetail(modelData.ssid, "", false);
             }
         }
 

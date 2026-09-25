@@ -19,16 +19,26 @@ PageBase {
     // The specific saved profile this page acts on; empty when opened for the
     // active network from the network list.
     readonly property string uuid: nState.selectedNetworkUuid
+    readonly property Nmcli.SavedProfile profile: root.uuid ? (Nmcli.savedConnectionProfiles.find(p => p.uuid === root.uuid) ?? null) : null
     readonly property var ap: Nmcli.findNetwork(root.ssid)
     readonly property var details: Nmcli.wirelessDeviceDetails
-    readonly property bool isActive: !!Nmcli.active && Nmcli.active.ssid === root.ssid
+    // A saved profile reports its own active state, so two profiles of one SSID
+    // are not both shown as connected. Without one, the active network's SSID
+    // is all there is to compare against.
+    readonly property bool isActive: root.profile ? root.profile.active : (!!Nmcli.active && Nmcli.active.ssid === root.ssid)
+    // Saved profiles are addressed by UUID; the SSID is what is left when the
+    // page was opened for the active network from the network list.
+    readonly property string connectionId: root.uuid || root.ssid
+    // Connect is offered for the selected profile only - the live network list
+    // has its own connect path.
+    readonly property bool canConnect: !root.isActive && !!root.uuid && !!root.ap
 
     property bool autoconnect: true
 
     function loadAutoconnect(): void {
-        if (!root.ssid)
+        if (!root.connectionId)
             return;
-        Nmcli.getIpv4Config(root.uuid || root.ssid, cfg => {
+        Nmcli.getIpv4Config(root.connectionId, cfg => {
             if (cfg)
                 root.autoconnect = cfg.autoconnect;
         });
@@ -59,130 +69,45 @@ PageBase {
         ButtonRow {
             Layout.bottomMargin: Tokens.spacing.large - parent.spacing
             Layout.alignment: Qt.AlignHCenter
-            Layout.minimumWidth: Math.round(root.cappedWidth * (root.isActive || root.ap ? 0.7 : 0.5))
+            Layout.minimumWidth: Math.round(root.cappedWidth * (root.isActive || root.canConnect ? 0.7 : 0.5))
             spacing: Tokens.spacing.small
 
-            ButtonBase {
-                id: forgetBtn
-
-                fillWidth: true
+            NetworkActionButton {
+                icon: "delete"
+                label: qsTr("Forget")
+                error: true
                 shapeMorph: root.isActive
-                isRound: true
-                inactiveColour: Colours.palette.m3errorContainer
-                inactiveOnColour: Colours.palette.m3onErrorContainer
-
-                implicitWidth: forgetLayout.implicitWidth + Tokens.padding.extraLarge * 2
-                implicitHeight: forgetLayout.implicitHeight + Tokens.padding.medium * 2
-
                 onClicked: {
-                    // Forget only this profile — several can share the SSID.
+                    // Forget only this profile: several can share the SSID.
                     if (root.uuid)
                         Nmcli.forgetNetworkByUuid(root.uuid);
                     else
                         Nmcli.forgetNetwork(root.ssid);
                     root.nState.closeSubPage();
                 }
-
-                ColumnLayout {
-                    id: forgetLayout
-
-                    anchors.centerIn: parent
-                    spacing: 0
-
-                    MaterialIcon {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "delete"
-                        color: forgetBtn.onColour
-                        fontStyle: Tokens.font.icon.medium
-                    }
-
-                    StyledText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Forget")
-                        color: forgetBtn.onColour
-                    }
-                }
             }
 
-            ButtonBase {
-                id: connectBtn
-
-                visible: !root.isActive && !!root.ap
-                fillWidth: true
-                shapeMorph: true
-                isRound: true
-                inactiveColour: Colours.palette.m3primaryContainer
-                inactiveOnColour: Colours.palette.m3onPrimaryContainer
-
-                implicitWidth: connectLayout.implicitWidth + Tokens.padding.extraLarge * 2
-                implicitHeight: connectLayout.implicitHeight + Tokens.padding.medium * 2
-
+            NetworkActionButton {
+                icon: "wifi"
+                label: qsTr("Connect")
+                visible: root.canConnect
                 onClicked: {
-                    // Through NetworkConnection, so the current network is brought
-                    // down before this one goes up: two profiles for the same SSID
-                    // are exactly the case where the device is already busy with
+                    // Through NetworkConnection, which takes the current
+                    // connection down first: two profiles of one SSID are
+                    // exactly the case where the device is already busy with
                     // the other one.
-                    NetworkConnection.connectToSavedProfile(root.uuid, root.ssid, root.ap?.bssid ?? "");
+                    NetworkConnection.connectToSavedProfile(root.uuid);
                     root.nState.closeSubPage();
                 }
-
-                ColumnLayout {
-                    id: connectLayout
-
-                    anchors.centerIn: parent
-                    spacing: 0
-
-                    MaterialIcon {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "wifi"
-                        color: connectBtn.onColour
-                        fontStyle: Tokens.font.icon.medium
-                    }
-
-                    StyledText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Connect")
-                        color: connectBtn.onColour
-                    }
-                }
             }
 
-            ButtonBase {
-                id: disconnectBtn
-
+            NetworkActionButton {
+                icon: "link_off"
+                label: qsTr("Disconnect")
                 visible: root.isActive
-                fillWidth: true
-                shapeMorph: true
-                isRound: true
-                inactiveColour: Colours.palette.m3primaryContainer
-                inactiveOnColour: Colours.palette.m3onPrimaryContainer
-
-                implicitWidth: disconnectLayout.implicitWidth + Tokens.padding.extraLarge * 2
-                implicitHeight: disconnectLayout.implicitHeight + Tokens.padding.medium * 2
-
                 onClicked: {
                     Nmcli.disconnectFromNetwork();
                     root.nState.closeSubPage();
-                }
-
-                ColumnLayout {
-                    id: disconnectLayout
-
-                    anchors.centerIn: parent
-                    spacing: 0
-
-                    MaterialIcon {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "link_off"
-                        color: disconnectBtn.onColour
-                        fontStyle: Tokens.font.icon.medium
-                    }
-
-                    StyledText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Disconnect")
-                        color: disconnectBtn.onColour
-                    }
                 }
             }
         }
@@ -253,13 +178,52 @@ PageBase {
             checked: root.autoconnect
             onToggled: {
                 root.autoconnect = checked;
-                Nmcli.setAutoconnect(root.uuid || root.ssid, checked, () => {});
+                Nmcli.setAutoconnect(root.connectionId, checked, () => {});
             }
         }
 
         Ipv4ConfigSection {
             Layout.fillWidth: true
-            connectionName: root.uuid || root.ssid
+            connectionId: root.connectionId
+        }
+    }
+
+    // One action button in the row above: an icon over its label, in the colour
+    // of the action it performs.
+    component NetworkActionButton: ButtonBase {
+        id: action
+
+        property string icon
+        property string label
+        property bool error
+
+        fillWidth: true
+        shapeMorph: true
+        isRound: true
+        inactiveColour: action.error ? Colours.palette.m3errorContainer : Colours.palette.m3primaryContainer
+        inactiveOnColour: action.error ? Colours.palette.m3onErrorContainer : Colours.palette.m3onPrimaryContainer
+
+        implicitWidth: actionLayout.implicitWidth + Tokens.padding.extraLarge * 2
+        implicitHeight: actionLayout.implicitHeight + Tokens.padding.medium * 2
+
+        ColumnLayout {
+            id: actionLayout
+
+            anchors.centerIn: parent
+            spacing: 0
+
+            MaterialIcon {
+                Layout.alignment: Qt.AlignHCenter
+                text: action.icon
+                color: action.onColour
+                fontStyle: Tokens.font.icon.medium
+            }
+
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: action.label
+                color: action.onColour
+            }
         }
     }
 }
