@@ -280,7 +280,7 @@ Item {
                 startTimestamp: root.shellStartTime,
                 buttons: [
                     { label: "Website", url: "https://caelestiashell.com" },
-                    { label: "GitHub", url: "https://github.com/caelestia-dots/" }
+                    { label: "GitHub", url: "https://github.com/ladybug-me/caelestia-kde" }
                 ]
             });
             return;
