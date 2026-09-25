@@ -28,6 +28,7 @@ class BarPopouts : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, activeWindow, true)
     CONFIG_PROPERTY(bool, tray, true)
     CONFIG_PROPERTY(bool, statusIcons, true)
+    CONFIG_PROPERTY(bool, clock, false)
 };
 
 class BarWorkspaces : public settings::ObjectNode {
@@ -197,6 +198,7 @@ class BarPreviewScales : public settings::ObjectNode {
     CONFIG_PROPERTY(qreal, audio, 0.0)
     CONFIG_PROPERTY(qreal, battery, 0.0)
     CONFIG_PROPERTY(qreal, bluetooth, 0.0)
+    CONFIG_PROPERTY(qreal, clock, 0.0)
     CONFIG_PROPERTY(qreal, dock, 0.0)
     CONFIG_PROPERTY(qreal, github, 0.0)
     CONFIG_PROPERTY(qreal, kblayout, 0.0)
@@ -216,6 +218,7 @@ class BarPreviewFontScales : public settings::ObjectNode {
     CONFIG_PROPERTY(qreal, audio, 0.0)
     CONFIG_PROPERTY(qreal, battery, 0.0)
     CONFIG_PROPERTY(qreal, bluetooth, 0.0)
+    CONFIG_PROPERTY(qreal, clock, 0.0)
     CONFIG_PROPERTY(qreal, dock, 0.0)
     CONFIG_PROPERTY(qreal, github, 0.0)
     CONFIG_PROPERTY(qreal, kblayout, 0.0)
