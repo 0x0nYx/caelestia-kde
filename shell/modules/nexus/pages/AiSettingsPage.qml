@@ -866,7 +866,6 @@ exit $status`]
             }
         }
 
-        // ── History ────────────────────────────────────────────────
         SectionHeader {
             text: qsTr("History")
         }
