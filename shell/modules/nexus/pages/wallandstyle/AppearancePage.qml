@@ -184,7 +184,7 @@ PageBase {
             Process {
                 id: bbdxFixProcess
 
-                command: [Quickshell.shellDir + "/scripts/bbdx-window-classes.sh"]
+                command: ["bash", Quickshell.shellDir + "/scripts/bbdx-window-classes.sh"]
             }
             ToggleRow {
                 text: qsTr("Background Blur")
