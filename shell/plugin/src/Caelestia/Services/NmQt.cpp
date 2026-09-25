@@ -77,7 +77,9 @@ NetworkManager::Connection::Ptr findConnectionByUuid(const QString& uuid) {
         return {};
 
     // Several saved profiles can share one SSID, so callers that must act on
-    // one exact profile resolve it by UUID rather than by name.
+    // one exact profile resolve it by UUID rather than by name. Deliberately
+    // stricter than findConnectionByName, which matches on the connection id
+    // and the SSID as well and can therefore land on the duplicate.
     const auto connPaths = NetworkManager::listConnections();
     for (const auto& conn : connPaths) {
         if (conn && conn->uuid() == uuid)

@@ -55,6 +55,41 @@ QtObject {
     }
 
     /**
+     * Connect to one specific saved profile, identified by its UUID.
+     *
+     * The target is a saved profile rather than a scanned network: it already
+     * holds its credentials, so there is no password step, and the UUID is what
+     * keeps the choice unambiguous when several profiles share one SSID. The
+     * disconnect first is the same as handleConnect's, so the activation is not
+     * left to resolve a device that is already busy with the other profile.
+     *
+     * @param uuid Profile UUID; an empty one falls back to the SSID, which is
+     *             what the detail page has when it was opened for the active network
+     * @param ssid SSID, used for the disconnect check and as the fallback target
+     * @param bssid Optional BSSID, used by the fallback path
+     * @param onResult Optional callback function(result) called with the connection result
+     */
+    function connectToSavedProfile(uuid, ssid, bssid, onResult): void {
+        if (!ssid) {
+            return;
+        }
+
+        const connect = () => {
+            if (uuid)
+                Nmcli.connectToNetworkByUuid(uuid, onResult || null);
+            else
+                Nmcli.connectToNetwork(ssid, "", bssid || "", onResult || null);
+        };
+
+        if (Nmcli.active && Nmcli.active.ssid !== ssid) {
+            Nmcli.disconnectFromNetwork();
+            Qt.callLater(connect);
+        } else {
+            connect();
+        }
+    }
+
+    /**
      * Connect to a wireless network.
      * Handles both secured and open networks, checks for saved profiles,
      * and shows password dialog if needed.

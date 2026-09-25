@@ -7,6 +7,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 import qs.modules.nexus.common
 
 // Detail / settings sub-page for the active Wi-Fi network. Reached by tapping
@@ -117,12 +118,11 @@ PageBase {
                 implicitHeight: connectLayout.implicitHeight + Tokens.padding.medium * 2
 
                 onClicked: {
-                    // Connect to this exact profile when one is selected;
-                    // fall back to the SSID when opened for the active network.
-                    if (root.uuid)
-                        Nmcli.connectToNetworkByUuid(root.uuid);
-                    else
-                        Nmcli.connectToNetwork(root.ssid, "", root.ap?.bssid ?? "", null);
+                    // Through NetworkConnection, so the current network is brought
+                    // down before this one goes up: two profiles for the same SSID
+                    // are exactly the case where the device is already busy with
+                    // the other one.
+                    NetworkConnection.connectToSavedProfile(root.uuid, root.ssid, root.ap?.bssid ?? "");
                     root.nState.closeSubPage();
                 }
 
