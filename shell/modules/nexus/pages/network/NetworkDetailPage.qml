@@ -10,35 +10,33 @@ import qs.services
 import qs.utils
 import qs.modules.nexus.common
 
-// Detail / settings sub-page for the active Wi-Fi network. Reached by tapping
-// the active network row (settings icon) on NetworkPage.
+// Detail / settings sub-page for one saved network profile. Reached from the
+// live network list (the profile that is up) and from the saved networks list
+// (the profile the user picked), so it always acts on a profile UUID.
 PageBase {
     id: root
 
     readonly property string ssid: nState.selectedNetworkSsid
-    // The specific saved profile this page acts on; empty when opened for the
-    // active network from the network list.
+    // The saved profile this page acts on, addressed by the UUID the opener
+    // selected; null while no profile carries that UUID.
     readonly property string uuid: nState.selectedNetworkUuid
-    readonly property Nmcli.SavedProfile profile: root.uuid ? (Nmcli.savedConnectionProfiles.find(p => p.uuid === root.uuid) ?? null) : null
+    readonly property Nmcli.SavedProfile profile: Nmcli.savedConnectionProfiles.find(p => p.uuid === root.uuid) ?? null
     readonly property var ap: Nmcli.findNetwork(root.ssid)
     readonly property var details: Nmcli.wirelessDeviceDetails
     // A saved profile reports its own active state, so two profiles of one SSID
     // are not both shown as connected. Without one, the active network's SSID
     // is all there is to compare against.
     readonly property bool isActive: root.profile ? root.profile.active : (!!Nmcli.active && Nmcli.active.ssid === root.ssid)
-    // Saved profiles are addressed by UUID; the SSID is what is left when the
-    // page was opened for the active network from the network list.
-    readonly property string connectionId: root.uuid || root.ssid
-    // Connect is offered for the selected profile only - the live network list
-    // has its own connect path.
-    readonly property bool canConnect: !root.isActive && !!root.uuid && !!root.ap
+    // Connect activates a saved profile, so it needs one that is in range and
+    // not already up. The live network list has its own connect path.
+    readonly property bool canConnect: !!root.profile && !root.isActive && !!root.ap
 
     property bool autoconnect: true
 
     function loadAutoconnect(): void {
-        if (!root.connectionId)
+        if (!root.uuid)
             return;
-        Nmcli.getIpv4Config(root.connectionId, cfg => {
+        Nmcli.getIpv4Config(root.uuid, cfg => {
             if (cfg)
                 root.autoconnect = cfg.autoconnect;
         });
@@ -77,12 +75,11 @@ PageBase {
                 label: qsTr("Forget")
                 error: true
                 shapeMorph: root.isActive
+                // Only this profile: several can share the SSID, and forgetting
+                // by SSID would take all of them.
+                visible: !!root.profile
                 onClicked: {
-                    // Forget only this profile: several can share the SSID.
-                    if (root.uuid)
-                        Nmcli.forgetNetworkByUuid(root.uuid);
-                    else
-                        Nmcli.forgetNetwork(root.ssid);
+                    Nmcli.forgetNetworkByUuid(root.uuid);
                     root.nState.closeSubPage();
                 }
             }
@@ -178,13 +175,13 @@ PageBase {
             checked: root.autoconnect
             onToggled: {
                 root.autoconnect = checked;
-                Nmcli.setAutoconnect(root.connectionId, checked, () => {});
+                Nmcli.setAutoconnect(root.uuid, checked, () => {});
             }
         }
 
         Ipv4ConfigSection {
             Layout.fillWidth: true
-            connectionId: root.connectionId
+            connectionId: root.uuid
         }
     }
 

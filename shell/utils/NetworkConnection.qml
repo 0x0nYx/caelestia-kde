@@ -75,7 +75,8 @@ QtObject {
      *
      * Two profiles of one SSID are exactly the case where the connection that
      * is up is a different profile than the target, which comparing SSIDs
-     * cannot see, so the active one is matched by UUID.
+     * cannot see, so the target is matched against the profile list's own
+     * active flag.
      *
      * @param uuid Profile UUID (required)
      * @param onResult Optional callback function(result) called with the connection result
@@ -85,7 +86,8 @@ QtObject {
             return;
         }
 
-        root.disconnectFirstIfNeeded(Nmcli.active?.uuid === uuid, () => {
+        const isTarget = !!Nmcli.savedConnectionProfiles.find(p => p.uuid === uuid)?.active;
+        root.disconnectFirstIfNeeded(isTarget, () => {
             Nmcli.connectToNetworkByUuid(uuid, onResult || null);
         });
     }

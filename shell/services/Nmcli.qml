@@ -45,6 +45,7 @@ Singleton {
     // active) — profiles sharing an SSID stay distinguishable.
     property list<SavedProfile> __savedConnectionProfiles: []
     readonly property list<SavedProfile> savedConnectionProfiles: __savedConnectionProfiles
+
     readonly property var activeProcesses: []
 
     // =========================================================================
@@ -684,9 +685,6 @@ Singleton {
         readonly property bool active: lastIpcObject.active ?? false
         readonly property string security: lastIpcObject.security ?? ""
         readonly property bool isSecure: (lastIpcObject.security ?? "").length > 0
-        // UUID of the connection this access point is connected through; empty
-        // when it is not the active one.
-        readonly property string uuid: lastIpcObject.uuid ?? ""
     }
 
     component SavedProfile: QtObject {

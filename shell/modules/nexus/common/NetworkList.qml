@@ -70,9 +70,11 @@ ItemList {
                 currentSelected = true;
                 root.networkSelected(modelData);
             } else {
-                // Active network: open its detail/settings sub-page. No saved
-                // profile is selected, so the page acts on the SSID alone.
-                root.nState.openNetworkDetail(modelData.ssid, "", false);
+                // Active network: open its detail/settings sub-page on the
+                // profile that is up, so its actions address that profile
+                // instead of re-deriving one from the SSID.
+                const activeProfile = Nmcli.savedConnectionProfiles.find(p => p.active && p.ssid === modelData.ssid);
+                root.nState.openNetworkDetail(modelData.ssid, activeProfile?.uuid ?? "", false);
             }
         }
 

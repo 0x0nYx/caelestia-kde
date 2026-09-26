@@ -53,11 +53,6 @@ class NmQt : public QObject {
     Q_PROPERTY(QVariantMap wirelessDeviceDetails READ wirelessDeviceDetails NOTIFY wirelessDeviceDetailsChanged)
     Q_PROPERTY(QVariantMap ethernetDeviceDetails READ ethernetDeviceDetails NOTIFY ethernetDeviceDetailsChanged)
 
-    // -- Saved connection security (ssid -> key-mgmt, e.g. "wpa-psk") --
-    // The SSID-keyed projection of the same field every profile entry already
-    // carries, kept for parity with the per-SSID API surface.
-    Q_PROPERTY(QVariantMap savedConnectionSecurity READ savedConnectionSecurity NOTIFY savedConnectionSecurityChanged)
-
     QML_ELEMENT
     QML_SINGLETON
 
@@ -87,7 +82,6 @@ public:
 
     QVariantMap wirelessDeviceDetails() const;
     QVariantMap ethernetDeviceDetails() const;
-    QVariantMap savedConnectionSecurity() const;
 
     // -- QML-invokable actions --
 
@@ -195,7 +189,6 @@ signals:
 
     void wirelessDeviceDetailsChanged();
     void ethernetDeviceDetailsChanged();
-    void savedConnectionSecurityChanged();
 
     /// Emitted when a connection attempt fails outright.
     void connectionFailed(const QString& ssid);
@@ -229,7 +222,7 @@ private:
     /// Activate an already-saved profile on the wireless device and report the
     /// outcome through the callback. Shared by the SSID and UUID connect paths.
     void activateProfile(const NetworkManager::Connection::Ptr& conn, const NetworkManager::WirelessDevice::Ptr& device,
-        const QString& ssid, QJSValue callback);
+        QJSValue callback);
 
     /// Build a QVariantMap for a single access point.
     static QVariantMap buildApMap(
@@ -255,7 +248,6 @@ private:
     QString m_vpnPendingConnection;
     QVariantMap m_wirelessDeviceDetails;
     QVariantMap m_ethernetDeviceDetails;
-    QVariantMap m_savedConnectionSecurity;
     QString m_connectingSsid;
     bool m_wifiEnabled = true;
     bool m_scanning = false;
