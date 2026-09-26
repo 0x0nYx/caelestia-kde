@@ -17,6 +17,8 @@ StyledRect {
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconColumn
 
+    property bool isDragging: false
+
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
     readonly property real rawScale: !isNaN(Config.bar.scale) ? Config.bar.scale : 1.0
     readonly property real scaleFactor: rawScale < 1.0 ? Math.sqrt(Math.max(0.1, rawScale)) : rawScale
@@ -78,43 +80,45 @@ StyledRect {
     // the icons here are only the enabled ones that have something to say, so an
     // index in this widget is not an index in the list.
     function moveEntry(fromId: string, toId: string): void {
-        const entries = Config.bar.statusIcons.values;
+        const entries = GlobalConfig.bar.statusIcons.values;
         const from = entries.findIndex(entry => entry.id === fromId);
         const to = entries.findIndex(entry => entry.id === toId);
         if (from < 0 || to < 0 || from === to)
             return;
-        Config.bar.statusIcons.move(from, to);
+        GlobalConfig.bar.statusIcons.move(from, to);
     }
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
     clip: true
-    implicitWidth: isHorizontal ? (iconColumn.implicitWidth + Tokens.padding.medium * 2 + currentHoverExpansion) : barThickness
-    implicitHeight: isHorizontal ? barThickness : (iconColumn.implicitHeight + Tokens.padding.medium * 2 + currentHoverExpansion)
+    implicitWidth: isHorizontal ? (iconColumn.implicitWidth + Tokens.padding.medium * 2) : barThickness
+    implicitHeight: isHorizontal ? barThickness : (iconColumn.implicitHeight + Tokens.padding.medium * 2)
 
     Behavior on currentHoverExpansion { Anim { type: Anim.DefaultEffects } }
 
-    GridLayout {
+    Grid {
         id: iconColumn
 
-        readonly property real spacing: isHorizontal ? columnSpacing : rowSpacing
+        readonly property real baseSpacing: Tokens.spacing.medium / 2
+        readonly property real extraSpacing: root.activeEntries.length > 1 ? (root.currentHoverExpansion / (root.activeEntries.length - 1)) : 0
+        readonly property real dynamicSpacing: baseSpacing + extraSpacing
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: isHorizontal ? undefined : parent.bottom
-        anchors.bottomMargin: isHorizontal ? 0 : Tokens.padding.medium
-        anchors.top: isHorizontal ? undefined : parent.top
-        anchors.topMargin: Tokens.padding.medium
-        anchors.leftMargin: isHorizontal ? Tokens.padding.medium : 0
-        anchors.rightMargin: isHorizontal ? Tokens.padding.medium : 0
-        anchors.verticalCenter: isHorizontal ? parent.verticalCenter : undefined
+        anchors.centerIn: parent
 
         columns: isHorizontal ? -1 : 1
         rows: isHorizontal ? 1 : -1
-        flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+        flow: isHorizontal ? Grid.LeftToRight : Grid.TopToBottom
 
-        columnSpacing: Tokens.spacing.medium / 2
-        rowSpacing: Tokens.spacing.medium / 2
+        columnSpacing: isHorizontal ? dynamicSpacing : baseSpacing
+        rowSpacing: !isHorizontal ? dynamicSpacing : baseSpacing
+
+        move: Transition {
+            Anim {
+                duration: root.isDragging ? Tokens.anim.durations.expressiveFastSpatial : 0
+                properties: "x,y"
+                type: Anim.FastSpatial
+            }
+        }
 
         Repeater {
             model: ScriptModel {
@@ -132,16 +136,26 @@ StyledRect {
 
                 implicitWidth: loader.implicitWidth
                 implicitHeight: loader.implicitHeight
-
-                Layout.fillWidth: root.isHorizontal
-                Layout.fillHeight: !root.isHorizontal
-                Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
+                width: implicitWidth
+                height: implicitHeight
 
                 DropArea {
                     anchors.fill: parent
-                    onDropped: drag => root.moveEntry(drag.source.entryId, delegateContainer.name)
+
+                    onEntered: drag => {
+                        const fromId = drag.source?.entryId;
+                        const toId = delegateContainer.name;
+                        if (fromId && toId && fromId !== toId)
+                            root.moveEntry(fromId, toId);
+                    }
+                    onDropped: drag => {
+                        const fromId = drag.source?.entryId;
+                        const toId = delegateContainer.name;
+                        if (fromId && toId && fromId !== toId)
+                            root.moveEntry(fromId, toId);
+                    }
                 }
-            
+
                 Item {
                     id: dragItem
 
@@ -150,7 +164,7 @@ StyledRect {
 
                     width: delegateContainer.width
                     height: delegateContainer.height
-                    
+
                     Drag.active: dragArea.held
                     Drag.source: dragItem
                     Drag.hotSpot.x: width / 2
@@ -205,20 +219,25 @@ StyledRect {
                         drag.axis: root.isHorizontal ? Drag.XAxis : Drag.YAxis
                         cursorShape: Qt.PointingHandCursor
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    
+
                         onPressed: mouse => {
-                            if (mouse.button === Qt.LeftButton)
+                            if (mouse.button === Qt.LeftButton) {
                                 held = true;
+                                root.isDragging = true;
+                            }
                         }
                         onReleased: mouse => {
                             if (mouse.button === Qt.LeftButton) {
+                                dragItem.Drag.drop();
                                 held = false;
+                                root.isDragging = false;
                                 dragItem.x = 0;
                                 dragItem.y = 0;
                             }
                         }
                         onCanceled: {
                             held = false;
+                            root.isDragging = false;
                             dragItem.x = 0;
                             dragItem.y = 0;
                         }
@@ -236,20 +255,21 @@ StyledRect {
                 }
             }
         }
+    }
 
-        Component {
-            id: lockstatusComp
+    Component {
+        id: lockstatusComp
 
-            GridLayout {
-                columns: root.isHorizontal ? -1 : 1
-                rows: root.isHorizontal ? 1 : -1
-                flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
-                columnSpacing: 0
-                rowSpacing: 0
+        GridLayout {
+            columns: root.isHorizontal ? -1 : 1
+            rows: root.isHorizontal ? 1 : -1
+            flow: root.isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+            columnSpacing: 0
+            rowSpacing: 0
 
-                Item {
-                    implicitWidth: root.isHorizontal ? (Kwin.capsLock ? capslockIcon.implicitWidth : 0) : capslockIcon.implicitWidth
-                    implicitHeight: root.isHorizontal ? capslockIcon.implicitHeight : (Kwin.capsLock ? capslockIcon.implicitHeight : 0)
+            Item {
+                implicitWidth: root.isHorizontal ? (Kwin.capsLock ? capslockIcon.implicitWidth : 0) : capslockIcon.implicitWidth
+                implicitHeight: root.isHorizontal ? capslockIcon.implicitHeight : (Kwin.capsLock ? capslockIcon.implicitHeight : 0)
 
                 MaterialIcon {
                     id: capslockIcon
@@ -523,5 +543,4 @@ StyledRect {
             color: root.colour
         }
     }
-}
 }
