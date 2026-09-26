@@ -17,6 +17,9 @@ StyledRect {
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconColumn
 
+    property var bar: null
+    readonly property var popouts: bar?.popouts ?? null
+
     property bool isDragging: false
 
     readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
@@ -88,6 +91,20 @@ StyledRect {
         GlobalConfig.bar.statusIcons.move(from, to);
     }
 
+    function openContextMenu(): void {
+        const popouts = root.popouts;
+        if (!popouts)
+            return;
+
+        if (popouts.hasCurrent && popouts.currentName === "statusiconscontext") {
+            popouts.hasCurrent = false;
+        } else {
+            popouts.currentName = "statusiconscontext";
+            popouts.currentCenter = root.isHorizontal ? root.mapToItem(null, root.implicitWidth / 2, 0).x : (root.mapToItem(null, 0, root.implicitHeight / 2).y ?? 0);
+            popouts.hasCurrent = true;
+        }
+    }
+
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.full
     clip: true
@@ -95,6 +112,16 @@ StyledRect {
     implicitHeight: isHorizontal ? barThickness : (iconColumn.implicitHeight + Tokens.padding.medium * 2)
 
     Behavior on currentHoverExpansion { Anim { type: Anim.DefaultEffects } }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton)
+                root.openContextMenu();
+        }
+    }
 
     Grid {
         id: iconColumn
@@ -242,13 +269,11 @@ StyledRect {
                             dragItem.y = 0;
                         }
                         onClicked: mouse => {
-                            if (name === "notifications") {
-                                if (mouse.button === Qt.RightButton) {
-                                    Notifs.dnd = !Notifs.dnd;
-                                } else {
-                                    const vis = Visibilities.getForActive();
-                                    vis.sidebar = !vis.sidebar;
-                                }
+                            if (mouse.button === Qt.RightButton) {
+                                root.openContextMenu();
+                            } else if (name === "notifications") {
+                                const vis = Visibilities.getForActive();
+                                vis.sidebar = !vis.sidebar;
                             }
                         }
                     }

@@ -92,7 +92,7 @@ Item {
     }
 
     function checkPopout(pos: real): void {
-        if (popouts.hasCurrent && (popouts.currentName === "clockcontext" || popouts.currentName === "dockcontext" || popouts.currentName === "greetercontext"))
+        if (popouts.hasCurrent && (popouts.currentName === "clockcontext" || popouts.currentName === "dockcontext" || popouts.currentName === "greetercontext" || popouts.currentName === "statusiconscontext"))
             return;
 
         const ch = getLoaderAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as WrappedLoader;
@@ -193,7 +193,7 @@ Item {
                 popouts.hasCurrent = false;
             }
         } else if (id === "dock") {
-            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "greeter" || popouts.currentName === "greetercontext" || popouts.currentName === "activewindow")) return;
+            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "greeter" || popouts.currentName === "greetercontext" || popouts.currentName === "activewindow" || popouts.currentName === "statusiconscontext")) return;
 
             const item = ch.item;
             if (item && typeof item.handleHover === "function") {
@@ -448,7 +448,9 @@ Item {
             DelegateChoice {
                 roleValue: "statusIcons"
                 delegate: WrappedLoader {
-                    sourceComponent: StatusIcons {}
+                    sourceComponent: StatusIcons {
+                        bar: root
+                    }
                 }
             }
             DelegateChoice {
