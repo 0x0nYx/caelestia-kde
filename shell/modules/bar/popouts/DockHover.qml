@@ -157,14 +157,25 @@ StyledRect {
                     radius: Tokens.rounding.small
                     color: "transparent"
 
+                    Timer {
+                        id: previewTimer
+
+                        interval: 500
+
+                        onTriggered: {
+                            if (cardHover.hovered && card.modelData?.address && Config.bar.dock.previewOnDesktop)
+                                Kwin.highlightWindow(card.modelData.address);
+                        }
+                    }
+
                     HoverHandler {
                         id: cardHover
 
                         onHoveredChanged: {
-                            if (hovered && card.modelData?.address) {
-                                if (Config.bar.dock.previewOnDesktop)
-                                    Kwin.highlightWindow(card.modelData.address);
+                            if (hovered) {
+                                previewTimer.restart();
                             } else {
+                                previewTimer.stop();
                                 Kwin.clearHighlight();
                             }
                         }
@@ -174,6 +185,7 @@ StyledRect {
                         anchors.fill: parent
                         radius: parent.radius
                         onClicked: {
+                            previewTimer.stop();
                             Kwin.clearHighlight();
                             if (card.modelData.address) {
                                 if (Kwin.windowList.length > 0) {
