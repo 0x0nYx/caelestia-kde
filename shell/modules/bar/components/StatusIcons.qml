@@ -31,10 +31,10 @@ StyledRect {
     readonly property int iconSize: Math.round(effectiveThickness * 0.42)
 
     property real hoverPos: -1
-    property real hoverExpansion: 30 // Fixed px amount to expand the tray area when hovered
+    property real hoverSpacing: Tokens.spacing.small // px amount added to each gap when hovered
 
     readonly property bool isHovering: hoverPos !== -1
-    property real currentHoverExpansion: isHovering ? hoverExpansion : 0
+    property real currentHoverSpacing: isHovering ? hoverSpacing : 0
 
     readonly property var activeEntries: Config.bar.statusIcons.values.filter(entry => entry.enabled && root.entryActive(entry.id))
 
@@ -111,7 +111,7 @@ StyledRect {
     implicitWidth: isHorizontal ? (iconColumn.implicitWidth + Tokens.padding.medium * 2) : barThickness
     implicitHeight: isHorizontal ? barThickness : (iconColumn.implicitHeight + Tokens.padding.medium * 2)
 
-    Behavior on currentHoverExpansion { Anim { type: Anim.DefaultEffects } }
+    Behavior on currentHoverSpacing { Anim { type: Anim.DefaultEffects } }
 
     MouseArea {
         anchors.fill: parent
@@ -127,8 +127,7 @@ StyledRect {
         id: iconColumn
 
         readonly property real baseSpacing: Tokens.spacing.medium / 2
-        readonly property real extraSpacing: root.activeEntries.length > 1 ? (root.currentHoverExpansion / (root.activeEntries.length - 1)) : 0
-        readonly property real dynamicSpacing: baseSpacing + extraSpacing
+        readonly property real dynamicSpacing: baseSpacing + root.currentHoverSpacing
 
         anchors.centerIn: parent
 
