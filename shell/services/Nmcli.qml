@@ -34,7 +34,6 @@ Singleton {
     readonly property bool hasAvailableEthernet: __ethernetDevices.some(d => d.state !== "unavailable")
     property string ethernetSpeed: ""
     property string ethernetDataUsage: ""
-    readonly property var savedConnectionSecurity: NmQt.savedConnectionSecurity
 
     readonly property var vpnConnections: NmQt.vpnConnections
     readonly property var activeVpn: NmQt.activeVpn
@@ -42,6 +41,10 @@ Singleton {
 
     property list<string> savedConnections: NmQt.savedConnections
     property list<string> savedConnectionSsids: NmQt.savedConnectionSsids
+    // One entry per saved wireless profile (ssid, id, uuid, path, security,
+    // active) — profiles sharing an SSID stay distinguishable.
+    property list<SavedProfile> __savedConnectionProfiles: []
+    readonly property list<SavedProfile> savedConnectionProfiles: __savedConnectionProfiles
 
     readonly property var activeProcesses: []
 
@@ -307,6 +310,8 @@ Singleton {
         }
     }
 
+    function connectToNetworkByUuid(uuid: string, callback: var): void { NmQt.connectToNetworkByUuid(uuid, callback); }
+
     function connectWireless(ssid: string, password: string, bssid: string, callback: var, retryCount: int): void {
         connectToNetwork(ssid, password, bssid, callback);
     }
@@ -346,6 +351,7 @@ Singleton {
 
     function hasSavedProfile(ssid: string): bool { return NmQt.hasSavedProfile(ssid); }
     function forgetNetwork(ssid: string, callback: var): void { NmQt.forgetNetwork(ssid, callback); }
+    function forgetNetworkByUuid(uuid: string, callback: var): void { NmQt.forgetNetworkByUuid(uuid, callback); }
 
     function disconnect(interfaceName: string, callback: var): void {
         NmQt.disconnectFromNetwork();
@@ -440,11 +446,6 @@ Singleton {
         }
     }
 
-    function savedSecurityFor(ssid: string): string {
-        if (!ssid || ssid.length === 0) return "";
-        return (root.savedConnectionSecurity || {})[ssid.toLowerCase().trim()] || "";
-    }
-
     function getEthernetInterfaces(callback: var): void {
         const names = root.__ethernetDevices.map(d => d.iface);
         if (callback && typeof callback === "function") callback(names);
@@ -459,16 +460,16 @@ Singleton {
         if (callback && typeof callback === "function") callback(root.ethernetDataUsage);
     }
 
-    function getIpv4Config(connectionName: string, callback: var): void {
-        NmQt.getIpv4Config(connectionName, callback);
+    function getIpv4Config(connectionId: string, callback: var): void {
+        NmQt.getIpv4Config(connectionId, callback);
     }
 
-    function setIpv4Config(connectionName: string, config: var, callback: var): void {
-        NmQt.setIpv4Config(connectionName, config, callback);
+    function setIpv4Config(connectionId: string, config: var, callback: var): void {
+        NmQt.setIpv4Config(connectionId, config, callback);
     }
 
-    function setAutoconnect(connectionName: string, enabled: bool, callback: var): void {
-        NmQt.setAutoconnect(connectionName, enabled, callback);
+    function setAutoconnect(connectionId: string, enabled: bool, callback: var): void {
+        NmQt.setAutoconnect(connectionId, enabled, callback);
     }
 
     function addHiddenNetwork(ssid: string, password: string, security: string, hidden: bool, callback: var): void {
@@ -496,12 +497,45 @@ Singleton {
         root.__ethernetDevices = newList;
     }
 
+    function rebuildSavedProfiles(): void {
+        const rawList = NmQt.savedConnectionProfiles;
+        const ssidCounts = {};
+
+        for (const raw of rawList)
+            ssidCounts[raw.ssid] = (ssidCounts[raw.ssid] || 0) + 1;
+
+        const oldByUuid = new Map();
+        for (const profile of __savedConnectionProfiles) {
+            if (profile && profile.uuid)
+                oldByUuid.set(profile.uuid, profile);
+        }
+
+        const newList = [];
+        for (const raw of rawList) {
+            const duplicate = ssidCounts[raw.ssid] > 1;
+            const existing = oldByUuid.get(raw.uuid);
+            if (existing) {
+                existing.lastIpcObject = raw;
+                existing.duplicate = duplicate;
+                newList.push(existing);
+                oldByUuid.delete(raw.uuid);
+            } else {
+                newList.push(savedProfileComp.createObject(root, { lastIpcObject: raw, duplicate: duplicate }));
+            }
+        }
+
+        oldByUuid.forEach(profile => profile.destroy());
+
+        root.__savedConnectionProfiles = newList;
+    }
+
     // NmQt populates its own network cache in its C++ constructor, before this
     // Connections block exists to observe networksChanged — without this, the
     // adapter's list stays empty until NetworkManager emits another change.
     Component.onCompleted: {
         rebuildNetworkList();
         rebuildEthernetDevices();
+        rebuildSavedProfiles();
         rebuildActive();
     }
 
@@ -526,6 +560,9 @@ Singleton {
         }
         function onSavedConnectionSsidsChanged(): void {
             root.savedConnectionSsids = NmQt.savedConnectionSsids;
+        }
+        function onSavedConnectionProfilesChanged(): void {
+            rebuildSavedProfiles();
         }
         function onConnectionFailed(ssid: string): void {
             root.connectionFailed(ssid);
@@ -632,6 +669,12 @@ Singleton {
         EthernetDevice {}
     }
 
+    Component {
+        id: savedProfileComp
+
+        SavedProfile {}
+    }
+
     component AccessPoint: QtObject {
         required property var lastIpcObject
 
@@ -642,6 +685,24 @@ Singleton {
         readonly property bool active: lastIpcObject.active ?? false
         readonly property string security: lastIpcObject.security ?? ""
         readonly property bool isSecure: (lastIpcObject.security ?? "").length > 0
+    }
+
+    component SavedProfile: QtObject {
+        required property var lastIpcObject
+
+        // More than one saved profile can carry the same SSID; the pages use
+        // this instead of counting the SSIDs over again.
+        property bool duplicate: false
+
+        readonly property string ssid: lastIpcObject.ssid ?? ""
+        readonly property string id: lastIpcObject.id ?? ""
+        readonly property string uuid: lastIpcObject.uuid ?? ""
+        readonly property string path: lastIpcObject.path ?? ""
+        readonly property string security: lastIpcObject.security ?? ""
+        readonly property bool active: lastIpcObject.active ?? false
+
+        // The connection name when it differs from the SSID, else the UUID tail.
+        readonly property string disambiguator: id && id !== ssid ? id : uuid.slice(-4).toUpperCase()
     }
 
     component EthernetDevice: QtObject {

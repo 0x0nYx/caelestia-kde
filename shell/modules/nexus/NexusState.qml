@@ -17,6 +17,9 @@ QtObject {
     property DesktopEntry selectedApp
     property int editingVpnIndex: -1
     property string selectedNetworkSsid
+    // UUID of the saved profile the network detail page acts on; empty when the
+    // opener has no profile for the network.
+    property string selectedNetworkUuid
     property string selectedEthernetInterface
     property bool networkDetailsFromSaved
 
@@ -56,6 +59,16 @@ QtObject {
     function closeSubPage(): void {
         subPageClosed();
         subPageIdxStack.pop();
+    }
+
+    // The network detail sub-page is shared by the live list and the saved
+    // list, so it is opened through one call that sets the whole selection: a
+    // caller cannot leave a stale profile UUID behind it.
+    function openNetworkDetail(ssid: string, uuid: string, fromSaved: bool): void {
+        selectedNetworkSsid = ssid;
+        selectedNetworkUuid = uuid;
+        networkDetailsFromSaved = fromSaved;
+        openSubPage(3);
     }
 
     onCurrentPageIdxChanged: {

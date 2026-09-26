@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #pragma once
 
+#include <qqmlintegration.h>
+
+#include <NetworkManagerQt/Connection>
+#include <NetworkManagerQt/Device>
+#include <NetworkManagerQt/WirelessDevice>
+#include <QDateTime>
+#include <QJSValue>
 #include <QObject>
+#include <QStringList>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QStringList>
-#include <QJSValue>
-#include <QDateTime>
-#include <qqmlintegration.h>
-#include <NetworkManagerQt/Device>
 
 namespace caelestia::services {
 
@@ -35,6 +38,7 @@ class NmQt : public QObject {
     // -- Saved connections --
     Q_PROPERTY(QStringList savedConnections READ savedConnections NOTIFY savedConnectionsChanged)
     Q_PROPERTY(QStringList savedConnectionSsids READ savedConnectionSsids NOTIFY savedConnectionSsidsChanged)
+    Q_PROPERTY(QVariantList savedConnectionProfiles READ savedConnectionProfiles NOTIFY savedConnectionProfilesChanged)
 
     // -- Ethernet --
     Q_PROPERTY(QVariantMap activeEthernet READ activeEthernet NOTIFY activeEthernetChanged)
@@ -48,9 +52,6 @@ class NmQt : public QObject {
     // -- Device details --
     Q_PROPERTY(QVariantMap wirelessDeviceDetails READ wirelessDeviceDetails NOTIFY wirelessDeviceDetailsChanged)
     Q_PROPERTY(QVariantMap ethernetDeviceDetails READ ethernetDeviceDetails NOTIFY ethernetDeviceDetailsChanged)
-
-    // -- Saved connection security (ssid -> key-mgmt, e.g. "wpa-psk") --
-    Q_PROPERTY(QVariantMap savedConnectionSecurity READ savedConnectionSecurity NOTIFY savedConnectionSecurityChanged)
 
     QML_ELEMENT
     QML_SINGLETON
@@ -70,6 +71,7 @@ public:
 
     QStringList savedConnections() const;
     QStringList savedConnectionSsids() const;
+    QVariantList savedConnectionProfiles() const;
 
     QVariantMap activeEthernet() const;
     QVariantList ethernetDevices() const;
@@ -80,7 +82,6 @@ public:
 
     QVariantMap wirelessDeviceDetails() const;
     QVariantMap ethernetDeviceDetails() const;
-    QVariantMap savedConnectionSecurity() const;
 
     // -- QML-invokable actions --
 
@@ -88,19 +89,25 @@ public:
     Q_INVOKABLE void getNetworks(QJSValue callback = {});
 
     /// Connect to a WiFi network.
-    Q_INVOKABLE void connectToNetwork(const QString& ssid, const QString& password,
-                                      const QString& bssid, QJSValue callback = {});
+    Q_INVOKABLE void connectToNetwork(
+        const QString& ssid, const QString& password, const QString& bssid, QJSValue callback = {});
 
     /// Try connecting with a saved password first; fall back to asking.
-    Q_INVOKABLE void connectToNetworkWithPasswordCheck(const QString& ssid, bool isSecure,
-                                                       QJSValue callback = {},
-                                                       const QString& bssid = {});
+    Q_INVOKABLE void connectToNetworkWithPasswordCheck(
+        const QString& ssid, bool isSecure, QJSValue callback = {}, const QString& bssid = {});
 
     /// Disconnect from the currently active WiFi network.
     Q_INVOKABLE void disconnectFromNetwork();
 
     /// Remove a saved connection profile by SSID.
     Q_INVOKABLE void forgetNetwork(const QString& ssid, QJSValue callback = {});
+
+    /// Remove a single saved connection profile by UUID, leaving any other
+    /// profiles for the same SSID untouched.
+    Q_INVOKABLE void forgetNetworkByUuid(const QString& uuid, QJSValue callback = {});
+
+    /// Activate a specific saved profile (matched by UUID) on the wireless device.
+    Q_INVOKABLE void connectToNetworkByUuid(const QString& uuid, QJSValue callback = {});
 
     /// Enable or disable WiFi radio.
     Q_INVOKABLE void enableWifi(bool enabled, QJSValue callback = {});
@@ -112,8 +119,8 @@ public:
     Q_INVOKABLE void rescanWifi();
 
     /// Connect an Ethernet device.
-    Q_INVOKABLE void connectEthernet(const QString& connectionName, const QString& interfaceName,
-                                     QJSValue callback = {});
+    Q_INVOKABLE void connectEthernet(
+        const QString& connectionName, const QString& interfaceName, QJSValue callback = {});
 
     /// Disconnect an Ethernet device.
     Q_INVOKABLE void disconnectEthernet(const QString& connectionName, QJSValue callback = {});
@@ -124,7 +131,7 @@ public:
     /// Disconnect a VPN connection.
     Q_INVOKABLE void disconnectVpn(const QString& connectionName, QJSValue callback = {});
 
-    /// Reload the saved-connections lists.
+    /// Reload the saved-connections lists. Optionally invoke callback(profiles).
     Q_INVOKABLE void loadSavedConnections(QJSValue callback = {});
 
     /// Reload the VPN connections list.
@@ -134,28 +141,24 @@ public:
     Q_INVOKABLE bool hasSavedProfile(const QString& ssid) const;
 
     /// Retrieve detailed info for a wireless device.
-    Q_INVOKABLE void getWirelessDeviceDetails(const QString& interfaceName,
-                                              QJSValue callback = {});
+    Q_INVOKABLE void getWirelessDeviceDetails(const QString& interfaceName, QJSValue callback = {});
 
     /// Retrieve detailed info for an ethernet device.
-    Q_INVOKABLE void getEthernetDeviceDetails(const QString& interfaceName,
-                                              QJSValue callback = {});
+    Q_INVOKABLE void getEthernetDeviceDetails(const QString& interfaceName, QJSValue callback = {});
 
-    /// Read IPv4 settings of a saved connection (matched by name or SSID).
-    Q_INVOKABLE void getIpv4Config(const QString& connectionName, QJSValue callback = {});
+    /// Read IPv4 settings of a saved connection. The identifier is matched by
+    /// UUID, connection id, or SSID.
+    Q_INVOKABLE void getIpv4Config(const QString& connectionId, QJSValue callback = {});
 
-    /// Write IPv4 settings to a saved connection.
-    Q_INVOKABLE void setIpv4Config(const QString& connectionName, const QVariantMap& config,
-                                   QJSValue callback = {});
+    /// Write IPv4 settings to a saved connection (same identifier forms).
+    Q_INVOKABLE void setIpv4Config(const QString& connectionId, const QVariantMap& config, QJSValue callback = {});
 
-    /// Toggle autoconnect on a saved connection.
-    Q_INVOKABLE void setAutoconnect(const QString& connectionName, bool enabled,
-                                    QJSValue callback = {});
+    /// Toggle autoconnect on a saved connection (same identifier forms).
+    Q_INVOKABLE void setAutoconnect(const QString& connectionId, bool enabled, QJSValue callback = {});
 
     /// Create and activate a hidden WiFi network.
-    Q_INVOKABLE void addHiddenNetwork(const QString& ssid, const QString& password,
-                                      const QString& security, bool hidden,
-                                      QJSValue callback = {});
+    Q_INVOKABLE void addHiddenNetwork(
+        const QString& ssid, const QString& password, const QString& security, bool hidden, QJSValue callback = {});
 
     /// Formatted link speed (e.g. "1000 Mb/s"), empty if unknown.
     Q_INVOKABLE QString ethernetSpeed(const QString& interfaceName) const;
@@ -174,6 +177,7 @@ signals:
 
     void savedConnectionsChanged();
     void savedConnectionSsidsChanged();
+    void savedConnectionProfilesChanged();
 
     void activeEthernetChanged();
     void ethernetDevicesChanged();
@@ -185,7 +189,6 @@ signals:
 
     void wirelessDeviceDetailsChanged();
     void ethernetDeviceDetailsChanged();
-    void savedConnectionSecurityChanged();
 
     /// Emitted when a connection attempt fails outright.
     void connectionFailed(const QString& ssid);
@@ -197,9 +200,8 @@ private slots:
     void onNetworkDevicesChanged();
     void onActiveConnectionsChanged();
     void onConnectionsChanged();
-    void onDeviceStateChanged(NetworkManager::Device::State newState,
-                              NetworkManager::Device::State oldState,
-                              NetworkManager::Device::StateChangeReason reason);
+    void onDeviceStateChanged(NetworkManager::Device::State newState, NetworkManager::Device::State oldState,
+        NetworkManager::Device::StateChangeReason reason);
     void onScanFinished(const QDateTime& dateTime);
     void onAccessPointAppeared(const QString& apPath);
     void onAccessPointDisappeared(const QString& apPath);
@@ -217,29 +219,28 @@ private:
     void refreshWirelessDeviceDetails(const QString& interfaceName = {});
     void refreshEthernetDeviceDetails(const QString& interfaceName = {});
 
+    /// Activate an already-saved profile on the wireless device and report the
+    /// outcome through the callback. Shared by the SSID and UUID connect paths.
+    void activateProfile(const NetworkManager::Connection::Ptr& conn, const NetworkManager::WirelessDevice::Ptr& device,
+        QJSValue callback);
+
     /// Build a QVariantMap for a single access point.
-    static QVariantMap buildApMap(const QString& ssid, const QString& bssid,
-                                  int strength, int frequency,
-                                  bool active, const QString& security);
+    static QVariantMap buildApMap(
+        const QString& ssid, const QString& bssid, int strength, int frequency, bool active, const QString& security);
 
     /// Build a standardised result object for a JS callback.
-    static QJSValue buildResult(QJSEngine* engine, bool success,
-                                const QString& output = {},
-                                const QString& error = {},
-                                int exitCode = 0,
-                                bool needsPassword = false);
+    static QJSValue buildResult(QJSEngine* engine, bool success, const QString& output = {}, const QString& error = {},
+        int exitCode = 0, bool needsPassword = false);
 
-    void invokeCallback(QJSValue callback, bool success,
-                        const QString& output = {},
-                        const QString& error = {},
-                        int exitCode = 0,
-                        bool needsPassword = false);
+    void invokeCallback(QJSValue callback, bool success, const QString& output = {}, const QString& error = {},
+        int exitCode = 0, bool needsPassword = false);
 
     // -- State --
     QVariantList m_networks;
     QVariantMap m_active;
     QStringList m_savedConnections;
     QStringList m_savedConnectionSsids;
+    QVariantList m_savedConnectionProfiles;
     QVariantMap m_activeEthernet;
     QVariantList m_ethernetDevices;
     QVariantList m_vpnConnections;
@@ -247,7 +248,6 @@ private:
     QString m_vpnPendingConnection;
     QVariantMap m_wirelessDeviceDetails;
     QVariantMap m_ethernetDeviceDetails;
-    QVariantMap m_savedConnectionSecurity;
     QString m_connectingSsid;
     bool m_wifiEnabled = true;
     bool m_scanning = false;

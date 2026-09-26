@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.modules.nexus.common
@@ -33,7 +34,10 @@ PageBase {
             placeholderText: qsTr("No saved networks")
 
             model: ScriptModel {
-                values: [...Nmcli.savedConnectionSsids].sort((a, b) => a.localeCompare(b))
+                // One entry per saved profile, not per SSID, so duplicates of
+                // the same SSID stay distinguishable and actionable. The
+                // duplicates are already flagged by the profile itself.
+                values: [...Nmcli.savedConnectionProfiles].sort((a, b) => a.ssid.localeCompare(b.ssid) || a.id.localeCompare(b.id))
             }
 
             delegate: StateLayer {
@@ -41,8 +45,9 @@ PageBase {
 
                 required property int index
                 required property var modelData
-                readonly property var ap: Nmcli.findNetwork(modelData)
-                readonly property bool isActive: !!Nmcli.active && Nmcli.active.ssid === modelData
+                readonly property Nmcli.SavedProfile profile: modelData
+                readonly property var ap: Nmcli.findNetwork(profile.ssid)
+                readonly property bool isActive: profile.active
 
                 anchors.left: savedList.list.contentItem.left
                 anchors.right: savedList.list.contentItem.right
@@ -54,11 +59,9 @@ PageBase {
                 bottomRightRadius: index === savedList?.list.count - 1 ? Tokens.rounding.extraLarge : radius
                 anchors.fill: undefined
 
-                onClicked: {
-                    root.nState.selectedNetworkSsid = saved.modelData;
-                    root.nState.networkDetailsFromSaved = true;
-                    root.nState.openSubPage(3); // Shared network detail/edit sub-page
-                }
+                // The shared detail/edit sub-page, opened on this exact profile
+                // rather than on its SSID.
+                onClicked: root.nState.openNetworkDetail(saved.profile.ssid, saved.profile.uuid, true)
 
                 RowLayout {
                     id: savedLayout
@@ -70,7 +73,7 @@ PageBase {
                     spacing: Tokens.spacing.medium
 
                     MaterialIcon {
-                        text: saved.ap ? Icons.getNetworkIcon(saved.ap.strength, !["", "none"].includes(Nmcli.savedSecurityFor(saved.modelData))) : "signal_wifi_off"
+                        text: saved.ap ? Icons.getNetworkIcon(saved.ap.strength, !["", "none"].includes(saved.profile.security)) : "signal_wifi_off"
                         color: saved.isActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
                         fontStyle: Tokens.font.icon.medium
                     }
@@ -81,7 +84,7 @@ PageBase {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: saved.modelData
+                            text: saved.profile.duplicate ? qsTr("%1 (%2)").arg(saved.profile.ssid).arg(saved.profile.disambiguator) : saved.profile.ssid
                             font: Tokens.font.body.small
                             elide: Text.ElideRight
                         }
@@ -93,7 +96,7 @@ PageBase {
                                 if (saved.ap)
                                     security = saved.ap.security || qsTr("Open");
                                 else
-                                    security = Nmcli.securityLabel(Nmcli.savedSecurityFor(saved.modelData)) || qsTr("Unknown");
+                                    security = Nmcli.securityLabel(saved.profile.security) || qsTr("Unknown");
                                 if (saved.isActive)
                                     return qsTr("Connected • %1").arg(security);
                                 return security;
@@ -102,6 +105,13 @@ PageBase {
                             font: Tokens.font.label.small
                             elide: Text.ElideRight
                         }
+                    }
+
+                    // Forgets this one profile; the duplicates of its SSID stay.
+                    IconButton {
+                        type: IconButton.Text
+                        icon: "delete"
+                        onClicked: Nmcli.forgetNetworkByUuid(saved.profile.uuid)
                     }
 
                     MaterialIcon {

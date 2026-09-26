@@ -72,24 +72,79 @@ QString keyMgmtToString(NetworkManager::WirelessSecuritySetting::KeyMgmt k) {
     }
 }
 
+/// The SSID a connection holds, as the raw bytes NetworkManager stores it as.
+/// Empty for every connection type that is not wireless.
+QByteArray ssidOf(const NetworkManager::Connection::Ptr& conn) {
+    if (!conn || !conn->settings())
+        return {};
+
+    const auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
+    if (!ws)
+        return {};
+
+    const auto* wireless = static_cast<NetworkManager::WirelessSetting*>(ws.data());
+    return wireless->ssid();
+}
+
+/// Every saved connection whose settings could be read.
+QList<NetworkManager::Connection::Ptr> connectionsWithSettings() {
+    QList<NetworkManager::Connection::Ptr> conns;
+    for (const auto& conn : NetworkManager::listConnections()) {
+        if (conn && conn->settings())
+            conns.append(conn);
+    }
+    return conns;
+}
+
+/// Every saved connection for exactly this SSID, in NetworkManager's order.
+/// One SSID can hold several profiles, so a caller that must act on one
+/// profile addresses it by UUID, and a caller that must act on all of them
+/// takes this list.
+QList<NetworkManager::Connection::Ptr> connectionsForSsid(const QString& ssid) {
+    QList<NetworkManager::Connection::Ptr> matches;
+    for (const auto& conn : connectionsWithSettings()) {
+        if (ssidOf(conn) == ssid.toUtf8())
+            matches.append(conn);
+    }
+    return matches;
+}
+
+/// Resolve one exact saved profile. Matching the connection id or the SSID as
+/// well would land on whichever duplicate NetworkManager enumerates first.
+NetworkManager::Connection::Ptr findConnectionByUuid(const QString& uuid) {
+    if (uuid.isEmpty())
+        return {};
+
+    for (const auto& conn : connectionsWithSettings()) {
+        if (conn->uuid() == uuid)
+            return conn;
+    }
+    return {};
+}
+
+/// Resolve a saved connection by UUID, connection id, or SSID: the legacy
+/// lookup for the call sites that hold a name or an SSID rather than a UUID.
 NetworkManager::Connection::Ptr findConnectionByName(const QString& name) {
     if (name.isEmpty())
         return {};
 
-    const auto connPaths = NetworkManager::listConnections();
-    for (const auto& conn : connPaths) {
-        if (!conn || !conn->settings())
-            continue;
-
-        if (conn->settings()->id() == name || conn->uuid() == name)
+    for (const auto& conn : connectionsWithSettings()) {
+        if (conn->uuid() == name)
             return conn;
+        if (conn->settings()->id() == name)
+            return conn;
+        if (ssidOf(conn) == name.toUtf8())
+            return conn;
+    }
+    return {};
+}
 
-        const auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
-        if (ws) {
-            const auto* wireless = static_cast<NetworkManager::WirelessSetting*>(ws.data());
-            if (wireless->ssid() == name.toUtf8())
-                return conn;
-        }
+/// The wireless device the connect paths act on. Systems with more than one
+/// wifi device are not told apart anywhere in the UI yet.
+NetworkManager::WirelessDevice::Ptr findWirelessDevice() {
+    for (const auto& dev : NetworkManager::networkInterfaces()) {
+        if (auto wd = dev.dynamicCast<NetworkManager::WirelessDevice>())
+            return wd;
     }
     return {};
 }
@@ -186,6 +241,10 @@ QStringList NmQt::savedConnectionSsids() const {
     return m_savedConnectionSsids;
 }
 
+QVariantList NmQt::savedConnectionProfiles() const {
+    return m_savedConnectionProfiles;
+}
+
 QVariantMap NmQt::activeEthernet() const {
     return m_activeEthernet;
 }
@@ -214,10 +273,6 @@ QVariantMap NmQt::ethernetDeviceDetails() const {
     return m_ethernetDeviceDetails;
 }
 
-QVariantMap NmQt::savedConnectionSecurity() const {
-    return m_savedConnectionSecurity;
-}
-
 // ---
 //  QML-invokable actions
 // ---
@@ -231,16 +286,7 @@ void NmQt::getNetworks(QJSValue callback) {
 }
 
 void NmQt::connectToNetwork(const QString& ssid, const QString& password, const QString& bssid, QJSValue callback) {
-    // Locate the wireless device
-    NetworkManager::WirelessDevice::Ptr wifiDev;
-    for (const auto& dev : NetworkManager::networkInterfaces()) {
-        auto wd = dev.dynamicCast<NetworkManager::WirelessDevice>();
-        if (wd) {
-            wifiDev = wd;
-            break;
-        }
-    }
-
+    const NetworkManager::WirelessDevice::Ptr wifiDev = findWirelessDevice();
     if (!wifiDev) {
         qCWarning(lcNmQt) << "connectToNetwork: no wireless device found";
         invokeCallback(callback, false, {}, QStringLiteral("No wireless device"), -1);
@@ -269,46 +315,14 @@ void NmQt::connectToNetwork(const QString& ssid, const QString& password, const 
     const bool apIsOpen = targetAp && !targetAp->wpaFlags() && !targetAp->rsnFlags() &&
                           !targetAp->capabilities().testFlag(NetworkManager::AccessPoint::Privacy);
 
-    // Look for a saved connection matching this SSID
-    NetworkManager::Connection::Ptr existingConn;
-    {
-        const auto connPaths = NetworkManager::listConnections();
-        for (const auto& conn : connPaths) {
-            if (!conn || !conn->settings())
-                continue;
-            auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
-            if (!ws)
-                continue;
-            auto* wirelessSetting = static_cast<NetworkManager::WirelessSetting*>(ws.data());
-            if (wirelessSetting->ssid() == ssid.toUtf8()) {
-                existingConn = conn;
-                break;
-            }
-        }
-    }
+    // The first saved profile for this SSID: this entry point is addressed by
+    // SSID, so a duplicate profile here is resolved by NetworkManager's order
+    // and not by a choice the user made.
+    const NetworkManager::Connection::Ptr existingConn = connectionsForSsid(ssid).value(0);
 
     if (existingConn && password.isEmpty()) {
-        // Activate existing connection
-        m_connectingSsid = ssid;
-        emit connectingSsidChanged();
-
-        QDBusPendingReply<QDBusObjectPath> reply =
-            NetworkManager::activateConnection(existingConn->path(), wifiDev->uni(), QString());
-        auto* watcher = new QDBusPendingCallWatcher(reply, this);
-        connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, ssid, callback](QDBusPendingCallWatcher* w) {
-            w->deleteLater();
-            QDBusPendingReply<QDBusObjectPath> r = *w;
-            if (r.isError()) {
-                qCWarning(lcNmQt) << "activateConnection failed:" << r.error().message();
-                m_connectingSsid.clear();
-                emit connectingSsidChanged();
-                invokeCallback(callback, false, {}, r.error().message(), -1);
-            } else {
-                m_connectingSsid.clear();
-                emit connectingSsidChanged();
-                invokeCallback(callback, true, QStringLiteral("Connection activated"));
-            }
-        });
+        // The profile already saved for this SSID: activate it as-is.
+        activateProfile(existingConn, wifiDev, callback);
         return;
     }
 
@@ -397,30 +411,69 @@ void NmQt::connectToNetworkWithPasswordCheck(
     }
 
     // Try with saved password first
-    NetworkManager::Connection::Ptr savedConn;
-    {
-        const auto connPaths = NetworkManager::listConnections();
-        for (const auto& conn : connPaths) {
-            if (!conn || !conn->settings())
-                continue;
-            auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
-            if (!ws)
-                continue;
-            auto* wirelessSetting = static_cast<NetworkManager::WirelessSetting*>(ws.data());
-            if (wirelessSetting->ssid() == ssid.toUtf8()) {
-                savedConn = conn;
-                break;
-            }
-        }
-    }
+    const bool hasSavedConn = !connectionsForSsid(ssid).isEmpty();
 
-    if (savedConn) {
+    if (hasSavedConn) {
         // Has a saved profile — try activating it; NM will use stored secrets
         connectToNetwork(ssid, QString(), bssid, callback);
     } else {
         // No saved profile — caller needs to provide password
         invokeCallback(callback, false, {}, QStringLiteral("Secrets were required, but not provided"), -1, true);
     }
+}
+
+void NmQt::activateProfile(
+    const NetworkManager::Connection::Ptr& conn, const NetworkManager::WirelessDevice::Ptr& device, QJSValue callback) {
+    // The SSID is what the UI shows as "connecting"; a profile without a
+    // readable one leaves nothing to show.
+    const QString ssid = QString::fromUtf8(ssidOf(conn));
+    if (!ssid.isEmpty()) {
+        m_connectingSsid = ssid;
+        emit connectingSsidChanged();
+    }
+
+    QDBusPendingReply<QDBusObjectPath> reply =
+        NetworkManager::activateConnection(conn->path(), device->uni(), QString());
+    auto* watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, ssid, callback](QDBusPendingCallWatcher* w) {
+        w->deleteLater();
+        QDBusPendingReply<QDBusObjectPath> r = *w;
+        if (!ssid.isEmpty()) {
+            m_connectingSsid.clear();
+            emit connectingSsidChanged();
+        }
+        if (r.isError()) {
+            qCWarning(lcNmQt) << "activateConnection failed:" << r.error().message();
+            invokeCallback(callback, false, {}, r.error().message(), -1);
+        } else {
+            invokeCallback(callback, true, QStringLiteral("Connection activated"));
+        }
+    });
+}
+
+void NmQt::connectToNetworkByUuid(const QString& uuid, QJSValue callback) {
+    if (uuid.isEmpty()) {
+        invokeCallback(callback, false, {}, QStringLiteral("No connection UUID specified"), -1);
+        return;
+    }
+
+    // Several saved profiles can share one SSID, so activating by SSID would
+    // pick an arbitrary one — match the exact profile the user selected.
+    const NetworkManager::Connection::Ptr target = findConnectionByUuid(uuid);
+
+    if (!target || !target->settings()) {
+        invokeCallback(callback, false, {}, QStringLiteral("No connection found for UUID"), -1);
+        return;
+    }
+
+    const NetworkManager::WirelessDevice::Ptr wifiDev = findWirelessDevice();
+    if (!wifiDev) {
+        qCWarning(lcNmQt) << "connectToNetworkByUuid: no wireless device found";
+        invokeCallback(callback, false, {}, QStringLiteral("No wireless device"), -1);
+        return;
+    }
+
+    activateProfile(target, wifiDev, callback);
 }
 
 void NmQt::disconnectFromNetwork() {
@@ -447,33 +500,14 @@ void NmQt::disconnectFromNetwork() {
     }
 
     // Fallback: deactivate the wireless device
-    NetworkManager::WirelessDevice::Ptr wifiDev;
-    for (const auto& dev : NetworkManager::networkInterfaces()) {
-        auto wd = dev.dynamicCast<NetworkManager::WirelessDevice>();
-        if (wd) {
-            wd->disconnectInterface();
-            break;
-        }
-    }
+    if (const auto wifiDev = findWirelessDevice())
+        wifiDev->disconnectInterface();
 }
 
 void NmQt::forgetNetwork(const QString& ssid, QJSValue callback) {
     // Forget every saved profile with this SSID, not just the first one NM
     // enumerates. Duplicate profiles happen after a router password change.
-    QList<NetworkManager::Connection::Ptr> matches;
-    const auto connPaths = NetworkManager::listConnections();
-    for (const auto& conn : connPaths) {
-        if (!conn || !conn->settings())
-            continue;
-
-        auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
-        if (!ws)
-            continue;
-
-        auto* wirelessSetting = static_cast<NetworkManager::WirelessSetting*>(ws.data());
-        if (wirelessSetting->ssid() == ssid.toUtf8())
-            matches.append(conn);
-    }
+    const auto matches = connectionsForSsid(ssid);
 
     if (matches.isEmpty()) {
         invokeCallback(callback, false, {}, QStringLiteral("No connection found for SSID"), -1);
@@ -499,6 +533,33 @@ void NmQt::forgetNetwork(const QString& ssid, QJSValue callback) {
                     invokeCallback(callback, false, {}, *failed, -1);
             });
     }
+}
+
+void NmQt::forgetNetworkByUuid(const QString& uuid, QJSValue callback) {
+    if (uuid.isEmpty()) {
+        invokeCallback(callback, false, {}, QStringLiteral("No connection UUID specified"), -1);
+        return;
+    }
+
+    const NetworkManager::Connection::Ptr target = findConnectionByUuid(uuid);
+
+    if (!target) {
+        invokeCallback(callback, false, {}, QStringLiteral("No connection found for UUID"), -1);
+        return;
+    }
+
+    QDBusPendingReply<> reply = target->remove();
+    auto* watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, callback](QDBusPendingCallWatcher* w) {
+        w->deleteLater();
+        if (w->isError()) {
+            refreshSavedConnections();
+            invokeCallback(callback, false, {}, w->error().message(), -1);
+            return;
+        }
+        refreshSavedConnections();
+        invokeCallback(callback, true, QStringLiteral("Deleted"));
+    });
 }
 
 void NmQt::enableWifi(bool enabled, QJSValue callback) {
@@ -690,7 +751,9 @@ void NmQt::disconnectVpn(const QString& connectionName, QJSValue callback) {
 void NmQt::loadSavedConnections(QJSValue callback) {
     refreshSavedConnections();
     if (callback.isCallable()) {
-        auto arr = qjsEngine(this)->toScriptValue(m_savedConnectionSsids);
+        // One entry per saved profile, each carrying its UUID and D-Bus path
+        // alongside the SSID: several profiles can share one SSID.
+        auto arr = qjsEngine(this)->toScriptValue(m_savedConnectionProfiles);
         callback.call({ arr });
     }
 }
@@ -749,7 +812,7 @@ void NmQt::getEthernetDeviceDetails(const QString& interfaceName, QJSValue callb
 //  IPv4 / autoconnect / hidden network / ethernet stats
 // ---
 
-void NmQt::getIpv4Config(const QString& connectionName, QJSValue callback) {
+void NmQt::getIpv4Config(const QString& connectionId, QJSValue callback) {
     if (!callback.isCallable())
         return;
 
@@ -757,7 +820,7 @@ void NmQt::getIpv4Config(const QString& connectionName, QJSValue callback) {
     if (!engine)
         return;
 
-    const auto conn = findConnectionByName(connectionName);
+    const auto conn = findConnectionByName(connectionId);
     if (!conn) {
         callback.call({ QJSValue() });
         return;
@@ -804,8 +867,8 @@ void NmQt::getIpv4Config(const QString& connectionName, QJSValue callback) {
     callback.call({ cfg });
 }
 
-void NmQt::setIpv4Config(const QString& connectionName, const QVariantMap& config, QJSValue callback) {
-    const auto conn = findConnectionByName(connectionName);
+void NmQt::setIpv4Config(const QString& connectionId, const QVariantMap& config, QJSValue callback) {
+    const auto conn = findConnectionByName(connectionId);
     if (!conn) {
         invokeCallback(callback, false, {}, QStringLiteral("Connection not found"), -1);
         return;
@@ -881,8 +944,8 @@ void NmQt::setIpv4Config(const QString& connectionName, const QVariantMap& confi
     });
 }
 
-void NmQt::setAutoconnect(const QString& connectionName, bool enabled, QJSValue callback) {
-    const auto conn = findConnectionByName(connectionName);
+void NmQt::setAutoconnect(const QString& connectionId, bool enabled, QJSValue callback) {
+    const auto conn = findConnectionByName(connectionId);
     if (!conn) {
         invokeCallback(callback, false, {}, QStringLiteral("Connection not found"), -1);
         return;
@@ -911,14 +974,7 @@ void NmQt::addHiddenNetwork(
         return;
     }
 
-    NetworkManager::WirelessDevice::Ptr wifiDev;
-    for (const auto& dev : NetworkManager::networkInterfaces()) {
-        auto wd = dev.dynamicCast<NetworkManager::WirelessDevice>();
-        if (wd) {
-            wifiDev = wd;
-            break;
-        }
-    }
+    const NetworkManager::WirelessDevice::Ptr wifiDev = findWirelessDevice();
     if (!wifiDev) {
         invokeCallback(callback, false, {}, QStringLiteral("No wireless device"), -1);
         return;
@@ -1062,6 +1118,10 @@ void NmQt::onActiveConnectionsChanged() {
     refreshNetworks();
     refreshDevices();
     refreshVpnConnections();
+    // Saved profiles track which of them is active, so they must be refreshed
+    // when the active connection changes, not only when profiles are added or
+    // removed.
+    refreshSavedConnections();
     // Ethernet devices never go through onDeviceStateChanged, so the global
     // connectivity property must be refreshed here too or it can go stale.
     emit isConnectedChanged();
@@ -1304,33 +1364,48 @@ void NmQt::refreshEthernetDevices() {
 void NmQt::refreshSavedConnections() {
     QStringList connNames;
     QStringList ssids;
-    QVariantMap securityMap;
+    QVariantList profiles;
 
-    const auto connPaths = NetworkManager::listConnections();
-    for (const auto& conn : connPaths) {
-        if (!conn || !conn->settings())
-            continue;
+    // UUIDs of the currently active connections, so each profile can report
+    // whether it is the one connected: duplicates of one SSID must not all
+    // claim to be active.
+    QSet<QString> activeUuids;
+    for (const auto& path : NetworkManager::activeConnectionsPaths()) {
+        const auto ac = NetworkManager::findActiveConnection(path);
+        if (ac)
+            activeUuids.insert(ac->uuid());
+    }
 
+    for (const auto& conn : connectionsWithSettings()) {
         connNames.append(conn->name());
 
-        // Extract SSID from wireless connections
-        auto ws = conn->settings()->setting(NetworkManager::Setting::SettingType::Wireless);
-        if (ws) {
-            auto* wirelessSetting = static_cast<NetworkManager::WirelessSetting*>(ws.data());
-            if (!wirelessSetting->ssid().isEmpty()) {
-                ssids.append(QString::fromUtf8(wirelessSetting->ssid()));
+        // Only a wireless connection has an SSID to list; every other profile
+        // stops here.
+        const QString ssid = QString::fromUtf8(ssidOf(conn));
+        if (ssid.isEmpty())
+            continue;
 
-                QString keyMgmt;
-                const auto sec = conn->settings()->setting(NetworkManager::Setting::SettingType::WirelessSecurity);
-                if (sec) {
-                    const auto* secSetting = static_cast<NetworkManager::WirelessSecuritySetting*>(sec.data());
-                    keyMgmt = keyMgmtToString(secSetting->keyMgmt());
-                }
-                if (keyMgmt.isEmpty())
-                    keyMgmt = QStringLiteral("none");
-                securityMap[QString::fromUtf8(wirelessSetting->ssid()).toLower().trimmed()] = keyMgmt;
-            }
+        ssids.append(ssid);
+
+        QString keyMgmt;
+        const auto sec = conn->settings()->setting(NetworkManager::Setting::SettingType::WirelessSecurity);
+        if (sec) {
+            const auto* secSetting = static_cast<NetworkManager::WirelessSecuritySetting*>(sec.data());
+            keyMgmt = keyMgmtToString(secSetting->keyMgmt());
         }
+        if (keyMgmt.isEmpty())
+            keyMgmt = QStringLiteral("none");
+
+        // One profile entry per wireless connection, keyed by UUID so the UI
+        // can tell duplicates of the same SSID apart.
+        QVariantMap profile;
+        profile[QStringLiteral("ssid")] = ssid;
+        profile[QStringLiteral("id")] = conn->name();
+        profile[QStringLiteral("uuid")] = conn->uuid();
+        profile[QStringLiteral("path")] = conn->path();
+        profile[QStringLiteral("security")] = keyMgmt;
+        profile[QStringLiteral("active")] = activeUuids.contains(conn->uuid());
+        profiles.append(profile);
     }
 
     if (m_savedConnections != connNames) {
@@ -1343,9 +1418,9 @@ void NmQt::refreshSavedConnections() {
         emit savedConnectionSsidsChanged();
     }
 
-    if (m_savedConnectionSecurity != securityMap) {
-        m_savedConnectionSecurity = securityMap;
-        emit savedConnectionSecurityChanged();
+    if (m_savedConnectionProfiles != profiles) {
+        m_savedConnectionProfiles = profiles;
+        emit savedConnectionProfilesChanged();
     }
 }
 

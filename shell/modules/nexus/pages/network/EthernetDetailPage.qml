@@ -128,7 +128,7 @@ PageBase {
 
         Ipv4ConfigSection {
             Layout.fillWidth: true
-            connectionName: root.connectionName
+            connectionId: root.connectionName
         }
     }
 }

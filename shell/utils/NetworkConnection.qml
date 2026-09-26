@@ -31,6 +31,23 @@ QtObject {
     property var passwordNetwork: null
 
     /**
+     * Bring the current connection down before running connect, unless it is
+     * already the target: an activation on a device that is busy with another
+     * connection is left for NetworkManager to resolve otherwise.
+     *
+     * @param isTarget Whether the connection that is up is the one about to be connected
+     * @param connect Callback that starts the connection
+     */
+    function disconnectFirstIfNeeded(isTarget: bool, connect: var): void {
+        if (Nmcli.active && !isTarget) {
+            Nmcli.disconnectFromNetwork();
+            Qt.callLater(connect);
+        } else {
+            connect();
+        }
+    }
+
+    /**
      * Handle network connection with automatic disconnection if needed.
      * If there's an active network different from the target, disconnects first,
      * then connects to the target network.
@@ -44,14 +61,35 @@ QtObject {
             return;
         }
 
-        if (Nmcli.active && Nmcli.active.ssid !== network.ssid) {
-            Nmcli.disconnectFromNetwork();
-            Qt.callLater(() => {
-                root.connectToNetwork(network, session, onPasswordNeeded);
-            });
-        } else {
+        root.disconnectFirstIfNeeded(Nmcli.active?.ssid === network.ssid, () => {
             root.connectToNetwork(network, session, onPasswordNeeded);
+        });
+    }
+
+    /**
+     * Connect to one specific saved profile, identified by its UUID.
+     *
+     * The target is a saved profile rather than a scanned network: it already
+     * holds its credentials, so there is no password step, and the UUID is what
+     * keeps the choice unambiguous when several profiles share one SSID.
+     *
+     * Two profiles of one SSID are exactly the case where the connection that
+     * is up is a different profile than the target, which comparing SSIDs
+     * cannot see, so the target is matched against the profile list's own
+     * active flag.
+     *
+     * @param uuid Profile UUID (required)
+     * @param onResult Optional callback function(result) called with the connection result
+     */
+    function connectToSavedProfile(uuid, onResult): void {
+        if (!uuid) {
+            return;
         }
+
+        const isTarget = !!Nmcli.savedConnectionProfiles.find(p => p.uuid === uuid)?.active;
+        root.disconnectFirstIfNeeded(isTarget, () => {
+            Nmcli.connectToNetworkByUuid(uuid, onResult || null);
+        });
     }
 
     /**
