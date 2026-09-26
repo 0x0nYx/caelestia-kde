@@ -48,6 +48,13 @@ Singleton {
             property int initialPageIdx: 0
             property int initialSubPageIdx: -1
 
+            function raise(): void {
+                const pageTitles = PageRegistry.pages.map(p => p.label);
+                const target = Kwin.windowList.find(w => w.title === win.title || (pageTitles.includes(w.title) && w.class && w.class.includes("quickshell")));
+                if (target?.address)
+                    Kwin.focusWindow(target.address);
+            }
+
             Component.onDestruction: {
                 if (root.openWindow === win)
                     root.openWindow = null;
