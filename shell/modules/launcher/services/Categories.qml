@@ -28,9 +28,11 @@ QtObject {
     ]
 
     /// The curated category a desktop entry belongs to, or "other".
+    /// Apps filtered out mid-rescan can surface as null here; they map to
+    /// "other" so category accounting stays stable instead of throwing.
     function categoryForApp(app): string {
         let cats = [];
-        const raw = app.categories;
+        const raw = app?.categories;
         if (raw) {
             if (typeof raw === "string") {
                 cats = raw.split(";").map(c => c.trim()).filter(c => c.length > 0);

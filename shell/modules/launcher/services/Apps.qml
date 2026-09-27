@@ -15,11 +15,17 @@ Searcher {
     }
 
     /// Every visible desktop entry in AppDb order (favourites, then frequency, then name).
+    /// Stale AppEntry objects whose wrapped DesktopEntry was already destroyed report a
+    /// null entry until the next AppDb rescan lands; those are skipped here so callers
+    /// (category mapping, fuzzy search, the grid) never see a half-dead entry.
     function allApps(): list<var> {
         const res = [];
         const apps = appDb.apps;
-        for (let i = 0; i < apps.length; i++)
-            res.push(apps[i].entry);
+        for (let i = 0; i < apps.length; i++) {
+            const entry = apps[i].entry;
+            if (entry)
+                res.push(entry);
+        }
         return res;
     }
 
