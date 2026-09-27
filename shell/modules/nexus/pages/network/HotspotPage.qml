@@ -10,40 +10,33 @@ import qs.modules.nexus.common
 
 // Settings for the Wi-Fi hotspot: the name and password it shares with, and the
 // switch that starts and stops it. Reached from the Hotspot row on NetworkPage,
-// and the values kept here are the ones the utilities panel's hotspot toggle
-// starts the access point with.
+// and the values kept here are the ones a one-tap toggle starts it with.
 PageBase {
     id: root
 
     readonly property bool changed: ssidField.text.trim() !== GlobalConfig.services.hotspotSsid || passwordField.text !== GlobalConfig.services.hotspotPassword
 
-    property bool busy: false
+    // Only the failure text is local. Whether a change is in flight comes from
+    // the controller, so this page, the utilities tile and the bar popout all
+    // switch on the same answer instead of three copies of it.
     property string failure: ""
 
-    function remember(): void {
-        GlobalConfig.services.hotspotSsid = ssidField.text.trim();
-        GlobalConfig.services.hotspotPassword = passwordField.text;
-    }
-
     function report(result: var): void {
-        root.busy = false;
         root.failure = result && result.success ? "" : (result?.error || qsTr("The hotspot could not be started"));
     }
 
     function enable(): void {
         root.failure = "";
-        root.busy = true;
-        Nmcli.enableHotspot(GlobalConfig.services.hotspotSsid, GlobalConfig.services.hotspotPassword, result => root.report(result));
+        Nmcli.hotspot.enable(HotspotSwitch.resolveName(GlobalConfig.services.hotspotSsid), GlobalConfig.services.hotspotPassword, root.report);
     }
 
     function disable(): void {
         root.failure = "";
-        root.busy = true;
-        Nmcli.disableHotspot(result => root.report(result));
+        Nmcli.hotspot.disable(root.report);
     }
 
     function submit(): void {
-        if (root.busy)
+        if (Nmcli.hotspot.busy)
             return;
 
         if (!passwordField.valid) {
@@ -57,17 +50,16 @@ PageBase {
             return;
         }
 
-        root.remember();
+        GlobalConfig.services.hotspotSsid = ssidField.text.trim();
+        GlobalConfig.services.hotspotPassword = passwordField.text;
 
         // A running access point keeps the name and password it started with,
         // so changing them takes it down and brings it back up. The page stays
         // open for that, so a start that goes wrong can be read here.
-        if (Nmcli.hotspotEnabled) {
-            root.busy = true;
-            Nmcli.disableHotspot(() => root.enable());
-        } else {
+        if (Nmcli.hotspot.enabled)
+            Nmcli.hotspot.disable(() => root.enable());
+        else
             root.nState.closeSubPage();
-        }
     }
 
     title: qsTr("Hotspot")
@@ -87,7 +79,7 @@ PageBase {
         StyledText {
             Layout.fillWidth: true
             Layout.leftMargin: Tokens.padding.extraSmall
-            text: qsTr("Share this machine's connection over Wi-Fi. The hotspot is saved as a connection named \"caelestia-hotspot\", so Plasma's own network applet can see it too.")
+            text: qsTr("Share this machine's connection over Wi-Fi. The hotspot is saved as a connection named \"%1\", so Plasma's own network applet can see it too.").arg(Nmcli.hotspot.profileId)
             color: Colours.palette.m3onSurfaceVariant
             font: Tokens.font.body.small
             wrapMode: Text.WordWrap
@@ -96,7 +88,7 @@ PageBase {
         StyledText {
             Layout.fillWidth: true
             Layout.leftMargin: Tokens.padding.extraSmall
-            visible: !Nmcli.hotspotSupported
+            visible: !Nmcli.hotspot.supported
             text: qsTr("No wireless device on this machine can run an access point.")
             color: Colours.palette.m3error
             font: Tokens.font.body.small
@@ -104,33 +96,17 @@ PageBase {
         }
 
         ToggleRow {
-            id: hotspotToggle
-
             first: true
             last: true
             text: qsTr("Hotspot")
-            subtext: Nmcli.hotspotEnabled ? qsTr("Sharing as \"%1\"").arg(Nmcli.hotspotSsid) : qsTr("Off")
-            enabled: Nmcli.hotspotSupported && !root.busy
+            subtext: Nmcli.hotspot.enabled ? qsTr("Sharing as \"%1\"").arg(Nmcli.hotspot.ssid) : qsTr("Off")
+            enabled: Nmcli.hotspot.supported && !Nmcli.hotspot.busy
 
-            onToggled: {
-                // Applying the backend state runs this again, and a toggle that
-                // already matches it is not an instruction to try.
-                if (root.busy || checked === Nmcli.hotspotEnabled)
-                    return;
-
-                if (checked)
-                    root.enable();
-                else
-                    root.disable();
-            }
-
-            // The switch reports what the backend is doing rather than what was
-            // tapped, so a start that fails puts it back where it was. A Binding
-            // survives the switch's own click; a plain binding would not.
-            Binding on checked {
-                when: !root.busy
-                value: Nmcli.hotspotEnabled
-            }
+            // A plain binding, like every other switch that reads the backend:
+            // the value only changes when the backend says so, so a start that
+            // fails leaves the switch where it was.
+            checked: Nmcli.hotspot.enabled
+            onToggled: checked ? root.enable() : root.disable()
         }
 
         StyledTextField {
@@ -194,15 +170,12 @@ PageBase {
                 isRound: true
                 inactiveColour: Colours.palette.m3primary
                 inactiveOnColour: Colours.palette.m3onPrimary
-                stateLayer.disabled: root.busy
+                stateLayer.disabled: Nmcli.hotspot.busy
 
                 implicitWidth: saveMetrics.width + Tokens.padding.extraLarge * 2
                 implicitHeight: saveMetrics.height + Tokens.padding.medium * 2
 
-                onClicked: {
-                    if (!root.busy)
-                        root.submit();
-                }
+                onClicked: root.submit()
 
                 TextMetrics {
                     id: saveMetrics
@@ -215,7 +188,7 @@ PageBase {
                     id: saveContent
 
                     anchors.centerIn: parent
-                    sourceComp: root.busy ? saveLoadingComp : saveTextComp
+                    sourceComp: Nmcli.hotspot.busy ? saveLoadingComp : saveTextComp
                     outAnimType: Anim.SlowEffects
                     inAnimType: Anim.SlowEffects
                 }

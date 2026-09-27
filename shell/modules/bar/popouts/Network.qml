@@ -42,6 +42,10 @@ ColumnLayout {
     property real scaleOffset: 1.0
     property real fontScale: 1.0
 
+    readonly property HotspotSwitch hotspotSwitch: HotspotSwitch {
+        controller: Nmcli.hotspot
+    }
+
     spacing: Tokens.spacing.medium * scaleOffset
     width: Math.max(400 * scaleOffset, _isSidebarOpen ? (Tokens.sizes.sidebar.width * scaleOffset) - Tokens.padding.extraLargeIncreased : 0)
 
@@ -109,27 +113,17 @@ ColumnLayout {
     // the same kind of thing: one tap on the radio this machine broadcasts.
     // Hidden on a device that cannot run an access point at all.
     PopoutToggleRow {
-        id: hotspotRow
-
-        visible: root.view === "wireless" && Nmcli.hotspotSupported
+        visible: root.view === "wireless" && Nmcli.hotspot.supported
         scaleOffset: root.scaleOffset
         fontScale: root.fontScale
         label: qsTr("Hotspot")
 
-        toggle.onToggled: {
-            // Putting the backend state back runs this again, and a switch that
-            // already matches it is not an instruction to try.
-            if (checked === Nmcli.hotspotEnabled)
-                return;
-            Nmcli.toggleHotspot();
-        }
-
-        // A Binding, not a plain binding: the switch writes checked itself when
-        // it is tapped, which would leave it showing the tap rather than what the
-        // hotspot is doing.
-        Binding on checked {
-            value: Nmcli.hotspotEnabled
-        }
+        // A plain binding, like the Wi-Fi switch above: the hotspot's state only
+        // changes when the backend says so, so a tap that fails leaves it where
+        // it was instead of showing the tap.
+        checked: Nmcli.hotspot.enabled
+        enabled: !Nmcli.hotspot.busy
+        toggle.onToggled: root.hotspotSwitch.toggle()
     }
 
     StyledText {

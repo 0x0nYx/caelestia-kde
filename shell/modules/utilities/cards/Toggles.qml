@@ -20,6 +20,10 @@ StyledRect {
     required property DrawerVisibilities visibilities
     required property BarPopouts.Wrapper popouts
 
+    readonly property HotspotSwitch hotspotSwitch: HotspotSwitch {
+        controller: Nmcli.hotspot
+    }
+
     readonly property var quickToggles: {
         const configToggles = Config.utilities.quickToggles || [];
         const disabledIds = new Set(configToggles.filter(t => t.enabled === false).map(t => t.id));
@@ -60,7 +64,7 @@ StyledRect {
             // Only a wireless device that can run an access point gets a hotspot
             // button; there is nothing to switch on anywhere else.
             if (item.id === "hotspot") {
-                return Nmcli.hotspotSupported;
+                return Nmcli.hotspot.supported;
             }
 
             // Nothing to toggle if it is not installed, and a dead button is
@@ -141,14 +145,8 @@ StyledRect {
                     roleValue: "hotspot"
                     delegate: Toggle {
                         icon: "wifi_tethering"
-                        checked: Nmcli.hotspotEnabled
-                        onClicked: {
-                            Nmcli.toggleHotspot();
-                            // The tile lights on the tap. Re-reading the backend
-                            // hands the light back to it, so a start that fails or
-                            // is refused does not leave the tile on.
-                            internalChecked = Nmcli.hotspotEnabled;
-                        }
+                        checked: Nmcli.hotspot.enabled
+                        onClicked: root.hotspotSwitch.toggle()
                     }
                 }
                 DelegateChoice {

@@ -3,9 +3,7 @@
 
 #include <qqmlintegration.h>
 
-#include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/Device>
-#include <NetworkManagerQt/WirelessDevice>
 #include <QDateTime>
 #include <QJSValue>
 #include <QObject>
@@ -14,6 +12,8 @@
 #include <QVariantMap>
 
 namespace caelestia::services {
+
+class HotspotController;
 
 /**
  * NetworkManager Qt / D-Bus singleton replacing the nmcli-shelling-out
@@ -55,10 +55,10 @@ class NmQt : public QObject {
     // -- Saved connection security (ssid -> key-mgmt, e.g. "wpa-psk") --
     Q_PROPERTY(QVariantMap savedConnectionSecurity READ savedConnectionSecurity NOTIFY savedConnectionSecurityChanged)
 
-    // -- Wi-Fi hotspot --
-    Q_PROPERTY(bool hotspotSupported READ hotspotSupported NOTIFY hotspotSupportedChanged)
-    Q_PROPERTY(bool hotspotEnabled READ hotspotEnabled NOTIFY hotspotEnabledChanged)
-    Q_PROPERTY(QString hotspotSsid READ hotspotSsid NOTIFY hotspotSsidChanged)
+    /// The Wi-Fi access point this machine can broadcast. A service of its own:
+    /// it shares nothing with connecting to a network but the D-Bus object it
+    /// talks to, and it would otherwise be a second, unrelated job for this one.
+    Q_PROPERTY(caelestia::services::HotspotController* hotspot READ hotspot CONSTANT)
 
     QML_ELEMENT
     QML_SINGLETON
@@ -90,9 +90,7 @@ public:
     QVariantMap ethernetDeviceDetails() const;
     QVariantMap savedConnectionSecurity() const;
 
-    bool hotspotSupported() const;
-    bool hotspotEnabled() const;
-    QString hotspotSsid() const;
+    HotspotController* hotspot() const;
 
     // -- QML-invokable actions --
 
@@ -163,13 +161,6 @@ public:
     Q_INVOKABLE void addHiddenNetwork(
         const QString& ssid, const QString& password, const QString& security, bool hidden, QJSValue callback = {});
 
-    /// Turn the Wi-Fi hotspot on: create or update the shell's access point
-    /// profile and activate it. An empty password shares an open network.
-    Q_INVOKABLE void enableHotspot(const QString& ssid, const QString& password, QJSValue callback = {});
-
-    /// Turn the Wi-Fi hotspot off, leaving its profile saved.
-    Q_INVOKABLE void disableHotspot(QJSValue callback = {});
-
     /// Formatted link speed (e.g. "1000 Mb/s"), empty if unknown.
     Q_INVOKABLE QString ethernetSpeed(const QString& interfaceName) const;
 
@@ -200,10 +191,6 @@ signals:
     void ethernetDeviceDetailsChanged();
     void savedConnectionSecurityChanged();
 
-    void hotspotSupportedChanged();
-    void hotspotEnabledChanged();
-    void hotspotSsidChanged();
-
     /// Emitted when a connection attempt fails outright.
     void connectionFailed(const QString& ssid);
 
@@ -232,25 +219,6 @@ private:
     void refreshVpnConnections();
     void refreshWirelessDeviceDetails(const QString& interfaceName = {});
     void refreshEthernetDeviceDetails(const QString& interfaceName = {});
-    void refreshHotspot();
-
-    /// The wireless device the hotspot can run on: the first one that advertises
-    /// access point support, else null when no device can run one.
-    static NetworkManager::WirelessDevice::Ptr hotspotDevice();
-
-    /// The access point that is already up.
-    struct RunningHotspot {
-        /// Object path of the active connection, empty when the hotspot is off.
-        QString path;
-        /// The name it broadcasts, empty when the hotspot is off.
-        QString ssid;
-    };
-
-    static RunningHotspot runningHotspot();
-
-    /// Build the access point profile the shell saves and activates.
-    static NMVariantMapMap buildHotspotSettings(const QString& ssid, const QString& password, const QString& uuid);
-
     /// Build a QVariantMap for a single access point.
     static QVariantMap buildApMap(
         const QString& ssid, const QString& bssid, int strength, int frequency, bool active, const QString& security);
@@ -280,11 +248,7 @@ private:
     bool m_scanning = false;
     bool m_initialised = false;
 
-    // Hotspot state. The ssid is the one the active access point broadcasts, so
-    // it follows a hotspot started elsewhere instead of only the shell's own.
-    bool m_hotspotSupported = false;
-    bool m_hotspotEnabled = false;
-    QString m_hotspotSsid;
+    HotspotController* m_hotspot = nullptr;
 
     // Track the wireless device UNI for scan/connection operations.
     QString m_wirelessDeviceUni;
