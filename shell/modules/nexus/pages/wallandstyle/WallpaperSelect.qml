@@ -222,8 +222,8 @@ PageBase {
 
             // The wallpaper the shell ships with, one tap away, above the user's
             // own. Upstream's tile and its `Wallpapers.fallback` are the same file
-            // there too; this port swaps that file for assets/wallpapers/, so the
-            // tile reads the fallback rather than naming the path a second time.
+            // there too, so the tile reads the fallback rather than naming the path
+            // a second time.
             WallItem {
                 Layout.topMargin: Tokens.spacing.medium
                 imgHeight: Math.round(width * 0.3)

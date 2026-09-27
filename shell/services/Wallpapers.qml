@@ -14,7 +14,7 @@ Searcher {
     id: root
 
     readonly property string currentNamePath: `${Paths.state}/wallpaper/path.txt`
-    readonly property string fallback: Quickshell.shellPath("assets/wallpapers/Minimal-Paper.png")
+    readonly property string fallback: Quickshell.shellPath("assets/wallpaper.webp")
 
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent

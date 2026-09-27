@@ -117,7 +117,7 @@ package() {
     install -d "$pkgdir/usr/share/caelestia/src" "$pkgdir/usr/share/caelestia/assets" \
         "$pkgdir/usr/share/caelestia/shell/assets"
     cp -r src/dots src/dots-extra "$pkgdir/usr/share/caelestia/src/"
-    cp -r shell/assets/wallpapers "$pkgdir/usr/share/caelestia/shell/assets/"
+    cp -r shell/assets/wallpaper.webp "$pkgdir/usr/share/caelestia/shell/assets/"
     cp -r assets/org.quickshell.desktop "$pkgdir/usr/share/caelestia/assets/"
     install -d "$pkgdir/usr/share/sddm/themes/caelestia/scripts"
     cp -r src/sddm/themes/full/* "$pkgdir/usr/share/sddm/themes/caelestia/"
@@ -164,7 +164,7 @@ DROPIN
         usr/share/caelestia/scripts/lib/install-kind.sh
         usr/share/caelestia/src/dots
         usr/share/caelestia/src/dots-extra
-        usr/share/caelestia/shell/assets/wallpapers
+        usr/share/caelestia/shell/assets/wallpaper.webp
         usr/share/caelestia/assets/org.quickshell.desktop
         usr/share/sddm/themes/caelestia/theme.conf
         usr/share/sddm/themes/caelestia/scripts/sync.sh
