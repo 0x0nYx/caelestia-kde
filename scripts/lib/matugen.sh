@@ -12,7 +12,6 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/scrip
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/scripts/lib/packages.sh" 2>/dev/null || true
 
 matugen_present() {
-    export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
     command -v matugen >/dev/null 2>&1
 }
 

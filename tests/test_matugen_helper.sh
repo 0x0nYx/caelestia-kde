@@ -13,14 +13,14 @@ test_matugen_present_checks_path() {
     tmp="$(new_tmpdir)"
     mkdir -p "$tmp/bin"
 
-    if (PATH="$tmp/bin" matugen_present); then
+    if (HOME="$tmp" PATH="$tmp/bin" matugen_present); then
         fail "matugen_present should return false when matugen is not on PATH"
     fi
 
     touch "$tmp/bin/matugen"
     chmod +x "$tmp/bin/matugen"
 
-    if ! (PATH="$tmp/bin" matugen_present); then
+    if ! (HOME="$tmp" PATH="$tmp/bin" matugen_present); then
         fail "matugen_present should return true when matugen is on PATH"
     fi
 }
@@ -28,25 +28,18 @@ test_matugen_present_checks_path() {
 test_cleanup_legacy_cargo_matugen_removes_binaries() {
     local tmp
     tmp="$(new_tmpdir)"
-    mkdir -p "$tmp/local/bin" "$tmp/cargo/bin"
+    mkdir -p "$tmp/.cargo/bin"
 
-    touch "$tmp/local/bin/matugen"
-    touch "$tmp/cargo/bin/matugen"
+    touch "$tmp/.cargo/bin/matugen"
 
     (
         HOME="$tmp"
         caelestia_sudo() { "$@"; }
         export -f caelestia_sudo
-        if [[ -f "$tmp/local/bin/matugen" ]]; then
-            rm -f "$tmp/local/bin/matugen"
-        fi
-        if [[ -f "$tmp/cargo/bin/matugen" ]]; then
-            rm -f "$tmp/cargo/bin/matugen"
-        fi
+        cleanup_legacy_cargo_matugen
     )
 
-    assert_file_missing "$tmp/local/bin/matugen" "local matugen should be removed"
-    assert_file_missing "$tmp/cargo/bin/matugen" "cargo matugen should be removed"
+    assert_file_missing "$tmp/.cargo/bin/matugen" "cargo matugen should be removed"
 }
 
 test_ensure_matugen_reports_success_when_present() {
@@ -57,6 +50,7 @@ test_ensure_matugen_reports_success_when_present() {
     chmod +x "$tmp/bin/matugen"
 
     (
+        HOME="$tmp"
         BASE_DISTRO=arch
         PATH="$tmp/bin"
         if ! ensure_matugen; then
@@ -111,7 +105,12 @@ test_install_matugen_debian_falls_back_to_cargo() {
 
     (
         HOME="$tmp"
-        caelestia_sudo() { "$@"; }
+        caelestia_sudo() {
+            if [[ "$1" == "cp" || "$1" == "install" ]]; then
+                return 0
+            fi
+            "$@"
+        }
         export -f caelestia_sudo
         cargo() {
             if [[ "$1" == "install" ]]; then
@@ -188,6 +187,9 @@ test_install_matugen_fedora_falls_back_to_cargo_when_copr_and_github_fail() {
         caelestia_sudo() {
             if [[ "$1" == "dnf" ]]; then
                 return 1
+            fi
+            if [[ "$1" == "cp" || "$1" == "install" ]]; then
+                return 0
             fi
             "$@"
         }
