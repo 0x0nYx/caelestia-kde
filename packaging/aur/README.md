@@ -45,13 +45,6 @@ It declares `provides=('caelestia-shell')` and
 interface and the config directory are the same, and the community packages that
 require `caelestia-shell` do so optionally, so nothing breaks.
 
-It ships the one font the shell needs. The tree carries Google Sans Flex, the same
-variable font upstream ships, and takes the rest of its type from font packages, the way
-upstream's package does. The SF Pro families used to be in the tree as 309 MiB of the
-401 MiB payload, and nothing fetches them any more: a user who wants another font drops
-it into `~/.local/share/caelestia/assets/fonts`, which `shell/modules/Fonts.qml` reads,
-or installs it system-wide.
-
 It no longer depends on `caelestia-cli`. The color pipeline belongs to this
 project now - `caelestia-color` generates the palette with matugen, applies it and
 fans it out - so what the package needs from outside is `matugen` and `python`,
@@ -128,9 +121,8 @@ directory does, and a checkout's `uninstall.sh` does both for a source install.
 
 What stays is the user's own state, which the package never owned: `~/.config/caelestia`,
 the session environment at `~/.config/environment.d/caelestia.conf`, the autostart state
-under `~/.local`, the fonts a user drops in under `~/.local/share/caelestia`, and the sudoers
-drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that lets the login screen follow the
-wallpaper. Deleting those is what removes the last trace of the install. There is no
+under `~/.local`, and the sudoers drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that
+lets the login screen follow the wallpaper. Deleting those is what removes the last trace of the install. There is no
 uninstall command, and upstream has none either: removal belongs to whoever installed
 the files, which for a package is pacman and for a source install is `uninstall.sh`.
 
