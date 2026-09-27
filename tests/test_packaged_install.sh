@@ -164,18 +164,6 @@ test_the_package_sources_and_their_hashes_stay_in_step() {
         assert_eq "$hash" "$actual" "the hash of $path should match the file beside the PKGBUILD"
     done
 }
-test_the_tree_ships_only_the_bundled_font() {
-    local fonts oversized pkgbuild
-    fonts="$(find "$REPO_ROOT/shell/assets/fonts" -type f \( -name '*.ttf' -o -name '*.otf' \) -print)"
-    assert_eq "$REPO_ROOT/shell/assets/fonts/google-sans-flex/GoogleSansFlex-Subset.ttf" "$fonts" "only the bundled Google Sans Flex subset belongs in the tree"
-
-    oversized="$(find "$REPO_ROOT/shell/assets/fonts" -type f -size +1M \( -name '*.ttf' -o -name '*.otf' \) -print)"
-    assert_eq "" "$oversized" "a font this large belongs in the user's directory, not in git"
-
-    pkgbuild="$(cat "$REPO_ROOT/packaging/aur/caelestia-kde/PKGBUILD")"
-    assert_not_contains "$pkgbuild" 'caelestia/assets/fonts' "so the package has no fonts to strip"
-}
-
 test_the_release_tarball_is_the_thing_the_package_sources() {
     local workflow pkgbuild
     workflow="$(cat "$REPO_ROOT/.github/workflows/version-release.yml")"
@@ -202,7 +190,6 @@ test_the_release_tarball_is_the_thing_the_package_sources() {
     assert_contains "$workflow" 'is empty; the PKGBUILD refuses a tarball without it' "failing instead of shipping a tarball prepare() rejects"
 
     assert_contains "$workflow" "--exclude '/dist'" "the staging directory must stay out of itself"
-    assert_not_contains "$workflow" 'shell/assets/fonts' "and no font exclusion is needed, the tree ships none"
     assert_contains "$workflow" 'git rev-parse HEAD > "dist/$ROOT/REVISION"' "and write the revision"
 
     assert_contains "$workflow" 'sha256sum "$ARTIFACT" | tee "$ARTIFACT.sha256"' "the job should publish the hash the PKGBUILD needs"
@@ -222,7 +209,6 @@ test_the_checkout_build_script_builds_the_same_tarball() {
     script="$(cat "$REPO_ROOT/packaging/aur/makepkg-from-checkout.sh")"
 
     assert_contains "$script" 'git clone --quiet --depth 1 --recurse-submodules --shallow-submodules "file://$repo" "$tree"' "it should stage a fresh clone, so build output cannot leak in and the submodules are materialized"
-    assert_not_contains "$script" 'shell/assets/fonts' "and there are no fonts to drop, the tree ships none"
     assert_contains "$script" 'git -C "$tree" rev-parse HEAD > "$tree/REVISION"' "and write the revision"
     assert_contains "$script" '_source_url=' "and point the staged PKGBUILD at the local tarball"
     assert_contains "$script" '_source_sum=' "with its hash, rather than a SKIP"
@@ -242,12 +228,12 @@ test_the_payload_carries_no_version_control_metadata() {
     assert_contains "$pkgbuild" "-name '.git' -o -name '.github' -o -name '.gitignore'" "the package should strip version control metadata"
 }
 
-test_the_shell_reads_fonts_from_the_user_directory_too() {
+test_the_shell_reads_the_user_font_directory() {
     local fonts
     fonts="$(cat "$REPO_ROOT/shell/modules/Fonts.qml")"
 
-    assert_contains "$fonts" 'Quickshell.shellPath("assets/fonts")' "the tree's fonts should still be read"
-    assert_contains "$fonts" '${Paths.data}/assets/fonts' "and the downloaded ones with them"
+    assert_contains "$fonts" '${Paths.data}/assets/fonts' "a user's own fonts should be read"
+    assert_not_contains "$fonts" 'shellPath("assets/fonts")' "and the tree should carry no second copy of the shell font"
 }
 
 test_the_install_says_how_to_start_the_shell_now() {

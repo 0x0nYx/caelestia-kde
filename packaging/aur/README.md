@@ -45,12 +45,12 @@ It declares `provides=('caelestia-shell')` and
 interface and the config directory are the same, and the community packages that
 require `caelestia-shell` do so optionally, so nothing breaks.
 
-It ships the one font the shell needs. The tree carries the Google Sans Flex subset
-(261 KiB) that the shell uses by default, and takes the rest of its type from font
-packages, the way upstream's package does. The SF Pro families used to be in the tree as
-309 MiB of the 401 MiB payload, and nothing fetches them any more: a user who wants them
-drops them into `~/.local/share/caelestia/assets/fonts`, which `shell/modules/Fonts.qml`
-reads alongside the tree, or installs them system-wide.
+It ships the one font the shell needs. The tree carries Google Sans Flex, the same
+variable font upstream ships, and takes the rest of its type from font packages, the way
+upstream's package does. The SF Pro families used to be in the tree as 309 MiB of the
+401 MiB payload, and nothing fetches them any more: a user who wants another font drops
+it into `~/.local/share/caelestia/assets/fonts`, which `shell/modules/Fonts.qml` reads,
+or installs it system-wide.
 
 It no longer depends on `caelestia-cli`. The color pipeline belongs to this
 project now - `caelestia-color` generates the palette with matugen, applies it and
@@ -128,12 +128,11 @@ directory does, and a checkout's `uninstall.sh` does both for a source install.
 
 What stays is the user's own state, which the package never owned: `~/.config/caelestia`,
 the session environment at `~/.config/environment.d/caelestia.conf`, the autostart state
-under `~/.local`, the downloaded fonts under `~/.local/share/caelestia`, and the sudoers
+under `~/.local`, the fonts a user drops in under `~/.local/share/caelestia`, and the sudoers
 drop-in at `/etc/sudoers.d/caelestia-sddm-sync` that lets the login screen follow the
 wallpaper. Deleting those is what removes the last trace of the install. There is no
 uninstall command, and upstream has none either: removal belongs to whoever installed
-the files, which for a package is pacman, and for the fonts is the install that
-downloaded them.
+the files, which for a package is pacman and for a source install is `uninstall.sh`.
 
 
 ## Publishing
@@ -174,12 +173,11 @@ Updating for a release:
 5. regenerate `.SRCINFO` before pushing.
 
 The source is the tarball the release job attaches, not a clone of the tag. The tree
-carries two submodules and 308 MiB of fonts in its history, so a clone makes every
-build download 645 MiB; the tarball is about 40, with the submodules inlined at the
-commits the tag pins, the fonts left out (`12-fetch-assets.sh` downloads those into
-the user's own asset directory when the shell is installed) and `REVISION` written,
-which is what the compiled helper reports from a tree with no `.git` to ask. Upstream
-does the same thing for the same reason.
+carries two submodules and a clone pulls the whole history with them, so a build would
+download far more than the tree it needs; the tarball is about 40 MiB, with the
+submodules inlined at the commits the tag pins and `REVISION` written, which is what the
+compiled helper reports from a tree with no `.git` to ask. Upstream does the same thing
+for the same reason.
 
 To build before a tag exists, use `packaging/aur/makepkg-from-checkout.sh`. It builds
 the same tarball from the checkout - same exclusions, same submodules, same `REVISION`
