@@ -5,11 +5,11 @@ if [[ -z "${CAELESTIA_MATUGEN_SOURCED:-}" ]]; then
 CAELESTIA_MATUGEN_SOURCED=1
 
 # shellcheck source=scripts/lib/log.sh
-source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}/scripts/lib/log.sh" 2>/dev/null || true
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/scripts/lib/log.sh" 2>/dev/null || true
 # shellcheck source=scripts/lib/privileges.sh
-source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}/scripts/lib/privileges.sh" 2>/dev/null || true
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/scripts/lib/privileges.sh" 2>/dev/null || true
 # shellcheck source=scripts/lib/packages.sh
-source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}/scripts/lib/packages.sh" 2>/dev/null || true
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/scripts/lib/packages.sh" 2>/dev/null || true
 
 matugen_present() {
     export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
