@@ -2,6 +2,8 @@
 
 #include <qjsonvalue.h>
 #include <qobject.h>
+#include <qset.h>
+#include <qstringlist.h>
 #include <qvariant.h>
 
 #include "changebatcher.hpp"
@@ -13,6 +15,8 @@ namespace caelestia::settings {
 
 class Node : public QObject {
     Q_OBJECT
+
+    Q_PROPERTY(QStringList overrides READ overrides NOTIFY overridesChanged)
 
 public:
     // Global only nodes are inherited, anything inside one is also global only
@@ -28,7 +32,7 @@ public:
 
     [[nodiscard]] Q_INVOKABLE bool isGlobalOnly() const;
     [[nodiscard]] Q_INVOKABLE bool isOverride(const QString& key) const;
-    [[nodiscard]] const QSet<QString>& overrides() const;
+    [[nodiscard]] QStringList overrides() const;
     [[nodiscard]] bool hasContent() const; // Recursive
 
     [[nodiscard]] virtual const Schema& schema() const = 0;
@@ -44,6 +48,7 @@ public:
 
 signals:
     void optionChanged(const QString& key);
+    void overridesChanged();
 
 protected:
     // Null means empty, otherwise it has content

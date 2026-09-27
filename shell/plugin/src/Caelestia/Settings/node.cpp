@@ -59,8 +59,8 @@ bool Node::isOverride(const QString& key) const {
     return m_overrides.contains(key);
 }
 
-const QSet<QString>& Node::overrides() const {
-    return m_overrides;
+QStringList Node::overrides() const {
+    return m_overrides.values();
 }
 
 bool Node::hasContent() const {
@@ -208,6 +208,7 @@ bool Node::recordWrite(const QString& key, bool changed) {
     const auto fromUser = origin == WriteOrigin::Qml || origin == WriteOrigin::QmlReset;
 
     bool dirty = changed;
+    bool overrideSetChanged = false;
     switch (origin) {
     // Init does not notify or write to file
     case WriteOrigin::Init:
@@ -216,8 +217,9 @@ bool Node::recordWrite(const QString& key, bool changed) {
     // File and qml both count as overrides
     case WriteOrigin::File:
     case WriteOrigin::Qml:
-        dirty |= !m_overrides.contains(key);
+        overrideSetChanged = !m_overrides.contains(key);
         m_overrides << key;
+        dirty |= overrideSetChanged;
         break;
 
     // Layer is not an override, it is a sync with the fallback value
@@ -227,7 +229,8 @@ bool Node::recordWrite(const QString& key, bool changed) {
     // Both resets clear the override
     case WriteOrigin::FileReset:
     case WriteOrigin::QmlReset:
-        dirty |= m_overrides.remove(key);
+        overrideSetChanged = m_overrides.remove(key);
+        dirty |= overrideSetChanged;
         break;
     }
 
@@ -238,6 +241,9 @@ bool Node::recordWrite(const QString& key, bool changed) {
     // Both qml and reset write to the file (only write if dirty)
     if (fromUser && dirty)
         m_rootNode->m_batcher->dirty();
+
+    if (overrideSetChanged)
+        emit overridesChanged();
 
     if (changed)
         emit optionChanged(key);

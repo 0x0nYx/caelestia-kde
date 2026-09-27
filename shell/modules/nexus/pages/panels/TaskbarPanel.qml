@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Caelestia.Config
 import qs.components.controls
 import qs.services
@@ -41,19 +42,10 @@ PageBase {
         }
     ]
 
-    // Whether any connected screen carries a per-monitor position override.
-    // The per-monitor section stays visible while this is true, so an
-    // override can never end up hidden on a single-monitor setup.
-    readonly property bool hasPositionOverrides: {
-        let overridden = false;
-        for (let i = 0; i < Screens.screens.length; i++) {
-            const screenConfig = GlobalConfig.forScreen(Screens.screens[i].name);
-            if (screenConfig && screenConfig.bar.isOverride("position")) {
-                overridden = true;
-                break;
-            }
-        }
-        return overridden;
+    readonly property list<ShellScreen> perMonitorRows: {
+        if (Screens.screens.length > 1)
+            return Screens.screens;
+        return Screens.screens.filter(s => GlobalConfig.forScreen(s.name).bar.overrides.includes("position"));
     }
 
     function itemForPosition(pos: string): MenuItem {
@@ -64,15 +56,9 @@ PageBase {
         return root.positionItems[0];
     }
 
-    // Choosing a global position is authoritative: drop every per-monitor
-    // position override so all connected monitors follow the global edge
-    // again, mirroring how the desktop page applies its global toggles.
     function resetScreenPositionOverrides(): void {
-        for (let i = 0; i < Screens.screens.length; i++) {
-            const screenConfig = GlobalConfig.forScreen(Screens.screens[i].name);
-            if (screenConfig)
-                screenConfig.bar.resetOption("position");
-        }
+        for (let i = 0; i < Quickshell.screens.length; i++)
+            GlobalConfig.forScreen(Quickshell.screens[i].name).bar.resetOption("position");
     }
 
     title: qsTr("Taskbar")
@@ -145,32 +131,30 @@ PageBase {
         }
 
         SectionHeader {
-            visible: Screens.screens.length > 1 || root.hasPositionOverrides
+            visible: root.perMonitorRows.length > 0
             text: qsTr("Per-monitor position")
         }
 
         Repeater {
             id: perMonitorRepeater
 
-            model: Screens.screens.length > 1 || root.hasPositionOverrides ? Screens.screens : []
+            model: root.perMonitorRows
 
             SelectRow {
                 required property var modelData
                 required property int index
 
                 readonly property var screenConfig: GlobalConfig.forScreen(modelData.name)
-                readonly property bool hasOverride: screenConfig ? screenConfig.bar.isOverride("position") : false
+                readonly property bool hasOverride: screenConfig.bar.overrides.includes("position")
 
                 first: index === 0
                 last: index === perMonitorRepeater.count - 1
                 Layout.fillWidth: true
                 label: modelData.name
                 subtext: hasOverride ? qsTr("Overridden for this monitor") : qsTr("Using global position")
-                active: root.itemForPosition(screenConfig ? screenConfig.bar.position : GlobalConfig.bar.position)
+                active: root.itemForPosition(screenConfig.bar.position)
                 menuItems: hasOverride ? root.positionItems.concat(root.useGlobalItems) : root.positionItems
                 onSelected: item => {
-                    if (!screenConfig)
-                        return;
                     if (item === root.useGlobalItems[0])
                         screenConfig.bar.resetOption("position");
                     else
