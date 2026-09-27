@@ -120,7 +120,7 @@ The project enables ccache in both `installer/CMakeLists.txt` and `shell/CMakeLi
 
 **RPM Fusion requirement:** `ffmpeg` with H264 support requires RPM Fusion. The script auto-enables it, but this may fail behind a proxy or on air-gapped systems.
 
-**matugen on Fedora:** there is no package for it, and it is what generates the palette. The installer reports it when it is missing; `cargo install matugen` fixes it.
+**matugen on Fedora:** available from the `avengemedia/danklinux` COPR repository. The installer auto-enables it and installs `matugen` via DNF.
 
 ### 2.3 CRLF / dos2unix Failure
 

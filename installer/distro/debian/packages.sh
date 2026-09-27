@@ -12,6 +12,8 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/sc
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
 # shellcheck source=scripts/lib/darkly.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/darkly.sh"
+# shellcheck source=scripts/lib/matugen.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/matugen.sh"
 
 darkly_deb_asset_url() {
     local release_json id ver needle url
@@ -333,18 +335,7 @@ for pkg in "${FALLBACK_TARGETS[@]}"; do
             rm -rf "$tmpdir"
             ;;
         matugen)
-            export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-            if ! command -v cargo >/dev/null 2>&1; then
-                info "Installing a Rust toolchain to build matugen..."
-                curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal || true # ci:allow-curl-pipe
-                export PATH="$HOME/.cargo/bin:$PATH"
-            fi
-            if command -v cargo >/dev/null 2>&1; then
-                cargo install matugen || { err "cargo install $pkg failed."; FAILED_PKGS+=("$pkg"); }
-            else
-                err "matugen generates the color palette but has no Debian package; install a Rust toolchain and run 'cargo install matugen'."
-                FAILED_PKGS+=("$pkg")
-            fi
+            install_matugen_debian || FAILED_PKGS+=("$pkg")
             ;;
         *)
             FAILED_PKGS+=("$pkg")

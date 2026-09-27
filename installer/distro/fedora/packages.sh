@@ -12,6 +12,8 @@ source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/sc
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/packages.sh"
 # shellcheck source=scripts/lib/darkly.sh
 source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/darkly.sh"
+# shellcheck source=scripts/lib/matugen.sh
+source "${BUNDLE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}/scripts/lib/matugen.sh"
 
 darkly_rpm_asset_url() {
     local release_json ver url
@@ -56,7 +58,7 @@ CORE_PACKAGES=(
 )
 
 SHELL_PACKAGES=(
-    foot eza fastfetch starship btop bash matugen
+    foot eza fastfetch starship btop bash
 )
 
 THEME_PACKAGES=(
@@ -72,7 +74,7 @@ UTILITY_PACKAGES=(
 )
 
 COPR_CORE=(app2unit libcava)
-COPR_SHELL=(quickshell-git)
+COPR_SHELL=(quickshell-git matugen)
 COPR_UTILS=()
 
 PACKAGES=()
@@ -83,7 +85,7 @@ case "$PACKAGE_GROUP" in
     themes) PACKAGES=("${THEME_PACKAGES[@]}");  COPR_PKGS=() ;;
     utils)  PACKAGES=("${UTILITY_PACKAGES[@]}"); COPR_PKGS=("${COPR_UTILS[@]}") ;;
     all|*)  PACKAGES=("${CORE_PACKAGES[@]}" "${SHELL_PACKAGES[@]}" "${THEME_PACKAGES[@]}" "${UTILITY_PACKAGES[@]}")
-            COPR_PKGS=("quickshell-git" "gpu-screen-recorder" "app2unit" "starship" "libcava" "wl-clip-persist") ;;
+            COPR_PKGS=("quickshell-git" "gpu-screen-recorder" "app2unit" "starship" "libcava" "wl-clip-persist" "matugen") ;;
 esac
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "core" ]]; then
@@ -160,7 +162,12 @@ for pkg in "${COPR_PKGS[@]}"; do
     done
     if [[ "$_needed" == "no" ]]; then continue; fi
 
-    if package_present "$pkg" || command -v "$pkg" >/dev/null 2>&1; then
+    if [[ "$pkg" == "matugen" ]]; then
+        if package_present matugen; then
+            cleanup_legacy_cargo_matugen
+            continue
+        fi
+    elif package_present "$pkg" || command -v "$pkg" >/dev/null 2>&1; then
         continue
     fi
 
@@ -171,6 +178,9 @@ for pkg in "${COPR_PKGS[@]}"; do
     fi
 
     if caelestia_sudo dnf install -y "$pkg" 2>/dev/null; then
+        if [[ "$pkg" == "matugen" ]] && package_present matugen; then
+            cleanup_legacy_cargo_matugen
+        fi
         continue
     fi
 
@@ -179,6 +189,11 @@ for pkg in "${COPR_PKGS[@]}"; do
     case "$pkg" in
         quickshell-git|quickshell)
             if caelestia_sudo dnf copr enable -y errornointernet/quickshell && caelestia_sudo dnf install -y quickshell-git; then
+                COPR_FAILED="no"
+            fi
+            ;;
+        matugen)
+            if install_matugen_fedora; then
                 COPR_FAILED="no"
             fi
             ;;
