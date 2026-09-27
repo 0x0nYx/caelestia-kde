@@ -41,11 +41,10 @@ void registerDefaultFonts() {
     const QString dataHome = qEnvironmentVariable("XDG_DATA_HOME", QDir::homePath() + QStringLiteral("/.local/share"));
     const QString dataFonts = QDir(dataHome).filePath(QStringLiteral("caelestia/assets/fonts"));
     const QStringList roots = { shellFonts, dataFonts };
-    const QStringList relativePaths = { QStringLiteral("SF-Pro/SF-Pro.ttf"),
-        QStringLiteral("SF-Mono/SF-Mono-Regular.otf") };
+    const QStringList relativePaths = { QStringLiteral("google-sans-flex/GoogleSansFlex-Subset.ttf") };
 
     // QML FontLoader registers these families after the first shell objects can
-    // already paint. Register the two defaults while the Caelestia module is
+    // already paint. Register the default family while the Caelestia module is
     // loading so initial text does not use a fallback family and then reflow.
     for (const QString& root : roots) {
         if (root.isEmpty())

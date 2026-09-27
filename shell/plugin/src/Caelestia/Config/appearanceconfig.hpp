@@ -133,7 +133,7 @@ public:
 class FontStyleConfig : public settings::ObjectNode {
     CONFIG_NODE(FontStyleConfig, settings::ObjectNode)
 
-    CONFIG_PROPERTY(QString, family, QStringLiteral("SF Pro"))
+    CONFIG_PROPERTY(QString, family, QStringLiteral("GoogleSansFlex"))
     CONFIG_SUBOBJECT(FontConfig, large)
     CONFIG_SUBOBJECT(FontConfig, medium)
     CONFIG_SUBOBJECT(FontConfig, small)

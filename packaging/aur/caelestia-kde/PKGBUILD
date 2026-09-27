@@ -109,8 +109,6 @@ package() {
     DESTDIR="$pkgdir" cmake --install build
     DESTDIR="$pkgdir" cmake --install effect-build
 
-    rm -rf "$pkgdir/etc/xdg/quickshell/caelestia/assets/fonts"
-
     install -d "$pkgdir/usr/share/caelestia"
     install -d "$pkgdir/usr/share/caelestia/scripts"
     install -m755 scripts/[0-9]*.sh "$pkgdir/usr/share/caelestia/scripts/"
@@ -180,11 +178,6 @@ DROPIN
             exit 1
         fi
     done
-
-    if [[ -e "$pkgdir/etc/xdg/quickshell/caelestia/assets/fonts" ]]; then
-        echo "the fonts are in the package again: 12-fetch-assets.sh downloads them instead" >&2
-        exit 1
-    fi
 
     echo "package layout checked: ${#required[@]} paths"
 }

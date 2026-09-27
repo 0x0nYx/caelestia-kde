@@ -160,8 +160,8 @@ void FontStyleConfig::setDefaultFamily(const QString& family) {
 // AppearanceFont
 
 void AppearanceFont::bindFont() {
-    const auto sans = QStringLiteral("SF Pro");
-    const auto mono = QStringLiteral("SF Mono");
+    const auto sans = QStringLiteral("GoogleSansFlex");
+    const auto mono = QStringLiteral("CaskaydiaCove NF");
     const auto icons = QStringLiteral("Material Symbols Rounded");
     const QVariantMap vaxes = { { QStringLiteral("ROND"), 25 } };
 

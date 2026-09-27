@@ -18,13 +18,13 @@ PageBase {
     id: root
 
     property var fonts: [
-        { label: qsTr("San Francisco Pro"), family: "SF Pro", mono: false },
         { label: qsTr("Google Sans Flex"), family: "GoogleSansFlex", mono: false },
+        { label: qsTr("Rubik"), family: "Rubik", mono: false },
     ]
 
     property var monoFonts: [
-        { label: qsTr("SF Mono"), family: "SF Mono", mono: true },
         { label: qsTr("CaskaydiaCove NF"), family: "CaskaydiaCove NF", mono: true },
+        { label: qsTr("JetBrainsMono Nerd Font"), family: "JetBrainsMono Nerd Font", mono: true },
     ]
 
     function applyFont(family: string): void {
