@@ -143,18 +143,6 @@ int AppearancePadding::extraExtraLarge() const {
     return m_tokens ? static_cast<int>(m_tokens->extraExtraLarge() * m_scale) : 0;
 }
 
-// FontStyleConfig
-
-void FontStyleConfig::setDefaultFamily(const QString& family) {
-    m_family = family;
-}
-
-// AppearanceFont
-
-void AppearanceFont::bindFont() {
-    m_icon->setDefaultFamily(QStringLiteral("Material Symbols Rounded"));
-}
-
 // AnimDurations
 
 void AnimDurations::bindTokens(AnimDurationTokens* tokens) {

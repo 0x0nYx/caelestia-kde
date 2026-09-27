@@ -61,7 +61,6 @@ void saveFailed(ConfigKind kind, const QString& error, const QString& screen) {
 ConfigRoot::ConfigRoot(const QString& path, ConfigRoot* fallback, QObject* parent)
     : RootNode(path, fallback, parent) {
     bindTokens();
-    bindFont();
     qCDebug(lcConfig) << "Created config root for" << nameFor(key());
 }
 
@@ -73,10 +72,6 @@ void ConfigRoot::bindTokens() {
     m_appearance->spacing()->bindTokens(tokens->spacing());
     m_appearance->padding()->bindTokens(tokens->padding());
     m_appearance->anim()->durations()->bindTokens(tokens->animDurations());
-}
-
-void ConfigRoot::bindFont() {
-    m_appearance->font()->bindFont();
 }
 
 TokensRoot::TokensRoot(const QString& path, TokensRoot* fallback, QObject* parent)
