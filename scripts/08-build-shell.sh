@@ -145,6 +145,37 @@ cleanup_legacy_lockscreen() {
     fi
 }
 
+# The installer used to download SF Pro and SF Mono into the user's asset directory
+# (the 12-fetch-assets.sh step, since removed) and the shell reads that directory no
+# longer, so what it left behind is dead weight. Only what that step could have put there
+# is removed; anything the user added themselves stays.
+cleanup_downloaded_fonts() {
+    local fonts_dir="${XDG_DATA_HOME:-$HOME/.local/share}/caelestia/assets/fonts"
+    local -a removed=()
+    local entry
+
+    [[ -d "$fonts_dir" ]] || return 0
+
+    for entry in SF-Pro SF-Mono google-sans-flex; do
+        if [[ -e "$fonts_dir/$entry" ]]; then
+            rm -rf "${fonts_dir:?}/$entry"
+            removed+=("$entry")
+        fi
+    done
+
+    # The download copied the tree's own three-line README along with the fonts, and it
+    # describes a directory nothing reads now. Only that exact text is removed.
+    if [[ "$(head -n 1 "$fonts_dir/README.md" 2>/dev/null || true)" == "# Fonts" ]]; then
+        rm -f "$fonts_dir/README.md"
+    fi
+
+    rmdir "$fonts_dir" 2>/dev/null || true
+
+    if [[ ${#removed[@]} -gt 0 ]]; then
+        ok "Reclaimed the fonts an older install downloaded (${removed[*]}); the shell no longer uses them."
+    fi
+}
+
 install_lockscreen_greeter() {
     local src="$BUNDLE_DIR/src/kde/shells/caelestia.desktop"
     local dest="$HOME/.local/share/plasma/shells/caelestia.desktop"
@@ -198,12 +229,6 @@ if [[ "${CAELESTIA_SETUP_RUNNING:-0}" == "0" ]]; then
         bash "$BUNDLE_DIR/scripts/02a-submodules.sh" || die "Failed to initialize submodules"
     fi
 
-    # A checkout that predates `installer/` being in the sparse-checkout rules needs
-    # the path adding before anything can read it. src/bin/caelestia-update owns that
-    # list and writes it before it checks the tree out; this is the fallback for the
-    # copies it already deployed. Run from the tree so the path git prints resolves
-    # there, and ask git for it: in a linked worktree .git is a file and the rules
-    # live in the main repository instead.
     if [[ ! -d "$BUNDLE_DIR/installer" ]]; then
         (
             cd "$BUNDLE_DIR" || exit 0
@@ -280,13 +305,6 @@ shell_release_tag() {
     sed -nE 's/^[[:space:]]*VERSION=//p' "$BUNDLE_DIR/.github/version.env" 2>/dev/null | tr -d '[:space:]'
 }
 
-# The prebuilt archive holds one released revision, so it may only stand in for a
-# tree that is that revision: the released tag itself (an update pinned to a
-# version) or main sitting on its remote tip. A branch, a stale main, or a
-# checkout carrying commits of its own builds locally instead of letting the
-# archive replace them. Main that has moved on since its last release cannot be
-# told apart from that release here - version.env still names it - so such a tree
-# is replaced by the release the archive was built from.
 checkout_may_use_prebuilt() {
     local head revision
     revision="$(shell_release_tag)"
@@ -594,6 +612,8 @@ else
 fi
 
 record_installed_revision "$BUNDLE_DIR" "$HOME/.config/quickshell/caelestia" || true
+
+cleanup_downloaded_fonts
 
 if [[ "${CAELESTIA_SKIP_DEPLOY:-0}" == "0" && "${APPLY_LOCKSCREEN:-true}" != "false" ]]; then
     cleanup_legacy_lockscreen
