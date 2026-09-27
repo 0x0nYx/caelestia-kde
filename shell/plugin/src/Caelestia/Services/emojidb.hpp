@@ -52,4 +52,4 @@ private:
     bool m_loaded = false;
 };
 
-} // namespace caelestia::services
+}

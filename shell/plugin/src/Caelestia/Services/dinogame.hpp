@@ -104,4 +104,4 @@ private:
     QVariantList m_clouds;
 };
 
-} // namespace caelestia::services
+}

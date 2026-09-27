@@ -25,16 +25,14 @@ public:
     [[nodiscard]] Q_INVOKABLE FontBuilder vaxes(QVariantMap axes);
     [[nodiscard]] Q_INVOKABLE QFont build() const;
 
-    // Common vaxes
     [[nodiscard]] Q_INVOKABLE FontBuilder fill(float value);
     [[nodiscard]] Q_INVOKABLE FontBuilder grade(float value);
     [[nodiscard]] Q_INVOKABLE FontBuilder width(float value);
 
-    // Operations
     [[nodiscard]] Q_INVOKABLE FontBuilder scale(qreal factor);
 
 private:
     QFont m_font;
 };
 
-} // namespace caelestia::config
+}

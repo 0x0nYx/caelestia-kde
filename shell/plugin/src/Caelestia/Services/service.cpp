@@ -22,4 +22,4 @@ void Service::unref(QObject* sender) {
     }
 }
 
-} // namespace caelestia::services
+}

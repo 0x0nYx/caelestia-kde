@@ -193,4 +193,4 @@ void NightColorBridge::updateState(const QVariantMap& config) {
     }
 }
 
-} // namespace caelestia::services
+}

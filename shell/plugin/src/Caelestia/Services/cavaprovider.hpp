@@ -62,4 +62,4 @@ private:
     void updateValues(const QVector<double>& values);
 };
 
-} // namespace caelestia::services
+}

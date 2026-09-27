@@ -262,4 +262,4 @@ void AudioCollector::stop() {
     }
 }
 
-} // namespace caelestia::services
+}

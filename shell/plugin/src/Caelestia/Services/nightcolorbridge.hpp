@@ -59,4 +59,4 @@ private:
     bool m_autoMode = false;
 };
 
-} // namespace caelestia::services
+}

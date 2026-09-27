@@ -43,4 +43,4 @@ private:
     int m_revision = 0;
 };
 
-} // namespace caelestia::services
+}

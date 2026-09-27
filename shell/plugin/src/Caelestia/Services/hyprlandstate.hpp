@@ -109,4 +109,4 @@ private:
     SocketPtr makeRequest(const QString& request, const std::function<void(bool, QByteArray)>& callback);
 };
 
-} // namespace caelestia::services
+}

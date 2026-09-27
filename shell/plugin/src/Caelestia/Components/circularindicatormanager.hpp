@@ -69,4 +69,4 @@ private:
     void updateRetreat(qreal progress);
 };
 
-} // namespace caelestia::components
+}

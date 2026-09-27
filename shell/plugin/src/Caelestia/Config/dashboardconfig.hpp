@@ -39,4 +39,4 @@ class DashboardConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(DashboardPerformance, performance)
 };
 
-} // namespace caelestia::config
+}

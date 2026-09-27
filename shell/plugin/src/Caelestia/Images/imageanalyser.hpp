@@ -59,4 +59,4 @@ private:
     static void analyse(QPromise<AnalyseResult>& promise, const QImage& image, int rescaleSize);
 };
 
-} // namespace caelestia::images
+}

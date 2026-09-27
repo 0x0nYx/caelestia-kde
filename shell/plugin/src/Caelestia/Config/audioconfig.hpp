@@ -28,4 +28,4 @@ class AudioConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(AudioSounds, sounds)
 };
 
-} // namespace caelestia::config
+}

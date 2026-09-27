@@ -26,4 +26,4 @@ class UserPaths : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, lockNoNotifsPic, u"root:/assets/dino.png"_s)
 };
 
-} // namespace caelestia::config
+}

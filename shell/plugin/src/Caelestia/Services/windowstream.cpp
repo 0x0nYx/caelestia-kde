@@ -13,17 +13,8 @@ namespace caelestia::services {
 
 namespace {
 
-// KWin has a finite number of screencast nodes to give out, and running it dry
-// does not fail politely: other clients asking for a capture -- a browser, OBS,
-// Vesktop sharing a screen -- start failing instead. Stay well under whatever
-// the real ceiling is.
 constexpr int kMaxStreams = 16;
 
-// A released stream is kept briefly before being torn down. Hovering along a
-// row of taskbar icons releases and re-acquires the same windows within a
-// second, and rebuilding the node each time shows as a black gap before the
-// first frame arrives. Long enough to cover that, short enough that a stream
-// nobody is watching does not sit on a slot.
 constexpr int kGraceMs = 4000;
 
 struct Entry {
@@ -67,9 +58,6 @@ void sweep() {
     }
 }
 
-/// Frees the least recently released idle stream. Returns false if every
-/// stream is in use, in which case the request has to be refused -- taking one
-/// from a consumer that is actively drawing it would only move the problem.
 bool evictOldestIdle() {
     QString oldest;
     qint64 oldestAt = std::numeric_limits<qint64>::max();
@@ -97,7 +85,7 @@ QTimer* sweeper() {
     return s_sweeper;
 }
 
-} // namespace
+}
 
 WindowStream::WindowStream(QObject* parent)
     : QObject(parent) {
@@ -204,4 +192,4 @@ bool WindowStream::available() const {
     return objectSerial() != 0 || nodeId() != 0;
 }
 
-} // namespace caelestia::services
+}

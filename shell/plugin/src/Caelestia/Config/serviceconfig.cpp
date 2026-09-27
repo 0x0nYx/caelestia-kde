@@ -6,8 +6,6 @@ namespace caelestia::config {
 
 namespace {
 
-// Auto follows the locale, and so does the clock. The QML helpers read the resolved
-// values below rather than repeating this, so there is one rule per concept.
 TemperatureUnit::Enum resolveTemperatureUnit(TemperatureUnit::Enum unit) {
     if (unit != TemperatureUnit::Auto)
         return unit;
@@ -17,7 +15,7 @@ TemperatureUnit::Enum resolveTemperatureUnit(TemperatureUnit::Enum unit) {
                                                                                       : TemperatureUnit::Celsius;
 }
 
-} // namespace
+}
 
 bool ServiceConfig::twelveHourClock() const {
     const auto format = clockFormat();
@@ -35,4 +33,4 @@ TemperatureUnit::Enum ServiceConfig::sensorUnit() const {
     return resolveTemperatureUnit(sensorUnits());
 }
 
-} // namespace caelestia::config
+}

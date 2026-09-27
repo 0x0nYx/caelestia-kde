@@ -11,4 +11,4 @@ class WInfoConfig : public settings::ObjectNode {
     CONFIG_NODE(WInfoConfig, settings::ObjectNode)
 };
 
-} // namespace caelestia::config
+}

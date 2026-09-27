@@ -129,4 +129,4 @@ private:
     bool m_isDay = true;
 };
 
-} // namespace caelestia::services
+}

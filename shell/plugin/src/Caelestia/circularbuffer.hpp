@@ -45,4 +45,4 @@ private:
     bool m_maxDirty = false;
 };
 
-} // namespace caelestia
+}

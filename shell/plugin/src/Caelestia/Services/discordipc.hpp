@@ -52,4 +52,4 @@ private:
     QStringList m_pendingPaths;
 };
 
-} // namespace caelestia
+}

@@ -223,4 +223,4 @@ void DinoGameBackend::writeHighScore() {
     }
 }
 
-} // namespace caelestia::services
+}

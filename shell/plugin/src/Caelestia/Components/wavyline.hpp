@@ -104,4 +104,4 @@ private:
     qreal m_fullAngleRad;
 };
 
-} // namespace caelestia::components
+}

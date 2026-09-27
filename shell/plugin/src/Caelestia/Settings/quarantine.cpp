@@ -19,9 +19,9 @@ bool ObjectQuarantine::isEmpty() const {
 QJsonValue ObjectQuarantine::apply(const QJsonValue& json) const {
     auto result = json.toObject();
     for (const auto& [key, value] : m_quarantine.asKeyValueRange())
-        if (!result.contains(key)) // Don't clobber existing values
+        if (!result.contains(key))
             result.insert(key, value);
     return result;
 }
 
-} // namespace caelestia::settings
+}

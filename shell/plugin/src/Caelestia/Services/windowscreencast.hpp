@@ -59,13 +59,6 @@ public:
     std::unique_ptr<WindowScreencastStream> createOutputStream(wl_output *output);
 };
 
-// Per-window request: bind `uuid` to a KWin window's internalId and read back
-// `objectSerial` once available, feeding it to a PipeWireSourceItem's
-// `objectSerial` property (org.kde.pipewire) to render the live window
-// contents. `nodeId` is also exposed but is deprecated upstream (KPipeWire):
-// raw PipeWire node ids require broad PipeWire registry access that a regular
-// desktop client isn't granted, so binding via `objectSerial` is required for
-// playback to actually work for an unprivileged client like this shell.
 class WindowScreencastRequest : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString uuid READ uuid WRITE setUuid NOTIFY uuidChanged)
@@ -93,7 +86,6 @@ private:
     void setNodeId(quint32 nodeId);
     void setObjectSerial(quint64 objectSerial);
 
-    /// Shared global — no longer own a private instance.
     std::unique_ptr<WindowScreencastStream> m_stream;
     QString m_uuid;
     quint32 m_nodeId = 0;
@@ -127,7 +119,6 @@ private:
     void setNodeId(quint32 nodeId);
     void setObjectSerial(quint64 objectSerial);
 
-    /// Shared global — no longer own a private instance.
     std::unique_ptr<WindowScreencastStream> m_stream;
     QString m_outputName;
     quint32 m_nodeId = 0;

@@ -6,8 +6,6 @@
 
 namespace caelestia::config {
 
-// Helper: connect all changed signals from a token object to a single valuesChanged signal,
-// plus connect the local scaleChanged signal.
 template <typename Source, typename Target> static void connectTokenSignals(Source* source, Target* target) {
     const auto* meta = source->metaObject();
 
@@ -22,7 +20,6 @@ template <typename Source, typename Target> static void connectTokenSignals(Sour
     QObject::connect(target, &Target::scaleChanged, target, &Target::valuesChanged);
 }
 
-// AppearanceRounding
 
 void AppearanceRounding::bindTokens(RoundingTokens* tokens) {
     m_tokens = tokens;
@@ -65,7 +62,6 @@ int AppearanceRounding::full() const {
     return m_tokens ? static_cast<int>(m_tokens->full()) : 0;
 }
 
-// AppearanceSpacing
 
 void AppearanceSpacing::bindTokens(SpacingTokens* tokens) {
     m_tokens = tokens;
@@ -104,7 +100,6 @@ int AppearanceSpacing::extraExtraLarge() const {
     return m_tokens ? static_cast<int>(m_tokens->extraExtraLarge() * m_scale) : 0;
 }
 
-// AppearancePadding
 
 void AppearancePadding::bindTokens(PaddingTokens* tokens) {
     m_tokens = tokens;
@@ -143,7 +138,6 @@ int AppearancePadding::extraExtraLarge() const {
     return m_tokens ? static_cast<int>(m_tokens->extraExtraLarge() * m_scale) : 0;
 }
 
-// AnimDurations
 
 void AnimDurations::bindTokens(AnimDurationTokens* tokens) {
     m_tokens = tokens;
@@ -190,4 +184,4 @@ int AnimDurations::expressiveSlowEffects() const {
     return m_tokens ? static_cast<int>(m_tokens->expressiveSlowEffects() * m_scale) : 0;
 }
 
-} // namespace caelestia::config
+}

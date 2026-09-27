@@ -21,4 +21,4 @@ private:
     virtual void stop() = 0;
 };
 
-} // namespace caelestia::services
+}

@@ -211,7 +211,6 @@ Item {
         id: lyricsContainer
 
         anchors.fill: parent
-        // Removed clip: true from here so the shadow doesn't get cut off
 
         layer.enabled: Config.background.desktopLyrics.shadow.enabled
         layer.effect: MultiEffect {
@@ -334,11 +333,11 @@ Item {
                     }
                     GradientStop {
                         color: Qt.alpha("black", 1)
-                        position: 0.25 // fadeMargin
+                        position: 0.25
                     }
                     GradientStop {
                         color: Qt.alpha("black", 1)
-                        position: 0.75 // 1 - fadeMargin
+                        position: 0.75
                     }
                     GradientStop {
                         color: Qt.alpha("black", 0)
@@ -347,7 +346,6 @@ Item {
                 }
             }
 
-            // --- Previous Lyric ---
             Item {
                 id: prevLyricItem
 
@@ -380,7 +378,6 @@ Item {
                 }
             }
 
-            // --- Current Lyric ---
             Item {
                 id: lyricContainer
 

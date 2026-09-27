@@ -48,4 +48,4 @@ void TickingService::applyInterval(int ms) {
     Q_EMIT updateIntervalChanged();
 }
 
-} // namespace caelestia::services
+}

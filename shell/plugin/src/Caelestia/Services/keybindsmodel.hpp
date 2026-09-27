@@ -66,4 +66,4 @@ private:
     void saveKeybinds();
 };
 
-} // namespace caelestia::services
+}

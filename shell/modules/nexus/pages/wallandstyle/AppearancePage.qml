@@ -195,7 +195,6 @@ PageBase {
                     bbdxFixProcess.running = true;
                     GlobalConfig.appearance.blur = checked
                     if (GlobalConfig.appearance.transparency.enabled && checked) {
-                        // Hack to force Quickshell blur region to update when enabling blur
                         GlobalConfig.appearance.transparency.enabled = false
                         blurHackTimer.start()
                     }

@@ -45,4 +45,4 @@ private:
     bool isBetterScaleAndSpace(double oldScale, double oldSpace, double scale, double space);
 };
 
-} // namespace caelestia::layouts
+}

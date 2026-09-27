@@ -59,4 +59,4 @@ private:
     qreal m_duration = 0.0;
 };
 
-} // namespace caelestia::services
+}

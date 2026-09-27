@@ -19,7 +19,7 @@ const AppearanceConfig* resolveAppearance(ConfigRoot* config, bool complete, con
     return ConfigSingleton::instance()->appearance();
 }
 
-} // namespace
+}
 
 Tokens::Tokens(QObject* parent)
     : QQuickAttachedPropertyPropagator(parent)
@@ -101,7 +101,7 @@ TOKENS_ATTACHED_GETTER(AppearancePadding, padding)
 #undef TOKENS_ATTACHED_GETTER
 
 const AppearanceTransparency* Tokens::transparency() const {
-    return ConfigSingleton::instance()->appearance()->transparency(); // Transparency is always global
+    return ConfigSingleton::instance()->appearance()->transparency();
 }
 
 const SizeTokens* Tokens::sizes() const {
@@ -128,4 +128,4 @@ Tokens* Tokens::qmlAttachedProperties(QObject* object) {
     return new Tokens(object);
 }
 
-} // namespace caelestia::config
+}

@@ -81,4 +81,4 @@ private:
     QHash<QString, KdeOutputDevice*> m_devices;
 };
 
-} // namespace caelestia::services
+}

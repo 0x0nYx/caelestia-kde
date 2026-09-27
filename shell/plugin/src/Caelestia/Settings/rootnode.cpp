@@ -47,4 +47,4 @@ void RootNode::saveToFile() {
     m_file->write(toJson());
 }
 
-} // namespace caelestia::settings
+}

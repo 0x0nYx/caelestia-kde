@@ -45,12 +45,6 @@ WindowScreencastGlobal::WindowScreencastGlobal()
 }
 
 WindowScreencastGlobal* WindowScreencastGlobal::instance() {
-    // Deliberately never destroyed. Releasing a Wayland proxy is itself a
-    // request, and a function-local static is torn down from an exit handler,
-    // long after Qt has closed the display — marshalling there writes into
-    // freed memory and takes the shell down with a SIGSEGV as it quits. The
-    // process is ending either way, so leaking the global is the cheap fix;
-    // the kernel reclaims it.
     static auto* s_instance = new WindowScreencastGlobal();
     return s_instance;
 }

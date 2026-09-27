@@ -77,7 +77,6 @@ static QString getCardFriendlyName(PulseAudioQt::Card *card)
         return QString();
     }
 
-    // 1. Try to find the active, non-inactive sink on this card
     for (auto sink : card->sinks()) {
         if (!isDeviceInactive(sink)) {
             const auto props = sink->pulseProperties();
@@ -100,7 +99,6 @@ static QString getCardFriendlyName(PulseAudioQt::Card *card)
         }
     }
 
-    // 2. Check available output ports on the card itself
     for (auto port : card->ports()) {
         if (port && port->availability() != PulseAudioQt::Port::Unavailable) {
             if (!port->name().startsWith(QLatin1String("Mic"), Qt::CaseInsensitive) &&
@@ -112,7 +110,6 @@ static QString getCardFriendlyName(PulseAudioQt::Card *card)
         }
     }
 
-    // 3. Try to find an active source on this card
     for (auto source : card->sources()) {
         if (!isDeviceInactive(source)) {
             const auto props = source->pulseProperties();

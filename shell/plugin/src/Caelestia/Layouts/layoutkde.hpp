@@ -47,4 +47,4 @@ private:
     QList<QRectF> refineAndApplyPacking(const QRectF& area, const QMarginsF& margins, const LayeredPacking& packing, const QList<QRectF>& windowSizes, const QList<QPointF>& centers, qreal maxScale, qreal maxGapRatio);
 };
 
-} // namespace caelestia::layouts
+}

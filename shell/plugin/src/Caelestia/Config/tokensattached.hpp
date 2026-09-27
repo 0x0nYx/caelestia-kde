@@ -78,4 +78,4 @@ private:
     AnimTokens* m_anim = nullptr;
 };
 
-} // namespace caelestia::config
+}

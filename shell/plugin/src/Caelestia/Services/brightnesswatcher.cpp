@@ -95,7 +95,6 @@ void BrightnessWatcher::setBrightness(const QString& outputName, qreal value) {
         return;
     }
 
-    // Clamp value between 0.0 and 1.0
     value = qBound(0.0, value, 1.0);
     uint32_t brightValue = qRound(value * 10000.0);
 
@@ -105,17 +104,10 @@ void BrightnessWatcher::setBrightness(const QString& outputName, qreal value) {
     QtWayland::kde_output_configuration_v2 cfg(config);
     cfg.set_brightness(dev->object(), brightValue);
     cfg.apply();
-    // Destroying the config object when it goes out of scope?
-    // According to protocol, the server cleans up the config after apply or destroy.
-    // Actually, we must call destroy() on the wrapper to free client-side memory, 
-    // or let it leak? QtWayland wrappers don't automatically destroy the Wayland object on C++ destruction unless told.
-    // Let's call destroy() after apply(), but wait - apply is asynchronous. 
-    // Usually destroying the object right after apply is safe in Wayland.
     cfg.destroy();
 }
 
 void BrightnessWatcher::onDeviceAdded(KdeOutputDevice* device) {
-    // Wait until we have the name
     connect(device, &KdeOutputDevice::nameChanged, this, [this, device]() {
         if (!device->name().isEmpty()) {
             m_devices[device->name()] = device;
@@ -134,4 +126,4 @@ void BrightnessWatcher::onDeviceAdded(KdeOutputDevice* device) {
     });
 }
 
-} // namespace caelestia::services
+}

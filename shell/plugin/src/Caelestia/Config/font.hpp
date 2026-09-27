@@ -9,6 +9,9 @@ namespace caelestia::config {
 
 class AppearanceFont;
 class AppearanceTokens;
+class FontConfigNode;
+class FontStyleNode;
+class FontStyleIconNode;
 class FontStyleBase;
 class IconFontStyle;
 
@@ -57,7 +60,7 @@ public:
     explicit FontStyleBase(QObject* parent = nullptr)
         : QObject(parent) {}
 
-    virtual void bind(settings::ObjectNode* cfg);
+    virtual void bind(FontStyleNode* cfg);
     void setScale(qreal scale);
 
     [[nodiscard]] QFont large() const;
@@ -70,9 +73,9 @@ signals:
 protected:
     virtual void rebuild();
 
-    static QFont buildFont(const settings::ObjectNode* cfg, const QString& fallbackFamily, qreal scale);
+    static QFont buildFont(const FontConfigNode* cfg, const QString& fallbackFamily, qreal scale);
 
-    settings::ObjectNode* m_cfg = nullptr;
+    FontStyleNode* m_cfg = nullptr;
     qreal m_scale = 1;
     QFont m_large;
     QFont m_medium;
@@ -106,7 +109,7 @@ public:
 
     Q_INVOKABLE FontBuilder size(int pointSize);
 
-    void bind(settings::ObjectNode* cfg) override;
+    void bind(FontStyleNode* cfg) override;
 
     [[nodiscard]] QFont extraLarge() const;
     [[nodiscard]] IconFontBuilders* builders() const;
@@ -167,4 +170,4 @@ private:
     QFont m_clock;
 };
 
-} // namespace caelestia::config
+}

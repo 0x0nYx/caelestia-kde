@@ -30,4 +30,4 @@ ENUM(ClockFormat, Auto, TwelveHour, TwentyFourHour)
 
 #undef ENUM
 
-} // namespace caelestia::config
+}

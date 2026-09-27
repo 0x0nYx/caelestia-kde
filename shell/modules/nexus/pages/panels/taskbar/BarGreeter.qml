@@ -151,9 +151,6 @@ PageBase {
             }
         }
 
-        // ==========================================
-        // TIME OF DAY SECTION
-        // ==========================================
         SectionHeader {
             visible: (Config.bar.greeter?.mode ?? "timeOfDay") !== "slideshow"
             text: qsTr("Time of Day Periods & Media")
@@ -341,9 +338,6 @@ PageBase {
             }
         }
 
-        // ==========================================
-        // SLIDESHOW SECTION
-        // ==========================================
         SectionHeader {
             visible: (Config.bar.greeter?.mode ?? "timeOfDay") === "slideshow"
             text: qsTr("Slideshow Timing & Order")

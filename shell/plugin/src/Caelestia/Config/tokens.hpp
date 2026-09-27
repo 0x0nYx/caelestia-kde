@@ -260,4 +260,4 @@ class SizeTokens : public settings::ObjectNode {
     CONFIG_SUBOBJECT(NexusTokens, nexus)
 };
 
-} // namespace caelestia::config
+}

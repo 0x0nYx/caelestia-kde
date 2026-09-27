@@ -101,4 +101,4 @@ private:
     ConfigRoot* m_config = nullptr;
 };
 
-} // namespace caelestia::config
+}

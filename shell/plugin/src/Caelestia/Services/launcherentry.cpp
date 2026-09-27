@@ -42,7 +42,7 @@ QVariantMap resolveEntry(const QVariantMap& properties) {
     };
 }
 
-} // namespace
+}
 
 LauncherEntry::LauncherEntry(QObject* parent)
     : QObject(parent)
@@ -121,4 +121,4 @@ void LauncherEntry::onServiceUnregistered(const QString& service) {
     emit changed();
 }
 
-} // namespace caelestia::services
+}

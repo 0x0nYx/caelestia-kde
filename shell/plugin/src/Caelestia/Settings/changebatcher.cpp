@@ -22,4 +22,4 @@ void ChangeBatcher::flush() {
     emit dirtied();
 }
 
-} // namespace caelestia::settings
+}

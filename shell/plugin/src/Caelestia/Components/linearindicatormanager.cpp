@@ -4,8 +4,6 @@
 
 namespace {
 
-// See
-// https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/progressindicator/LinearIndeterminateDisjointAnimatorDelegate.java#L44-L46
 constexpr int TOTAL_DURATION_IN_MS = 1800;
 constexpr std::array DURATION_TO_MOVE_SEGMENT_ENDS = { 533, 567, 850, 750 };
 constexpr std::array DELAY_TO_MOVE_SEGMENT_ENDS = { 1267, 1000, 333, 0 };
@@ -21,7 +19,7 @@ qreal getFractionInRange(qreal playtime, int start, int duration) {
     return std::clamp(fraction, 0.0, 1.0);
 }
 
-} // namespace
+}
 
 namespace caelestia::components {
 
@@ -116,4 +114,4 @@ void LinearIndicatorManager::updateCompleteEndProgress(qreal progress) {
     update(m_progress);
 }
 
-} // namespace caelestia::components
+}

@@ -126,4 +126,4 @@ private:
     bool m_tileLayoutEnabled = false;
 };
 
-} // namespace caelestia::services
+}

@@ -64,7 +64,7 @@ bool labelStartsWith(const QByteArray& label, const char* prefix) {
     return static_cast<size_t>(label.size()) >= n && std::memcmp(label.constData(), prefix, n) == 0;
 }
 
-} // namespace
+}
 
 void ensureInit() {
     std::call_once(g_initFlag, doInit);
@@ -76,8 +76,8 @@ std::optional<double> cpuPackageTemp() {
         return std::nullopt;
     }
 
-    std::optional<double> primary;  // Package id N / Tdie
-    std::optional<double> fallback; // Tctl
+    std::optional<double> primary;
+    std::optional<double> fallback;
 
     int chipNr = 0;
     while (const sensors_chip_name* chip = sensors_get_detected_chips(nullptr, &chipNr)) {
@@ -168,4 +168,4 @@ std::optional<double> gpuPciAverageTemp() {
     return std::nullopt;
 }
 
-} // namespace caelestia::services::sensorslib
+}

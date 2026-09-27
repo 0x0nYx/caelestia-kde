@@ -27,17 +27,6 @@ public:
 
     [[nodiscard]] QVariantMap tPalette() const;
 
-    /**
-     * Called from QML whenever palette colors, transparency, or wallLuminance change.
-     * Recomputes all 44 transparent color variants in one C++ pass.
-     *
-     * @param palette     QVariantMap of property-name -> QColor from M3Palette
-     * @param light       Whether the current theme is light mode
-     * @param transpEnabled Whether transparency is enabled
-     * @param transpBase  Base transparency alpha value
-     * @param transpLayers Layer transparency alpha value
-     * @param wallLuminance Luminance of the current wallpaper (0.0-1.0)
-     */
     Q_INVOKABLE void update(const QVariantMap& palette,
                             bool light,
                             bool transpEnabled,
@@ -58,4 +47,4 @@ private:
     QVariantMap m_tPalette;
 };
 
-} // namespace caelestia::services
+}

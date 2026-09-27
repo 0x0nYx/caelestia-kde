@@ -4,16 +4,6 @@
 
 namespace caelestia::config {
 
-namespace {
-
-settings::ObjectNode* style(settings::ObjectNode* cfg, const QString& key) {
-    return cfg->value(key).value<settings::ObjectNode*>();
-}
-
-} // namespace
-
-// FontStyleBase
-
 QFont FontStyleBase::large() const {
     return m_large;
 }
@@ -26,23 +16,18 @@ QFont FontStyleBase::small() const {
     return m_small;
 }
 
-QFont FontStyleBase::buildFont(const settings::ObjectNode* cfg, const QString& fallbackFamily, qreal scale) {
-    const auto family = cfg->value(u"family"_s).toString();
-    const auto size = cfg->value(u"size"_s).toInt();
-    const auto weight = cfg->value(u"weight"_s).value<QFont::Weight>();
-    const auto italic = cfg->value(u"italic"_s).toBool();
-    const auto vaxes = cfg->value(u"vaxes"_s).toMap();
-
+QFont FontStyleBase::buildFont(const FontConfigNode* cfg, const QString& fallbackFamily, qreal scale) {
     QFont font;
-    font.setFamily(family.isEmpty() ? fallbackFamily : family);
-    const int scaledSize = static_cast<int>(size * scale);
+    font.setFamily(cfg->family().isEmpty() ? fallbackFamily : cfg->family());
+    const int scaledSize = static_cast<int>(cfg->size() * scale);
     const int cappedSize = scaledSize > 0 ? scaledSize : 1;
     font.setPointSize(cappedSize);
     font.setVariableAxis("opsz", static_cast<float>(cappedSize));
-    font.setWeight(weight);
-    font.setVariableAxis("wght", weight);
-    font.setItalic(italic);
+    font.setWeight(static_cast<QFont::Weight>(cfg->weight()));
+    font.setVariableAxis("wght", font.weight());
+    font.setItalic(cfg->italic());
 
+    const auto vaxes = cfg->vaxes();
     for (auto it = vaxes.constBegin(); it != vaxes.constEnd(); ++it) {
         if (auto tag = QFont::Tag::fromString(it.key()))
             font.setVariableAxis(*tag, it.value().toFloat());
@@ -51,24 +36,24 @@ QFont FontStyleBase::buildFont(const settings::ObjectNode* cfg, const QString& f
     return font;
 }
 
-void FontStyleBase::bind(settings::ObjectNode* cfg) {
+void FontStyleBase::bind(FontStyleNode* cfg) {
     if (m_cfg == cfg)
         return;
 
     if (m_cfg) {
         disconnect(m_cfg, nullptr, this, nullptr);
-        disconnect(style(m_cfg, u"large"_s), nullptr, this, nullptr);
-        disconnect(style(m_cfg, u"medium"_s), nullptr, this, nullptr);
-        disconnect(style(m_cfg, u"small"_s), nullptr, this, nullptr);
+        disconnect(m_cfg->large(), nullptr, this, nullptr);
+        disconnect(m_cfg->medium(), nullptr, this, nullptr);
+        disconnect(m_cfg->small(), nullptr, this, nullptr);
     }
 
     m_cfg = cfg;
 
     if (cfg) {
         connect(cfg, &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
-        connect(style(cfg, u"large"_s), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
-        connect(style(cfg, u"medium"_s), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
-        connect(style(cfg, u"small"_s), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
+        connect(cfg->large(), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
+        connect(cfg->medium(), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
+        connect(cfg->small(), &settings::Node::optionChanged, this, &FontStyleBase::rebuild);
     }
 
     rebuild();
@@ -76,10 +61,10 @@ void FontStyleBase::bind(settings::ObjectNode* cfg) {
 
 void FontStyleBase::rebuild() {
     if (m_cfg) {
-        const auto family = m_cfg->value(u"family"_s).toString();
-        m_large = buildFont(style(m_cfg, u"large"_s), family, m_scale);
-        m_medium = buildFont(style(m_cfg, u"medium"_s), family, m_scale);
-        m_small = buildFont(style(m_cfg, u"small"_s), family, m_scale);
+        const auto family = m_cfg->family();
+        m_large = buildFont(m_cfg->large(), family, m_scale);
+        m_medium = buildFont(m_cfg->medium(), family, m_scale);
+        m_small = buildFont(m_cfg->small(), family, m_scale);
     } else {
         m_large = QFont();
         m_medium = QFont();
@@ -95,7 +80,6 @@ void FontStyleBase::setScale(qreal scale) {
     rebuild();
 }
 
-// FontStyle
 
 FontStyle::FontStyle(QObject* parent)
     : FontStyleBase(parent)
@@ -105,7 +89,6 @@ FontBuilders* FontStyle::builders() const {
     return m_builders;
 }
 
-// IconFontStyle
 
 IconFontStyle::IconFontStyle(QObject* parent)
     : FontStyleBase(parent)
@@ -115,17 +98,17 @@ FontBuilder IconFontStyle::size(int pointSize) {
     return FontBuilder(m_small).size(pointSize);
 }
 
-void IconFontStyle::bind(settings::ObjectNode* cfg) {
+void IconFontStyle::bind(FontStyleNode* cfg) {
     if (m_cfg == cfg)
         return;
 
-    if (m_cfg)
-        disconnect(style(m_cfg, u"extraLarge"_s), nullptr, this, nullptr);
+    if (auto* previous = qobject_cast<FontStyleIconNode*>(m_cfg))
+        disconnect(previous->extraLarge(), nullptr, this, nullptr);
 
     FontStyleBase::bind(cfg);
 
-    if (cfg)
-        connect(style(cfg, u"extraLarge"_s), &settings::Node::optionChanged, this, &IconFontStyle::rebuild);
+    if (auto* icon = qobject_cast<FontStyleIconNode*>(cfg))
+        connect(icon->extraLarge(), &settings::Node::optionChanged, this, &IconFontStyle::rebuild);
 }
 
 QFont IconFontStyle::extraLarge() const {
@@ -138,11 +121,15 @@ IconFontBuilders* IconFontStyle::builders() const {
 
 void IconFontStyle::rebuild() {
     if (m_cfg) {
-        const auto family = m_cfg->value(u"family"_s).toString();
-        m_large = buildFont(style(m_cfg, u"large"_s), family, m_scale);
-        m_medium = buildFont(style(m_cfg, u"medium"_s), family, m_scale);
-        m_small = buildFont(style(m_cfg, u"small"_s), family, m_scale);
-        m_extraLarge = buildFont(style(m_cfg, u"extraLarge"_s), family, m_scale);
+        const auto family = m_cfg->family();
+        m_large = buildFont(m_cfg->large(), family, m_scale);
+        m_medium = buildFont(m_cfg->medium(), family, m_scale);
+        m_small = buildFont(m_cfg->small(), family, m_scale);
+
+        // Only the icon node carries the fourth size; the cast is the one place the icon
+        // style needs more than FontStyleNode offers.
+        const auto* icon = qobject_cast<FontStyleIconNode*>(m_cfg);
+        m_extraLarge = icon ? buildFont(icon->extraLarge(), family, m_scale) : QFont();
     } else {
         m_large = QFont();
         m_medium = QFont();
@@ -152,7 +139,6 @@ void IconFontStyle::rebuild() {
     emit fontsChanged();
 }
 
-// FontBuilders
 
 FontBuilders::FontBuilders(const FontStyleBase* style, QObject* parent)
     : QObject(parent)
@@ -172,7 +158,6 @@ FontBuilder FontBuilders::small() const {
     return FontBuilder(m_style->small());
 }
 
-// IconFontBuilders
 
 IconFontBuilders::IconFontBuilders(const IconFontStyle* style, QObject* parent)
     : FontBuilders(style, parent) {}
@@ -181,7 +166,6 @@ FontBuilder IconFontBuilders::extraLarge() const {
     return FontBuilder(static_cast<const IconFontStyle*>(m_style)->extraLarge());
 }
 
-// FontTokens
 
 FontTokens::FontTokens(QObject* parent)
     : QObject(parent)
@@ -281,4 +265,4 @@ void FontTokens::bindTokens(AppearanceTokens* tokens) {
     m_tokens = tokens;
 }
 
-} // namespace caelestia::config
+}

@@ -109,4 +109,4 @@ class BackgroundConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BackgroundVisualiser, visualiser)
 };
 
-} // namespace caelestia::config
+}

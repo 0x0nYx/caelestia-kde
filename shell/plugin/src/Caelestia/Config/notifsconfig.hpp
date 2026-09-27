@@ -25,4 +25,4 @@ class NotifsConfig : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(int, maxNotifs, 50)
 };
 
-} // namespace caelestia::config
+}
