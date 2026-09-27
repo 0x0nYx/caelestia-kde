@@ -91,11 +91,12 @@ class BarGreeter : public settings::ObjectNode {
 
     CONFIG_PROPERTY(QString, mode, u"timeOfDay"_s)
 
-    // Time of day GIFs
-    CONFIG_PROPERTY(QString, morningGif, u"root:/assets/morning.gif"_s)
-    CONFIG_PROPERTY(QString, afternoonGif, u"root:/assets/afternoon.gif"_s)
-    CONFIG_PROPERTY(QString, eveningGif, u"root:/assets/evening.gif"_s)
-    CONFIG_PROPERTY(QString, nightGif, u"root:/assets/night.gif"_s)
+    // Time of day GIFs. The shell ships none, so these start empty and the Nexus bar page
+    // is where they get picked.
+    CONFIG_PROPERTY(QString, morningGif, u""_s)
+    CONFIG_PROPERTY(QString, afternoonGif, u""_s)
+    CONFIG_PROPERTY(QString, eveningGif, u""_s)
+    CONFIG_PROPERTY(QString, nightGif, u""_s)
 
     // Time of day period start hours (0-23)
     CONFIG_PROPERTY(int, morningStart, 5)
@@ -113,9 +114,7 @@ class BarGreeter : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, slideshowText, u""_s)
     CONFIG_PROPERTY(QString, slideshowIcon, u"waving_hand"_s)
     CONFIG_PROPERTY(QStringList, slideshowFolders, QStringList())
-    CONFIG_PROPERTY(QStringList, slideshowGifs,
-        DEFAULT_ARG({ u"root:/assets/morning.gif"_s, u"root:/assets/afternoon.gif"_s, u"root:/assets/evening.gif"_s,
-            u"root:/assets/night.gif"_s }))
+    CONFIG_PROPERTY(QStringList, slideshowGifs, QStringList())
     CONFIG_PROPERTY(qreal, slideshowInterval, 60.0)
     CONFIG_PROPERTY(bool, slideshowRandom, false)
 };
