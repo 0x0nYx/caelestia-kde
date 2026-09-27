@@ -68,7 +68,6 @@ ShellRoot {
         value: GlobalConfig.general.language
     }
 
-    Fonts {}
     GSFLoader {}
     ServiceLoader {}
 

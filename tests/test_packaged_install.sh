@@ -228,14 +228,6 @@ test_the_payload_carries_no_version_control_metadata() {
     assert_contains "$pkgbuild" "-name '.git' -o -name '.github' -o -name '.gitignore'" "the package should strip version control metadata"
 }
 
-test_the_shell_reads_the_user_font_directory() {
-    local fonts
-    fonts="$(cat "$REPO_ROOT/shell/modules/Fonts.qml")"
-
-    assert_contains "$fonts" '${Paths.data}/assets/fonts' "a user's own fonts should be read"
-    assert_not_contains "$fonts" 'shellPath("assets/fonts")' "and the tree should carry no second copy of the shell font"
-}
-
 test_the_install_says_how_to_start_the_shell_now() {
     local cli
     cli="$(cat "$CLI")"
