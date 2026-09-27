@@ -101,7 +101,7 @@ if [[ -d "$BUNDLE_DIR/backups" ]]; then
             if [[ "$_bsel" == "0" ]]; then
                 SELECTED_BACKUP=""
                 break
-            elif [[ "$_bsel" -ge 1 ]] && [[ "$_bsel" -le "${#backups[@]}" ]]; then
+            elif [[ "$_bsel" =~ ^[0-9]+$ ]] && [[ "$_bsel" -ge 1 ]] && [[ "$_bsel" -le "${#backups[@]}" ]]; then
                 SELECTED_BACKUP="${backups[$((_bsel-1))]}"
                 SELECTED_KNSV="$(find "$SELECTED_BACKUP" -maxdepth 1 -type f -name '*.knsv' | head -n 1)"
                 if [[ -n "$SELECTED_KNSV" ]]; then
@@ -254,6 +254,14 @@ if [[ -d "$HOME/.local/lib/caelestia" ]]; then
     ok "Removed ~/.local/lib/caelestia"
 fi
 
+# Desktop entries 10-autostart.sh drops into ~/.local/share/applications.
+for desktop_file in quickshell.desktop org.quickshell.desktop; do
+    if [[ -f "$HOME/.local/share/applications/$desktop_file" ]]; then
+        rm -f "$HOME/.local/share/applications/$desktop_file"
+        ok "Removed ~/.local/share/applications/$desktop_file"
+    fi
+done
+
 for qml_mod in Caelestia M3Shapes; do
     if [[ -d "$HOME/.local/lib/qt6/qml/$qml_mod" ]]; then
         rm -rf "$HOME/.local/lib/qt6/qml/$qml_mod"
@@ -263,7 +271,13 @@ done
 
 if [[ -d "$HOME/.local/share/caelestia-shell" ]]; then
     rm -rf "$HOME/.local/share/caelestia-shell"
-    ok "Removed ~/.local/share/caelestia-shell"
+    ok "Removed legacy ~/.local/share/caelestia-shell"
+fi
+
+# Data dir 12-fetch-assets.sh actually populates (wallpaper pack, fonts).
+if [[ -d "$HOME/.local/share/caelestia" ]]; then
+    rm -rf "$HOME/.local/share/caelestia"
+    ok "Removed ~/.local/share/caelestia"
 fi
 
 if [[ -d "$HOME/.local/share/plasma/shells/caelestia.desktop" ]]; then
@@ -468,12 +482,6 @@ _bk_dir="$SELECTED_BACKUP"
 if [[ -n "$_bk_dir" ]] && [[ -f "$_bk_dir/.config/kglobalshortcutsrc" ]]; then
     cp "$_bk_dir/.config/kglobalshortcutsrc" "$HOME/.config/kglobalshortcutsrc"
     ok "Restored kglobalshortcutsrc from backup"
-elif ls "$BUNDLE_DIR/backups/kglobalshortcutsrc_"* >/dev/null 2>&1; then
-    _bk_file="$(ls -t "$BUNDLE_DIR/backups/kglobalshortcutsrc_"* 2>/dev/null | head -1)"
-    if [[ -f "$_bk_file" ]]; then
-        cp "$_bk_file" "$HOME/.config/kglobalshortcutsrc"
-        ok "Restored kglobalshortcutsrc from $( basename "$_bk_file")"
-    fi
 fi
 
 rm -f "$HOME/.local/share/konsole/MaterialYou.colorscheme"
@@ -589,17 +597,6 @@ else
         ok "Removed Caelestia env vars from ~/.bashrc"
     fi
 
-    if [[ -f "$HOME/.config/environment.d/caelestia.conf" ]]; then
-        rm -f "$HOME/.config/environment.d/caelestia.conf"
-        ok "Removed the Caelestia environment file"
-    fi
-
-    if [[ -f "$HOME/.config/plasma-workspace/env/caelestia.sh" ]]; then
-        rm -f "$HOME/.config/plasma-workspace/env/caelestia.sh"
-        rmdir "$HOME/.config/plasma-workspace/env" 2>/dev/null || true
-        ok "Removed the Caelestia Plasma session environment script"
-    fi
-
     if [[ -f "$HOME/.config/fish/config.fish" ]]; then
         sed -i '/QML2_IMPORT_PATH\|CAELESTIA_LIB_DIR/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
         ok "Removed Caelestia env vars from fish config"
@@ -609,6 +606,19 @@ else
         sed -i '/QML2_IMPORT_PATH\|CAELESTIA_LIB_DIR/d' "$HOME/.zshrc" 2>/dev/null || true
         ok "Removed Caelestia env vars from ~/.zshrc"
     fi
+fi
+
+# These two are written unconditionally by 08-build-shell.sh, independently of any
+# rc file, so an exact rc restore must not keep them either.
+if [[ -f "$HOME/.config/environment.d/caelestia.conf" ]]; then
+    rm -f "$HOME/.config/environment.d/caelestia.conf"
+    ok "Removed the Caelestia environment file"
+fi
+
+if [[ -f "$HOME/.config/plasma-workspace/env/caelestia.sh" ]]; then
+    rm -f "$HOME/.config/plasma-workspace/env/caelestia.sh"
+    rmdir "$HOME/.config/plasma-workspace/env" 2>/dev/null || true
+    ok "Removed the Caelestia Plasma session environment script"
 fi
 
 section "Step 8 - Remove System-level Files"
@@ -886,6 +896,14 @@ if [[ -d "$CACHE_DIR" ]]; then
     else
         skip "Kept installer cache at $CACHE_DIR"
     fi
+fi
+
+# Runtime state the color pipeline, recorder and installer stages regenerate on
+# demand: scheme.json, wallpaper state, rendered theme, recorder pid/lock files.
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+if [[ -d "$STATE_DIR" ]]; then
+    rm -rf "$STATE_DIR"
+    ok "Removed $STATE_DIR"
 fi
 
 section "Step 11 - Reload KDE"
