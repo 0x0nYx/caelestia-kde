@@ -125,9 +125,6 @@ class FontConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(int, weight, QFont::Normal)
     CONFIG_PROPERTY(bool, italic, false)
     CONFIG_PROPERTY(QVariantMap, vaxes, {})
-
-public:
-    void setDefaults(int size, int weight = QFont::Normal, const QVariantMap& vaxes = {});
 };
 
 class FontStyleConfig : public settings::ObjectNode {
