@@ -83,7 +83,7 @@ install_matugen_cargo() {
 
         if ! command -v cargo >/dev/null 2>&1; then
             info "Installing Rust toolchain via rustup..."
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal || true
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal || true # ci:allow-curl-pipe
             export PATH="$HOME/.cargo/bin:$PATH"
         fi
     fi
