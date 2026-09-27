@@ -74,8 +74,9 @@ prepare() {
     # script fills both _source_url and _source_sum, so a SKIP reaching here means the
     # published hash was never put in, and the tarball is the whole shell.
     if [[ "$_source_sum" == "SKIP" && "${CAELESTIA_ALLOW_UNVERIFIED_SOURCE:-0}" != "1" ]]; then
-        echo "No source checksum: put the release's sha256 in the first sha256sums entry" >&2
-        echo "(see packaging/aur/README.md), or set CAELESTIA_ALLOW_UNVERIFIED_SOURCE=1 to build anyway." >&2
+        echo "No source checksum: put the release's sha256 in the first sha256sums entry." >&2
+        echo "The release job prints it beside the size and attaches it as .sha256;" >&2
+        echo "set CAELESTIA_ALLOW_UNVERIFIED_SOURCE=1 to build anyway." >&2
         return 1
     fi
 
