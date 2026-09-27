@@ -123,4 +123,4 @@ void Toaster::toast(const QString& title, const QString& message, const QString&
     emit toastsChanged();
 }
 
-}
+} // namespace caelestia

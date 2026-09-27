@@ -75,4 +75,4 @@ private:
     QEasingCurve m_expressiveSlowEffects;
 };
 
-}
+} // namespace caelestia::config

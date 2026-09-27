@@ -79,4 +79,4 @@ void AudioProvider::stop() {
     }
 }
 
-}
+} // namespace caelestia::services

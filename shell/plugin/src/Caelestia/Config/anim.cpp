@@ -1,8 +1,9 @@
 #include "anim.hpp"
-#include "appearanceconfig.hpp"
-#include "tokens.hpp"
 
 #include <qpoint.h>
+
+#include "appearanceconfig.hpp"
+#include "tokens.hpp"
 
 namespace caelestia::config {
 
@@ -110,4 +111,4 @@ void AnimTokens::bindDurations(AnimDurations* durations) {
     emit durationsChanged();
 }
 
-}
+} // namespace caelestia::config

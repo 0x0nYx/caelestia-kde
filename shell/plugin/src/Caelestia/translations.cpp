@@ -1,11 +1,12 @@
 #include "translations.hpp"
 
 #include <QtQml/qqmlengine.h>
-#include <algorithm>
 #include <qcoreapplication.h>
 #include <qdir.h>
 #include <qlocale.h>
 #include <qlogging.h>
+
+#include <algorithm>
 #include <utility>
 
 namespace caelestia {
@@ -38,7 +39,7 @@ QString normaliseCode(const QString& code) {
     return normalised;
 }
 
-}
+} // namespace
 
 Translations::Translations(QObject* parent)
     : QObject(parent)
@@ -237,4 +238,4 @@ void Translations::refreshAvailable() {
     }
 }
 
-}
+} // namespace caelestia

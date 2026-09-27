@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #pragma once
 
-
 #include <QHash>
 #include <QObject>
 #include <QQmlEngine>
@@ -32,4 +31,4 @@ private:
     QHash<QString, QString> m_resolved;
 };
 
-}
+} // namespace caelestia::services

@@ -279,4 +279,4 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(QStringList, excludedScreens, QStringList())
 };
 
-}
+} // namespace caelestia::config

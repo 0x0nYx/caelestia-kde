@@ -36,4 +36,4 @@ private:
     quint64 m_lastTotal = 0;
 };
 
-}
+} // namespace caelestia::services

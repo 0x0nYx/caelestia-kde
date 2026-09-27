@@ -71,4 +71,4 @@ private:
     QList<HyprKeyboard*> m_keyboards;
 };
 
-}
+} // namespace caelestia::services::hypr

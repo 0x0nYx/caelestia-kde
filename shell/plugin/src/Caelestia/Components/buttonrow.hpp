@@ -34,4 +34,4 @@ private:
     qreal m_spacing;
 };
 
-}
+} // namespace caelestia::components

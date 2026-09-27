@@ -92,7 +92,7 @@ QStringList resolveByDevt(uint major, uint minor, int depth) {
     return resolveAtNode(sysfsRealPath(major, minor), depth);
 }
 
-}
+} // namespace
 
 Storage::Storage(QObject* parent)
     : TickingService(parent)
@@ -331,4 +331,4 @@ void Storage::applyDisks(const AccumHash& byDisk) {
     }
 }
 
-}
+} // namespace caelestia::services

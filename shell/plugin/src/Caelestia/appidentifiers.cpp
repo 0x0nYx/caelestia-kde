@@ -10,7 +10,7 @@ void setApplicationIdentifiers() {
     QCoreApplication::setApplicationName(QStringLiteral("caelestia-shell"));
 }
 
-}
+} // namespace
 
 // Q_CONSTRUCTOR_FUNCTION rather than a plain static: the compiler cannot drop it
 // as unused, and the call is visible as what it is.

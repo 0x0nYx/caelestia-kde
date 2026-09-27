@@ -27,4 +27,4 @@ class OverviewConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(int, layoutType, 1)
 };
 
-}
+} // namespace caelestia::config

@@ -13,4 +13,4 @@ class NexusConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(int, maxNetworksShown, 5)
 };
 
-}
+} // namespace caelestia::config

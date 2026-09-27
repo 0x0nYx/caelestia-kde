@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #pragma once
 
-
 #include <QHash>
 #include <QJsonObject>
 #include <QObject>
@@ -64,4 +63,4 @@ private:
     bool m_restored = false;
 };
 
-}
+} // namespace caelestia::services

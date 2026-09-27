@@ -27,24 +27,19 @@ public:
 
     [[nodiscard]] QVariantMap tPalette() const;
 
-    Q_INVOKABLE void update(const QVariantMap& palette,
-                            bool light,
-                            bool transpEnabled,
-                            double transpBase,
-                            double transpLayers,
-                            double wallLuminance);
+    Q_INVOKABLE void update(const QVariantMap& palette, bool light, bool transpEnabled, double transpBase,
+        double transpLayers, double wallLuminance);
 
 signals:
     void tPaletteChanged();
 
 private:
-    QColor applyLayer(const QColor& c, bool light, bool transpEnabled,
-                      double transpBase, double transpLayers,
-                      double wallLuminance, int layer) const;
+    QColor applyLayer(const QColor& c, bool light, bool transpEnabled, double transpBase, double transpLayers,
+        double wallLuminance, int layer) const;
 
     double getLuminance(const QColor& c) const;
 
     QVariantMap m_tPalette;
 };
 
-}
+} // namespace caelestia::services

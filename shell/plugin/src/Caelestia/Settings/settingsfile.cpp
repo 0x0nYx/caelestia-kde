@@ -192,4 +192,4 @@ void SettingsFile::save() {
     initWatcher();
 }
 
-}
+} // namespace caelestia::settings

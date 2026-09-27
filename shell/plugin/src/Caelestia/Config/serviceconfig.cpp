@@ -15,7 +15,7 @@ TemperatureUnit::Enum resolveTemperatureUnit(TemperatureUnit::Enum unit) {
                                                                                       : TemperatureUnit::Celsius;
 }
 
-}
+} // namespace
 
 bool ServiceConfig::twelveHourClock() const {
     const auto format = clockFormat();
@@ -33,4 +33,4 @@ TemperatureUnit::Enum ServiceConfig::sensorUnit() const {
     return resolveTemperatureUnit(sensorUnits());
 }
 
-}
+} // namespace caelestia::config

@@ -77,4 +77,4 @@ private:
     QHash<QString, qsizetype> m_keyToIndex;
 };
 
-}
+} // namespace caelestia::settings

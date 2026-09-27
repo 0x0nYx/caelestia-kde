@@ -276,4 +276,4 @@ void KeybindsModel::flushOverridesToDisk() {
     saveKeybinds();
 }
 
-}
+} // namespace caelestia::services

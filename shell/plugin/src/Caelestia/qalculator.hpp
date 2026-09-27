@@ -39,4 +39,4 @@ private:
     quint64 m_generation = 0;
 };
 
-}
+} // namespace caelestia

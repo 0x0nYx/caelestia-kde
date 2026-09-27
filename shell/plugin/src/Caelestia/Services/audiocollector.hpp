@@ -20,7 +20,7 @@ namespace ac {
 constexpr quint32 SAMPLE_RATE = 44100;
 constexpr quint32 CHUNK_SIZE = 512;
 
-}
+} // namespace ac
 
 class AudioCollector;
 
@@ -76,4 +76,4 @@ private:
     void stop() override;
 };
 
-}
+} // namespace caelestia::services

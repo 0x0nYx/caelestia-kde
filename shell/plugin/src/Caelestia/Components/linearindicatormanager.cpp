@@ -19,7 +19,7 @@ qreal getFractionInRange(qreal playtime, int start, int duration) {
     return std::clamp(fraction, 0.0, 1.0);
 }
 
-}
+} // namespace
 
 namespace caelestia::components {
 
@@ -114,4 +114,4 @@ void LinearIndicatorManager::updateCompleteEndProgress(qreal progress) {
     update(m_progress);
 }
 
-}
+} // namespace caelestia::components

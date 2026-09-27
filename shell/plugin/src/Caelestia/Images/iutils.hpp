@@ -25,4 +25,4 @@ private:
         : QObject(parent) {};
 };
 
-}
+} // namespace caelestia::images

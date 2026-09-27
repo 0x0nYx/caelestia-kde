@@ -78,4 +78,4 @@ private:
     QFutureWatcher<AccumHash>* const m_futureWatcher;
 };
 
-}
+} // namespace caelestia::services

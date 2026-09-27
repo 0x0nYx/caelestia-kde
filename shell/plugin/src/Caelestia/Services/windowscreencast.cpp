@@ -1,9 +1,10 @@
 #include "windowscreencast.hpp"
 
+#include <QtGui/qscreen_platform.h>
+
 #include <QDebug>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QtGui/qscreen_platform.h>
 
 namespace caelestia::services {
 
@@ -23,11 +24,12 @@ void WindowScreencastStream::zkde_screencast_stream_unstable_v1_closed() {
     Q_EMIT closed();
 }
 
-void WindowScreencastStream::zkde_screencast_stream_unstable_v1_failed(const QString &error) {
+void WindowScreencastStream::zkde_screencast_stream_unstable_v1_failed(const QString& error) {
     Q_EMIT failed(error);
 }
 
-void WindowScreencastStream::zkde_screencast_stream_unstable_v1_serial(uint32_t object_serial_hi, uint32_t object_serial_low) {
+void WindowScreencastStream::zkde_screencast_stream_unstable_v1_serial(
+    uint32_t object_serial_hi, uint32_t object_serial_low) {
     Q_EMIT objectSerialArrived(static_cast<quint64>(object_serial_hi) << 32 | object_serial_low);
 }
 
@@ -55,7 +57,7 @@ WindowScreencastGlobal::~WindowScreencastGlobal() {
     }
 }
 
-std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createWindowStream(const QString &uuid) {
+std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createWindowStream(const QString& uuid) {
     if (!isActive()) {
         qWarning() << "WindowScreencastGlobal: cannot request stream for" << uuid << "- extension is not active.";
         return nullptr;
@@ -67,7 +69,7 @@ std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createWindowStre
     return stream;
 }
 
-std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createOutputStream(wl_output *output) {
+std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createOutputStream(wl_output* output) {
     if (!isActive()) {
         qWarning() << "WindowScreencastGlobal: cannot request stream for output - extension is not active.";
         return nullptr;
@@ -84,9 +86,8 @@ std::unique_ptr<WindowScreencastStream> WindowScreencastGlobal::createOutputStre
     return stream;
 }
 
-WindowScreencastRequest::WindowScreencastRequest(QObject *parent)
-    : QObject(parent) {
-}
+WindowScreencastRequest::WindowScreencastRequest(QObject* parent)
+    : QObject(parent) {}
 
 WindowScreencastRequest::~WindowScreencastRequest() = default;
 
@@ -94,7 +95,7 @@ QString WindowScreencastRequest::uuid() const {
     return m_uuid;
 }
 
-void WindowScreencastRequest::setUuid(const QString &uuid) {
+void WindowScreencastRequest::setUuid(const QString& uuid) {
     if (m_uuid == uuid) {
         return;
     }
@@ -130,7 +131,7 @@ void WindowScreencastRequest::setStream(std::unique_ptr<WindowScreencastStream> 
             setNodeId(0);
             setObjectSerial(0);
         });
-        connect(m_stream.get(), &WindowScreencastStream::failed, this, [this](const QString &error) {
+        connect(m_stream.get(), &WindowScreencastStream::failed, this, [this](const QString& error) {
             qWarning() << "WindowScreencastRequest: error creating screencast for uuid" << m_uuid << ":" << error;
         });
         connect(m_stream.get(), &WindowScreencastStream::objectSerialArrived, this, [this](quint64 serial) {
@@ -158,9 +159,8 @@ void WindowScreencastRequest::setObjectSerial(quint64 objectSerial) {
     }
 }
 
-OutputScreencastRequest::OutputScreencastRequest(QObject *parent)
-    : QObject(parent) {
-}
+OutputScreencastRequest::OutputScreencastRequest(QObject* parent)
+    : QObject(parent) {}
 
 OutputScreencastRequest::~OutputScreencastRequest() = default;
 
@@ -168,7 +168,7 @@ QString OutputScreencastRequest::outputName() const {
     return m_outputName;
 }
 
-void OutputScreencastRequest::setOutputName(const QString &outputName) {
+void OutputScreencastRequest::setOutputName(const QString& outputName) {
     if (m_outputName == outputName) {
         return;
     }
@@ -180,8 +180,8 @@ void OutputScreencastRequest::setOutputName(const QString &outputName) {
     if (!m_outputName.isEmpty()) {
         qDebug() << "OutputScreencastRequest: outputName set to" << m_outputName;
 
-        QScreen *targetScreen = nullptr;
-        for (QScreen *s : QGuiApplication::screens()) {
+        QScreen* targetScreen = nullptr;
+        for (QScreen* s : QGuiApplication::screens()) {
             if (s->name() == m_outputName) {
                 targetScreen = s;
                 break;
@@ -192,7 +192,7 @@ void OutputScreencastRequest::setOutputName(const QString &outputName) {
         }
 
         if (targetScreen) {
-            auto *ws = targetScreen->nativeInterface<QNativeInterface::QWaylandScreen>();
+            auto* ws = targetScreen->nativeInterface<QNativeInterface::QWaylandScreen>();
             if (ws && ws->output()) {
                 setStream(WindowScreencastGlobal::instance()->createOutputStream(ws->output()));
             } else {
@@ -223,8 +223,9 @@ void OutputScreencastRequest::setStream(std::unique_ptr<WindowScreencastStream> 
             setNodeId(0);
             setObjectSerial(0);
         });
-        connect(m_stream.get(), &WindowScreencastStream::failed, this, [this](const QString &error) {
-            qWarning() << "OutputScreencastRequest: error creating screencast for output" << m_outputName << ":" << error;
+        connect(m_stream.get(), &WindowScreencastStream::failed, this, [this](const QString& error) {
+            qWarning() << "OutputScreencastRequest: error creating screencast for output" << m_outputName << ":"
+                       << error;
         });
         connect(m_stream.get(), &WindowScreencastStream::objectSerialArrived, this, [this](quint64 serial) {
             qDebug() << "OutputScreencastRequest: objectSerial arrived =" << serial << "for output" << m_outputName;
@@ -251,4 +252,4 @@ void OutputScreencastRequest::setObjectSerial(quint64 objectSerial) {
     }
 }
 
-}
+} // namespace caelestia::services

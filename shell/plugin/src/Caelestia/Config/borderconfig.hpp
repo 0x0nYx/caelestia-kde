@@ -1,9 +1,9 @@
 #pragma once
 
+#include <algorithm>
+
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
-
-#include <algorithm>
 
 namespace caelestia::config {
 
@@ -23,4 +23,4 @@ public:
     [[nodiscard]] int clampedThickness() const { return std::max(minThickness(), m_thickness); }
 };
 
-}
+} // namespace caelestia::config

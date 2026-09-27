@@ -74,4 +74,4 @@ bool IUtils::isVideo(const QString& path) {
     return videoExtensions.contains(suffix);
 }
 
-}
+} // namespace caelestia::images

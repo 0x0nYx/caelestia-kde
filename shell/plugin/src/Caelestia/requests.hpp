@@ -19,16 +19,14 @@ class Requests : public QObject {
 public:
     explicit Requests(QObject* parent = nullptr);
 
-    Q_INVOKABLE int get(const QUrl& url, QJSValue callback, QJSValue onError = {},
-                        QJSValue headers = {}, int timeoutMs = 0);
+    Q_INVOKABLE int get(
+        const QUrl& url, QJSValue callback, QJSValue onError = {}, QJSValue headers = {}, int timeoutMs = 0);
 
-    Q_INVOKABLE int post(const QUrl& url, const QByteArray& body, const QString& contentType,
-                         QJSValue callback, QJSValue onError = {}, QJSValue headers = {},
-                         int timeoutMs = 0);
+    Q_INVOKABLE int post(const QUrl& url, const QByteArray& body, const QString& contentType, QJSValue callback,
+        QJSValue onError = {}, QJSValue headers = {}, int timeoutMs = 0);
 
-    Q_INVOKABLE int download(const QUrl& url, const QString& destPath, QJSValue onComplete,
-                             QJSValue onProgress = {}, QJSValue onError = {},
-                             QJSValue headers = {}, int timeoutMs = 0);
+    Q_INVOKABLE int download(const QUrl& url, const QString& destPath, QJSValue onComplete, QJSValue onProgress = {},
+        QJSValue onError = {}, QJSValue headers = {}, int timeoutMs = 0);
 
     Q_INVOKABLE void cancel(int requestId);
 
@@ -65,4 +63,4 @@ private:
     int m_nextRequestId = 1;
 };
 
-}
+} // namespace caelestia

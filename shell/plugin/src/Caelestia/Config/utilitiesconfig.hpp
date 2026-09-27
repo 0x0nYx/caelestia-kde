@@ -101,4 +101,4 @@ class UtilitiesConfig : public settings::ObjectNode {
         }))
 };
 
-}
+} // namespace caelestia::config

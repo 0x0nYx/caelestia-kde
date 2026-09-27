@@ -10,7 +10,6 @@ namespace caelestia::components {
 
 using Qt::StringLiterals::operator""_s;
 
-
 AnimatedRepeaterAttached::AnimatedRepeaterAttached(QObject* parent)
     : QObject(parent) {}
 
@@ -36,7 +35,6 @@ void AnimatedRepeaterAttached::setRemoving(bool removing) {
     emit removingChanged();
 }
 
-
 AnimatedRepeater::AnimatedRepeater(QQuickItem* parent)
     : QQuickItem(parent) {
     setFlag(ItemHasContents, false);
@@ -57,7 +55,6 @@ AnimatedRepeaterAttached* AnimatedRepeater::qmlAttachedProperties(QObject* objec
 AnimatedRepeaterAttached* AnimatedRepeater::attachedFor(QQuickItem* item, bool create) {
     return qobject_cast<AnimatedRepeaterAttached*>(qmlAttachedPropertiesObject<AnimatedRepeater>(item, create));
 }
-
 
 QVariant AnimatedRepeater::model() const {
     return m_model;
@@ -168,7 +165,6 @@ void AnimatedRepeater::itemChange(ItemChange change, const ItemChangeData& data)
     restack();
 }
 
-
 int AnimatedRepeater::modelCount() const {
     switch (m_mode) {
     case Mode::Count:
@@ -225,7 +221,6 @@ void AnimatedRepeater::updateItemData(int index) {
     for (const auto& [name, value] : props)
         item->setProperty(name.toUtf8().constData(), value);
 }
-
 
 void AnimatedRepeater::regenerate() {
     clearItems(false);
@@ -376,7 +371,6 @@ void AnimatedRepeater::flushPendingAdds() {
     m_pendingAdds.clear();
 }
 
-
 void AnimatedRepeater::connectModel() {
     if (!m_itemModel)
         return;
@@ -454,4 +448,4 @@ void AnimatedRepeater::onDataChanged(
         updateItemData(i);
 }
 
-}
+} // namespace caelestia::components

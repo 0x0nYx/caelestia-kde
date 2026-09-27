@@ -13,4 +13,4 @@ class SidebarConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(int, grabWidth, 12)
 };
 
-}
+} // namespace caelestia::config

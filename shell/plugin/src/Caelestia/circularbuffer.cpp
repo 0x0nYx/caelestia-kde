@@ -139,4 +139,4 @@ void CircularBuffer::recomputeMaximum() {
     m_maxDirty = false;
 }
 
-}
+} // namespace caelestia

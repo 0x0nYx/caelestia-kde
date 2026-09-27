@@ -283,4 +283,4 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
     return result;
 }
 
-}
+} // namespace caelestia::services

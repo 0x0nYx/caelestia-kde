@@ -1,8 +1,8 @@
 #pragma once
 
-#include "imagecacher.hpp"
-
 #include <qquickimageprovider.h>
+
+#include "imagecacher.hpp"
 
 namespace caelestia::images {
 
@@ -18,4 +18,4 @@ private:
     FillMode m_fillMode;
 };
 
-}
+} // namespace caelestia::images

@@ -18,8 +18,8 @@ class Translations : public QObject {
 
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QString activeLanguage READ activeLanguage NOTIFY activeLanguageChanged)
-    Q_PROPERTY(QStringList extraSearchPaths READ extraSearchPaths WRITE setExtraSearchPaths NOTIFY
-            extraSearchPathsChanged)
+    Q_PROPERTY(
+        QStringList extraSearchPaths READ extraSearchPaths WRITE setExtraSearchPaths NOTIFY extraSearchPathsChanged)
     Q_PROPERTY(QVariantList available READ available NOTIFY availableChanged)
 
 public:
@@ -58,4 +58,4 @@ private:
     QTranslator* m_translator;
 };
 
-}
+} // namespace caelestia

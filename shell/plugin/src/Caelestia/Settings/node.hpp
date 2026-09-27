@@ -96,4 +96,4 @@ template <typename C, typename T> T Node::fallbackValue(T C::* member, std::type
     return fallback ? fallback->*member : defaultValue;
 }
 
-}
+} // namespace caelestia::settings

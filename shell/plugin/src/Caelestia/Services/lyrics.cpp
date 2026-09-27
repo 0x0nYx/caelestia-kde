@@ -59,7 +59,7 @@ constexpr qreal kIndexFudge = 0.1;
     return haystack.contains(needle, Qt::CaseInsensitive);
 }
 
-}
+} // namespace
 
 Lyrics::Lyrics(QObject* parent)
     : QObject(parent)
@@ -1057,4 +1057,4 @@ QVector<LyricLine> Lyrics::parseLrc(const QString& text) {
     return result;
 }
 
-}
+} // namespace caelestia::services

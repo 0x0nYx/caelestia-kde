@@ -27,4 +27,4 @@ private:
     void resetUnvisited(const QSet<QString>& visited);
 };
 
-}
+} // namespace caelestia::settings

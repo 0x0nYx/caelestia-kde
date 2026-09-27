@@ -74,4 +74,4 @@ class AiConfig : public settings::ObjectNode {
     CONFIG_PROPERTY(QString, defaultOpencodeGoModel, u""_s)
 };
 
-}
+} // namespace caelestia::config

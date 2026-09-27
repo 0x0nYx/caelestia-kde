@@ -146,4 +146,4 @@ private:
     [[nodiscard]] bool compareEntries(const FileSystemEntry* a, const FileSystemEntry* b) const;
 };
 
-}
+} // namespace caelestia::models

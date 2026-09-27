@@ -24,4 +24,4 @@ QJsonValue ObjectQuarantine::apply(const QJsonValue& json) const {
     return result;
 }
 
-}
+} // namespace caelestia::settings

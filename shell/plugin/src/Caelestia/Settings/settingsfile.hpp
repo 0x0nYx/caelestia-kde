@@ -48,4 +48,4 @@ private:
     void save();
 };
 
-}
+} // namespace caelestia::settings

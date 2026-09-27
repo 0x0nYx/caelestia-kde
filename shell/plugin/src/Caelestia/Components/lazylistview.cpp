@@ -20,12 +20,11 @@ QRectF clipVertical(const QRectF& rect, qreal top, qreal bottom) {
     return { rect.x(), newTop, rect.width(), newBottom - newTop };
 }
 
-}
+} // namespace
 
 namespace caelestia::components {
 
 using Qt::StringLiterals::operator""_s;
-
 
 LazyListViewAttached::LazyListViewAttached(QObject* parent)
     : QObject(parent) {}
@@ -107,7 +106,6 @@ void LazyListViewAttached::setTrackViewport(bool track) {
     emit trackViewportChanged();
 }
 
-
 LazyListView::LazyListView(QQuickItem* parent)
     : QQuickItem(parent) {
     setFlag(ItemHasContents, false);
@@ -123,7 +121,6 @@ LazyListView::~LazyListView() {
     for (auto& entry : m_dyingDelegates)
         destroyDelegate(entry);
 }
-
 
 QAbstractItemModel* LazyListView::model() const {
     return m_model;
@@ -158,7 +155,6 @@ void LazyListView::setDelegate(QQmlComponent* delegate) {
     emit delegateChanged();
 }
 
-
 qreal LazyListView::spacing() const {
     return m_spacing;
 }
@@ -190,7 +186,6 @@ void LazyListView::setContentY(qreal contentY) {
     emit contentYChanged();
     polish();
 }
-
 
 QRectF LazyListView::viewport() const {
     return m_viewport;
@@ -240,7 +235,6 @@ void LazyListView::setCullDelegates(bool cull) {
     emit cullDelegatesChanged();
     polish();
 }
-
 
 qreal LazyListView::estimatedHeight() const {
     return m_estimatedHeight;
@@ -374,7 +368,6 @@ bool LazyListView::isDelegateReady(QQuickItem* item) {
     return !attached || attached->ready();
 }
 
-
 int LazyListView::removeDuration() const {
     return m_removeDuration;
 }
@@ -396,7 +389,6 @@ void LazyListView::setReadyDelay(int delay) {
     m_readyDelay = delay;
     emit readyDelayChanged();
 }
-
 
 int LazyListView::count() const {
     return m_model ? m_model->rowCount() : 0;
@@ -428,7 +420,6 @@ QQuickItem* LazyListView::itemAt(qreal x, qreal y) const {
 
     return nullptr;
 }
-
 
 void LazyListView::componentComplete() {
     QQuickItem::componentComplete();
@@ -543,7 +534,6 @@ void LazyListView::updateLayoutY(QQuickItem* item, int index) {
     if (attached)
         attached->setLayoutY(m_layout[index].targetY - m_contentY);
 }
-
 
 void LazyListView::relayout() {
     updateLayoutPositions();
@@ -670,7 +660,6 @@ std::pair<int, int> LazyListView::computeVisibleRange() const {
 
     return { first, last };
 }
-
 
 void LazyListView::syncDelegates() {
     const auto [first, last] = computeVisibleRange();
@@ -960,7 +949,6 @@ void LazyListView::remapDelegates(const std::function<int(int)>& mapIndex) {
     emit itemsDirtyChanged();
 }
 
-
 void LazyListView::connectModel() {
     if (!m_model)
         return;
@@ -1169,4 +1157,4 @@ void LazyListView::onModelReset() {
     resetContent();
 }
 
-}
+} // namespace caelestia::components

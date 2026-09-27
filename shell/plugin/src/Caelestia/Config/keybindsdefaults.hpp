@@ -90,4 +90,4 @@ inline QJsonObject defaultKeybinds() {
         { QStringLiteral("workspace10"), QStringLiteral("Meta+0") } };
 }
 
-}
+} // namespace caelestia::config

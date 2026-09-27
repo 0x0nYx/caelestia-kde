@@ -84,4 +84,4 @@ private:
     CONFIG_GLOBAL_PROPERTY(int, arpcIdleTimeout, 0)
 };
 
-}
+} // namespace caelestia::config

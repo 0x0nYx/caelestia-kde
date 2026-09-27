@@ -186,4 +186,4 @@ void ObjectNode::resetUnvisited(const QSet<QString>& visited) {
     }
 }
 
-}
+} // namespace caelestia::settings

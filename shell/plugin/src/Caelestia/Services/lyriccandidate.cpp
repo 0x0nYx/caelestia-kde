@@ -62,4 +62,4 @@ bool LyricCandidate::operator!=(const LyricCandidate& o) const noexcept {
     return !(*this == o);
 }
 
-}
+} // namespace caelestia::services

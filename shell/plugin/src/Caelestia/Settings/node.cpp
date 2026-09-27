@@ -274,4 +274,4 @@ void Node::onFallbackNotify(const QString& key) {
     setValue(key, m_fallbackNode->value(key));
 }
 
-}
+} // namespace caelestia::settings

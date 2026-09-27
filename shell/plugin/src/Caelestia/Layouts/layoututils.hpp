@@ -41,4 +41,4 @@ inline void centreLayout(QVariantMap& layout, double areaWidth, double areaHeigh
     }
 }
 
-}
+} // namespace caelestia::layouts

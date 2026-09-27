@@ -144,4 +144,4 @@ private:
     bool m_settingFromPrefs = false;
 };
 
-}
+} // namespace caelestia::services

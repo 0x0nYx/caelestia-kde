@@ -85,4 +85,4 @@ private:
     QList<Toast*> m_toasts;
 };
 
-}
+} // namespace caelestia

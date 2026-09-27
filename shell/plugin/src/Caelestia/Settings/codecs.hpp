@@ -97,4 +97,4 @@ private:
     QHash<int, const ValueCodec*> m_byType;
 };
 
-}
+} // namespace caelestia::settings

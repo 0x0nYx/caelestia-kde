@@ -1,9 +1,9 @@
 #pragma once
 
+#include <qstring.h>
+
 #include "../Settings/objectnode.hpp"
 #include "common.hpp"
-
-#include <qstring.h>
 
 namespace caelestia::config {
 
@@ -25,4 +25,4 @@ class NotifsConfig : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(int, maxNotifs, 50)
 };
 
-}
+} // namespace caelestia::config

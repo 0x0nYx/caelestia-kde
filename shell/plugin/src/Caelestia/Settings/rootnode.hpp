@@ -33,4 +33,4 @@ private:
     void saveToFile();
 };
 
-}
+} // namespace caelestia::settings

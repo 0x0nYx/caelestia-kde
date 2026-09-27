@@ -1,8 +1,9 @@
 #pragma once
 
+#include <qqmlintegration.h>
+
 #include <QObject>
 #include <QString>
-#include <qqmlintegration.h>
 
 namespace caelestia::services {
 
@@ -59,4 +60,4 @@ private:
     qreal m_duration = 0.0;
 };
 
-}
+} // namespace caelestia::services

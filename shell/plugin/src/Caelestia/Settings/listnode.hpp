@@ -66,4 +66,4 @@ private:
     void onFallbackListNotify(const NodeChanges& added, const NodeChanges& removed, const MoveChanges& moved);
 };
 
-}
+} // namespace caelestia::settings

@@ -41,7 +41,7 @@ inline QString stripLeadingSlashes(QStringView str) {
     return str.toString();
 }
 
-}
+} // namespace detail
 
 template <LayerType T>
 LayerRegistry<T>::LayerRegistry(const QString& prefix, const QString& suffix, QObject* parent)
@@ -72,4 +72,4 @@ template <LayerType T> T* LayerRegistry<T>::get(const QString& name, T* fallback
     return layer;
 }
 
-}
+} // namespace caelestia::settings

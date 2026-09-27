@@ -20,7 +20,6 @@ template <typename Source, typename Target> static void connectTokenSignals(Sour
     QObject::connect(target, &Target::scaleChanged, target, &Target::valuesChanged);
 }
 
-
 void AppearanceRounding::bindTokens(RoundingTokens* tokens) {
     m_tokens = tokens;
     connectTokenSignals(tokens, this);
@@ -62,7 +61,6 @@ int AppearanceRounding::full() const {
     return m_tokens ? static_cast<int>(m_tokens->full()) : 0;
 }
 
-
 void AppearanceSpacing::bindTokens(SpacingTokens* tokens) {
     m_tokens = tokens;
     connectTokenSignals(tokens, this);
@@ -100,7 +98,6 @@ int AppearanceSpacing::extraExtraLarge() const {
     return m_tokens ? static_cast<int>(m_tokens->extraExtraLarge() * m_scale) : 0;
 }
 
-
 void AppearancePadding::bindTokens(PaddingTokens* tokens) {
     m_tokens = tokens;
     connectTokenSignals(tokens, this);
@@ -137,7 +134,6 @@ int AppearancePadding::extraLargeIncreased() const {
 int AppearancePadding::extraExtraLarge() const {
     return m_tokens ? static_cast<int>(m_tokens->extraExtraLarge() * m_scale) : 0;
 }
-
 
 void AnimDurations::bindTokens(AnimDurationTokens* tokens) {
     m_tokens = tokens;
@@ -184,4 +180,4 @@ int AnimDurations::expressiveSlowEffects() const {
     return m_tokens ? static_cast<int>(m_tokens->expressiveSlowEffects() * m_scale) : 0;
 }
 
-}
+} // namespace caelestia::config

@@ -112,4 +112,4 @@ private:
     void updateApps();
 };
 
-}
+} // namespace caelestia::models

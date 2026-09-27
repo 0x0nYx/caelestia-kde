@@ -1,9 +1,10 @@
 #include "sparklineitem.hpp"
-#include "../circularbuffer.hpp"
 
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <qpen.h>
+
+#include "../circularbuffer.hpp"
 
 namespace caelestia::components {
 
@@ -223,4 +224,4 @@ void SparklineItem::setLineWidth(qreal width) {
     scheduleUpdate();
 }
 
-}
+} // namespace caelestia::components

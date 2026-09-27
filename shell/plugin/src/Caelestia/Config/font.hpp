@@ -170,4 +170,4 @@ private:
     QFont m_clock;
 };
 
-}
+} // namespace caelestia::config

@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <QObject>
 #include <QQmlEngine>
 #include <QString>
@@ -44,4 +43,4 @@ private:
     bool m_active = true;
 };
 
-}
+} // namespace caelestia::services

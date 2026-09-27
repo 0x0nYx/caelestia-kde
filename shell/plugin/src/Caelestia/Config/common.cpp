@@ -16,4 +16,4 @@ QString monitorConfigDir() {
     return configDir() + u"/monitors"_s;
 }
 
-}
+} // namespace caelestia::config

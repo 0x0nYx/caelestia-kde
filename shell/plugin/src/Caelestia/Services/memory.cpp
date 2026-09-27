@@ -55,4 +55,4 @@ void Memory::tick() {
     emit changed();
 }
 
-}
+} // namespace caelestia::services

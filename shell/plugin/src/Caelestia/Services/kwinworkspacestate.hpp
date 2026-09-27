@@ -98,6 +98,6 @@ private:
     ::QLocalServer* m_trackerServer = nullptr;
 };
 
-}
+} // namespace caelestia::services
 
 Q_DECLARE_METATYPE(caelestia::services::KWinDesktopData)

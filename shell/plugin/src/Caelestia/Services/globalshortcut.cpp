@@ -52,7 +52,7 @@ QStringList buildRestoreArgs(const QString& component, const QString& action, co
         arrayStr, QStringLiteral("4") };
 }
 
-}
+} // namespace
 
 GlobalShortcutDispatcher* GlobalShortcutDispatcher::instance() {
     GlobalShortcutDispatcher* inst = s_dispatcher();

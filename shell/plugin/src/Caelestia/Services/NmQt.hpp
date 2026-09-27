@@ -76,7 +76,6 @@ public:
     QVariantMap wirelessDeviceDetails() const;
     QVariantMap ethernetDeviceDetails() const;
 
-
     Q_INVOKABLE void getNetworks(QJSValue callback = {});
 
     Q_INVOKABLE void connectToNetwork(
@@ -213,4 +212,4 @@ private:
     QString m_ethernetDeviceUni;
 };
 
-}
+} // namespace caelestia::services

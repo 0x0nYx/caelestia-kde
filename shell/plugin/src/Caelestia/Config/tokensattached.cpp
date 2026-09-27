@@ -1,11 +1,12 @@
 #include "tokensattached.hpp"
-#include "anim.hpp"
-#include "appearanceconfig.hpp"
-#include "rootnodes.hpp"
-#include "font.hpp"
-#include "tokens.hpp"
 
 #include <qquickitem.h>
+
+#include "anim.hpp"
+#include "appearanceconfig.hpp"
+#include "font.hpp"
+#include "rootnodes.hpp"
+#include "tokens.hpp"
 
 namespace caelestia::config {
 
@@ -19,7 +20,7 @@ const AppearanceConfig* resolveAppearance(ConfigRoot* config, bool complete, con
     return ConfigSingleton::instance()->appearance();
 }
 
-}
+} // namespace
 
 Tokens::Tokens(QObject* parent)
     : QQuickAttachedPropertyPropagator(parent)
@@ -128,4 +129,4 @@ Tokens* Tokens::qmlAttachedProperties(QObject* object) {
     return new Tokens(object);
 }
 
-}
+} // namespace caelestia::config

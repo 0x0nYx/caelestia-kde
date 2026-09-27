@@ -64,4 +64,4 @@ void DiskInfo::update(quint64 usedBytes, quint64 totalBytes, bool hasRoot) {
     }
 }
 
-}
+} // namespace caelestia::services

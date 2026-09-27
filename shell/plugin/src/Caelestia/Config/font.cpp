@@ -80,7 +80,6 @@ void FontStyleBase::setScale(qreal scale) {
     rebuild();
 }
 
-
 FontStyle::FontStyle(QObject* parent)
     : FontStyleBase(parent)
     , m_builders(new FontBuilders(this, this)) {}
@@ -88,7 +87,6 @@ FontStyle::FontStyle(QObject* parent)
 FontBuilders* FontStyle::builders() const {
     return m_builders;
 }
-
 
 IconFontStyle::IconFontStyle(QObject* parent)
     : FontStyleBase(parent)
@@ -139,7 +137,6 @@ void IconFontStyle::rebuild() {
     emit fontsChanged();
 }
 
-
 FontBuilders::FontBuilders(const FontStyleBase* style, QObject* parent)
     : QObject(parent)
     , m_style(style) {
@@ -158,14 +155,12 @@ FontBuilder FontBuilders::small() const {
     return FontBuilder(m_style->small());
 }
 
-
 IconFontBuilders::IconFontBuilders(const IconFontStyle* style, QObject* parent)
     : FontBuilders(style, parent) {}
 
 FontBuilder IconFontBuilders::extraLarge() const {
     return FontBuilder(static_cast<const IconFontStyle*>(m_style)->extraLarge());
 }
-
 
 FontTokens::FontTokens(QObject* parent)
     : QObject(parent)
@@ -265,4 +260,4 @@ void FontTokens::bindTokens(AppearanceTokens* tokens) {
     m_tokens = tokens;
 }
 
-}
+} // namespace caelestia::config

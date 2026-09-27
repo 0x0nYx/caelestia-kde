@@ -23,7 +23,7 @@ const QString LOGIN_PATH = QStringLiteral("/org/freedesktop/login1");
 const QString LOGIN_IFACE = QStringLiteral("org.freedesktop.login1.Manager");
 const QString SESSION_IFACE = QStringLiteral("org.freedesktop.login1.Session");
 
-}
+} // namespace
 
 SessionManager::SessionManager(QObject* parent)
     : QObject(parent) {
@@ -204,4 +204,4 @@ void SessionManager::handleUnlockRequested() {
     emit unlockRequested();
 }
 
-}
+} // namespace caelestia::services

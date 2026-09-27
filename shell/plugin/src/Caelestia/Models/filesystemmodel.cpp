@@ -488,4 +488,4 @@ bool FileSystemModel::compareEntries(const FileSystemEntry* a, const FileSystemE
     return m_sortReverse ? cmp > 0 : cmp < 0;
 }
 
-}
+} // namespace caelestia::models

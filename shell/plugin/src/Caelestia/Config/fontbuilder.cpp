@@ -90,4 +90,4 @@ FontBuilder FontBuilder::scale(qreal factor) {
     return size(static_cast<int>(m_font.pointSize() * factor));
 }
 
-}
+} // namespace caelestia::config

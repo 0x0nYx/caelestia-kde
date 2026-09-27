@@ -695,4 +695,4 @@ void Weather::saveCachedCity(const QString& coords, const QString& cityName) {
     }
 }
 
-}
+} // namespace caelestia::services

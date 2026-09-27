@@ -135,8 +135,7 @@ NetworkManager::WirelessDevice::Ptr findWirelessDevice() {
     return {};
 }
 
-}
-
+} // namespace
 
 NmQt::NmQt(QObject* parent)
     : QObject(parent) {
@@ -249,7 +248,6 @@ QVariantMap NmQt::wirelessDeviceDetails() const {
 QVariantMap NmQt::ethernetDeviceDetails() const {
     return m_ethernetDeviceDetails;
 }
-
 
 void NmQt::getNetworks(QJSValue callback) {
     refreshNetworks();
@@ -751,7 +749,6 @@ void NmQt::getEthernetDeviceDetails(const QString& interfaceName, QJSValue callb
     }
 }
 
-
 void NmQt::getIpv4Config(const QString& connectionId, QJSValue callback) {
     if (!callback.isCallable())
         return;
@@ -1033,7 +1030,6 @@ QString NmQt::ethernetDataUsage(const QString& interfaceName) const {
     return QString::number(value, 'f', (value < 10.0 && i > 0) ? 1 : 0) + QLatin1Char(' ') + units.at(i);
 }
 
-
 void NmQt::onWirelessEnabledChanged(bool enabled) {
     m_wifiEnabled = enabled;
     emit wifiEnabledChanged();
@@ -1119,7 +1115,6 @@ void NmQt::onNetworkManagerReady() {
     refreshEthernetDeviceDetails();
     emit isConnectedChanged();
 }
-
 
 void NmQt::refreshNetworks() {
     NetworkManager::WirelessDevice::Ptr wifiDev;
@@ -1515,7 +1510,6 @@ void NmQt::refreshEthernetDeviceDetails(const QString& interfaceName) {
     }
 }
 
-
 QVariantMap NmQt::buildApMap(
     const QString& ssid, const QString& bssid, int strength, int frequency, bool active, const QString& security) {
     QVariantMap map;
@@ -1548,4 +1542,4 @@ void NmQt::invokeCallback(
     callback.call({ result });
 }
 
-}
+} // namespace caelestia::services

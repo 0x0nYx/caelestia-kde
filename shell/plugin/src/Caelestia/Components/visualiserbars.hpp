@@ -69,4 +69,4 @@ private:
     bool m_settled = true;
 };
 
-}
+} // namespace caelestia::components

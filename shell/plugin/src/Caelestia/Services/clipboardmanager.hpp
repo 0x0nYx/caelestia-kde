@@ -67,4 +67,4 @@ private:
     QSet<int> m_activeDecodes;
 };
 
-}
+} // namespace caelestia::services

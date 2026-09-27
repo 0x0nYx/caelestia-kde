@@ -25,6 +25,7 @@ class XDisplay {
 public:
     XDisplay()
         : m_dpy(XOpenDisplay(nullptr)) {}
+
     ~XDisplay() {
         if (m_dpy) {
             XCloseDisplay(m_dpy);
@@ -35,6 +36,7 @@ public:
     XDisplay& operator=(const XDisplay&) = delete;
 
     operator Display*() const { return m_dpy; }
+
     bool isValid() const { return m_dpy != nullptr; }
 
 private:
@@ -47,8 +49,8 @@ unsigned char* fetchProperty(Display* dpy, Window win, Atom prop, Atom type, uns
     unsigned long bytesAfter;
     unsigned char* data = nullptr;
 
-    if (XGetWindowProperty(dpy, win, prop, 0, 0, False, type, &actualType, &actualFormat, count, &bytesAfter,
-            &data) != Success) {
+    if (XGetWindowProperty(dpy, win, prop, 0, 0, False, type, &actualType, &actualFormat, count, &bytesAfter, &data) !=
+        Success) {
         return nullptr;
     }
     if (data) {
@@ -60,8 +62,8 @@ unsigned char* fetchProperty(Display* dpy, Window win, Atom prop, Atom type, uns
     }
 
     const long words = static_cast<long>((bytesAfter + 3) / 4);
-    if (XGetWindowProperty(dpy, win, prop, 0, words, False, type, &actualType, &actualFormat, count, &bytesAfter,
-            &data) != Success) {
+    if (XGetWindowProperty(
+            dpy, win, prop, 0, words, False, type, &actualType, &actualFormat, count, &bytesAfter, &data) != Success) {
         return nullptr;
     }
     return data;
@@ -106,7 +108,7 @@ qint64 windowPid(Display* dpy, Window win) {
 }
 
 bool matchesClass(Display* dpy, Window win, const QString& wmClass) {
-    XClassHint hint {};
+    XClassHint hint{};
     if (!XGetClassHint(dpy, win, &hint)) {
         return false;
     }
@@ -166,7 +168,7 @@ QImage decodeLargest(const unsigned long* data, unsigned long count) {
     return best;
 }
 
-}
+} // namespace
 
 WindowIcon::WindowIcon(QObject* parent)
     : QObject(parent) {}
@@ -244,8 +246,7 @@ QString WindowIcon::extract(const QString& wmClass, const QString& title, qint64
 
     const auto cacheRoot =
         QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QStringLiteral("/caelestia/winicons");
-    const auto digest =
-        QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
+    const auto digest = QString::fromLatin1(QCryptographicHash::hash(png, QCryptographicHash::Sha256).toHex().left(16));
     const auto path = cacheRoot + QStringLiteral("/") + digest + QStringLiteral(".png");
 
     if (!QFile::exists(path)) {
@@ -260,4 +261,4 @@ QString WindowIcon::extract(const QString& wmClass, const QString& title, qint64
     return path;
 }
 
-}
+} // namespace caelestia::services

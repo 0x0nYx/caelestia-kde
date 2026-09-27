@@ -1,7 +1,7 @@
 #include "tickingservice.hpp"
 
-#include "../Config/rootnodes.hpp"
 #include "../Config/dashboardconfig.hpp"
+#include "../Config/rootnodes.hpp"
 
 namespace caelestia::services {
 
@@ -48,4 +48,4 @@ void TickingService::applyInterval(int ms) {
     Q_EMIT updateIntervalChanged();
 }
 
-}
+} // namespace caelestia::services

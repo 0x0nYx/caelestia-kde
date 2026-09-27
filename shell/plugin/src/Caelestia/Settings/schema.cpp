@@ -41,7 +41,7 @@ const ValueCodec* resolveCodec(Descriptor& desc) {
     return nullptr;
 }
 
-}
+} // namespace
 
 QString Descriptor::typeString() const {
     if (annotation.allowedTypes.isEmpty())
@@ -134,4 +134,4 @@ const Descriptor* Schema::get(const QString& key) const {
     return it != m_keyToIndex.end() ? &m_descriptors[it.value()] : nullptr;
 }
 
-}
+} // namespace caelestia::settings

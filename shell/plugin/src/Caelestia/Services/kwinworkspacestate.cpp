@@ -462,8 +462,7 @@ void KWinWorkspaceState::onCurrentChanged(const QString& id) {
     updateActiveId();
 }
 
-void KWinWorkspaceState::onCountChanged(uint count) {
-}
+void KWinWorkspaceState::onCountChanged(uint count) {}
 
 void KWinWorkspaceState::onRowsChanged(uint rows) {
     if (rows > 0 && rows != m_rows) {
@@ -472,4 +471,4 @@ void KWinWorkspaceState::onRowsChanged(uint rows) {
     }
 }
 
-}
+} // namespace caelestia::services

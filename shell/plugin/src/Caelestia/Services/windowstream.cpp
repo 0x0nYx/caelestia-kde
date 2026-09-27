@@ -1,13 +1,13 @@
 #include "windowstream.hpp"
 
-#include "windowscreencast.hpp"
-
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QHash>
 #include <QList>
-#include <limits>
 #include <QTimer>
+#include <limits>
+
+#include "windowscreencast.hpp"
 
 namespace caelestia::services {
 
@@ -78,14 +78,16 @@ QTimer* sweeper() {
     static QTimer* s_sweeper = [] {
         auto* timer = new QTimer;
         timer->setInterval(kGraceMs);
-        QObject::connect(timer, &QTimer::timeout, [] { sweep(); });
+        QObject::connect(timer, &QTimer::timeout, [] {
+            sweep();
+        });
         timer->start();
         return timer;
     }();
     return s_sweeper;
 }
 
-}
+} // namespace
 
 WindowStream::WindowStream(QObject* parent)
     : QObject(parent) {
@@ -192,4 +194,4 @@ bool WindowStream::available() const {
     return objectSerial() != 0 || nodeId() != 0;
 }
 
-}
+} // namespace caelestia::services

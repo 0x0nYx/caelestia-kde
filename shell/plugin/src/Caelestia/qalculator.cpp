@@ -146,4 +146,4 @@ bool Qalculator::busy() const {
     return m_busy;
 }
 
-}
+} // namespace caelestia

@@ -75,4 +75,4 @@ private:
     Private* d;
 };
 
-}
+} // namespace caelestia

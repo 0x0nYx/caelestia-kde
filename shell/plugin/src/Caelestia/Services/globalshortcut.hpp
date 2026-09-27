@@ -1,19 +1,20 @@
 #include <QtQml/qqmlregistration.h>
 #pragma once
 
-#include <QObject>
 #include <QAction>
-#include <QString>
-#include <QList>
-#include <QKeySequence>
-#include <QHash>
-#include <memory>
 #include <QAtomicInt>
+#include <QHash>
+#include <QKeySequence>
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <memory>
 
 class GlobalShortcut;
 
 class GlobalShortcutDispatcher : public QObject {
     Q_OBJECT
+
 public:
     static GlobalShortcutDispatcher* instance();
 
@@ -31,9 +32,7 @@ signals:
     void collisionIndexChanged();
 };
 
-
-class GlobalShortcut : public QObject
-{
+class GlobalShortcut : public QObject {
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -41,20 +40,21 @@ class GlobalShortcut : public QObject
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
 
 public:
-    explicit GlobalShortcut(QObject *parent = nullptr);
+    explicit GlobalShortcut(QObject* parent = nullptr);
     ~GlobalShortcut() override;
 
     QString name() const;
-    void setName(const QString &name);
+    void setName(const QString& name);
 
     QString key() const;
-    void setKey(const QString &key);
+    void setKey(const QString& key);
 
     QString description() const;
-    void setDescription(const QString &description);
+    void setDescription(const QString& description);
 
     QString getCollisionName() const;
     QString getCollisionNameForKey(const QString& keyPart) const;
+
     int stolenCount() const { return m_stolenShortcuts.size(); }
 
     QString displayLabel() const;
@@ -77,7 +77,7 @@ private:
     QString m_name;
     QString m_key;
     QString m_description;
-    QAction *m_action;
+    QAction* m_action;
 
     int m_registerGeneration = 0;
 
@@ -91,6 +91,7 @@ private:
         QString actionFriendlyName;
         QKeySequence triggerKey;
     };
+
     QList<StolenShortcut> m_stolenShortcuts;
     QList<QKeySequence> m_activeKeys;
 };

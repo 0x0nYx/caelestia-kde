@@ -1,8 +1,10 @@
 #pragma once
 
-#include "audioprovider.hpp"
-#include <cava/cavacore.h>
 #include <qqmlintegration.h>
+
+#include <cava/cavacore.h>
+
+#include "audioprovider.hpp"
 
 namespace caelestia::services {
 
@@ -62,4 +64,4 @@ private:
     void updateValues(const QVector<double>& values);
 };
 
-}
+} // namespace caelestia::services

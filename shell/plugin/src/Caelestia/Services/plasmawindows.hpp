@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #pragma once
 
-
 #include <QHash>
 #include <QObject>
 #include <QtWaylandClient/QWaylandClientExtension>
@@ -169,4 +168,4 @@ private:
     QHash<QString, PlasmaWindowHandle*> m_handles;
 };
 
-}
+} // namespace caelestia::services

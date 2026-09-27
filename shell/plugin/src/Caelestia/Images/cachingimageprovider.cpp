@@ -124,7 +124,7 @@ private:
     QString m_error;
 };
 
-}
+} // namespace
 
 CachingImageProvider::CachingImageProvider(FillMode fillMode)
     : m_fillMode(fillMode) {}
@@ -135,4 +135,4 @@ QQuickImageResponse* CachingImageProvider::requestImageResponse(const QString& i
     return response;
 }
 
-}
+} // namespace caelestia::images

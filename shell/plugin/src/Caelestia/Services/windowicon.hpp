@@ -22,4 +22,4 @@ signals:
     void extracted(const QString& key, const QString& path);
 };
 
-}
+} // namespace caelestia::services

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "minimizegeometry.hpp"
 
-#include "plasmawindows.hpp"
+#include <qpa/qplatformnativeinterface.h>
 
 #include <QGuiApplication>
 #include <QQuickWindow>
 #include <QWindow>
 
-#include <qpa/qplatformnativeinterface.h>
+#include "plasmawindows.hpp"
 
 namespace caelestia::services {
 
@@ -25,12 +25,13 @@ wl_surface* surfaceFor(QWindow* window) {
     return static_cast<wl_surface*>(native->nativeResourceForWindow(QByteArrayLiteral("surface"), window));
 }
 
-}
+} // namespace
 
 MinimizeGeometry::MinimizeGeometry(QObject* parent)
     : QObject(parent) {
-    connect(PlasmaWindows::instance(), &PlasmaWindows::handleLost, this,
-        [this](const QString& uuid) { m_published.remove(uuid); });
+    connect(PlasmaWindows::instance(), &PlasmaWindows::handleLost, this, [this](const QString& uuid) {
+        m_published.remove(uuid);
+    });
 }
 
 void MinimizeGeometry::setGeometry(QQuickItem* anchor, const QString& uuid, int x, int y, int width, int height) {
@@ -86,4 +87,4 @@ void MinimizeGeometry::clearGeometry(QQuickItem* anchor, const QString& uuid) {
     m_published.remove(key);
 }
 
-}
+} // namespace caelestia::services

@@ -43,4 +43,4 @@ private:
     bool m_hasRoot;
 };
 
-}
+} // namespace caelestia::services

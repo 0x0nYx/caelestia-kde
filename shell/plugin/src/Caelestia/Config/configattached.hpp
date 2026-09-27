@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rootnodes.hpp"
-
 #include <qquickattachedpropertypropagator.h>
+
+#include "rootnodes.hpp"
 
 namespace caelestia::config {
 
@@ -101,4 +101,4 @@ private:
     ConfigRoot* m_config = nullptr;
 };
 
-}
+} // namespace caelestia::config

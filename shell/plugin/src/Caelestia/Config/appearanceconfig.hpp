@@ -167,7 +167,7 @@ struct FontConfig {
     QVariantMap vaxes = { { u"ROND"_s, 25 } };
 };
 
-}
+} // namespace detail
 
 #define ARG(...) __VA_ARGS__
 #define FONT(...) detail::FontConfig __VA_ARGS__
@@ -327,4 +327,4 @@ class AppearanceConfig : public settings::ObjectNode {
     CONFIG_GLOBAL_PROPERTY(qreal, ambientOpacity, 0.45)
 };
 
-}
+} // namespace caelestia::config

@@ -383,4 +383,4 @@ HyprlandState::SocketPtr HyprlandState::makeRequest(
     return socket;
 }
 
-}
+} // namespace caelestia::services

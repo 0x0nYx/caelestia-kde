@@ -56,4 +56,4 @@ private:
     QElapsedTimer m_timer;
 };
 
-}
+} // namespace caelestia::services

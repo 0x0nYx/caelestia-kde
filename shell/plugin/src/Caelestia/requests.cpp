@@ -17,7 +17,6 @@ namespace caelestia {
 
 using Qt::StringLiterals::operator""_ba;
 
-
 static void applyHeaders(QNetworkRequest& request, const QJSValue& headers) {
     if (!headers.isObject()) {
         return;
@@ -39,7 +38,6 @@ static QNetworkRequest buildRequest(const QUrl& url, const QJSValue& headers) {
     applyHeaders(request, headers);
     return request;
 }
-
 
 Requests::Requests(QObject* parent)
     : QObject(parent)
@@ -201,7 +199,6 @@ void Requests::abortAndFail(int requestId, const QString& errorMessage, bool rem
         qCWarning(lcRequests) << "request" << requestId << "failed:" << errorMessage;
     }
 }
-
 
 int Requests::get(const QUrl& url, QJSValue callback, QJSValue onError, QJSValue headers, int timeoutMs) {
     if (!callback.isCallable()) {
@@ -400,4 +397,4 @@ void Requests::resetCookies() {
     m_manager->setCookieJar(new QNetworkCookieJar(m_manager));
 }
 
-}
+} // namespace caelestia

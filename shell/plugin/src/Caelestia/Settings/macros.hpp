@@ -44,9 +44,9 @@ template <std::floating_point T> bool compare(const QList<T>& a, const QList<T>&
     return true;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace caelestia::settings
 
 #define DEFAULT_ARG(...) __VA_ARGS__
 

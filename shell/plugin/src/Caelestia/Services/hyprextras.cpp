@@ -230,4 +230,4 @@ HyprExtras::SocketPtr HyprExtras::makeRequest(
     return socket;
 }
 
-}
+} // namespace caelestia::services::hypr
