@@ -76,8 +76,8 @@ NetworkManager::WirelessSecuritySetting::KeyMgmt personalKeyMgmtFor(const Networ
 
     const auto rsn = ap->rsnFlags();
     const auto wpa = ap->wpaFlags();
-    const bool psk = rsn.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk) ||
-                     wpa.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk);
+    const bool psk =
+        rsn.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk) || wpa.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk);
     const bool sae = rsn.testFlag(NetworkManager::AccessPoint::KeyMgmtSAE);
 
     if (psk)
@@ -361,8 +361,8 @@ void NmQt::connectToNetwork(const QString& ssid, const QString& password, const 
 
         const auto keyMgmt = personalKeyMgmtFor(targetAp);
         if (keyMgmt == NetworkManager::WirelessSecuritySetting::WpaNone) {
-            invokeCallback(callback, false, {},
-                QStringLiteral("The network's security is not supported (no PSK or SAE)"), -1);
+            invokeCallback(
+                callback, false, {}, QStringLiteral("The network's security is not supported (no PSK or SAE)"), -1);
             return;
         }
         securitySetting->setKeyMgmt(keyMgmt);
