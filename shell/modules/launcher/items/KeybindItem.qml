@@ -22,8 +22,6 @@ Item {
         if (actionStr.startsWith("command(") && actionStr.endsWith(")")) {
             Quickshell.execDetached(["sh", "-c", actionStr.substring(8, actionStr.length - 1)]);
         }
-        // Every other listed shortcut is already live through kglobalaccel on
-        // the KDE port, so there is nothing to dispatch for it here.
     }
 
     implicitHeight: Tokens.sizes.launcher.itemHeight
