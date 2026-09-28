@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
 import Caelestia.Config
 import qs.components
 import qs.components.effects
@@ -112,7 +111,7 @@ Item {
         model: ScriptModel {
             // Kwin.workspaces is a plain array (KWinWorkspaceState.workspaces): `.values` is
             // Array.prototype.values, so the filter threw and the strip never rendered.
-            values: Kwin.workspaces.filter(w => w.name.startsWith("special:") && (!Config.bar.workspaces.perMonitor || w.monitor === root.monitor))
+            values: Kwin.workspaces.filter(w => (w.name ?? "").startsWith("special:"))
         }
 
         preferredHighlightBegin: 0
@@ -278,24 +277,27 @@ Item {
             if (Math.abs(currentPos - startPos) > drag.threshold)
                 return;
 
-                            return;
-
             const ws = view.itemAt(event.x, event.y) as SpecialWsDelegate;
             if (ws?.modelData)
-                Kwin.dispatch(Kwin.usingLua ? `hl.dsp.workspace.toggle_special("${ws.modelData.name.slice(8)}")` : `togglespecialworkspace ${ws.modelData.name.slice(8)}`);
+                Kwin.toggleSpecialWorkspace(ws.modelData.name.slice(8));
             else
-                Kwin.dispatch(Kwin.usingLua ? 'hl.dsp.workspace.toggle_special("special")' : "togglespecialworkspace special");
+                Kwin.toggleSpecialWorkspace("special");
         }
     }
 
     component SpecialWsDelegate: GridLayout {
         id: ws
 
-        required property HyprlandWorkspace modelData
+        // Workspaces arrive as plain maps from KWinWorkspaceState.workspaces:
+        // `index` is the 1-based desktop position, the same numbering windows
+        // report on their workspace.id.
+        required property var modelData
+        readonly property int wsId: modelData?.index ?? -1
+        readonly property string icon: Icons.getSpecialWsIcon(modelData?.name ?? "")
+        readonly property bool hasWindows: wsId > 0
+            && Config.bar.workspaces.showWindowsOnSpecialWorkspaces
+            && Kwin.workspaceWindowCount(wsId) > 0
         readonly property int size: isHorizontal ? (label.Layout.preferredWidth + (hasWindows ? windows.implicitWidth + Tokens.padding.extraSmall : 0)) : (label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0))
-        property int wsId
-        property string icon
-        property bool hasWindows
 
         columns: isHorizontal ? -1 : 1
         rows: isHorizontal ? 1 : -1
@@ -308,42 +310,6 @@ Item {
 
         columnSpacing: 0
         rowSpacing: 0
-
-        Component.onCompleted: {
-            wsId = modelData.id;
-            icon = Icons.getSpecialWsIcon(modelData.name);
-            hasWindows = Config.bar.workspaces.showWindowsOnSpecialWorkspaces && modelData.lastIpcObject.windows > 0;
-        }
-
-        Connections {
-            function onIdChanged(): void {
-                if (ws.modelData)
-                    ws.wsId = ws.modelData.id;
-            }
-
-            function onNameChanged(): void {
-                if (ws.modelData)
-                    ws.icon = Icons.getSpecialWsIcon(ws.modelData.name);
-            }
-
-            function onLastIpcObjectChanged(): void {
-                if (ws.modelData) {
-                    ws.hasWindows = root.Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
-                    ws.wsId = ws.modelData.id;
-                }
-            }
-
-            target: ws.modelData
-        }
-
-        Connections {
-            function onShowWindowsOnSpecialWorkspacesChanged(): void {
-                if (ws.modelData)
-                    ws.hasWindows = root.Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
-            }
-
-            target: root.Config.bar.workspaces
-        }
 
         Loader {
             id: label
@@ -441,7 +407,7 @@ Item {
                         required property var modelData
 
                         grade: 0
-                        text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
+                        text: Icons.getAppCategoryIcon(modelData.class, "terminal")
                         color: Colours.palette.m3onSurfaceVariant
                     }
                 }
@@ -485,7 +451,7 @@ Item {
                         required property var modelData
 
                         grade: 0
-                        text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
+                        text: Icons.getAppCategoryIcon(modelData.class, "terminal")
                         color: Colours.palette.m3onSurfaceVariant
                     }
                 }

@@ -41,6 +41,8 @@ Singleton {
     property var _monitorCache: ({})
     property bool hadKeyboard: false
     property string lastSpecialWorkspace: ""
+    property string lastNormalWorkspace: ""
+    property var _lastNormalByOutput: ({})
     readonly property var monitors: {
         const screens = [...Quickshell.screens];
         const screenNames = screens.map(s => s.name);
@@ -411,8 +413,29 @@ Singleton {
             return;
         }
 
-        if (request.startsWith("togglespecialworkspace"))
+        if (request.startsWith("togglespecialworkspace")) {
+            root.toggleSpecialWorkspace(request.slice("togglespecialworkspace".length).trim());
             return;
+        }
+    }
+
+    function toggleSpecialWorkspace(name: string): void {
+        const wsName = name.startsWith("special:") ? name : `special:${name}`;
+        const output = root.focusedMonitor?.name ?? "";
+        const currentId = root.activeWorkspaceFor(output);
+        const current = root.workspaces.find(w => w.index === currentId);
+
+        if (current && (current.name ?? "") === wsName) {
+            // Toggling the active special workspace off returns this output to
+            // the last normal desktop it was on, or the first one.
+            const last = root._lastNormalByOutput[output] ?? root.lastNormalWorkspace ?? "";
+            root.switchToWorkspace(last.length > 0 ? last : "1", output);
+            return;
+        }
+
+        if (!root.workspaces.some(w => (w.name ?? "") === wsName))
+            root.createWorkspace(wsName);
+        root.switchToWorkspace(wsName, output);
     }
 
     function cycleSpecialWorkspace(direction: string): void {
@@ -455,6 +478,48 @@ Singleton {
             root._monitorCache[screen.name] = cached;
         }
         return cached;
+    }
+
+    // The monitor mocks are the QML-facing shape callers still read
+    // (lastIpcObject.specialWorkspace / activeWorkspace), so keep them in
+    // step with the real per-output tracker state.
+    function syncMonitorMocks(): void {
+        for (const key in root._monitorCache) {
+            if (key === "values")
+                continue;
+            const m = root._monitorCache[key];
+            if (!m || typeof m !== "object")
+                continue;
+            const position = root.activeWorkspaceFor(key);
+            const current = root.workspaces.find(w => w.index === position);
+            const name = current?.name ?? "";
+            if (m.activeWorkspace)
+                m.activeWorkspace.id = position;
+            if (m.specialWorkspace)
+                m.specialWorkspace.name = name.startsWith("special:") ? name : "";
+        }
+    }
+
+    // Remember the last normal desktop per output so toggling a special
+    // workspace off can go back to where the user was.
+    function rememberWorkspaces(): void {
+        for (const output in root.activeByOutput) {
+            const current = root.workspaces.find(w => w.index === root.activeByOutput[output]);
+            const name = current?.name ?? "";
+            if (!name)
+                continue;
+            if (name.startsWith("special:")) {
+                root.lastSpecialWorkspace = name;
+            } else {
+                root.lastNormalWorkspace = name;
+                root._lastNormalByOutput[output] = name;
+            }
+        }
+        root.syncMonitorMocks();
+    }
+
+    function workspaceWindowCount(workspaceId: int): int {
+        return root.windowsForWorkspace(workspaceId, false).length;
     }
 
     function refreshDevices(): void {
@@ -549,6 +614,22 @@ Singleton {
         }
 
         target: "hypr"
+    }
+
+    Connections {
+        function onActiveByOutputChanged(): void {
+            root.rememberWorkspaces();
+        }
+
+        function onActiveIdChanged(): void {
+            root.rememberWorkspaces();
+        }
+
+        function onWorkspacesChanged(): void {
+            root.syncMonitorMocks();
+        }
+
+        target: KWinWorkspaceState
     }
 
     // qmllint disable unresolved-type
