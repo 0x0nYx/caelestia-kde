@@ -326,7 +326,7 @@ ls -la ~/.local/share/plasma/shells/caelestia.desktop/contents/lockscreen/LockSc
 | Symptom | Cause | Solution |
 |---|---|---|
 | Stock Breeze lock screen appears | `ShellPackage` reset after KDE update or theme switch. | Caelestia autostart (`caelestia-autostart.sh`) automatically self-heals this at next login if `caelestia.desktop` is present. To restore immediately in session: `kwriteconfig6 --file plasmashellrc --group "Shell" --key "ShellPackage" "caelestia.desktop" && kwriteconfig6 --file kscreenlockerrc --group "Greeter" --key "Theme" --delete`. |
-| Lock screen fails or crashes | Greeter files missing or corrupted in `~/.local/share/plasma/shells/`. | Re-deploy via `BUNDLE_DIR=. ./scripts/02-packages.sh` or `cp -r src/kde/shells/caelestia.desktop ~/.local/share/plasma/shells/`. |
+| Lock screen fails or crashes | Greeter files missing or corrupted in `~/.local/share/plasma/shells/`. | Re-deploy via `BUNDLE_DIR=. ./scripts/08-build-shell.sh` or `cp -r src/kde/shells/caelestia.desktop ~/.local/share/plasma/shells/`. |
 | Lock screen shows wallpaper error | Legacy `PlasmaApplicationWallpaper` left in `kscreenlockerrc`. | Reset WallpaperPlugin: `kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin "org.kde.image"`. |
 | Profile picture missing | `~/.face` does not exist and no system user avatar set. | Place your avatar image at `~/.face` or configure an avatar in KDE System Settings → Users. |
 
@@ -380,21 +380,6 @@ systemctl --user status plasma-kglobalaccel.service
 ```
 
 If `keyd` is active and manages Meta+1..5, the tweak script skips KWin bindings for those combos to avoid conflicts.
-
-### 5.5 Terminal Sequence Bleeding (Garbled Output)
-
-If ANSI escape sequences leak from the `caelestia` CLI into your terminal:
-
-```bash
-cat $XDG_CACHE_HOME/caelestia-kde/failed_patches.txt
-```
-
-If `Caelestia CLI Theme Sequence Patch` appears in the failed list, re-run:
-```bash
-bash scripts/09-system-tweaks.sh
-```
-
----
 
 ## 6. Network & Proxy Issues
 
@@ -727,20 +712,6 @@ user to the `input` group. The installer removes that membership when it finds t
 old `/etc/udev/rules.d/80-uinput.rules`, and the uninstaller runs
 `sudo gpasswd -d $USER input`. Either way it takes effect on next login.
 
-### 9.6 Failed Patches Tracking
-
-Failed patches are logged to:
-```text
-$XDG_CACHE_HOME/caelestia-kde/failed_patches.txt
-```
-
-Possible entries:
-- `Caelestia CLI Hyprctl Mock Patch`
-- `Caelestia CLI Record/Dolphin Patch`
-- `Caelestia CLI Theme Sequence Patch`
-
-These are **cosmetic** — the shell works without them, but certain features (screenshot, recording, terminal colors) may be degraded.
-
 ---
 
 ## 10. Update Issues
@@ -802,9 +773,6 @@ kreadconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin
 
 # View failed packages log
 cat $XDG_CACHE_HOME/caelestia-kde/failed_packages.txt 2>/dev/null
-
-# View failed patches log
-cat $XDG_CACHE_HOME/caelestia-kde/failed_patches.txt 2>/dev/null
 
 # View installer build log
 cat /tmp/caelestia_build.log 2>/dev/null | tail -60
