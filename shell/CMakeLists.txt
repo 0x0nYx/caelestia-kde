@@ -179,10 +179,17 @@ if("plugin" IN_LIST ENABLE_MODULES)
 endif()
 
 if("shell" IN_LIST ENABLE_MODULES)
-    foreach(dir assets components modules scripts services utils)
+    foreach(dir assets components modules services utils)
         install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir}
                 DESTINATION ${INSTALL_QSCONFDIR})
     endforeach()
+
+    # scripts/ installs with the dev tooling stripped: the conventions
+    # linter runs in CI and the perf profiler is not runtime code.
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/
+            DESTINATION ${INSTALL_QSCONFDIR}/scripts
+            PATTERN "qml-lint-conventions.py" EXCLUDE
+            PATTERN "menu_perf_stats.py" EXCLUDE)
 
     install(PROGRAMS assets/wrap_term_launch.sh DESTINATION "${INSTALL_QSCONFDIR}/assets")
 
