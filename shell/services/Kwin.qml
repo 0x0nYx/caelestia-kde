@@ -43,6 +43,7 @@ Singleton {
     property string lastSpecialWorkspace: ""
     property string lastNormalWorkspace: ""
     property var _lastNormalByOutput: ({})
+    property string _pendingSpecialSwitch: ""
     readonly property var monitors: {
         const screens = [...Quickshell.screens];
         const screenNames = screens.map(s => s.name);
@@ -433,13 +434,18 @@ Singleton {
             return;
         }
 
-        if (!root.workspaces.some(w => (w.name ?? "") === wsName))
+        if (!root.workspaces.some(w => (w.name ?? "") === wsName)) {
+            // createWorkspace resolves asynchronously over DBus; switch once
+            // the desktop actually shows up in onWorkspacesChanged.
+            root._pendingSpecialSwitch = wsName;
             root.createWorkspace(wsName);
+            return;
+        }
         root.switchToWorkspace(wsName, output);
     }
 
     function cycleSpecialWorkspace(direction: string): void {
-        const openSpecials = root.workspaces.filter(w => (w.name ?? "").startsWith("special:") && (w.windows ?? 0) > 0);
+        const openSpecials = root.workspaces.filter(w => (w.name ?? "").startsWith("special:") && root.workspaceWindowCount(w.index) > 0);
         if (openSpecials.length === 0)
             return;
 
@@ -527,7 +533,7 @@ Singleton {
     }
 
     function listSpecialWorkspaces(): string {
-        return root.workspaces.filter(w => (w.name ?? "").startsWith("special:") && (w.windows ?? 0) > 0).map(w => w.name).join("\n");
+        return root.workspaces.filter(w => (w.name ?? "").startsWith("special:") && root.workspaceWindowCount(w.index) > 0).map(w => w.name).join("\n");
     }
 
     function getFocusedMonitor(): string {
@@ -627,6 +633,12 @@ Singleton {
 
         function onWorkspacesChanged(): void {
             root.syncMonitorMocks();
+            if (root._pendingSpecialSwitch.length > 0) {
+                const pending = root._pendingSpecialSwitch;
+                root._pendingSpecialSwitch = "";
+                if (root.workspaces.some(w => (w.name ?? "") === pending))
+                    root.switchToWorkspace(pending);
+            }
         }
 
         target: KWinWorkspaceState

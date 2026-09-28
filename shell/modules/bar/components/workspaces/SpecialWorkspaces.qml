@@ -294,9 +294,11 @@ Item {
         required property var modelData
         readonly property int wsId: modelData?.index ?? -1
         readonly property string icon: Icons.getSpecialWsIcon(modelData?.name ?? "")
+        // Bind through windowList so the count follows open/close events;
+        // workspace.id is the same 1-based position as modelData.index.
         readonly property bool hasWindows: wsId > 0
             && Config.bar.workspaces.showWindowsOnSpecialWorkspaces
-            && Kwin.workspaceWindowCount(wsId) > 0
+            && Kwin.windowList.filter(w => (w.workspace?.id ?? -1) === wsId).length > 0
         readonly property int size: isHorizontal ? (label.Layout.preferredWidth + (hasWindows ? windows.implicitWidth + Tokens.padding.extraSmall : 0)) : (label.Layout.preferredHeight + (hasWindows ? windows.implicitHeight + Tokens.padding.extraSmall : 0))
 
         columns: isHorizontal ? -1 : 1
