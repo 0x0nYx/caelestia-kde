@@ -27,9 +27,6 @@ QtObject {
         { id: "other", name: qsTr("Other"), icon: "category" }
     ]
 
-    /// The curated category a desktop entry belongs to, or "other".
-    /// Apps filtered out mid-rescan can surface as null here; they map to
-    /// "other" so category accounting stays stable instead of throwing.
     function categoryForApp(app): string {
         let cats = [];
         const raw = app?.categories;
