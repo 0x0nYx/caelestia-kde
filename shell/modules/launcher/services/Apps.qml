@@ -13,14 +13,13 @@ Searcher {
         appDb.incrementFrequency(entry.id);
         Launch.launchEntry(entry);
     }
+
+    /// Every visible desktop entry in AppDb order (favourites, then frequency, then name).
     function allApps(): list<var> {
         const res = [];
         const apps = appDb.apps;
-        for (let i = 0; i < apps.length; i++) {
-            const entry = apps[i].entry;
-            if (entry)
-                res.push(entry);
-        }
+        for (let i = 0; i < apps.length; i++)
+            res.push(apps[i].entry);
         return res;
     }
 
