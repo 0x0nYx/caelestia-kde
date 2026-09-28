@@ -61,8 +61,6 @@ StyledRect {
                 return GlobalConfig.utilities.vpn.selectedProvider.length > 0;
             }
 
-            // Only a wireless device that can run an access point gets a hotspot
-            // button; there is nothing to switch on anywhere else.
             if (item.id === "hotspot") {
                 return Nmcli.hotspot.supported;
             }

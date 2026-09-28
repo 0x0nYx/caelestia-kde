@@ -143,11 +143,6 @@ NmQt::NmQt(QObject* parent)
     : QObject(parent)
     , m_hotspot(new HotspotController(this)) {
 
-    // The hotspot is a service of its own; these are the only things it needs
-    // from this class. The profile lists matter because a first enable creates a
-    // profile that was not there before, and the radio state matters because an
-    // access point that comes up or goes down changes what this machine is
-    // connected through.
     connect(m_hotspot, &HotspotController::profileAdded, this, &NmQt::refreshSavedConnections);
     connect(m_hotspot, &HotspotController::stateChanged, this, [this] {
         emit isConnectedChanged();

@@ -68,8 +68,6 @@ private:
     CONFIG_GLOBAL_PROPERTY(QString, lyricsBackend, u"Auto"_s)
     CONFIG_GLOBAL_PROPERTY(QStringList, bluetoothAutoReconnectDevices, QStringList())
 
-    // Wi-Fi hotspot, edited under Settings -> Network -> Hotspot. An empty SSID
-    // falls back to the hostname; an empty password shares an open network.
     CONFIG_GLOBAL_PROPERTY(QString, hotspotSsid, QString())
     CONFIG_GLOBAL_PROPERTY(QString, hotspotPassword, QString())
 
