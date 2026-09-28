@@ -67,6 +67,24 @@ QString keyMgmtToString(NetworkManager::WirelessSecuritySetting::KeyMgmt k) {
     }
 }
 
+NetworkManager::WirelessSecuritySetting::KeyMgmt personalKeyMgmtFor(const NetworkManager::AccessPoint::Ptr& ap) {
+    using KeyMgmt = NetworkManager::WirelessSecuritySetting::KeyMgmt;
+    if (!ap)
+        return KeyMgmt::WpaPsk;
+
+    const auto rsn = ap->rsnFlags();
+    const auto wpa = ap->wpaFlags();
+    const bool psk = rsn.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk) ||
+                     wpa.testFlag(NetworkManager::AccessPoint::KeyMgmtPsk);
+    const bool sae = rsn.testFlag(NetworkManager::AccessPoint::KeyMgmtSAE);
+
+    if (psk)
+        return KeyMgmt::WpaPsk;
+    if (sae)
+        return KeyMgmt::SAE;
+    return KeyMgmt::WpaNone;
+}
+
 /// The SSID a connection holds, as the raw bytes NetworkManager stores it as.
 /// Empty for every connection type that is not wireless.
 QByteArray ssidOf(const NetworkManager::Connection::Ptr& conn) {
@@ -328,9 +346,13 @@ void NmQt::connectToNetwork(const QString& ssid, const QString& password, const 
             return;
         }
 
-        const bool useSae = targetAp && targetAp->rsnFlags().testFlag(NetworkManager::AccessPoint::KeyMgmtSAE);
-        securitySetting->setKeyMgmt(
-            useSae ? NetworkManager::WirelessSecuritySetting::SAE : NetworkManager::WirelessSecuritySetting::WpaPsk);
+        const auto keyMgmt = personalKeyMgmtFor(targetAp);
+        if (keyMgmt == NetworkManager::WirelessSecuritySetting::WpaNone) {
+            invokeCallback(callback, false, {},
+                QStringLiteral("The network's security is not supported (no PSK or SAE)"), -1);
+            return;
+        }
+        securitySetting->setKeyMgmt(keyMgmt);
         securitySetting->setPsk(password);
         securitySetting->setInitialized(true);
         wirelessSetting->setSecurity(securitySetting->name());
