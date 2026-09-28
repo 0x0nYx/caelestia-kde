@@ -281,7 +281,7 @@ Item {
             if (ws?.modelData)
                 Kwin.toggleSpecialWorkspace(ws.modelData.name.slice(8));
             else
-                Kwin.toggleSpecialWorkspace("special");
+                Kwin.toggleSpecialWorkspace("magic");
         }
     }
 

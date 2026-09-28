@@ -44,6 +44,7 @@ Singleton {
     property string lastNormalWorkspace: ""
     property var _lastNormalByOutput: ({})
     property string _pendingSpecialSwitch: ""
+    property string _pendingSpecialSwitchOutput: ""
     readonly property var monitors: {
         const screens = [...Quickshell.screens];
         const screenNames = screens.map(s => s.name);
@@ -437,7 +438,10 @@ Singleton {
         if (!root.workspaces.some(w => (w.name ?? "") === wsName)) {
             // createWorkspace resolves asynchronously over DBus; switch once
             // the desktop actually shows up in onWorkspacesChanged.
+            if (root._pendingSpecialSwitch === wsName)
+                return;
             root._pendingSpecialSwitch = wsName;
+            root._pendingSpecialSwitchOutput = output;
             root.createWorkspace(wsName);
             return;
         }
@@ -500,15 +504,24 @@ Singleton {
             const current = root.workspaces.find(w => w.index === position);
             const name = current?.name ?? "";
             if (m.activeWorkspace)
-                m.activeWorkspace.id = position;
+                m.activeWorkspace = Object.assign({}, m.activeWorkspace, { id: position });
             if (m.specialWorkspace)
-                m.specialWorkspace.name = name.startsWith("special:") ? name : "";
+                m.specialWorkspace = Object.assign({}, m.specialWorkspace, { name: name.startsWith("special:") ? name : "" });
         }
     }
 
     // Remember the last normal desktop per output so toggling a special
     // workspace off can go back to where the user was.
     function rememberWorkspaces(): void {
+        // Without the per-output tracker, fall back to the global active desktop.
+        if (Object.keys(root.activeByOutput).filter(key => key !== "values").length === 0) {
+            const active = root.workspaces.find(w => w.index === root.activeWsId);
+            const activeName = active?.name ?? "";
+            if (activeName.startsWith("special:"))
+                root.lastSpecialWorkspace = activeName;
+            else if (activeName)
+                root.lastNormalWorkspace = activeName;
+        }
         for (const output in root.activeByOutput) {
             const current = root.workspaces.find(w => w.index === root.activeByOutput[output]);
             const name = current?.name ?? "";
@@ -635,9 +648,11 @@ Singleton {
             root.syncMonitorMocks();
             if (root._pendingSpecialSwitch.length > 0) {
                 const pending = root._pendingSpecialSwitch;
+                const pendingOutput = root._pendingSpecialSwitchOutput;
                 root._pendingSpecialSwitch = "";
+                root._pendingSpecialSwitchOutput = "";
                 if (root.workspaces.some(w => (w.name ?? "") === pending))
-                    root.switchToWorkspace(pending);
+                    root.switchToWorkspace(pending, pendingOutput);
             }
         }
 
