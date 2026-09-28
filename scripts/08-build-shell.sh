@@ -598,6 +598,13 @@ install -m 755 "$BUNDLE_DIR/src/bin/caelestia-update" ~/.local/bin/caelestia-upd
 install -m 755 "$BUNDLE_DIR/src/bin/caelestia-check-updates" ~/.local/bin/caelestia-check-updates
 ok "Caelestia bin wrappers installed to ~/.local/bin"
 
+info "Installing the update-checker units..."
+install -m 644 "$BUNDLE_DIR/src/systemd/caelestia-update-checker.service" ~/.config/systemd/user/caelestia-update-checker.service
+install -m 644 "$BUNDLE_DIR/src/systemd/caelestia-update-checker.timer" ~/.config/systemd/user/caelestia-update-checker.timer
+systemctl --user daemon-reload
+systemctl --user enable --now caelestia-update-checker.timer
+ok "Update-checker timer enabled"
+
 CAELESTIA_SHARE="$HOME/.local/lib/caelestia"
 if [[ -d "$BUNDLE_DIR/src/matugen" && -d "$BUNDLE_DIR/src/schemes" ]]; then
     info "Installing the color pipeline data..."

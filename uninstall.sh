@@ -618,7 +618,7 @@ if [[ -z "$_RESTORE_SHELL" ]]; then
 fi
 
 if [[ -n "$_RESTORE_SHELL" ]]; then
-    caelestia_sudo chsh -s "$_RESTORE_SHELL" "$USER" 2>/dev/null || \
+    caelestia_sudo chsh -s "$_RESTORE_SHELL" "$(id -un)" 2>/dev/null || \
         warn "Could not change login shell to $_RESTORE_SHELL. Run: chsh -s $_RESTORE_SHELL"
     ok "Login shell reverted to $_RESTORE_SHELL"
 fi
@@ -795,9 +795,9 @@ for effect_lib in /usr/lib/qt6/plugins/kwin/effects/plugins/kwin_workspace_track
     fi
 done
 
-if groups "$USER" | grep -q '\binput\b'; then
-    caelestia_sudo gpasswd -d "$USER" input 2>/dev/null || \
-        warn "Could not remove $USER from input group. Run: sudo gpasswd -d $USER input"
+if groups "$(id -un)" | grep -q '\binput\b'; then
+    caelestia_sudo gpasswd -d "$(id -un)" input 2>/dev/null || \
+        warn "Could not remove the user from input group. Run: sudo gpasswd -d $(id -un) input"
     ok "Removed $USER from 'input' group (takes effect on next login)"
 fi
 

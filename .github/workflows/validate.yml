@@ -270,9 +270,19 @@ jobs:
       - name: Check C++ formatting
         run: python3 .github/scripts/check_cpp_format.py
 
+  shell-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Run the shell test suite
+        run: bash tests/run-tests.sh
+
   validate-gate:
     needs:
       - python-quality
+      - shell-tests
       - repo-integrity
       - json-validation
       - file-hygiene
@@ -308,6 +318,7 @@ jobs:
           job_results[qml-imports]="${{ needs.qml-imports.result }}"
           job_results[qml-template-interp]="${{ needs.qml-template-interp.result }}"
           job_results[shell-quality]="${{ needs.shell-quality.result }}"
+          job_results[shell-tests]="${{ needs.shell-tests.result }}"
           job_results[cpp-format]="${{ needs.cpp-format.result }}"
 
           all_passed=true
