@@ -1,15 +1,17 @@
+pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Caelestia.Config
 import Caelestia.Services
 import qs.services
 import qs.utils
 
-QtObject {
+Singleton {
     id: root
 
-    required property HotspotController controller
+    readonly property HotspotController controller: Nmcli.hotspot
 
     function toggle(): void {
         if (root.controller.busy)
@@ -26,7 +28,7 @@ QtObject {
             return;
         }
 
-        root.controller.enable(HotspotSwitch.resolveName(hotspotSsid), hotspotPassword, root.report);
+        root.controller.enable(resolveName(hotspotSsid), hotspotPassword, root.report);
     }
 
     function resolveName(ssid: string): string {

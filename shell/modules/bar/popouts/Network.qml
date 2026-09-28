@@ -41,10 +41,6 @@ ColumnLayout {
     property real scaleOffset: 1.0
     property real fontScale: 1.0
 
-    readonly property HotspotSwitch hotspotSwitch: HotspotSwitch {
-        controller: Nmcli.hotspot
-    }
-
     spacing: Tokens.spacing.medium * scaleOffset
     width: Math.max(400 * scaleOffset, _isSidebarOpen ? (Tokens.sizes.sidebar.width * scaleOffset) - Tokens.padding.extraLargeIncreased : 0)
 
@@ -121,7 +117,7 @@ ColumnLayout {
         // it was instead of showing the tap.
         checked: Nmcli.hotspot.enabled
         enabled: !Nmcli.hotspot.busy
-        toggle.onToggled: root.hotspotSwitch.toggle()
+        toggle.onToggled: HotspotSwitch.toggle()
     }
 
     StyledText {

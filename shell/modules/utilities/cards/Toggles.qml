@@ -20,10 +20,6 @@ StyledRect {
     required property DrawerVisibilities visibilities
     required property BarPopouts.Wrapper popouts
 
-    readonly property HotspotSwitch hotspotSwitch: HotspotSwitch {
-        controller: Nmcli.hotspot
-    }
-
     readonly property var quickToggles: {
         const configToggles = Config.utilities.quickToggles || [];
         const disabledIds = new Set(configToggles.filter(t => t.enabled === false).map(t => t.id));
@@ -142,7 +138,7 @@ StyledRect {
                     delegate: Toggle {
                         icon: "wifi_tethering"
                         checked: Nmcli.hotspot.enabled
-                        onClicked: root.hotspotSwitch.toggle()
+                        onClicked: HotspotSwitch.toggle()
                     }
                 }
                 DelegateChoice {
