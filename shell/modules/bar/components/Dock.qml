@@ -517,7 +517,7 @@ Item {
                                             if (isKWin) {
                                                 Kwin.focusWindow(addr);
                                             } else {
-                                                Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                                Kwin.dispatch(`focuswindow address:0x${addr}`);
                                             }
                                         }
                                     } else {
@@ -526,7 +526,7 @@ Item {
                                         if (isKWin) {
                                             Kwin.focusWindow(addr);
                                         } else {
-                                            Kwin.dispatch(Kwin.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+                                            Kwin.dispatch(`focuswindow address:0x${addr}`);
                                         }
                                     }
                                 } else if (modelData.entry) {
