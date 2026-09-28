@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Caelestia.Config
+import Caelestia.Services
 import qs.services
 import qs.utils
 
@@ -42,7 +43,7 @@ QtObject {
 
     /// The name an empty setting stands for: the machine's own name, so a
     /// hotspot started without typing one is still identifiable on the network.
-    static function resolveName(ssid: string): string {
+    function resolveName(ssid: string): string {
         return ssid.length > 0 ? ssid : (SysInfo.hostname || "caelestia");
     }
 

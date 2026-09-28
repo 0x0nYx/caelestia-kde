@@ -18,6 +18,8 @@ namespace caelestia::services {
 
 namespace {
 
+// The one definition of the profile id. profileId() hands it to QML, and the
+// static settings builder names the profile with it.
 constexpr QLatin1String hotspotProfileId("caelestia-hotspot");
 
 } // namespace
@@ -102,7 +104,7 @@ std::optional<HotspotController::Active> HotspotController::active() {
 
 NMVariantMapMap HotspotController::buildSettings(const QString& ssid, const QString& password, const QString& uuid) {
     NetworkManager::ConnectionSettings settings(NetworkManager::ConnectionSettings::Wireless);
-    settings.setId(profileId());
+    settings.setId(hotspotProfileId);
     settings.setUuid(uuid);
     // A hotspot is switched on by hand. Leaving the default autoconnect on would
     // start an access point on every boot, from a profile the user never asked

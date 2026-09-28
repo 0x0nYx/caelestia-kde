@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #pragma once
 
+#include <qqmlintegration.h>
+
 #include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/WirelessDevice>
 #include <QJSValue>
@@ -21,6 +23,10 @@ namespace caelestia::services {
 /// derived from that, so the three cannot disagree with each other.
 class HotspotController : public QObject {
     Q_OBJECT
+    // Exposed so QML can name the type in a property annotation (the adapter
+    // does); it is not creatable, because NmQt owns the only instance.
+    QML_ELEMENT
+    QML_UNCREATABLE("HotspotController is created by NmQt")
 
     /// Id of the profile the shell saves its access point as. Stable across
     /// sessions so a second enable updates the profile instead of adding a
