@@ -403,6 +403,31 @@ if [[ -z "$SELECTED_KNSV" ]]; then
     fi
 fi
 
+# The installer wipes the panels from the running plasmashell, so without a
+# backup there is nothing to restore and the user ends up on a blank desktop.
+# Hand back a plain stock panel instead (issue #854).
+if [[ "$THEME_RESTORED_FROM_BACKUP" != "true" ]] && pgrep -x plasmashell >/dev/null 2>&1; then
+    _qdbus="$(command -v qdbus6 || command -v qdbus || true)"
+    if [[ -n "$_qdbus" ]]; then
+        if "$_qdbus" org.kde.plasmashell /PlasmaShell evaluateScript "
+if (panels().length === 0) {
+    var panel = new Panel;
+    panel.alignment = 'center';
+    panel.location = 'bottom';
+    panel.hiding = 'dodgewindows';
+    panel.height = 48;
+    panel.addWidget('org.kde.plasma.kickoff');
+    panel.addWidget('org.kde.plasma.icontasks');
+    panel.addWidget('org.kde.plasma.systemtray');
+    panel.addWidget('org.kde.plasma.digitalclock');
+}" 2>/dev/null; then
+            ok "Created a default bottom panel (no backup was available)"
+        else
+            warn "Could not create a default panel. Add one via Edit Mode if the desktop is empty."
+        fi
+    fi
+fi
+
 kwriteconfig6 --file kwinrc --group "Plugins" --key "quickshell-kde-bridgeEnabled" "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "krohnkiteEnabled"             "false" 2>/dev/null || true
 kwriteconfig6 --file kwinrc --group "Plugins" --key "kwin_workspace_trackerEnabled" "false" 2>/dev/null || true
@@ -844,21 +869,51 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
     esac
 
     if [[ ${#_pkg_list[@]} -gt 0 ]]; then
-        warn "The following packages will be removed:"
-        printf '  %s\n' "${_pkg_list[@]}"
-        echo
-        read -r -p "Proceed? [y/N]: " _pkg_confirm
-        if [[ "${_pkg_confirm,,}" == "y" || "${_pkg_confirm,,}" == "yes" ]]; then
-            mapfile -t _installed < <(filter_installed "${_pkg_list[@]}")
-            if [[ ${#_installed[@]} -gt 0 ]]; then
-                "${_remove_cmd[@]}" "${_installed[@]}" 2>/dev/null || \
-                    warn "Some packages could not be removed automatically. Check manually."
-                ok "$BASE_DISTRO packages removed"
-            else
-                skip "None of the listed packages are installed"
-            fi
+        mapfile -t _installed < <(filter_installed "${_pkg_list[@]}")
+        if [[ ${#_installed[@]} -eq 0 ]]; then
+            skip "None of the listed packages are installed"
         else
-            skip "Package removal skipped"
+            # These are shared desktop tools; the selection keeps the user in
+            # control of which ones go (issue #854).
+            warn "Packages installed by caelestia that are also common desktop tools:"
+            for _i in "${!_installed[@]}"; do
+                printf '  %2d) %s\n' "$((_i + 1))" "${_installed[_i]}"
+            done
+            cat <<'EOF'
+Enter the numbers to remove, e.g. 1 3 5-9, 'all' for every package,
+or press Enter to keep them all:
+EOF
+            read -r -p "Selection [keep all]: " _pkg_choice
+            _pkg_choice="${_pkg_choice,,}"
+            if [[ -z "${_pkg_choice//[[:space:]]/}" ]]; then
+                skip "Package removal skipped"
+            else
+                _selected=()
+                if [[ "$_pkg_choice" == "all" || "$_pkg_choice" == "a" ]]; then
+                    _selected=("${_installed[@]}")
+                else
+                    for _tok in $_pkg_choice; do
+                        if [[ "$_tok" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+                            for ((_n = BASH_REMATCH[1]; _n <= BASH_REMATCH[2]; _n++)); do
+                                if ((_n >= 1 && _n <= ${#_installed[@]})); then
+                                    _selected+=("${_installed[_n - 1]}")
+                                fi
+                            done
+                        elif [[ "$_tok" =~ ^[0-9]+$ ]] && ((_tok >= 1 && _tok <= ${#_installed[@]})); then
+                            _selected+=("${_installed[_tok - 1]}")
+                        else
+                            warn "Ignoring invalid selection: $_tok"
+                        fi
+                    done
+                fi
+                if [[ ${#_selected[@]} -eq 0 ]]; then
+                    skip "Nothing selected, packages kept"
+                else
+                    "${_remove_cmd[@]}" "${_selected[@]}" 2>/dev/null || \
+                        warn "Some packages could not be removed automatically. Check manually."
+                    ok "Removed ${#_selected[@]} package(s)"
+                fi
+            fi
         fi
     fi
 
