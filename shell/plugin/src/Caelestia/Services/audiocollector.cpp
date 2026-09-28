@@ -50,8 +50,7 @@ PipeWireWorker::PipeWireWorker(std::stop_token token, AudioCollector* collector)
         // Tap the default sink's monitor: everything the system is playing.
         pw_properties_set(props, PW_KEY_STREAM_CAPTURE_SINK, "true");
     }
-    // Otherwise leave the capture stream plain, which auto-connects it to the
-    // default source (the microphone) instead of a sink monitor.
+    // Otherwise a plain capture stream auto-connects to the default source.
     pw_properties_setf(
         props, PW_KEY_NODE_LATENCY, "%u/%u", nextPowerOf2(512 * ac::SAMPLE_RATE / 48000), ac::SAMPLE_RATE);
     pw_properties_set(props, PW_KEY_NODE_PASSIVE, "true");
@@ -277,9 +276,8 @@ void AudioCollector::setCaptureMode(caelestia::config::VisualiserInput::Enum mod
         return;
     }
 
-    // The worker reads the mode once while building its stream, so applying a
-    // change means replacing the stream. Only restart when a stream is running:
-    // with no refs held the next start() picks the new mode up on its own.
+    // The worker reads the mode once while building its stream; only a running
+    // stream needs restarting, otherwise the next start() picks the mode up.
     if (m_thread.joinable()) {
         stop();
         start();

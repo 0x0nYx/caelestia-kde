@@ -61,9 +61,7 @@ public:
     quint32 readChunk(float* out, quint32 count = 0);
     quint32 readChunk(double* out, quint32 count = 0);
 
-    // Which endpoint the capture stream taps: the default output's monitor
-    // (Output) or the default input (Input). The worker reads the mode once
-    // when it builds its stream, so a change restarts the stream.
+    // What the capture stream taps: the default output's monitor or the default input.
     [[nodiscard]] caelestia::config::VisualiserInput::Enum captureMode() const;
     void setCaptureMode(caelestia::config::VisualiserInput::Enum mode);
 
