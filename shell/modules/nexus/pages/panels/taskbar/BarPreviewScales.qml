@@ -52,7 +52,7 @@ PageBase {
                     ToolTip.text: qsTr("Reset all to 0")
                     ToolTip.visible: hovered
                     onClicked: {
-                        const keys = ["activeWindow", "audio", "battery", "bluetooth", "clock", "dock", "github", "lockStatus", "network", "notifications", "peripheralBattery", "trayMenu", "wirelessPassword"];
+                        const keys = ["greeter", "audio", "battery", "bluetooth", "clock", "dock", "github", "lockStatus", "network", "notifications", "peripheralBattery", "trayMenu", "wirelessPassword"];
                         for (let k of keys) {
                             GlobalConfig.bar.previewScales[k] = 0.0;
                             GlobalConfig.bar.previewFontScales[k] = 0.0;
@@ -84,17 +84,11 @@ PageBase {
                 
                 scaleValue: GlobalConfig.bar.previewScales.greeter
                 scaleFrom: -1.0; scaleTo: 1.0; scaleStepSize: 0.05
-                onScaleMoved: v => {
-                    GlobalConfig.bar.previewScales.greeter = v;
-                    GlobalConfig.bar.previewScales.activeWindow = v;
-                }
+                onScaleMoved: v => GlobalConfig.bar.previewScales.greeter = v
                 
                 fontValue: GlobalConfig.bar.previewFontScales.greeter
                 fontFrom: -1.0; fontTo: 1.0; fontStepSize: 0.05
-                onFontMoved: v => {
-                    GlobalConfig.bar.previewFontScales.greeter = v;
-                    GlobalConfig.bar.previewFontScales.activeWindow = v;
-                }
+                onFontMoved: v => GlobalConfig.bar.previewFontScales.greeter = v
             }
             DoubleStepperRow {
                 first: false

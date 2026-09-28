@@ -107,7 +107,7 @@ Item {
             closeTray();
 
         if (!ch) {
-            if (popouts.hasCurrent && (popouts.currentName === "dockhover" || popouts.currentName === "greeter" || popouts.currentName === "activewindow")) return;
+            if (popouts.hasCurrent && (popouts.currentName === "dockhover" || popouts.currentName === "greeter")) return;
             if (!Config.bar.popouts.tray && popouts.currentName.startsWith("traymenu")) return;
             popouts.hasCurrent = false;
             return;
@@ -170,7 +170,7 @@ Item {
             } else {
                 popouts.hasCurrent = false;
             }
-        } else if ((id === "greeter" || id === "activeWindow") && (Config.bar.popouts.greeter ?? Config.bar.popouts.activeWindow) && (Config.bar.greeter.showOnHover ?? Config.bar.activeWindow.showOnHover)) {
+        } else if (id === "greeter" && Config.bar.popouts.greeter && Config.bar.greeter.showOnHover) {
             const item = ch.item as Item;
             if (item) {
                 const relPos = pos - top;
@@ -190,7 +190,7 @@ Item {
                 popouts.hasCurrent = false;
             }
         } else if (id === "dock") {
-            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "greeter" || popouts.currentName === "greetercontext" || popouts.currentName === "activewindow" || popouts.currentName === "statusiconscontext")) return;
+            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "greeter" || popouts.currentName === "greetercontext" || popouts.currentName === "statusiconscontext")) return;
 
             const item = ch.item;
             if (item && typeof item.handleHover === "function") {
@@ -406,15 +406,6 @@ Item {
             }
             DelegateChoice {
                 roleValue: "greeter"
-                delegate: WrappedLoader {
-                    sourceComponent: Greeter {
-                        bar: root
-                        monitor: Brightness.getMonitorForScreen(root.screen)
-                    }
-                }
-            }
-            DelegateChoice {
-                roleValue: "activeWindow"
                 delegate: WrappedLoader {
                     sourceComponent: Greeter {
                         bar: root

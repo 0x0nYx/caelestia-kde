@@ -114,14 +114,6 @@ Item {
     }
 
     Connections {
-        function onListChanged(): void {
-            root.refresh();
-        }
-
-        target: Apps
-    }
-
-    Connections {
         function onFavouriteAppsChanged(): void {
             root.refresh();
         }

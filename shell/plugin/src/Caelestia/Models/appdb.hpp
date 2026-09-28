@@ -53,10 +53,13 @@ signals:
     void genericNameChanged();
     void categoriesChanged();
     void keywordsChanged();
+    void removed();
 
 private:
     QObject* m_entry;
     quint32 m_frequency;
+
+    void onEntryDestroyed();
 };
 
 class AppDb : public QObject {
