@@ -31,9 +31,6 @@ tweak_disable_kde_osd() {
 }
 
 first_install() {
-    # A system that already configured its desktops has been installed or
-    # tweaked before; redoing the first-install tweaks there would stomp the
-    # user's own desktop layout and panels on every update.
     local existing
     existing="$(kreadconfig6 --file kwinrc --group "Desktops" --key "Number" 2>/dev/null || true)"
     [[ -z "$existing" ]]
