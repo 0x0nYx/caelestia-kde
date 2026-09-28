@@ -619,11 +619,13 @@ if [[ -f /etc/keyd/quickshell.conf ]]; then
     caelestia_sudo rmdir /etc/keyd 2>/dev/null || true
 fi
 
-if [[ -f /etc/udev/rules.d/80-uinput.rules ]]; then
-    caelestia_sudo rm -f /etc/udev/rules.d/80-uinput.rules
-    caelestia_sudo udevadm control --reload-rules 2>/dev/null || true
-    ok "Removed udev rule: 80-uinput.rules"
-fi
+for uinput_rule in /etc/udev/rules.d/70-uinput.rules /etc/udev/rules.d/80-uinput.rules; do
+    if [[ -f "$uinput_rule" ]]; then
+        caelestia_sudo rm -f "$uinput_rule"
+        caelestia_sudo udevadm control --reload-rules 2>/dev/null || true
+        ok "Removed udev rule: $(basename "$uinput_rule")"
+    fi
+done
 
 CCACHE_FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/ccache-enabled"
 if [[ -f "$CCACHE_FLAG" ]] && [[ -f /etc/makepkg.conf ]]; then

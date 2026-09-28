@@ -5,7 +5,6 @@ import qs.utils
 
 QtObject {
     readonly property list<var> pages: [
-        // Personalization
         {
             label: qsTr("Appearance"),
             key: "appearance",
@@ -82,7 +81,6 @@ QtObject {
                 { label: qsTr("Window Switcher"), keywords: ["tab switcher", "alt+tab", "task switcher", "desktop", "preview", "filter", "windows"], pagePath: "panels/TabSwitcherPanel.qml", subPageIdx: 18 }
             ]
         },
-        // Connectivity
         {
             label: qsTr("Network"),
             key: "network",
@@ -125,7 +123,6 @@ QtObject {
                 { label: qsTr("Muted Notification Apps"), pagePath: "audio/NotificationSilencingPage.qml", subPageIdx: 3, keywords: ["silence", "mute", "notification sound"] }
             ]
         },
-        // Controls
         {
             label: qsTr("Notifications"),
             key: "notifications",
@@ -154,18 +151,6 @@ QtObject {
             ]
         },
         {
-            label: qsTr("Power"),
-            key: "power",
-            icon: "battery_charging_full",
-            description: qsTr("Battery indicators, idle suspend"),
-            category: "controls",
-            settings: [
-                { label: qsTr("Battery Status"), keywords: ["percentage", "charging", "health"] },
-                { label: qsTr("Power Saving"), keywords: ["suspend", "sleep", "idle"] },
-                { label: qsTr("Screen Timeout"), keywords: ["dim", "turn off screen"] }
-            ]
-        },
-        {
             label: qsTr("Session"),
             key: "session",
             icon: "power_settings_new",
@@ -189,7 +174,6 @@ QtObject {
                 { label: qsTr("Custom Keybinds"), pagePath: "wallandstyle/AddShortcutDialog.qml", keywords: ["scripts", "commands", "actions"] }
             ]
         },
-        // Shell
         {
             label: qsTr("Apps"),
             key: "apps",
@@ -200,7 +184,7 @@ QtObject {
                 { label: qsTr("Default Apps"), keywords: ["browser", "email", "default"] },
                 { label: qsTr("File Types"), keywords: ["associations", "extensions", "open with"] },
                 { label: qsTr("All Apps"), keywords: ["installed", "list", "uninstall"], subPageIdx: 1 },
-                { label: qsTr("Favorites & Hidden"), keywords: ["pinned", "dock", "launcher", "ignore"], subPageIdx: 1 }
+                { label: qsTr("Favorites & Hidden"), keywords: ["pinned", "dock", "launcher", "ignore"], subPageIdx: 1 },
             ]
         },
         {
@@ -226,7 +210,6 @@ QtObject {
                 { label: qsTr("Weather Location"), keywords: ["city", "forecast", "units", "celsius", "fahrenheit"] }
             ]
         },
-        // System
         {
             label: qsTr("Updates"),
             key: "updates",
@@ -270,6 +253,7 @@ QtObject {
             category: "assistant",
             settings: [
                 { label: qsTr("Claude Code"), keywords: ["claude", "cli", "subscription", "login"] },
+                { label: qsTr("Let the CLI run its own tools"), keywords: ["claude", "permissions", "tools", "bypass", "dangerous"] },
                 { label: qsTr("Accounts"), keywords: ["claude", "account", "login", "switch"] },
                 { label: qsTr("Providers"), keywords: ["ollama", "openai", "chatgpt", "gemini", "openrouter", "api key"] }
             ]

@@ -67,8 +67,6 @@ StyledRect {
                 return Nmcli.hotspot.supported;
             }
 
-            // Nothing to toggle if it is not installed, and a dead button is
-            // worse than no button.
             if (item.id === "easyeffects") {
                 return EasyEffects.available;
             }
