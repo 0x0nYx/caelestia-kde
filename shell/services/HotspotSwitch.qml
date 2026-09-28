@@ -20,6 +20,12 @@ QtObject {
     required property HotspotController controller
 
     function toggle(): void {
+        // Two taps before the backend has answered are one request, not two. The
+        // controller is the one that owns the in-flight state, so the guard is
+        // read from it rather than tracked here as a second copy.
+        if (root.controller.busy)
+            return;
+
         if (root.controller.enabled) {
             root.controller.disable(root.report);
             return;

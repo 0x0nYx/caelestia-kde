@@ -128,11 +128,11 @@ PageBase {
             Layout.fillWidth: true
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
             placeholderText: qsTr("Password")
-            supportingText: qsTr("At least 8 characters. Leave empty to share an open network.")
-            errorText: qsTr("A password is either empty or at least 8 characters")
+            supportingText: qsTr("At least %1 characters. Leave empty to share an open network.").arg(Nmcli.hotspot.minPasswordLength)
+            errorText: qsTr("A password is either empty or at least %1 characters").arg(Nmcli.hotspot.minPasswordLength)
             leadingIcon: "key"
             echoMode: TextInput.Password
-            validate: text => text.length === 0 || text.length >= 8
+            validate: text => text.length === 0 || text.length >= Nmcli.hotspot.minPasswordLength
 
             onAccepted: root.submit()
         }

@@ -99,17 +99,24 @@ test_the_profile_id_is_read_not_restated() {
         "the page should read the profile id from the controller"
 }
 
-test_the_password_rule_agrees_across_the_layers() {
-    # WPA cannot carry a passphrase under eight characters, so the controller
-    # refuses one and the form refuses to save one. Two copies of the rule can
-    # drift apart silently, which is why both sides are pinned here.
+test_the_password_rule_has_one_definition() {
+    # WPA cannot carry a passphrase under eight characters. The length lives in
+    # the controller and the form reads it: a second literal would be free to
+    # drift, and a form that accepts what the controller refuses fails only after
+    # the tap, with the dialog already gone.
     local controller="$REPO_ROOT/shell/plugin/src/Caelestia/Services/HotspotController.cpp"
     local page="$SHELL_DIR/modules/nexus/pages/network/HotspotPage.qml"
 
-    assert_contains "$(cat "$controller")" "if (!password.isEmpty() && password.size() < 8)" \
-        "the controller should refuse a password under eight characters"
-    assert_contains "$(cat "$page")" "validate: text => text.length === 0 || text.length >= 8" \
-        "the form should refuse the same password"
+    assert_eq "1" "$(grep -c 'return 8;' "$controller")" \
+        "the minimum password length should be written once, in the controller"
+    assert_contains "$(cat "$controller")" "password.size() < minPasswordLength()" \
+        "the controller should refuse a password under its own minimum"
+    assert_contains "$(cat "$page")" "text.length >= Nmcli.hotspot.minPasswordLength" \
+        "the form should read the minimum from the controller"
+
+    local literals
+    literals="$(grep -n 'length >= 8\|length < 8\|at least 8 characters' "$page" || true)"
+    assert_eq "" "$literals" "no QML file should carry its own copy of the password rule"
 }
 
 run_tests

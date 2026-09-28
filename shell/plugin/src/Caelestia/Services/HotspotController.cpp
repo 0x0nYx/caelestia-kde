@@ -46,6 +46,10 @@ bool HotspotController::busy() const {
     return m_busy;
 }
 
+int HotspotController::minPasswordLength() const {
+    return 8;
+}
+
 void HotspotController::refresh() {
     // Every property is derived from NetworkManager at read time, so there is
     // nothing to recompute. Notifying unconditionally keeps the QML bindings
@@ -65,13 +69,25 @@ NetworkManager::WirelessDevice::Ptr HotspotController::accessPointDevice() {
 }
 
 std::optional<HotspotController::Active> HotspotController::active() {
-    // Every access point connection counts, not only the shell's own profile: a
-    // hotspot started from Plasma's applet is just as on, and the toggle that
-    // reads this should say so and be able to switch it off again.
+    // Scoped to the device the hotspot would run on, not to any access point on
+    // the machine. A second radio running its own hotspot is a different
+    // network: counting it would report the wrong name and switch off a
+    // connection this feature does not own. Not filtered by profile id, though:
+    // a hotspot started from Plasma's applet on this device is still this
+    // hotspot, and the toggle that reads it should say so and be able to stop
+    // it.
+    const auto device = accessPointDevice();
+    if (!device)
+        return std::nullopt;
+
+    const QString deviceUni = device->uni();
     const auto activePaths = NetworkManager::activeConnectionsPaths();
     for (const auto& path : activePaths) {
         const auto ac = NetworkManager::findActiveConnection(path);
-        const auto conn = ac ? ac->connection() : NetworkManager::Connection::Ptr();
+        if (!ac || !ac->devices().contains(deviceUni))
+            continue;
+
+        const auto conn = ac->connection();
         const auto connSettings = conn ? conn->settings() : NetworkManager::ConnectionSettings::Ptr();
         if (!connSettings)
             continue;
@@ -100,8 +116,11 @@ NMVariantMapMap HotspotController::buildSettings(const QString& ssid, const QStr
 
     wireless->setSsid(ssid.toUtf8());
     wireless->setMode(NetworkManager::WirelessSetting::Ap);
-    // 2.4 GHz: every driver that can run an access point can run it there, and a
-    // hotspot is for the phone in the room rather than for throughput.
+    // "bg" is NetworkManager's legacy "2.4 GHz preferred" band, not a literal
+    // 802.11b/g request, and it is deprecated in favour of leaving the band
+    // unset for the radio to choose. Every driver that can run an access point
+    // can run one on 2.4 GHz, and a hotspot is for the phone in the room rather
+    // than for throughput, so the pick is made here rather than left to default.
     wireless->setBand(NetworkManager::WirelessSetting::Bg);
     wireless->setInitialized(true);
 
@@ -149,8 +168,10 @@ void HotspotController::finish(QJSValue callback, bool success, const QString& o
 }
 
 void HotspotController::enable(const QString& ssid, const QString& password, QJSValue callback) {
-    if (m_busy)
+    if (m_busy) {
+        finish(callback, false, {}, QStringLiteral("A hotspot change is already in flight"));
         return;
+    }
 
     const auto wifiDev = accessPointDevice();
     if (!wifiDev) {
@@ -163,7 +184,7 @@ void HotspotController::enable(const QString& ssid, const QString& password, QJS
         finish(callback, false, {}, QStringLiteral("The hotspot needs a name"));
         return;
     }
-    if (!password.isEmpty() && password.size() < 8) {
+    if (!password.isEmpty() && password.size() < minPasswordLength()) {
         finish(callback, false, {}, QStringLiteral("A hotspot password is either empty or at least 8 characters"));
         return;
     }
@@ -230,8 +251,10 @@ void HotspotController::enable(const QString& ssid, const QString& password, QJS
 }
 
 void HotspotController::disable(QJSValue callback) {
-    if (m_busy)
+    if (m_busy) {
+        finish(callback, false, {}, QStringLiteral("A hotspot change is already in flight"));
         return;
+    }
 
     const auto up = active();
     if (!up) {

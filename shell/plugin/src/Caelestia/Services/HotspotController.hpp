@@ -41,6 +41,11 @@ class HotspotController : public QObject {
     /// the backend has caught up instead of guessing.
     Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
+    /// Shortest password WPA can carry. Exposed so the form refuses the same
+    /// length the controller does, instead of holding a second copy of the
+    /// number that can drift from this one.
+    Q_PROPERTY(int minPasswordLength READ minPasswordLength CONSTANT)
+
 public:
     explicit HotspotController(QObject* parent = nullptr);
 
@@ -49,6 +54,7 @@ public:
     bool enabled() const;
     QString ssid() const;
     bool busy() const;
+    int minPasswordLength() const;
 
     /// Read the access point state from NetworkManager again.
     void refresh();
@@ -89,8 +95,10 @@ private:
     /// access point support, else null when no device can run one.
     static NetworkManager::WirelessDevice::Ptr accessPointDevice();
 
-    /// The access point that is up, if any. Read from NetworkManager rather than
-    /// cached, so a hotspot started from Plasma's applet is reported as on.
+    /// The access point that is up on the hotspot device, if any. Read from
+    /// NetworkManager rather than cached, so a hotspot started from Plasma's
+    /// applet on that device is reported as on; an access point on a different
+    /// radio is not this one.
     static std::optional<Active> active();
 
     static NMVariantMapMap buildSettings(const QString& ssid, const QString& password, const QString& uuid);
