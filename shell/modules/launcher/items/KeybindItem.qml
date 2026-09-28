@@ -17,8 +17,10 @@ Item {
             return;
         root.list.visibilities.launcher = false;
 
-        if (root.modelData.action.startsWith("command(") && root.modelData.action.endsWith(")")) {
-            Quickshell.execDetached(["sh", "-c", root.modelData.action.substring(8, root.modelData.action.length - 1)]);
+        const actionStr = root.modelData.action;
+
+        if (actionStr.startsWith("command(") && actionStr.endsWith(")")) {
+            Quickshell.execDetached(["sh", "-c", actionStr.substring(8, actionStr.length - 1)]);
         }
         // Every other listed shortcut is already live through kglobalaccel on
         // the KDE port, so there is nothing to dispatch for it here.
