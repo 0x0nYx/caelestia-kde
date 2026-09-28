@@ -6,24 +6,12 @@ import Caelestia.Services
 import qs.services
 import qs.utils
 
-/// Drives the Wi-Fi hotspot from a one-tap surface.
-///
-/// A one-tap surface has no name or password field, so it uses the ones kept in
-/// the settings. A hotspot that has never been set up is not started: one tap
-/// should not share an open network under the machine's hostname, so the refusal
-/// points at the settings page, which is where an open network is a choice.
-///
-/// Both the utilities tile and the bar popout use this, so a failure is reported
-/// once, here, rather than once per surface.
 QtObject {
     id: root
 
     required property HotspotController controller
 
     function toggle(): void {
-        // Two taps before the backend has answered are one request, not two. The
-        // controller is the one that owns the in-flight state, so the guard is
-        // read from it rather than tracked here as a second copy.
         if (root.controller.busy)
             return;
 
@@ -41,8 +29,6 @@ QtObject {
         root.controller.enable(HotspotSwitch.resolveName(hotspotSsid), hotspotPassword, root.report);
     }
 
-    /// The name an empty setting stands for: the machine's own name, so a
-    /// hotspot started without typing one is still identifiable on the network.
     function resolveName(ssid: string): string {
         return ssid.length > 0 ? ssid : (SysInfo.hostname || "caelestia");
     }

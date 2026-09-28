@@ -18,8 +18,6 @@ namespace caelestia::services {
 
 namespace {
 
-// The one definition of the profile id. profileId() hands it to QML, and the
-// static settings builder names the profile with it.
 constexpr QLatin1String hotspotProfileId("caelestia-hotspot");
 
 } // namespace
@@ -53,11 +51,6 @@ int HotspotController::minPasswordLength() const {
 }
 
 void HotspotController::refresh() {
-    // Every property is derived from NetworkManager at read time, so there is
-    // nothing to recompute. Notifying unconditionally keeps the QML bindings
-    // live without caching a copy that could go stale; QML assigns a binding's
-    // current value to itself without running handlers, so a redundant
-    // notification is free for the consumers of this class.
     emit stateChanged();
 }
 
@@ -71,13 +64,6 @@ NetworkManager::WirelessDevice::Ptr HotspotController::accessPointDevice() {
 }
 
 std::optional<HotspotController::Active> HotspotController::active() {
-    // Scoped to the device the hotspot would run on, not to any access point on
-    // the machine. A second radio running its own hotspot is a different
-    // network: counting it would report the wrong name and switch off a
-    // connection this feature does not own. Not filtered by profile id, though:
-    // a hotspot started from Plasma's applet on this device is still this
-    // hotspot, and the toggle that reads it should say so and be able to stop
-    // it.
     const auto device = accessPointDevice();
     if (!device)
         return std::nullopt;
@@ -106,9 +92,6 @@ NMVariantMapMap HotspotController::buildSettings(const QString& ssid, const QStr
     NetworkManager::ConnectionSettings settings(NetworkManager::ConnectionSettings::Wireless);
     settings.setId(hotspotProfileId);
     settings.setUuid(uuid);
-    // A hotspot is switched on by hand. Leaving the default autoconnect on would
-    // start an access point on every boot, from a profile the user never asked
-    // to make permanent.
     settings.setAutoconnect(false);
 
     const auto wireless =
@@ -118,11 +101,6 @@ NMVariantMapMap HotspotController::buildSettings(const QString& ssid, const QStr
 
     wireless->setSsid(ssid.toUtf8());
     wireless->setMode(NetworkManager::WirelessSetting::Ap);
-    // "bg" is NetworkManager's legacy "2.4 GHz preferred" band, not a literal
-    // 802.11b/g request, and it is deprecated in favour of leaving the band
-    // unset for the radio to choose. Every driver that can run an access point
-    // can run one on 2.4 GHz, and a hotspot is for the phone in the room rather
-    // than for throughput, so the pick is made here rather than left to default.
     wireless->setBand(NetworkManager::WirelessSetting::Bg);
     wireless->setInitialized(true);
 
@@ -135,8 +113,6 @@ NMVariantMapMap HotspotController::buildSettings(const QString& ssid, const QStr
         wireless->setSecurity(security->name());
     }
 
-    // Shared IPv4 is what hands addresses to the clients: NM runs the DHCP server
-    // and the NAT itself, so a hotspot needs nothing else installed.
     ipv4->setMethod(NetworkManager::Ipv4Setting::Shared);
     ipv4->setInitialized(true);
 
@@ -191,8 +167,6 @@ void HotspotController::enable(const QString& ssid, const QString& password, QJS
         return;
     }
 
-    // The existing profile, found by id, so enabling twice updates what is there
-    // instead of leaving a numbered duplicate beside it.
     NetworkManager::Connection::Ptr existing;
     for (const auto& conn : NetworkManager::listConnections()) {
         if (conn && conn->settings() && conn->settings()->id() == hotspotProfileId) {
@@ -207,8 +181,6 @@ void HotspotController::enable(const QString& ssid, const QString& password, QJS
     setBusy(true);
 
     if (existing) {
-        // Update in place, then activate. The profile uuid has to survive, or the
-        // hotspot loses the name NetworkManager and Plasma know it by.
         QDBusPendingReply<> reply = existing->update(settings);
         auto* watcher = new QDBusPendingCallWatcher(reply, this);
         connect(watcher, &QDBusPendingCallWatcher::finished, this,
@@ -266,8 +238,6 @@ void HotspotController::disable(QJSValue callback) {
 
     setBusy(true);
 
-    // Deactivating leaves the profile saved, so turning the hotspot back on needs
-    // no credentials typed in again.
     QDBusPendingReply<> reply = NetworkManager::deactivateConnection(up->path);
     auto* watcher = new QDBusPendingCallWatcher(reply, this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, callback](QDBusPendingCallWatcher* w) {

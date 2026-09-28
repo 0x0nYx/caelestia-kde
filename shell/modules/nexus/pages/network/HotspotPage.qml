@@ -8,17 +8,11 @@ import qs.components.controls
 import qs.services
 import qs.modules.nexus.common
 
-// Settings for the Wi-Fi hotspot: the name and password it shares with, and the
-// switch that starts and stops it. Reached from the Hotspot row on NetworkPage,
-// and the values kept here are the ones a one-tap toggle starts it with.
 PageBase {
     id: root
 
     readonly property bool changed: ssidField.text.trim() !== GlobalConfig.services.hotspotSsid || passwordField.text !== GlobalConfig.services.hotspotPassword
 
-    // Only the failure text is local. Whether a change is in flight comes from
-    // the controller, so this page, the utilities tile and the bar popout all
-    // switch on the same answer instead of three copies of it.
     property string failure: ""
 
     function report(result: var): void {
@@ -53,9 +47,6 @@ PageBase {
         GlobalConfig.services.hotspotSsid = ssidField.text.trim();
         GlobalConfig.services.hotspotPassword = passwordField.text;
 
-        // A running access point keeps the name and password it started with,
-        // so changing them takes it down and brings it back up. The page stays
-        // open for that, so a start that goes wrong can be read here.
         if (Nmcli.hotspot.enabled)
             Nmcli.hotspot.disable(() => root.enable());
         else
@@ -102,9 +93,6 @@ PageBase {
             subtext: Nmcli.hotspot.enabled ? qsTr("Sharing as \"%1\"").arg(Nmcli.hotspot.ssid) : qsTr("Off")
             enabled: Nmcli.hotspot.supported && !Nmcli.hotspot.busy
 
-            // A plain binding, like every other switch that reads the backend:
-            // the value only changes when the backend says so, so a start that
-            // fails leaves the switch where it was.
             checked: Nmcli.hotspot.enabled
             onToggled: checked ? root.enable() : root.disable()
         }
@@ -161,8 +149,6 @@ PageBase {
                 onClicked: root.nState.closeSubPage()
             }
 
-            // Save button - swaps to a loading spinner while the hotspot is
-            // being started, stopped, or restarted with the new name.
             ButtonBase {
                 id: saveBtn
 

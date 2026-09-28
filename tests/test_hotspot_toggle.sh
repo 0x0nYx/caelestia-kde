@@ -7,16 +7,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/helpers.sh"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHELL_DIR="$REPO_ROOT/shell"
 
-# The invariants worth pinning here are the ones a compiler or a QML engine
-# cannot see: that a settings read cannot silently resolve to nothing, and that
-# the pieces which must agree on the profile id still do. Everything else about
-# this feature is behavior, and belongs in a harness that can run it.
-
 test_every_hotspot_setting_reader_uses_global_config() {
-    # A global property is only reachable through GlobalConfig. Reading it off
-    # Config resolves to nothing, so a field would stay empty and a one-tap
-    # toggle would start an access point with the wrong name: no error, no
-    # warning, just the wrong network.
     local readers
     readers="$(grep -rn 'Config\.services\.hotspot' "$SHELL_DIR" --include='*.qml' \
         | grep -v 'GlobalConfig\.services\.hotspot' || true)"
@@ -25,9 +16,6 @@ test_every_hotspot_setting_reader_uses_global_config() {
 }
 
 test_the_profile_id_has_one_definition() {
-    # The id names a connection NetworkManager and Plasma both key on. It is
-    # declared once, in the controller, and the UI reads it from there: a second
-    # literal would be free to drift from this one.
     local controller="$REPO_ROOT/shell/plugin/src/Caelestia/Services/HotspotController.cpp"
 
     assert_file_exists "$controller"
@@ -40,9 +28,6 @@ test_the_profile_id_has_one_definition() {
 }
 
 test_the_hotspot_state_has_one_owner() {
-    # Supported, enabled, the name and the in-flight flag all change together.
-    # Copying them through the Nmcli adapter is what makes a switch have to guess
-    # which copy is authoritative, so the adapter hands over the service instead.
     local adapter
     adapter="$(cat "$SHELL_DIR/services/Nmcli.qml")"
 
@@ -53,10 +38,6 @@ test_the_hotspot_state_has_one_owner() {
 }
 
 test_every_switch_reads_the_backend() {
-    # A switch that writes its own checked and then reads the backend has to
-    # reconcile the two, and every surface that does it needs its own copy of
-    # that reconciliation. Binding checked to the backend makes the tap a no-op
-    # on failure instead.
     local file
     for file in \
         "$SHELL_DIR/modules/utilities/cards/Toggles.qml" \
@@ -72,9 +53,6 @@ test_every_switch_reads_the_backend() {
 }
 
 test_one_tap_does_not_share_an_open_network() {
-    # With nothing configured, starting the hotspot would share an open network
-    # under the machine's hostname. The refusal lives with the one-tap path, not
-    # in the adapter, and points at the page where an open network is a choice.
     local switch
     switch="$(cat "$SHELL_DIR/services/HotspotSwitch.qml")"
 
@@ -90,8 +68,6 @@ test_one_tap_does_not_share_an_open_network() {
 }
 
 test_the_profile_id_is_read_not_restated() {
-    # The help text names the profile so a user can find it in Plasma's applet.
-    # It reads the id from the controller so the sentence cannot outlive a rename.
     local page
     page="$(cat "$SHELL_DIR/modules/nexus/pages/network/HotspotPage.qml")"
 
@@ -100,10 +76,6 @@ test_the_profile_id_is_read_not_restated() {
 }
 
 test_the_password_rule_has_one_definition() {
-    # WPA cannot carry a passphrase under eight characters. The length lives in
-    # the controller and the form reads it: a second literal would be free to
-    # drift, and a form that accepts what the controller refuses fails only after
-    # the tap, with the dialog already gone.
     local controller="$REPO_ROOT/shell/plugin/src/Caelestia/Services/HotspotController.cpp"
     local page="$SHELL_DIR/modules/nexus/pages/network/HotspotPage.qml"
 
