@@ -90,7 +90,7 @@ Item {
                 sourceComponent: MaterialIcon {
                     text: "person_add"
                     color: Colours.palette.m3onSurfaceVariant
-                    fontStyle: Tokens.font.icon.builders.extraLarge.scale(2.2).build()
+                    fontStyle: Tokens.font.icon.extraLarge
                     fill: 1
                     grade: -2
                 }
