@@ -26,7 +26,6 @@ PageBase {
             unavailableText: qsTr("GitHub token not detected")
         },
         "greeter": { icon: "waving_hand", name: qsTr("Greeter") },
-        "activeWindow": { icon: "waving_hand", name: qsTr("Greeter") },
         "tray": { icon: "expand_more", name: qsTr("System tray") },
         "updateIndicator": { icon: "update", name: qsTr("Updates") },
         "clock": { icon: "schedule", name: qsTr("Clock") },
@@ -362,7 +361,7 @@ PageBase {
         return [
             { id: "logo", enabled: true, zone: "left" },
             { id: "workspaces", enabled: true, zone: "left" },
-            { id: "activeWindow", enabled: true, zone: "left" },
+            { id: "greeter", enabled: true, zone: "left" },
             { id: "dock", enabled: true, zone: "middle" },
             { id: "tray", enabled: true, zone: "right" },
             { id: "updateIndicator", enabled: true, zone: "right" },

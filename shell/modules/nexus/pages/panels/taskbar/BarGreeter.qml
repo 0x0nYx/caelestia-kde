@@ -69,7 +69,7 @@ PageBase {
             checked: {
                 const entries = Config.bar.entries || [];
                 for (let i = 0; i < entries.length; i++) {
-                    if (entries[i].id === "greeter" || entries[i].id === "activeWindow")
+                    if (entries[i].id === "greeter")
                         return entries[i].enabled;
                 }
                 return false;
@@ -78,7 +78,7 @@ PageBase {
                 let newEntries = [...(GlobalConfig.bar.entries || [])];
                 let found = false;
                 for (let i = 0; i < newEntries.length; i++) {
-                    if (newEntries[i].id === "greeter" || newEntries[i].id === "activeWindow") {
+                    if (newEntries[i].id === "greeter") {
                         newEntries[i].enabled = checked;
                         found = true;
                         break;

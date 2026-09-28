@@ -24,8 +24,7 @@ class BarScrollActions : public settings::ObjectNode {
 class BarPopouts : public settings::ObjectNode {
     CONFIG_NODE(BarPopouts, settings::ObjectNode)
 
-    CONFIG_PROPERTY(bool, greeter, true)
-    CONFIG_PROPERTY(bool, activeWindow, true)
+    CONFIG_PROPERTY(bool, greeter, false)
     CONFIG_PROPERTY(bool, tray, true)
     CONFIG_PROPERTY(bool, statusIcons, true)
     CONFIG_PROPERTY(bool, clock, false)
@@ -172,7 +171,6 @@ class BarPreviewScales : public settings::ObjectNode {
     CONFIG_NODE(BarPreviewScales, settings::ObjectNode)
 
     CONFIG_PROPERTY(qreal, greeter, 0.0)
-    CONFIG_PROPERTY(qreal, activeWindow, 0.0)
     CONFIG_PROPERTY(qreal, audio, 0.0)
     CONFIG_PROPERTY(qreal, battery, 0.0)
     CONFIG_PROPERTY(qreal, bluetooth, 0.0)
@@ -192,7 +190,6 @@ class BarPreviewFontScales : public settings::ObjectNode {
     CONFIG_NODE(BarPreviewFontScales, settings::ObjectNode)
 
     CONFIG_PROPERTY(qreal, greeter, 0.0)
-    CONFIG_PROPERTY(qreal, activeWindow, 0.0)
     CONFIG_PROPERTY(qreal, audio, 0.0)
     CONFIG_PROPERTY(qreal, battery, 0.0)
     CONFIG_PROPERTY(qreal, bluetooth, 0.0)
@@ -230,7 +227,6 @@ class BarConfig : public settings::ObjectNode {
     CONFIG_SUBOBJECT(BarPopouts, popouts)
     CONFIG_SUBOBJECT(BarWorkspaces, workspaces)
     CONFIG_SUBOBJECT(BarGreeter, greeter)
-    CONFIG_SUBOBJECT(BarGreeter, activeWindow)
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarStatus, status)
     // The status area as an ordered list: which icons are there and in what order,
