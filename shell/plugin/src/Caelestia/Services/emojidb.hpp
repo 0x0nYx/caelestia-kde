@@ -4,6 +4,7 @@
 #include <qhash.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
+#include <qset.h>
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <qvector.h>
@@ -44,11 +45,16 @@ private:
     bool loadTextFile(const QString& path);
     void loadFrequencies();
     void saveFrequencies();
+    void buildTrigramIndex();
 
     QString m_freqPath;
 
     QVector<EmojiEntry> m_emojis;
     QHash<QString, int> m_frequencies;
+    // Trigram inverted index: 3-char substring -> sorted list of emoji indices.
+    // Built once after all emojis are loaded; used to quickly get candidates
+    // during search(), avoiding the O(N*L) full linear scan.
+    QHash<QString, QVector<int>> m_trigramIndex;
     bool m_loaded = false;
 };
 
