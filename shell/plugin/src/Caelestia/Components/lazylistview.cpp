@@ -394,10 +394,6 @@ int LazyListView::count() const {
     return m_model ? m_model->rowCount() : 0;
 }
 
-bool LazyListView::itemsDirty() {
-    return false;
-}
-
 QQuickItem* LazyListView::itemAtIndex(int index) const {
     return m_delegates.value(index).item;
 }
@@ -682,9 +678,6 @@ void LazyListView::syncDelegates() {
                                                    created < static_cast<int>(toCreate.size()));
     if (created > 0 || workRemains)
         polish();
-
-    if (created > 0 || destroyed > 0)
-        emit itemsDirtyChanged();
 }
 
 QList<int> LazyListView::delegatesOutsideViewport(const QSet<int>& keep, const QRectF& viewport) const {
@@ -946,7 +939,6 @@ void LazyListView::remapDelegates(const std::function<int(int)>& mapIndex) {
     }
 
     m_delegates = std::move(remapped);
-    emit itemsDirtyChanged();
 }
 
 void LazyListView::connectModel() {
@@ -1000,7 +992,6 @@ void LazyListView::resetContent() {
         emit countChanged();
     }
 
-    emit itemsDirtyChanged();
     polish();
 }
 
