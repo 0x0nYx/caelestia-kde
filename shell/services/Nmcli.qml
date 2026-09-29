@@ -6,9 +6,9 @@ import Quickshell
 import Caelestia
 import Caelestia.Services
 
-/// Thin adapter wrapping the C++ NmQt (NetworkManagerQt/D-Bus) singleton.
-/// Keeps the QML modules on a stable API surface while the actual heavy
-/// lifting is done by the D-Bus backend instead of shelling out to nmcli.
+/// Adapter over the C++ NmQt (NetworkManagerQt/D-Bus) singleton.
+/// Forwards the QML-facing network API to the D-Bus backend and keeps the
+/// AccessPoint/SavedProfile/EthernetDevice object models rebuilt in sync.
 Singleton {
     id: root
 
