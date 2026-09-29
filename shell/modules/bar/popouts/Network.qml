@@ -94,32 +94,6 @@ ColumnLayout {
         font.pointSize: Tokens.font.body.medium.pointSize * root.fontScale
     }
 
-    PopoutToggleRow {
-        visible: root.view === "wireless"
-        scaleOffset: root.scaleOffset
-        fontScale: root.fontScale
-        label: qsTr("Enabled")
-        checked: Nmcli.wifiEnabled
-        toggle.onToggled: Nmcli.enableWifi(checked)
-    }
-
-    // Sits with the Wi-Fi switch rather than in the settings page because it is
-    // the same kind of thing: one tap on the radio this machine broadcasts.
-    // Hidden on a device that cannot run an access point at all.
-    PopoutToggleRow {
-        visible: root.view === "wireless" && Nmcli.hotspot.supported
-        scaleOffset: root.scaleOffset
-        fontScale: root.fontScale
-        label: qsTr("Hotspot")
-
-        // A plain binding, like the Wi-Fi switch above: the hotspot's state only
-        // changes when the backend says so, so a tap that fails leaves it where
-        // it was instead of showing the tap.
-        checked: Nmcli.hotspot.enabled
-        enabled: !Nmcli.hotspot.busy
-        toggle.onToggled: HotspotSwitch.toggle()
-    }
-
     StyledText {
         visible: root.view === "wireless"
 
