@@ -102,8 +102,9 @@ Item {
             if (wId === activeWsId) {
                 if (listView.currentIndex !== i) {
                     listView.currentIndex = i;
-                    if (!root._initialized) listView.positionViewAtIndex(i, ListView.SnapPosition);
                 }
+                if (!root._initialized || root.opacity <= 0.01)
+                    listView.positionViewAtIndex(i, ListView.SnapPosition);
                 break;
             }
         }
@@ -117,6 +118,7 @@ Item {
             selectedIndex = -1;
             root.isDragging = false;
         } else {
+            root.syncPage();
             if (Visibilities.preOverviewActiveWindowAddress !== "") {
                 const targetAddress = Visibilities.preOverviewActiveWindowAddress;
                 let foundIndex = -1;
