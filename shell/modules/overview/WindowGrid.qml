@@ -238,7 +238,9 @@ Item {
                 let changed = arr.length !== wsWindows.length;
                 if (!changed) {
                     for (let i = 0; i < arr.length; ++i) {
-                        if (arr[i].address !== wsWindows[i].address) {
+                        const a = arr[i];
+                        const b = wsWindows[i];
+                        if (a.address !== b.address || a.width !== b.width || a.height !== b.height || a.x !== b.x || a.y !== b.y || a.title !== b.title) {
                             changed = true;
                             break;
                         }
