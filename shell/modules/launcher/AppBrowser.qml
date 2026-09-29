@@ -31,10 +31,25 @@ Item {
     readonly property int columns: Math.max(1, Math.floor((root.implicitWidth - root.sidebarWidth - root.padding * 2 - Tokens.spacing.medium) / root.tileCellWidth))
     readonly property int rows: Math.ceil(root.count / root.columns)
 
+    function sameItems(a: var, b: var): bool {
+        if (a === b)
+            return true;
+        if (a.length !== b.length)
+            return false;
+        for (let i = 0; i < a.length; i++)
+            if (a[i] !== b[i])
+                return false;
+        return true;
+    }
+
     function refresh(): void {
         const all = Apps.allApps();
-        root.visibleCategories = Categories.visibleCategories(all);
-        gridModel.values = Categories.appsFor(root.currentCategory, all);
+        const nextCategories = Categories.visibleCategories(all);
+        const nextApps = Categories.appsFor(root.currentCategory, all);
+        if (!sameItems(root.visibleCategories, nextCategories))
+            root.visibleCategories = nextCategories;
+        if (!sameItems(gridModel.values, nextApps))
+            gridModel.values = nextApps;
     }
 
     function launch(app): void {
@@ -111,6 +126,14 @@ Item {
         root.refresh();
         grid.currentIndex = grid.count > 0 ? 0 : -1;
         sidebar.currentIndex = 0;
+    }
+
+    Connections {
+        function onListChanged(): void {
+            root.refresh();
+        }
+
+        target: Apps
     }
 
     Connections {

@@ -15,6 +15,8 @@
 
 namespace caelestia::services {
 
+class HotspotController;
+
 /**
  * NetworkManager Qt / D-Bus singleton replacing the nmcli-shelling-out
  * approach of the old Nmcli.qml.
@@ -39,6 +41,8 @@ class NmQt : public QObject {
 
     Q_PROPERTY(QVariantMap activeEthernet READ activeEthernet NOTIFY activeEthernetChanged)
     Q_PROPERTY(QVariantList ethernetDevices READ ethernetDevices NOTIFY ethernetDevicesChanged)
+
+    Q_PROPERTY(caelestia::services::HotspotController* hotspot READ hotspot CONSTANT)
 
     Q_PROPERTY(QVariantList vpnConnections READ vpnConnections NOTIFY vpnConnectionsChanged)
     Q_PROPERTY(QVariantMap activeVpn READ activeVpn NOTIFY activeVpnChanged)
@@ -75,6 +79,8 @@ public:
 
     QVariantMap wirelessDeviceDetails() const;
     QVariantMap ethernetDeviceDetails() const;
+
+    HotspotController* hotspot() const;
 
     Q_INVOKABLE void getNetworks(QJSValue callback = {});
 
@@ -207,6 +213,8 @@ private:
     bool m_wifiEnabled = true;
     bool m_scanning = false;
     bool m_initialised = false;
+
+    HotspotController* m_hotspot = nullptr;
 
     QString m_wirelessDeviceUni;
     QString m_ethernetDeviceUni;
