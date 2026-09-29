@@ -48,7 +48,9 @@ Variants {
         TapHandler {
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onTapped: (eventPoint, button) => {
-                if (button === Qt.RightButton && Config.background.wallpaperEnabled) {
+                if (desktopIcons.renameActive)
+                    desktopIcons.renamingDelegate?.cancelRename();
+                if (button === Qt.RightButton && Config.background.wallpaperEnabled && !desktopIcons.iconAt(eventPoint.position.x, eventPoint.position.y)) {
                     ContextMenuStore.openDesktopContextMenu(eventPoint.position.x, eventPoint.position.y, win.modelData.name);
                 } else if (button === Qt.LeftButton) {
                     if (true) {
@@ -81,6 +83,8 @@ Variants {
             }
         }
         DesktopIcons {
+            id: desktopIcons
+
             screenData: win.modelData
             z: 3
         }
@@ -463,5 +467,6 @@ Variants {
         }
         WlrLayershell.exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Bottom
+        WlrLayershell.keyboardFocus: desktopIcons.renameActive ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
     }
 }
