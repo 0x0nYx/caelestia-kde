@@ -131,7 +131,9 @@ void KWinActiveWindowBridge::onWindowAdded(const QString& uuid) {
         connect(handle, &PlasmaWindowHandle::titleChanged, this, &KWinActiveWindowBridge::scheduleWindowListUpdate);
         connect(handle, &PlasmaWindowHandle::appIdChanged, this, &KWinActiveWindowBridge::scheduleWindowListUpdate);
         connect(handle, &PlasmaWindowHandle::geometryChanged, this, &KWinActiveWindowBridge::scheduleWindowListUpdate);
-        connect(handle, &PlasmaWindowHandle::stateChanged, this, &KWinActiveWindowBridge::scheduleWindowListUpdate);
+        connect(handle, &PlasmaWindowHandle::stateChanged, this, [this, handle]() {
+            onStateChanged(handle);
+        });
         connect(handle, &PlasmaWindowHandle::desktopsChanged, this, &KWinActiveWindowBridge::scheduleWindowListUpdate);
         scheduleWindowListUpdate();
     }
@@ -144,9 +146,78 @@ void KWinActiveWindowBridge::onWindowLost(const QString& uuid) {
     scheduleWindowListUpdate();
 }
 
+void KWinActiveWindowBridge::onStateChanged(PlasmaWindowHandle* handle) {
+   const QString uuid = handle->uuid();
+    const bool isNowActive = handle->isActive();
+    const bool wasActive = m_activeWindow.value(QStringLiteral("address")).toString() == uuid;
+
+    if (isNowActive && !wasActive) {
+        const QString oldUuid = m_activeWindow.value(QStringLiteral("address")).toString();
+        if (!oldUuid.isEmpty()) {
+            const int oldIdx = m_windowIndex.value(oldUuid, -1);
+            if (oldIdx >= 0 && oldIdx < m_windowList.size()) {
+                QVariantMap map = m_windowList[oldIdx].toMap();
+                map[QStringLiteral("focused")] = false;
+                map[QStringLiteral("floating")] = !map.value(QStringLiteral("fullscreen")).toBool() &&
+                                                  !map.value(QStringLiteral("maximized")).toBool();
+                m_windowList[oldIdx] = map;
+                m_windowCache[oldUuid] = map;
+            }
+        }
+        QVariantMap w = windowToVariant(handle);
+        const int newIdx = m_windowIndex.value(uuid, -1);
+        if (newIdx >= 0 && newIdx < m_windowList.size()) {
+            QVariantMap map = m_windowList[newIdx].toMap();
+            map[QStringLiteral("focused")] = true;
+            m_windowList[newIdx] = map;
+            m_windowCache[uuid] = map;
+            w = map;
+        }
+        emit windowListChanged();
+        if (m_activeWindow != w) {
+            m_activeWindow = w;
+            emit activeWindowChanged();
+            const QString newOutput = w.value(QStringLiteral("output")).toString();
+            if (!newOutput.isEmpty())
+                setActiveOutputName(newOutput);
+            if (m_activeWindow.value(QStringLiteral("address")).toString() == m_pendingFocusAddress) {
+                m_pendingFocusAddress.clear();
+                emit pendingFocusAddressChanged();
+            }
+        }
+        return;
+    }
+
+    if (!isNowActive && wasActive) {
+        const int idx = m_windowIndex.value(uuid, -1);
+        if (idx >= 0 && idx < m_windowList.size()) {
+            QVariantMap map = m_windowList[idx].toMap();
+            map[QStringLiteral("focused")] = false;
+            m_windowList[idx] = map;
+            m_windowCache[uuid] = map;
+        }
+        m_activeWindow.clear();
+        emit windowListChanged();
+        emit activeWindowChanged();
+        return;
+    }
+
+    scheduleWindowListUpdate();
+}
+
 void KWinActiveWindowBridge::scheduleWindowListUpdate() {
     if (!m_updateTimer.isActive()) {
         m_updateTimer.start();
+    }
+}
+
+void KWinActiveWindowBridge::rebuildIndex() {
+    m_windowIndex.clear();
+    m_windowIndex.reserve(m_windowList.size());
+    for (int i = 0; i < m_windowList.size(); ++i) {
+        const QString addr = m_windowList[i].toMap().value(QStringLiteral("address")).toString();
+        if (!addr.isEmpty())
+            m_windowIndex.insert(addr, i);
     }
 }
 
@@ -167,13 +238,9 @@ void KWinActiveWindowBridge::sendToOutput(const QString& address, const QString&
     }
 
     QVariantMap window;
-    for (const QVariant& entry : m_windowList) {
-        const QVariantMap map = entry.toMap();
-        if (map.value(QStringLiteral("address")).toString() == address) {
-            window = map;
-            break;
-        }
-    }
+    const int idx = m_windowIndex.value(address, -1);
+    if (idx >= 0 && idx < m_windowList.size())
+        window = m_windowList[idx].toMap();
     if (window.isEmpty()) {
         return;
     }
@@ -289,7 +356,7 @@ QVariantMap KWinActiveWindowBridge::windowToVariant(PlasmaWindowHandle* w) const
 }
 
 void KWinActiveWindowBridge::buildWindowList() {
-    m_windowList.clear();
+    QVariantList newList;
     QVariantMap newActiveWindow;
     bool activeWindowFound = false;
 
@@ -297,7 +364,7 @@ void KWinActiveWindowBridge::buildWindowList() {
     for (const QString& uuid : plasmaWindows->windowUuids()) {
         if (auto* handle = plasmaWindows->handleFor(uuid)) {
             QVariantMap w = windowToVariant(handle);
-            m_windowList.append(w);
+            newList.append(w);
             if (handle->isActive()) {
                 newActiveWindow = w;
                 activeWindowFound = true;
@@ -305,7 +372,16 @@ void KWinActiveWindowBridge::buildWindowList() {
         }
     }
 
-    emit windowListChanged();
+    if (newList != m_windowList) {
+        m_windowList = newList;
+        m_windowCache.clear();
+        for (const QVariant& v : m_windowList) {
+            const QVariantMap map = v.toMap();
+            m_windowCache.insert(map.value(QStringLiteral("address")).toString(), map);
+        }
+        rebuildIndex();
+        emit windowListChanged();
+    }
 
     if (activeWindowFound && m_activeWindow != newActiveWindow) {
         m_activeWindow = newActiveWindow;
