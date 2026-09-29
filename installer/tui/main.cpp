@@ -143,7 +143,9 @@ int main(int argc, char** argv) {
     }
     check_signals();
 
-    if (!g_menu.is_null() && g_menu.contains("menu")) {
+    // render_menu walks the tree by index, so only a real array qualifies: any other
+    // menu.json shape would abort the TUI on a bad element access.
+    if (!g_menu.is_null() && g_menu.contains("menu") && g_menu["menu"].is_array()) {
         std::cerr << "[installer] phase 3: configure + review" << std::endl;
         UI::init_menu_defaults(g_menu["menu"]);
 

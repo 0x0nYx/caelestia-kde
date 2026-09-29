@@ -451,7 +451,6 @@ void execute() {
   }
   std::filesystem::remove(cache_dir + "/failed_steps.txt", fs_error);
   std::filesystem::remove(cache_dir + "/failed_packages.txt", fs_error);
-  std::filesystem::remove(cache_dir + "/failed_patches.txt", fs_error);
 
   setenv("BASE_DISTRO", g_base_distro.c_str(), 1);
   setenv("BUNDLE_DIR", g_bundle_dir.c_str(), 1);
@@ -624,6 +623,19 @@ void execute() {
       } else {
         Term::restore();
         exit(1);
+      }
+    }
+  }
+
+  // Record the steps that failed and were ignored, so the completion screen's
+  // "completed with warnings" summary (and TROUBLESHOOTING's `cat` advice) is real.
+  // The file is cleared at the start of this run, so a stale failure cannot leak in.
+  {
+    ofstream failed_steps(cache_dir + "/failed_steps.txt", ios::app);
+    if (failed_steps) {
+      for (const auto& st : steps) {
+        if (st.status == "IGNORED")
+          failed_steps << st.name << '\n';
       }
     }
   }

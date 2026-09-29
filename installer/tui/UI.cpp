@@ -290,9 +290,15 @@ namespace UI {
         std::function<void(const json&)> walk = [&](const json& arr) {
             for (size_t i = 0; i < arr.size(); ++i) {
                 auto& item = arr[i];
-                if (item.contains("type") && item["type"] == "submenu" && item.contains("items")) {
+                // Malformed entries are skipped, not fatal: menu.json is data, and one
+                // bad element must not abort the TUI with an unhandled exception.
+                if (!item.is_object())
+                    continue;
+                if (item.contains("type") && item["type"] == "submenu" &&
+                    item.contains("items") && item["items"].is_array()) {
                     walk(item["items"]);
-                } else if (item.contains("id") && item.contains("default") &&
+                } else if (item.contains("id") && item["id"].is_string() &&
+                           item.contains("default") &&
                            g_answers.find(item["id"].get<string>()) == g_answers.end()) {
                     if (item["default"].is_boolean())
                         g_answers[item["id"].get<string>()] = item["default"].get<bool>() ? "true" : "false";
@@ -634,7 +640,6 @@ namespace UI {
         string cache_dir = xdg_cache_dir() + "/caelestia-kde";
         string steps_file = cache_dir + "/failed_steps.txt";
         string pkgs_file = cache_dir + "/failed_packages.txt";
-        string patches_file = cache_dir + "/failed_patches.txt";
         string log_path = cache_dir + "/install.log";
 
         while (true) {
@@ -655,7 +660,9 @@ namespace UI {
             while (getline(pf, pkg)) {
                 if (!pkg.empty()) failed_pkgs.push_back(pkg);
             }
-            bool shell_failed = check_failed(steps_file, "Build Caelestia Shell");
+            // Runner writes the names of steps that failed and were ignored; this
+            // target must match the step name in Runner::steps exactly.
+            bool shell_failed = check_failed(steps_file, "Build Caelestia shell");
             bool has_errors = !failed_pkgs.empty() || shell_failed;
 
             Draw::box(left, top, w, h, has_errors ? "INSTALLATION COMPLETED WITH WARNINGS" : "INSTALLATION COMPLETE", has_errors ? "warning" : "success", "on_surface");
@@ -737,6 +744,7 @@ namespace UI {
             string help;
             vector<string> options;
             unordered_map<string, int> option_index;
+            size_t source; // index into menu_items; skipped entries desync the two lists
         };
 
         int selected = 0;
@@ -750,16 +758,25 @@ namespace UI {
         meta.reserve(static_cast<size_t>(num_items));
         for (int i = 0; i < num_items; ++i) {
             auto& item = menu_items[i];
+            // Malformed entries are skipped, not fatal: menu.json is data, and one bad
+            // element must not abort the TUI with an unhandled nlohmann exception.
+            if (!item.is_object())
+                continue;
+            if (item.contains("type") && !item["type"].is_string())
+                continue;
             MenuItemMeta m;
+            m.source = static_cast<size_t>(i);
             m.type = item.contains("type") ? item["type"].get<string>() : "action";
-            m.title = item.contains("title") ? item["title"].get<string>() : "Unknown";
-            m.id = item.contains("id") ? item["id"].get<string>() : "";
-            m.help = item.contains("help") ? item["help"].get<string>() : "";
+            m.title = item.contains("title") && item["title"].is_string() ? item["title"].get<string>() : "Unknown";
+            m.id = item.contains("id") && item["id"].is_string() ? item["id"].get<string>() : "";
+            m.help = item.contains("help") && item["help"].is_string() ? item["help"].get<string>() : "";
 
             if (m.type == "select" && item.contains("options") && item["options"].is_array()) {
                 auto& opts = item["options"];
                 m.options.reserve(opts.size());
                 for (size_t oi = 0; oi < opts.size(); ++oi) {
+                    if (!opts[oi].is_string())
+                        continue;
                     string opt = opts[oi].get<string>();
                     m.option_index[opt] = static_cast<int>(oi);
                     m.options.push_back(opt);
@@ -771,6 +788,8 @@ namespace UI {
 
             meta.push_back(std::move(m));
         }
+        num_items = static_cast<int>(meta.size());
+        if (num_items == 0) return true;
 
         auto build_display = [&](int index) {
             const auto& m = meta[index];
@@ -831,8 +850,8 @@ namespace UI {
             cout << Draw::sync_end() << flush;
 
             string key = Input::wait_key();
-            auto& item = menu_items[selected];
             auto& selected_meta = meta[selected];
+            auto& item = menu_items[selected_meta.source]; // meta can skip entries
             string type = selected_meta.type;
             string id = selected_meta.id;
 
@@ -847,7 +866,7 @@ namespace UI {
                     if (id == "action_back") return false;
                     if (id == "action_review" || id == "action_proceed") return true;
                 } else if (type == "submenu") {
-                    if (item.contains("items")) {
+                    if (item.contains("items") && item["items"].is_array()) {
                         bool proceed = render_menu(item["items"], selected_meta.title);
                         if (proceed) return true; // review chosen from a submenu bubbles up
                     }
