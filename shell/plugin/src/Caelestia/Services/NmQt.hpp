@@ -10,6 +10,7 @@
 #include <QJSValue>
 #include <QObject>
 #include <QStringList>
+#include <QTimer>
 #include <QVariantList>
 #include <QVariantMap>
 
@@ -215,7 +216,7 @@ private:
     bool m_initialised = false;
 
     HotspotController* m_hotspot = nullptr;
-
+    QTimer* m_scanWatchdog = nullptr;
     QString m_wirelessDeviceUni;
     QString m_ethernetDeviceUni;
 };

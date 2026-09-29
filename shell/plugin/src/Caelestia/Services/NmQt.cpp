@@ -46,6 +46,8 @@ bool isPhysicalInterface(const QString& name) {
     return QFileInfo::exists(QStringLiteral("/sys/class/net/%1/device").arg(name));
 }
 
+constexpr int kScanWatchdogMs = 15000;
+
 QString keyMgmtToString(NetworkManager::WirelessSecuritySetting::KeyMgmt k) {
     switch (k) {
     case NetworkManager::WirelessSecuritySetting::Ieee8021x:
@@ -165,6 +167,16 @@ NmQt::NmQt(QObject* parent)
     connect(m_hotspot, &HotspotController::stateChanged, this, [this] {
         emit isConnectedChanged();
         emit activeChanged();
+    });
+
+    m_scanWatchdog = new QTimer(this);
+    m_scanWatchdog->setSingleShot(true);
+    connect(m_scanWatchdog, &QTimer::timeout, this, [this] {
+        if (!m_scanning)
+            return;
+        qCWarning(lcNmQt) << "rescanWifi: scan timed out, clearing stuck scanning state";
+        m_scanning = false;
+        emit scanningChanged();
     });
 
     auto* notifier = NetworkManager::notifier();
@@ -320,6 +332,20 @@ void NmQt::connectToNetwork(const QString& ssid, const QString& password, const 
     if (existingConn && password.isEmpty()) {
         activateProfile(existingConn, wifiDev, callback);
         return;
+    }
+
+    if (existingConn && !password.isEmpty()) {
+        // Update the saved profile's PSK in place instead of duplicating it.
+        const auto securitySetting = existingConn->settings()
+                                         ->setting(NetworkManager::Setting::SettingType::WirelessSecurity)
+                                         .dynamicCast<NetworkManager::WirelessSecuritySetting>();
+        if (securitySetting) {
+            securitySetting->setPsk(password);
+            existingConn->update();
+            activateProfile(existingConn, wifiDev, callback);
+            return;
+        }
+        // else: profile has no security section — fall through and create a fresh one.
     }
 
     if (password.isEmpty() && !apIsOpen) {
@@ -577,6 +603,7 @@ void NmQt::rescanWifi() {
 
     m_scanning = true;
     emit scanningChanged();
+    m_scanWatchdog->start(kScanWatchdogMs);
 
     connect(wifiDev.data(), &NetworkManager::WirelessDevice::lastScanChanged, this, &NmQt::onScanFinished,
         Qt::UniqueConnection);
@@ -1134,6 +1161,7 @@ void NmQt::onDeviceStateChanged(NetworkManager::Device::State newState, NetworkM
 }
 
 void NmQt::onScanFinished(const QDateTime& /*dateTime*/) {
+    m_scanWatchdog->stop();
     m_scanning = false;
     emit scanningChanged();
     refreshNetworks();
