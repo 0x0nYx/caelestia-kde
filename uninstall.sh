@@ -576,7 +576,7 @@ if [[ -z "$_RESTORE_SHELL" ]]; then
 fi
 
 if [[ -n "$_RESTORE_SHELL" ]]; then
-    caelestia_sudo chsh -s "$_RESTORE_SHELL" "$USER" 2>/dev/null || \
+    caelestia_sudo chsh -s "$_RESTORE_SHELL" "$(id -un)" 2>/dev/null || \
         warn "Could not change login shell to $_RESTORE_SHELL. Run: chsh -s $_RESTORE_SHELL"
     ok "Login shell reverted to $_RESTORE_SHELL"
 fi
@@ -619,11 +619,13 @@ if [[ -f /etc/keyd/quickshell.conf ]]; then
     caelestia_sudo rmdir /etc/keyd 2>/dev/null || true
 fi
 
-if [[ -f /etc/udev/rules.d/80-uinput.rules ]]; then
-    caelestia_sudo rm -f /etc/udev/rules.d/80-uinput.rules
-    caelestia_sudo udevadm control --reload-rules 2>/dev/null || true
-    ok "Removed udev rule: 80-uinput.rules"
-fi
+for uinput_rule in /etc/udev/rules.d/70-uinput.rules /etc/udev/rules.d/80-uinput.rules; do
+    if [[ -f "$uinput_rule" ]]; then
+        caelestia_sudo rm -f "$uinput_rule"
+        caelestia_sudo udevadm control --reload-rules 2>/dev/null || true
+        ok "Removed udev rule: $(basename "$uinput_rule")"
+    fi
+done
 
 CCACHE_FLAG="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/ccache-enabled"
 if [[ -f "$CCACHE_FLAG" ]] && [[ -f /etc/makepkg.conf ]]; then
@@ -752,9 +754,9 @@ if [[ -f "$HOME/.cargo/bin/satty" ]]; then
     ok "Removed: satty (cargo)"
 fi
 
-if groups "$USER" | grep -q '\binput\b'; then
-    caelestia_sudo gpasswd -d "$USER" input 2>/dev/null || \
-        warn "Could not remove $USER from input group. Run: sudo gpasswd -d $USER input"
+if groups "$(id -un)" | grep -q '\binput\b'; then
+    caelestia_sudo gpasswd -d "$(id -un)" input 2>/dev/null || \
+        warn "Could not remove the user from input group. Run: sudo gpasswd -d $(id -un) input"
     ok "Removed $USER from 'input' group (takes effect on next login)"
 fi
 

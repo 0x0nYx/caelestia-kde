@@ -1,18 +1,7 @@
 import QtQuick
 import Quickshell
 
-// The What's New release notes.
-//
-// Append new entries to the end of `list` with a revision higher than every
-// entry above them. Never renumber or reorder an entry that has already
-// shipped: an entry's revision is how the shell records that a user has
-// acknowledged it, so changing one either re-shows the entry to everybody or
-// hides it from them. Pruning old entries is fine, but their revisions stay
-// used up, which is why this list does not start at 1. See the authoring notes
-// in ../../assets/whatsnew/README.md.
 QtObject {
-    // Bare media names are resolved against this directory; "root:" addresses a
-    // shared shell asset, matching the convention used by GlobalConfig paths.
     readonly property string assetDir: "../../assets/whatsnew/"
 
     readonly property var list: [
@@ -35,6 +24,8 @@ QtObject {
             "revision": 21,
             "icon": "space_dashboard",
             "title": qsTr("Status Icons You Can Arrange"),
+            "settingsPage": "panels",
+            "settingsSubPage": 10,
             "description": qsTr("The bar's status icons are an ordered list now instead of a wall of switches: add one, switch it off, or drag it into place under Settings -> Panels -> Taskbar -> Status icons, and the bar draws them in that order. The clock can show seconds, and the workspace indicator can hide the ones that are empty and inactive.")
         },
         {
@@ -42,13 +33,17 @@ QtObject {
             "revision": 22,
             "icon": "gamepad",
             "title": qsTr("Game Mode at a Tap"),
-            "description": qsTr("The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -> Services -> Game mode.")
+            "settingsPage": "utilities",
+            "settingsSubPage": 1,
+            "description": qsTr("The utilities panel has a game mode toggle: it stops window animations and blur, pauses a video wallpaper and stops the desktop media shapes while it is on, then puts everything back afterwards. Game mode can still switch itself on when one of your target windows opens, under Settings -> Utilities -> Game mode.")
         },
         {
             "id": "color_intensity",
             "revision": 23,
             "icon": "tune",
             "title": qsTr("Color Intensity"),
+            "settingsPage": "appearance",
+            "settingsSubPage": 10,
             "description": qsTr("Advanced color settings gained a slider that scales how saturated the palette derived from your wallpaper is: 0 percent leaves the same palette in grey, 100 percent is what the color engine produces, and 200 percent is the most the accents take. It is kept with the scheme, so it survives a wallpaper change and a reboot, and 'caelestia scheme set -i' sets it from the command line.")
         },
         {
@@ -56,6 +51,8 @@ QtObject {
             "revision": 24,
             "icon": "badge",
             "title": qsTr("Dock App Badges"),
+            "settingsPage": "panels",
+            "settingsSubPage": 12,
             "description": qsTr("Dock icons can now display the count, progress, and urgency published by running applications. Configure it under Settings -> Panels -> Taskbar -> Dock.")
         },
         {
@@ -63,6 +60,8 @@ QtObject {
             "revision": 25,
             "icon": "flare",
             "title": qsTr("Ambient Glow"),
+            "settingsPage": "appearance",
+            "settingsSubPage": 8,
             "description": qsTr("Shell surfaces and window previews can now cast a subtle, dynamic ambient glow derived from the window content. Enable it under Settings -> Appearance.")
         },
         {
