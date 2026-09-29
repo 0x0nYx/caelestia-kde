@@ -1277,29 +1277,6 @@
     </message>
 </context>
 <context>
-    <name>AreaPicker</name>
-    <message>
-        <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
-        <source>Open screenshot tool</source>
-        <translation>Открыть инструмент снимка экрана</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Open screenshot tool (freeze mode)</source>
-        <translation>Снимок экрана (с заморозкой)</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Open screenshot tool (clipboard)</source>
-        <translation>Снимок экрана (в буфер обмена)</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Open screenshot tool (freeze mode, clipboard)</source>
-        <translation>Снимок экрана (заморозка, в буфер)</translation>
-    </message>
-</context>
-<context>
     <name>ArpcPage</name>
     <message>
         <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
