@@ -229,9 +229,15 @@ StyledWindow {
         id: overviewWallpaperLayer
 
         property bool active: visibilities.overview || warming
+        property bool keepAlive: false
         property bool warming: false
         property real _maxBorder: Math.max(1, Math.min(root.width, root.height) * 0.15)
         property real bgScale: 1.0 + (dynamicBorderThickness / _maxBorder) * 0.1
+
+        onActiveChanged: {
+            if (active)
+                keepAlive = true;
+        }
 
         anchors.fill: parent
         visible: active || opacity > 0
@@ -263,6 +269,7 @@ StyledWindow {
                 height: parent.height
                 scale: overviewWallpaperLayer.bgScale
                 active: overviewWallpaperLayer.active || overviewWallpaperLayer.opacity > 0
+                        || (overviewWallpaperLayer.keepAlive && wallpaperLoader.item && !wallpaperLoader.item.isVideo(wallpaperLoader.item.source))
                 sourceComponent: Component { Wallpaper { screen: root.screen; skipTransition: true } }
             }
         }
