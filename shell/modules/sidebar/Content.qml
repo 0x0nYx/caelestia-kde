@@ -30,7 +30,17 @@ Item {
         }
     }
 
-    Component.onCompleted: checkAiTab()
+    Component.onCompleted: {
+        if (root.visibilities.sidebar) {
+            root.activeTab = Visibilities.initialSidebarTab || Visibilities.sidebarOpenTab();
+            Visibilities.initialSidebarTab = "";
+        }
+        checkAiTab();
+    }
+    onActiveTabChanged: {
+        if (root.visibilities.sidebar)
+            Visibilities.lastSidebarTab = activeTab;
+    }
 
     Connections {
         function onEnableAiAssistantChanged(): void { checkAiTab(); }
@@ -50,7 +60,8 @@ Item {
     Connections {
         function onSidebarChanged(): void {
             if (root.visibilities.sidebar) {
-                root.activeTab = Visibilities.initialSidebarTab;
+                root.activeTab = Visibilities.initialSidebarTab || Visibilities.sidebarOpenTab();
+                Visibilities.initialSidebarTab = "";
                 checkAiTab();
             }
         }
