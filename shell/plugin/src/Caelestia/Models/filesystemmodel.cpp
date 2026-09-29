@@ -425,6 +425,7 @@ void FileSystemModel::applyChanges(const QSet<QString>& removedPaths, const QSet
     }
 
     QList<FileSystemEntry*> newEntries;
+    newEntries.reserve(static_cast<qsizetype>(addedPaths.size()));
     for (const auto& path : addedPaths) {
         newEntries << new FileSystemEntry(path, m_dir.relativeFilePath(path), this);
     }
@@ -432,49 +433,27 @@ void FileSystemModel::applyChanges(const QSet<QString>& removedPaths, const QSet
         return compareEntries(a, b);
     });
 
-    QList<int> insertRows;
-    insertRows.reserve(newEntries.size());
-    for (const auto& entry : std::as_const(newEntries)) {
-        const auto it = std::lower_bound(
-            m_entries.begin(), m_entries.end(), entry, [this](const FileSystemEntry* a, const FileSystemEntry* b) {
+    if (!newEntries.isEmpty()) {
+        // Append sorted new entries to the back of the existing (already sorted)
+        // list, then merge the two sorted halves in-place. This avoids the
+        // O(M*N) repeated vector shifts caused by repeated mid-insertions.
+        // std::inplace_merge is O((N+M)*log(N+M)) time, O(log N) space.
+        const int oldSize = static_cast<int>(m_entries.size());
+        const int addedCount = static_cast<int>(newEntries.size());
+
+        beginInsertRows(QModelIndex(), oldSize, oldSize + addedCount - 1);
+        m_entries.append(std::move(newEntries));
+        endInsertRows();
+
+        // Merge the two sorted halves in-place.
+        // beginMoveRows/endMoveRows communicates positional changes to the view.
+        std::inplace_merge(m_entries.begin(), m_entries.begin() + oldSize, m_entries.end(),
+            [this](const FileSystemEntry* a, const FileSystemEntry* b) {
                 return compareEntries(a, b);
             });
-        insertRows << static_cast<int>(it - m_entries.begin());
-    }
 
-    int offset = 0;
-    int currentOriginalRow = -1;
-    QList<FileSystemEntry*> batchItems;
-    for (int i = 0; i < newEntries.size(); ++i) {
-        const auto entry = newEntries[i];
-        const int originalRow = insertRows[i];
-
-        if (currentOriginalRow == -1) {
-            currentOriginalRow = originalRow;
-            batchItems << entry;
-        } else if (originalRow == currentOriginalRow) {
-            batchItems << entry;
-        } else {
-            int insertPos = currentOriginalRow + offset;
-            beginInsertRows(QModelIndex(), insertPos, insertPos + static_cast<int>(batchItems.size()) - 1);
-            for (int j = 0; j < batchItems.size(); ++j) {
-                m_entries.insert(insertPos + j, batchItems[j]);
-            }
-            endInsertRows();
-
-            offset += batchItems.size();
-            currentOriginalRow = originalRow;
-            batchItems.clear();
-            batchItems << entry;
-        }
-    }
-    if (!batchItems.isEmpty()) {
-        int insertPos = currentOriginalRow + offset;
-        beginInsertRows(QModelIndex(), insertPos, insertPos + static_cast<int>(batchItems.size()) - 1);
-        for (int j = 0; j < batchItems.size(); ++j) {
-            m_entries.insert(insertPos + j, batchItems[j]);
-        }
-        endInsertRows();
+        // Notify the view that the layout has changed so delegates are re-ordered.
+        emit layoutChanged();
     }
 
     emit entriesChanged();
