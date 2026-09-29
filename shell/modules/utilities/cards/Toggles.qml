@@ -26,6 +26,9 @@ StyledRect {
 
         const builtIn = [
             {
+                id: "hotspot"
+            },
+            {
                 id: "restartShell"
             },
             {
@@ -52,6 +55,10 @@ StyledRect {
 
             if (item.id === "vpn") {
                 return GlobalConfig.utilities.vpn.selectedProvider.length > 0;
+            }
+
+            if (item.id === "hotspot") {
+                return Nmcli.hotspot.supported;
             }
 
             if (item.id === "easyeffects") {
@@ -124,6 +131,14 @@ StyledRect {
                         icon: "wifi"
                         checked: Nmcli.wifiEnabled
                         onClicked: Nmcli.toggleWifi()
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "hotspot"
+                    delegate: Toggle {
+                        icon: "wifi_tethering"
+                        checked: Nmcli.hotspot.enabled
+                        onClicked: HotspotSwitch.toggle()
                     }
                 }
                 DelegateChoice {
@@ -263,6 +278,16 @@ StyledRect {
                         icon: "graphic_eq"
                         onClicked: EasyEffects.toggle()
 
+                        // Right-click opens the application itself. Toggling the
+                        // service on is only half of what people want from
+                        // EasyEffects -- the other half is changing what it does,
+                        // and that lives in its own window.
+                        //
+                        // Only the right button is accepted here, so the left one
+                        // falls through to the button underneath and keeps working
+                        // as the toggle. Adding a second signal to ButtonBase would
+                        // have reached every button in the shell for the sake of
+                        // one.
                         MouseArea {
                             acceptedButtons: Qt.RightButton
                             anchors.fill: parent

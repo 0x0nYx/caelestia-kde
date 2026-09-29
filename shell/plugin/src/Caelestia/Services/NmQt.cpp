@@ -30,6 +30,8 @@
 #include <QSharedPointer>
 #include <algorithm>
 
+#include "HotspotController.hpp"
+
 Q_LOGGING_CATEGORY(lcNmQt, "caelestia.services.nmqt", QtInfoMsg)
 
 namespace caelestia::services {
@@ -156,7 +158,14 @@ NetworkManager::WirelessDevice::Ptr findWirelessDevice() {
 } // namespace
 
 NmQt::NmQt(QObject* parent)
-    : QObject(parent) {
+    : QObject(parent)
+    , m_hotspot(new HotspotController(this)) {
+
+    connect(m_hotspot, &HotspotController::profileAdded, this, &NmQt::refreshSavedConnections);
+    connect(m_hotspot, &HotspotController::stateChanged, this, [this] {
+        emit isConnectedChanged();
+        emit activeChanged();
+    });
 
     auto* notifier = NetworkManager::notifier();
     if (!notifier) {
@@ -233,6 +242,10 @@ QStringList NmQt::savedConnections() const {
 
 QStringList NmQt::savedConnectionSsids() const {
     return m_savedConnectionSsids;
+}
+
+HotspotController* NmQt::hotspot() const {
+    return m_hotspot;
 }
 
 QVariantList NmQt::savedConnectionProfiles() const {
@@ -1055,6 +1068,7 @@ QString NmQt::ethernetDataUsage(const QString& interfaceName) const {
 void NmQt::onWirelessEnabledChanged(bool enabled) {
     m_wifiEnabled = enabled;
     emit wifiEnabledChanged();
+    m_hotspot->refresh();
 }
 
 void NmQt::onWirelessHardwareEnabledChanged(bool enabled) {
@@ -1062,11 +1076,13 @@ void NmQt::onWirelessHardwareEnabledChanged(bool enabled) {
         m_wifiEnabled = false;
         emit wifiEnabledChanged();
     }
+    m_hotspot->refresh();
 }
 
 void NmQt::onNetworkDevicesChanged() {
     refreshDevices();
     refreshNetworks();
+    m_hotspot->refresh();
 }
 
 void NmQt::onActiveConnectionsChanged() {
@@ -1074,12 +1090,14 @@ void NmQt::onActiveConnectionsChanged() {
     refreshDevices();
     refreshVpnConnections();
     refreshSavedConnections();
+    m_hotspot->refresh();
     emit isConnectedChanged();
 }
 
 void NmQt::onConnectionsChanged() {
     refreshSavedConnections();
     refreshVpnConnections();
+    m_hotspot->refresh();
 }
 
 void NmQt::onDeviceStateChanged(NetworkManager::Device::State newState, NetworkManager::Device::State oldState,

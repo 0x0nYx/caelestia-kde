@@ -90,6 +90,8 @@ qml_module(caelestia-services
         screenedges.hpp
         NmQt.cpp
         NmQt.hpp
+        HotspotController.cpp
+        HotspotController.hpp
     LIBRARIES
         Qt::Concurrent
         Qt::DBus

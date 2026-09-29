@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Caelestia
+import Caelestia.Config
 import Caelestia.Services
 import qs.components.misc
 
@@ -33,6 +34,12 @@ Singleton {
     readonly property var vpnConnections: NmQt.vpnConnections
     readonly property var activeVpn: NmQt.activeVpn
     property string vpnPendingConnection: NmQt.vpnPendingConnection
+
+    /// Wi-Fi access point. Exposed as the service itself rather than as three
+    /// copied properties: supported, enabled, the name and whether an enable is
+    /// in flight all change together, and splitting them across an adapter is
+    /// what makes a switch have to guess which of the three is authoritative.
+    readonly property HotspotController hotspot: NmQt.hotspot
 
     property list<string> savedConnections: NmQt.savedConnections
     property list<string> savedConnectionSsids: NmQt.savedConnectionSsids
