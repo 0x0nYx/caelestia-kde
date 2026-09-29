@@ -215,7 +215,7 @@ static QRect physicalGeometry(const QScreen* screen) {
     const QRect logical = screen->geometry();
     const qreal dpr = screen->devicePixelRatio();
     return QRect(QPoint(qRound(logical.x() * dpr), qRound(logical.y() * dpr)),
-                 QSize(qRound(logical.width() * dpr), qRound(logical.height() * dpr)));
+        QSize(qRound(logical.width() * dpr), qRound(logical.height() * dpr)));
 }
 
 QString KWinActiveWindowBridge::getOutputNameForGeometry(int x, int y, int w, int h) const {
