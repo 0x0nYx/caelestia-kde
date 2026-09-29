@@ -7,7 +7,34 @@
 #include <qregularexpression.h>
 #include <qtimer.h>
 
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+
 namespace caelestia::models {
+
+// Key used in the PBDS order-statistics rank tree.
+// Ordering: favourites first (notFav=0 < 1), then by descending frequency
+// (-freq), then alphabetically by name. Encoding all three fields into a
+// single comparable struct lets the tree maintain the correct sort order
+// without any extra sorting step.
+struct AppRankKey {
+    int notFav;   // 0 = favourite, 1 = regular
+    int negFreq;  // stored as negative so higher frequency sorts first
+    QString name; // tie-break: ascending locale-aware name
+
+    bool operator<(const AppRankKey& o) const {
+        if (notFav != o.notFav)
+            return notFav < o.notFav;
+        if (negFreq != o.negFreq)
+            return negFreq < o.negFreq;
+        return name.localeAwareCompare(o.name) < 0;
+    }
+};
+
+// PBDS tree keyed on AppRankKey → AppEntry*.
+// Provides O(log N) insert, erase, and order-of/find-by-order.
+using AppRankTree = __gnu_pbds::tree<AppRankKey, AppEntry*, std::less<AppRankKey>, __gnu_pbds::rb_tree_tag,
+    __gnu_pbds::tree_order_statistics_node_update>;
 
 class AppEntry : public QObject {
     Q_OBJECT
@@ -105,10 +132,13 @@ private:
     QStringList m_favouriteApps;
     QList<QRegularExpression> m_favouriteAppsRegex;
     QHash<QString, AppEntry*> m_apps;
-    mutable QList<AppEntry*> m_sortedApps;
+    AppRankTree m_rankTree;                  // Replaces the flat m_sortedApps vector.
+    mutable QList<AppEntry*> m_cachedSorted; // Backing storage for QQmlListProperty.
 
     QString regexifyString(const QString& original) const;
-    QList<AppEntry*>& getSortedApps() const;
+    void rebuildRankTree();
+    [[nodiscard]] AppRankKey makeKey(const AppEntry* app) const;
+    QList<AppEntry*> getSortedApps() const;
     bool isFavourite(const AppEntry* app) const;
     quint32 getFrequency(const QString& id) const;
     void updateAppFrequencies();
