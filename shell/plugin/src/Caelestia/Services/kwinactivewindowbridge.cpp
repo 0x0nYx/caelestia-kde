@@ -56,8 +56,13 @@ QVariantList KWinActiveWindowBridge::windowList() const {
 }
 
 QVariantList KWinActiveWindowBridge::windowsForWorkspace(const QVariant& workspace, bool includeOnAllWorkspaces) const {
-    const bool hasNumberTarget = workspace.type() == QVariant::Int && workspace.toInt() > 0;
-    const bool hasStringTarget = workspace.type() == QVariant::String && !workspace.toString().isEmpty();
+    bool isInt = false;
+    const int targetId = workspace.toInt(&isInt);
+    const bool hasNumberTarget = isInt && targetId > 0;
+    const QString targetUuid = workspace.toString();
+    const bool hasStringTarget = !hasNumberTarget && !targetUuid.isEmpty();
+
+    auto* wsState = KWinWorkspaceState::instance();
 
     QVariantList out;
     for (const QVariant& v : m_windowList) {
@@ -67,9 +72,17 @@ QVariantList KWinActiveWindowBridge::windowsForWorkspace(const QVariant& workspa
             out.push_back(v);
             continue;
         }
-        const QVariant id = ws.value(QStringLiteral("id"));
+        int id = ws.value(QStringLiteral("id")).toInt();
         const QString uuid = ws.value(QStringLiteral("uuid")).toString();
-        const bool onAll = (id.type() == QVariant::Int && id.toInt() == -1) || uuid.isEmpty();
+
+        if (id <= 0 && !uuid.isEmpty() && wsState) {
+            const int resolved = wsState->indexForId(uuid);
+            if (resolved > 0) {
+                id = resolved;
+            }
+        }
+
+        const bool onAll = (id == -1 || id == 0) && uuid.isEmpty();
         if (onAll) {
             if (includeOnAllWorkspaces)
                 out.push_back(v);
@@ -79,13 +92,25 @@ QVariantList KWinActiveWindowBridge::windowsForWorkspace(const QVariant& workspa
             out.push_back(v);
             continue;
         }
-        if (hasNumberTarget && id.type() == QVariant::Int && id.toInt() == workspace.toInt()) {
-            out.push_back(v);
-            continue;
+        if (hasNumberTarget) {
+            if (id > 0 && id == targetId) {
+                out.push_back(v);
+                continue;
+            }
+            if (!uuid.isEmpty() && wsState && uuid == wsState->uuidForIndex(targetId)) {
+                out.push_back(v);
+                continue;
+            }
         }
-        if (hasStringTarget && uuid == workspace.toString()) {
-            out.push_back(v);
-            continue;
+        if (hasStringTarget) {
+            if (!uuid.isEmpty() && uuid == targetUuid) {
+                out.push_back(v);
+                continue;
+            }
+            if (id > 0 && wsState && wsState->uuidForIndex(id) == targetUuid) {
+                out.push_back(v);
+                continue;
+            }
         }
     }
     return out;
@@ -186,15 +211,22 @@ void KWinActiveWindowBridge::sendToOutput(const QString& address, const QString&
     });
 }
 
+static QRect physicalGeometry(const QScreen* screen) {
+    const QRect logical = screen->geometry();
+    const qreal dpr = screen->devicePixelRatio();
+    return QRect(QPoint(qRound(logical.x() * dpr), qRound(logical.y() * dpr)),
+        QSize(qRound(logical.width() * dpr), qRound(logical.height() * dpr)));
+}
+
 QString KWinActiveWindowBridge::getOutputNameForGeometry(int x, int y, int w, int h) const {
     const QRect windowRect(x, y, w, h);
 
     QScreen* bestScreen = nullptr;
-    int maxIntersectArea = 0;
+    qreal maxIntersectArea = 0;
 
     for (QScreen* screen : QGuiApplication::screens()) {
-        const QRect intersect = screen->geometry().intersected(windowRect);
-        const int area = intersect.width() * intersect.height();
+        const QRect intersect = physicalGeometry(screen).intersected(windowRect);
+        const qreal area = static_cast<qreal>(intersect.width()) * static_cast<qreal>(intersect.height());
         if (area > maxIntersectArea) {
             maxIntersectArea = area;
             bestScreen = screen;
@@ -205,7 +237,7 @@ QString KWinActiveWindowBridge::getOutputNameForGeometry(int x, int y, int w, in
         qreal bestDistance = -1;
         const QPoint windowCentre = windowRect.center();
         for (QScreen* screen : QGuiApplication::screens()) {
-            const QPoint delta = screen->geometry().center() - windowCentre;
+            const QPoint delta = physicalGeometry(screen).center() - windowCentre;
             const qreal distance =
                 static_cast<qreal>(delta.x()) * delta.x() + static_cast<qreal>(delta.y()) * delta.y();
             if (bestDistance < 0 || distance < bestDistance) {
@@ -227,7 +259,12 @@ QVariantMap KWinActiveWindowBridge::windowToVariant(PlasmaWindowHandle* w) const
         int parsed = firstDesktop.toInt(&ok);
         if (ok) {
             desktopId = parsed;
-            desktopUuid = firstDesktop;
+            if (auto wsState = KWinWorkspaceState::instance()) {
+                QString resolvedUuid = wsState->uuidForIndex(parsed);
+                desktopUuid = resolvedUuid.isEmpty() ? firstDesktop : resolvedUuid;
+            } else {
+                desktopUuid = firstDesktop;
+            }
         } else {
             desktopUuid = firstDesktop;
             if (auto wsState = KWinWorkspaceState::instance()) {
@@ -257,8 +294,6 @@ void KWinActiveWindowBridge::buildWindowList() {
     bool activeWindowFound = false;
 
     auto* plasmaWindows = PlasmaWindows::instance();
-    // qDebug() << "KWinActiveWindowBridge::buildWindowList called, total UUIDs:" <<
-    // plasmaWindows->windowUuids().size();
     for (const QString& uuid : plasmaWindows->windowUuids()) {
         if (auto* handle = plasmaWindows->handleFor(uuid)) {
             QVariantMap w = windowToVariant(handle);
@@ -267,7 +302,6 @@ void KWinActiveWindowBridge::buildWindowList() {
                 newActiveWindow = w;
                 activeWindowFound = true;
             }
-        } else {
         }
     }
 
@@ -408,6 +442,9 @@ void KWinActiveWindowBridge::clearHighlight() {
 }
 
 void KWinActiveWindowBridge::refreshWindows() {
+    if (auto* plasmaWindows = PlasmaWindows::instance()) {
+        plasmaWindows->refresh();
+    }
     scheduleWindowListUpdate();
 }
 

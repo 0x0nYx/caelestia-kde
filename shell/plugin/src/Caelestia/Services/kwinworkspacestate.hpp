@@ -34,8 +34,8 @@ class KWinWorkspaceState : public QObject {
 
 public:
     static KWinWorkspaceState* instance();
-    int indexForId(const QString& id) const;
-    QString uuidForIndex(int index) const;
+    Q_INVOKABLE int indexForId(const QString& id) const;
+    Q_INVOKABLE QString uuidForIndex(int index) const;
 
     explicit KWinWorkspaceState(QObject* parent = nullptr);
     ~KWinWorkspaceState() override;
