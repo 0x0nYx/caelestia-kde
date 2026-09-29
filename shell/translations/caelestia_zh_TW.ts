@@ -1277,6 +1277,29 @@
     </message>
   </context>
   <context>
+    <name>AreaPicker</name>
+    <message>
+      <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
+      <source>Open screenshot tool</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode)</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (clipboard)</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode, clipboard)</source>
+      <translation type="unfinished"/>
+    </message>
+  </context>
+  <context>
     <name>ArpcPage</name>
     <message>
       <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
@@ -3167,6 +3190,37 @@
       <location line="+19"/>
       <source>Variants</source>
       <translation>變體</translation>
+    </message>
+  </context>
+  <context>
+    <name>ConnectionInfoSection</name>
+    <message>
+      <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
+      <source>IP Address</source>
+      <translation>IP 地址</translation>
+    </message>
+    <message>
+      <location line="+4"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <source>Not available</source>
+      <translation>不可用</translation>
+    </message>
+    <message>
+      <location line="-26"/>
+      <source>Subnet Mask</source>
+      <translation>子網掩碼</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>Gateway</source>
+      <translation>閘道器</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>DNS Servers</source>
+      <translation>DNS 伺服器</translation>
     </message>
   </context>
   <context>

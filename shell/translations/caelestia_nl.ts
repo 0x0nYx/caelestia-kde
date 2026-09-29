@@ -1277,6 +1277,29 @@
     </message>
   </context>
   <context>
+    <name>AreaPicker</name>
+    <message>
+      <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
+      <source>Open screenshot tool</source>
+      <translation>Open schermafbeelding gereedschap</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode)</source>
+      <translation>Open schermafbeeldingsgereedschap (modus bevriezen)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (clipboard)</source>
+      <translation>Open schermafbeeldingsgereedschap (klembord)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode, clipboard)</source>
+      <translation>Open schermafbeelding tool (bevriezing modus, klembord)</translation>
+    </message>
+  </context>
+  <context>
     <name>ArpcPage</name>
     <message>
       <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
@@ -3167,6 +3190,37 @@
       <location line="+19"/>
       <source>Variants</source>
       <translation>Varianten</translation>
+    </message>
+  </context>
+  <context>
+    <name>ConnectionInfoSection</name>
+    <message>
+      <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
+      <source>IP Address</source>
+      <translation>IP adres</translation>
+    </message>
+    <message>
+      <location line="+4"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <source>Not available</source>
+      <translation>Niet beschikbaar</translation>
+    </message>
+    <message>
+      <location line="-26"/>
+      <source>Subnet Mask</source>
+      <translation>Subnet masker</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>Gateway</source>
+      <translation type="unfinished"/>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>DNS Servers</source>
+      <translation type="unfinished"/>
     </message>
   </context>
   <context>

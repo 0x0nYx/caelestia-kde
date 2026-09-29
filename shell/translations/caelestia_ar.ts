@@ -1277,6 +1277,29 @@
     </message>
   </context>
   <context>
+    <name>AreaPicker</name>
+    <message>
+      <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
+      <source>Open screenshot tool</source>
+      <translation>فتح أداة لقطة الشاشة</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode)</source>
+      <translation>فتح أداة لقطة الشاشة (وضع التجميد)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (clipboard)</source>
+      <translation>فتح أداة لقطة الشاشة (الحافظة)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode, clipboard)</source>
+      <translation>فتح أداة لقطة الشاشة (وضع التجميد، الحافظة)</translation>
+    </message>
+  </context>
+  <context>
     <name>ArpcPage</name>
     <message>
       <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
@@ -3167,6 +3190,37 @@
       <location line="+19"/>
       <source>Variants</source>
       <translation>المتغيرات</translation>
+    </message>
+  </context>
+  <context>
+    <name>ConnectionInfoSection</name>
+    <message>
+      <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
+      <source>IP Address</source>
+      <translation>عنوان IP</translation>
+    </message>
+    <message>
+      <location line="+4"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <source>Not available</source>
+      <translation>غير متوفر</translation>
+    </message>
+    <message>
+      <location line="-26"/>
+      <source>Subnet Mask</source>
+      <translation>قناع الشبكة الفرعية</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>Gateway</source>
+      <translation>البوابة</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>DNS Servers</source>
+      <translation>خوادم DNS</translation>
     </message>
   </context>
   <context>

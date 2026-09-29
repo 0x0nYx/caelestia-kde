@@ -1277,6 +1277,29 @@
     </message>
   </context>
   <context>
+    <name>AreaPicker</name>
+    <message>
+      <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
+      <source>Open screenshot tool</source>
+      <translation>Otevřít nástroj pro snímek obrazovky</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode)</source>
+      <translation>Otevřít nástroj pro snímek obrazovky (režim zamrznutí)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (clipboard)</source>
+      <translation>Otevřít nástroj pro snímek obrazovky (schránka)</translation>
+    </message>
+    <message>
+      <location line="+13"/>
+      <source>Open screenshot tool (freeze mode, clipboard)</source>
+      <translation>Otevřít nástroj pro snímek obrazovky (režim zmizení, schránka)</translation>
+    </message>
+  </context>
+  <context>
     <name>ArpcPage</name>
     <message>
       <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
@@ -3167,6 +3190,37 @@
       <location line="+19"/>
       <source>Variants</source>
       <translation>Varianty</translation>
+    </message>
+  </context>
+  <context>
+    <name>ConnectionInfoSection</name>
+    <message>
+      <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
+      <source>IP Address</source>
+      <translation>IP adresa</translation>
+    </message>
+    <message>
+      <location line="+4"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <location line="+11"/>
+      <source>Not available</source>
+      <translation>Není k dispozici</translation>
+    </message>
+    <message>
+      <location line="-26"/>
+      <source>Subnet Mask</source>
+      <translation>Maska podsítě</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>Gateway</source>
+      <translation>Brána</translation>
+    </message>
+    <message>
+      <location line="+11"/>
+      <source>DNS Servers</source>
+      <translation>DNS servery</translation>
     </message>
   </context>
   <context>

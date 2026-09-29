@@ -1277,6 +1277,29 @@
     </message>
 </context>
 <context>
+    <name>AreaPicker</name>
+    <message>
+        <location filename="../modules/areapicker/AreaPicker.qml" line="+99"/>
+        <source>Open screenshot tool</source>
+        <translation>Открыть инструмент снимка экрана</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open screenshot tool (freeze mode)</source>
+        <translation>Снимок экрана (с заморозкой)</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open screenshot tool (clipboard)</source>
+        <translation>Снимок экрана (в буфер обмена)</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open screenshot tool (freeze mode, clipboard)</source>
+        <translation>Снимок экрана (заморозка, в буфер)</translation>
+    </message>
+</context>
+<context>
     <name>ArpcPage</name>
     <message>
         <location filename="../modules/nexus/pages/services/ArpcPage.qml" line="+19"/>
@@ -3167,6 +3190,37 @@
         <location line="+19"/>
         <source>Variants</source>
         <translation>Варианты</translation>
+    </message>
+</context>
+<context>
+    <name>ConnectionInfoSection</name>
+    <message>
+        <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
+        <source>IP Address</source>
+        <translation>IP-адрес</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <source>Not available</source>
+        <translation>Недоступно</translation>
+    </message>
+    <message>
+        <location line="-26"/>
+        <source>Subnet Mask</source>
+        <translation>Маска подсети</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Gateway</source>
+        <translation>Шлюз</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>DNS Servers</source>
+        <translation>DNS-серверы</translation>
     </message>
 </context>
 <context>
