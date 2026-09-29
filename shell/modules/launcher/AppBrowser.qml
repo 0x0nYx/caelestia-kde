@@ -31,9 +31,6 @@ Item {
     readonly property int columns: Math.max(1, Math.floor((root.implicitWidth - root.sidebarWidth - root.padding * 2 - Tokens.spacing.medium) / root.tileCellWidth))
     readonly property int rows: Math.ceil(root.count / root.columns)
 
-    /// True when two model arrays hold the same items in the same order (reference
-    /// equality). Reassigning an equal array tears down and rebuilds every delegate,
-    /// which reads as the grid flickering, so callers keep the existing array instead.
     function sameItems(a: var, b: var): bool {
         if (a === b)
             return true;
@@ -131,10 +128,6 @@ Item {
         sidebar.currentIndex = 0;
     }
 
-    // Apps inherits Searcher, whose `required property list` bound to AppDb.apps gets
-    // an engine-generated listChanged signal: it fires on every real app-set change
-    // (install, removal, frequency reorder). Dropping this leaves the grid stale until
-    // the next category click.
     Connections {
         function onListChanged(): void {
             root.refresh();
