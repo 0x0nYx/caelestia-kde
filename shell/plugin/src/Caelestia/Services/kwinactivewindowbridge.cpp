@@ -147,7 +147,7 @@ void KWinActiveWindowBridge::onWindowLost(const QString& uuid) {
 }
 
 void KWinActiveWindowBridge::onStateChanged(PlasmaWindowHandle* handle) {
-   const QString uuid = handle->uuid();
+    const QString uuid = handle->uuid();
     const bool isNowActive = handle->isActive();
     const bool wasActive = m_activeWindow.value(QStringLiteral("address")).toString() == uuid;
 
