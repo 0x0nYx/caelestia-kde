@@ -9,8 +9,12 @@ LIB_DIR="$(dirname "${BASH_SOURCE[0]}")/scripts/lib"
 source "$LIB_DIR/log.sh"
 # shellcheck source=scripts/lib/packages.sh
 source "$LIB_DIR/packages.sh"
+# shellcheck source=scripts/lib/panels.sh
+source "$LIB_DIR/panels.sh"
 # shellcheck source=scripts/lib/privileges.sh
 source "$LIB_DIR/privileges.sh"
+# shellcheck source=scripts/lib/selection.sh
+source "$LIB_DIR/selection.sh"
 
 section() {
     local title="$1"
@@ -258,7 +262,7 @@ fi
 # user's own quickshell.desktop without it stays untouched.
 for desktop_file in quickshell.desktop org.quickshell.desktop; do
     _df="$HOME/.local/share/applications/$desktop_file"
-    if [[ -f "$_df" ]] && grep -q "X-KDE-Wayland-Interfaces" "$_df"; then
+    if [[ -f "$_df" ]] && grep -qE '^[[:space:]]*X-KDE-Wayland-Interfaces=' "$_df"; then
         rm -f "$_df"
         ok "Removed ~/.local/share/applications/$desktop_file"
     fi
@@ -409,18 +413,7 @@ fi
 if [[ "$THEME_RESTORED_FROM_BACKUP" != "true" ]] && pgrep -x plasmashell >/dev/null 2>&1; then
     _qdbus="$(command -v qdbus6 || command -v qdbus || true)"
     if [[ -n "$_qdbus" ]]; then
-        if "$_qdbus" org.kde.plasmashell /PlasmaShell evaluateScript "
-if (panels().length === 0) {
-    var panel = new Panel;
-    panel.alignment = 'center';
-    panel.location = 'bottom';
-    panel.hiding = 'dodgewindows';
-    panel.height = 48;
-    panel.addWidget('org.kde.plasma.kickoff');
-    panel.addWidget('org.kde.plasma.icontasks');
-    panel.addWidget('org.kde.plasma.systemtray');
-    panel.addWidget('org.kde.plasma.digitalclock');
-}" 2>/dev/null; then
+        if "$_qdbus" org.kde.plasmashell /PlasmaShell evaluateScript "$(stock_panel_script)" 2>/dev/null; then
             ok "Created a default bottom panel (no backup was available)"
         else
             warn "Could not create a default panel. Add one via Edit Mode if the desktop is empty."
@@ -873,46 +866,33 @@ if [[ "$REMOVE_PACKAGES" == "true" ]]; then
         if [[ ${#_installed[@]} -eq 0 ]]; then
             skip "None of the listed packages are installed"
         else
-            # These are shared desktop tools; the selection keeps the user in
-            # control of which ones go (issue #854).
             warn "Packages installed by caelestia that are also common desktop tools:"
             for _i in "${!_installed[@]}"; do
                 printf '  %2d) %s\n' "$((_i + 1))" "${_installed[_i]}"
             done
-            cat <<'EOF'
-Enter the numbers to remove, e.g. 1 3 5-9, 'all' for every package,
-or press Enter to keep them all:
-EOF
-            read -r -p "Selection [keep all]: " _pkg_choice
-            _pkg_choice="${_pkg_choice,,}"
-            if [[ -z "${_pkg_choice//[[:space:]]/}" ]]; then
-                skip "Package removal skipped"
-            else
-                _selected=()
-                if [[ "$_pkg_choice" == "all" || "$_pkg_choice" == "a" ]]; then
+            echo "  Enter the numbers to remove (e.g. 1 3 5-9), 'all' for every package,"
+            echo "  or press Enter to keep them all."
+
+            _selected=()
+            read -r -p "Selection [keep all]: " _pkg_choice || _pkg_choice=""
+            case "${_pkg_choice,,}" in
+                all|a)
                     _selected=("${_installed[@]}")
-                else
-                    for _tok in $_pkg_choice; do
-                        if [[ "$_tok" =~ ^([0-9]+)-([0-9]+)$ ]]; then
-                            for ((_n = BASH_REMATCH[1]; _n <= BASH_REMATCH[2]; _n++)); do
-                                if ((_n >= 1 && _n <= ${#_installed[@]})); then
-                                    _selected+=("${_installed[_n - 1]}")
-                                fi
-                            done
-                        elif [[ "$_tok" =~ ^[0-9]+$ ]] && ((_tok >= 1 && _tok <= ${#_installed[@]})); then
-                            _selected+=("${_installed[_tok - 1]}")
-                        else
-                            warn "Ignoring invalid selection: $_tok"
-                        fi
+                ;;
+                *)
+                    mapfile -t _idx < <(select_indices "${#_installed[@]}" "$_pkg_choice")
+                    for _n in "${_idx[@]}"; do
+                        _selected+=("${_installed[_n]}")
                     done
-                fi
-                if [[ ${#_selected[@]} -eq 0 ]]; then
-                    skip "Nothing selected, packages kept"
-                else
-                    "${_remove_cmd[@]}" "${_selected[@]}" 2>/dev/null || \
-                        warn "Some packages could not be removed automatically. Check manually."
-                    ok "Removed ${#_selected[@]} package(s)"
-                fi
+                ;;
+            esac
+
+            if [[ ${#_selected[@]} -gt 0 ]]; then
+                "${_remove_cmd[@]}" "${_selected[@]}" 2>/dev/null || \
+                    warn "Some packages could not be removed automatically. Check manually."
+                ok "Removed ${#_selected[@]} package(s)"
+            else
+                skip "Package removal skipped"
             fi
         fi
     fi
