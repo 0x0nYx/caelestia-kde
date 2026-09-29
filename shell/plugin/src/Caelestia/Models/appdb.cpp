@@ -208,6 +208,10 @@ QQmlListProperty<AppEntry> AppDb::apps() {
     return QQmlListProperty<AppEntry>(this, &m_cachedSorted);
 }
 
+QVariantList AppDb::alphaApps() const {
+    return m_cachedAlphaApps;
+}
+
 void AppDb::incrementFrequency(const QString& id) {
     auto db = QSqlDatabase::database(m_uuid);
     QSqlQuery query(db);
@@ -325,6 +329,18 @@ void AppDb::updateApps() {
 
     if (dirty) {
         rebuildRankTree();
+        
+        QList<AppEntry*> alphaList = m_apps.values();
+        std::sort(alphaList.begin(), alphaList.end(), [](AppEntry* a, AppEntry* b) {
+            return a->name().localeAwareCompare(b->name()) < 0;
+        });
+        
+        m_cachedAlphaApps.clear();
+        m_cachedAlphaApps.reserve(alphaList.size());
+        for (auto* a : alphaList) {
+            m_cachedAlphaApps.append(QVariant::fromValue(a->entry()));
+        }
+        
         emit appsChanged();
     }
 }

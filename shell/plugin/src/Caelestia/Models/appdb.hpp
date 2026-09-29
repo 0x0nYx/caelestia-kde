@@ -98,6 +98,7 @@ class AppDb : public QObject {
     Q_PROPERTY(QObjectList entries READ entries WRITE setEntries NOTIFY entriesChanged REQUIRED)
     Q_PROPERTY(QStringList favouriteApps READ favouriteApps WRITE setFavouriteApps NOTIFY favouriteAppsChanged REQUIRED)
     Q_PROPERTY(QQmlListProperty<caelestia::models::AppEntry> apps READ apps NOTIFY appsChanged)
+    Q_PROPERTY(QVariantList alphaApps READ alphaApps NOTIFY appsChanged)
 
 public:
     explicit AppDb(QObject* parent = nullptr);
@@ -114,6 +115,7 @@ public:
     void setFavouriteApps(const QStringList& favApps);
 
     [[nodiscard]] QQmlListProperty<AppEntry> apps();
+    [[nodiscard]] QVariantList alphaApps() const;
 
     Q_INVOKABLE void incrementFrequency(const QString& id);
 
@@ -134,6 +136,7 @@ private:
     QHash<QString, AppEntry*> m_apps;
     AppRankTree m_rankTree;                  // Replaces the flat m_sortedApps vector.
     mutable QList<AppEntry*> m_cachedSorted; // Backing storage for QQmlListProperty.
+    QVariantList m_cachedAlphaApps; // Backing storage for alphaApps property.
 
     QString regexifyString(const QString& original) const;
     void rebuildRankTree();
