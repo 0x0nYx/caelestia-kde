@@ -9,6 +9,8 @@ import qs.utils
 Searcher {
     id: root
 
+    property alias alphaApps: appDb.alphaApps
+
     function launch(entry: DesktopEntry): void {
         appDb.incrementFrequency(entry.id);
         Launch.launchEntry(entry);
