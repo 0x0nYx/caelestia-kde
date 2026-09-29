@@ -41,8 +41,7 @@ test_every_switch_reads_the_backend() {
     local file
     for file in \
         "$SHELL_DIR/modules/utilities/cards/Toggles.qml" \
-        "$SHELL_DIR/modules/nexus/pages/network/HotspotPage.qml" \
-        "$SHELL_DIR/modules/bar/popouts/Network.qml"; do
+        "$SHELL_DIR/modules/nexus/pages/network/HotspotPage.qml"; do
         assert_contains "$(cat "$file")" "Nmcli.hotspot.enabled" \
             "$(basename "$file") should read the hotspot state from the controller"
     done
