@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDBusArgument>
+#include <QHash>
 #include <QObject>
 #include <QQmlEngine>
 #include <QStringList>
@@ -87,6 +88,9 @@ private:
     QString resolveDesktopUuid(const QString& id) const;
 
     QList<KWinDesktopData> m_desktops;
+    // Maps desktop UUID -> 1-based sorted position index.
+    // Populated by updateActiveId() so O(1) lookup replaces the O(N) linear scan.
+    QHash<QString, int> m_uuidToIndex;
     QString m_currentUuid;
     int m_activeId = 0;
     QVariantMap m_activeByOutput;
