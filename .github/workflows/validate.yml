@@ -7,6 +7,9 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -279,10 +282,27 @@ jobs:
       - name: Run the shell test suite
         run: bash tests/run-tests.sh
 
+  # The only place CI compiles the TUI (the release job builds it too, but that fires
+  # after merge). Plain cmake: the TUI is C++20 with no external dependencies.
+  tui-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install toolchain
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq cmake g++ make
+
+      - name: Build the installer TUI
+        run: |
+          cmake -B installer/build -S installer/tui -DCMAKE_BUILD_TYPE=Release
+          cmake --build installer/build
+
   validate-gate:
     needs:
       - python-quality
       - shell-tests
+      - tui-compile
       - repo-integrity
       - json-validation
       - file-hygiene
@@ -319,6 +339,7 @@ jobs:
           job_results[qml-template-interp]="${{ needs.qml-template-interp.result }}"
           job_results[shell-quality]="${{ needs.shell-quality.result }}"
           job_results[shell-tests]="${{ needs.shell-tests.result }}"
+          job_results[tui-compile]="${{ needs.tui-compile.result }}"
           job_results[cpp-format]="${{ needs.cpp-format.result }}"
 
           all_passed=true

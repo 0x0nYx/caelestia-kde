@@ -32,6 +32,9 @@ env:
   INSTALL_TODOIST: "false"
   INSTALL_FIREFOX_THEME: "false"
 
+permissions:
+  contents: read
+
 jobs:
   test-arch:
     name: Test Arch Linux
