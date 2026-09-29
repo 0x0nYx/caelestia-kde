@@ -167,26 +167,39 @@ QString KeybindsModel::getKey(const QString& name) const {
 }
 
 QVariantList KeybindsModel::query(const QString& searchText) const {
-    QVariantList result;
+    QList<GlobalShortcut*> matches;
     const auto lower = searchText.toLower();
 
     for (GlobalShortcut* sc : m_rows) {
-        // Use pre-lowercased cache to avoid three toLower() allocations per
-        // shortcut per keystroke.
+        if (sc->key().isEmpty()) {
+            continue;
+        }
+
         if (searchText.isEmpty()) {
-            result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
-                { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
-                { QStringLiteral("isOverridden"), m_defaults.value(sc->name()).toString() != sc->key() } });
+            matches.append(sc);
         } else {
             const QString& cached = m_lowerCache.value(sc->name());
             if (cached.contains(lower)) {
-                result.append(
-                    QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
-                        { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
-                        { QStringLiteral("isOverridden"), m_defaults.value(sc->name()).toString() != sc->key() } });
+                matches.append(sc);
             }
         }
     }
+
+    // Sort matches alphabetically by description, falling back to name
+    std::sort(matches.begin(), matches.end(), [](GlobalShortcut* a, GlobalShortcut* b) {
+        const QString strA = a->description().isEmpty() ? a->name() : a->description();
+        const QString strB = b->description().isEmpty() ? b->name() : b->description();
+        return strA.localeAwareCompare(strB) < 0;
+    });
+
+    QVariantList result;
+    result.reserve(matches.size());
+    for (GlobalShortcut* sc : std::as_const(matches)) {
+        result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
+            { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
+            { QStringLiteral("isOverridden"), m_defaults.value(sc->name()).toString() != sc->key() } });
+    }
+
     return result;
 }
 

@@ -31,6 +31,8 @@ struct AppRankKey {
     }
 };
 
+class AppEntry;
+
 // PBDS tree keyed on AppRankKey → AppEntry*.
 // Provides O(log N) insert, erase, and order-of/find-by-order.
 using AppRankTree = __gnu_pbds::tree<AppRankKey, AppEntry*, std::less<AppRankKey>, __gnu_pbds::rb_tree_tag,
