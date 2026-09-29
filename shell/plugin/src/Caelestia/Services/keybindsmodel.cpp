@@ -27,8 +27,11 @@ KeybindsModel::KeybindsModel(QObject* parent)
     bool shouldSave = false;
 
     QJsonObject defaults = caelestia::config::defaultKeybinds();
+    // Cache defaults once — defaultKeybinds() parses JSON on every call.
+    m_defaults = defaults;
     bool krohnkiteEnabled = caelestia::config::ConfigSingleton::instance()->general()->krohnkiteEnabled();
 
+    m_keybinds.reserve(defaults.size());
     for (auto it = defaults.begin(); it != defaults.end(); ++it) {
         if (it.key().startsWith(QStringLiteral("krohnkite")) && !krohnkiteEnabled) {
             continue;
@@ -116,8 +119,7 @@ QVariant KeybindsModel::data(const QModelIndex& index, int role) const {
     case DescriptionRole:
         return sc->description();
     case IsOverriddenRole: {
-        QJsonObject defaults = caelestia::config::defaultKeybinds();
-        return defaults.value(sc->name()).toString() != sc->key();
+        return m_defaults.value(sc->name()).toString() != sc->key();
     }
     }
     return QVariant();
@@ -169,16 +171,29 @@ QVariantList KeybindsModel::query(const QString& searchText) const {
     const auto lower = searchText.toLower();
 
     for (GlobalShortcut* sc : m_rows) {
-        if (searchText.isEmpty() || sc->key().toLower().contains(lower) ||
-            sc->description().toLower().contains(lower) || sc->name().toLower().contains(lower)) {
-
-            QJsonObject defaults = caelestia::config::defaultKeybinds();
+        // Use pre-lowercased cache to avoid three toLower() allocations per
+        // shortcut per keystroke.
+        if (searchText.isEmpty()) {
             result.append(QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
                 { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
-                { QStringLiteral("isOverridden"), defaults.value(sc->name()).toString() != sc->key() } });
+                { QStringLiteral("isOverridden"), m_defaults.value(sc->name()).toString() != sc->key() } });
+        } else {
+            const QString& cached = m_lowerCache.value(sc->name());
+            if (cached.contains(lower)) {
+                result.append(
+                    QVariantMap{ { QStringLiteral("bind"), sc->key() }, { QStringLiteral("action"), sc->name() },
+                        { QStringLiteral("name"), sc->name() }, { QStringLiteral("description"), sc->description() },
+                        { QStringLiteral("isOverridden"), m_defaults.value(sc->name()).toString() != sc->key() } });
+            }
         }
     }
     return result;
+}
+
+void KeybindsModel::updateLowerCache(GlobalShortcut* sc) {
+    // Concatenate all searchable fields lowercased once so query() never needs
+    // to call toLower() at keystroke time.
+    m_lowerCache.insert(sc->name(), (sc->key() + u' ' + sc->description() + u' ' + sc->name()).toLower());
 }
 
 void KeybindsModel::onShortcutRegistered(GlobalShortcut* sc) {
@@ -193,6 +208,7 @@ void KeybindsModel::onShortcutRegistered(GlobalShortcut* sc) {
     beginInsertRows(QModelIndex(), row, row);
     m_rows.append(sc);
     endInsertRows();
+    updateLowerCache(sc);
 
     if (QCoreApplication::instance()) {
         m_loadTimer->start();
@@ -201,6 +217,7 @@ void KeybindsModel::onShortcutRegistered(GlobalShortcut* sc) {
     connect(sc, &GlobalShortcut::keyChanged, this, [this, sc] {
         int idx = m_rows.indexOf(sc);
         if (idx >= 0) {
+            updateLowerCache(sc); // refresh cache on key change
             emit dataChanged(index(idx), index(idx), { KeyRole, IsOverriddenRole });
             if (QCoreApplication::instance()) {
                 m_loadTimer->start();
@@ -244,6 +261,7 @@ void KeybindsModel::onShortcutUnregistered(GlobalShortcut* sc) {
         beginRemoveRows(QModelIndex(), idx, idx);
         m_rows.removeAt(idx);
         endRemoveRows();
+        m_lowerCache.remove(sc->name());
         if (QCoreApplication::instance()) {
             m_loadTimer->start();
         }
