@@ -3170,37 +3170,6 @@
     </message>
   </context>
   <context>
-    <name>ConnectionInfoSection</name>
-    <message>
-      <location filename="../components/ConnectionInfoSection.qml" line="+15"/>
-      <source>IP Address</source>
-      <translation>IP adresa</translation>
-    </message>
-    <message>
-      <location line="+4"/>
-      <location line="+11"/>
-      <location line="+11"/>
-      <location line="+11"/>
-      <source>Not available</source>
-      <translation>Není k dispozici</translation>
-    </message>
-    <message>
-      <location line="-26"/>
-      <source>Subnet Mask</source>
-      <translation>Maska podsítě</translation>
-    </message>
-    <message>
-      <location line="+11"/>
-      <source>Gateway</source>
-      <translation>Brána</translation>
-    </message>
-    <message>
-      <location line="+11"/>
-      <source>DNS Servers</source>
-      <translation>DNS servery</translation>
-    </message>
-  </context>
-  <context>
     <name>Content</name>
     <message>
       <location filename="../modules/dashboard/Content.qml" line="+25"/>
