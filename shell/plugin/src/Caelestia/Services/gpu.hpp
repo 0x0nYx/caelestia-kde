@@ -52,14 +52,15 @@ protected:
 
 private:
     void detectGpu();
+    void finishLspciProbe(const QByteArray& out);
+    void probeNvidiaCapability();
     void tryNameSource(int index);
     void finishNameSource(int index, QString name);
     void readGenericUsage();
     void startNvidiaUsage();
     void readGpuTemperature();
+    void resetReadings();
 
-    // Runs a one-shot process, delivering its stdout to callback exactly once
-    // (empty output if it crashes or never starts), then tears the process down.
     void runProcess(const QString& program, const QStringList& args, std::function<void(const QByteArray&)> callback);
 
     void setUserType(Type value);
@@ -75,6 +76,11 @@ private:
     qreal m_temperature = 0.0;
 
     QStringList m_busyFiles;
+
+    QString m_nvidiaPciPath;
+
+    int m_nvidiaFailures = 0;
+
     bool m_detecting = false;
     bool m_nvidiaQuerying = false;
 };

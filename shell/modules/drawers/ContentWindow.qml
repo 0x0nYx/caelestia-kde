@@ -263,6 +263,7 @@ StyledWindow {
                 height: parent.height
                 scale: overviewWallpaperLayer.bgScale
                 active: overviewWallpaperLayer.active || overviewWallpaperLayer.opacity > 0
+                        || (overviewWallpaperLayer.keepAlive && wallpaperLoader.item && !wallpaperLoader.item.isVideo(wallpaperLoader.item.source))
                 sourceComponent: Component { Wallpaper { screen: root.screen; skipTransition: true } }
             }
         }
