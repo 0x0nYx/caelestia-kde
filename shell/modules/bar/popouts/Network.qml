@@ -400,7 +400,7 @@ ColumnLayout {
         StyledRect {
             id: ethernetItem
 
-            required property var modelData
+            required property Nmcli.EthernetDevice modelData
             readonly property bool loading: false
 
             Layout.fillWidth: true
@@ -430,7 +430,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     Layout.preferredWidth: 0
                     elide: Text.ElideRight
-                    text: ethernetItem.modelData?.interface || qsTr("Unknown")
+                    text: ethernetItem.modelData?.iface || qsTr("Unknown")
                     color: ethernetItem.modelData?.connected ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                     font.pointSize: Tokens.font.body.small.pointSize * root.fontScale
                 }
@@ -463,7 +463,7 @@ ColumnLayout {
                     if (ethernetItem.modelData?.connected && ethernetItem.modelData?.connection) {
                         Nmcli.disconnectEthernet(ethernetItem.modelData.connection, () => {});
                     } else if (ethernetItem.modelData) {
-                        Nmcli.connectEthernet(ethernetItem.modelData.connection || "", ethernetItem.modelData.interface || "", () => {});
+                        Nmcli.connectEthernet(ethernetItem.modelData.connection || "", ethernetItem.modelData.iface || "", () => {});
                     }
                 }
             }

@@ -1068,6 +1068,7 @@ QString NmQt::ethernetDataUsage(const QString& interfaceName) const {
 void NmQt::onWirelessEnabledChanged(bool enabled) {
     m_wifiEnabled = enabled;
     emit wifiEnabledChanged();
+    m_hotspot->refresh();
 }
 
 void NmQt::onWirelessHardwareEnabledChanged(bool enabled) {
@@ -1075,11 +1076,13 @@ void NmQt::onWirelessHardwareEnabledChanged(bool enabled) {
         m_wifiEnabled = false;
         emit wifiEnabledChanged();
     }
+    m_hotspot->refresh();
 }
 
 void NmQt::onNetworkDevicesChanged() {
     refreshDevices();
     refreshNetworks();
+    m_hotspot->refresh();
 }
 
 void NmQt::onActiveConnectionsChanged() {
@@ -1087,12 +1090,14 @@ void NmQt::onActiveConnectionsChanged() {
     refreshDevices();
     refreshVpnConnections();
     refreshSavedConnections();
+    m_hotspot->refresh();
     emit isConnectedChanged();
 }
 
 void NmQt::onConnectionsChanged() {
     refreshSavedConnections();
     refreshVpnConnections();
+    m_hotspot->refresh();
 }
 
 void NmQt::onDeviceStateChanged(NetworkManager::Device::State newState, NetworkManager::Device::State oldState,
