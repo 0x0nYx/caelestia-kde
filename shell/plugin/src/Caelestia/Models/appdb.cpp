@@ -203,7 +203,6 @@ QString AppDb::regexifyString(const QString& original) const {
 
 QQmlListProperty<AppEntry> AppDb::apps() {
     auto sorted = getSortedApps();
-    // QQmlListProperty needs a persistent backing list; store in m_cachedSorted.
     m_cachedSorted = std::move(sorted);
     return QQmlListProperty<AppEntry>(this, &m_cachedSorted);
 }
@@ -224,7 +223,6 @@ void AppDb::incrementFrequency(const QString& id) {
 
     auto* app = m_apps.value(id);
     if (app) {
-        // Remove old key, update frequency, re-insert with new key — O(log N).
         m_rankTree.erase(makeKey(app));
         app->incrementFrequency();
         m_rankTree.insert({ makeKey(app), app });
@@ -250,7 +248,6 @@ void AppDb::rebuildRankTree() {
 }
 
 QList<AppEntry*> AppDb::getSortedApps() const {
-    // Flatten the rank tree into a list (in-order traversal = sorted order).
     QList<AppEntry*> result;
     result.reserve(static_cast<qsizetype>(m_rankTree.size()));
     for (const auto& [key, entry] : m_rankTree) {
@@ -286,7 +283,6 @@ void AppDb::updateAppFrequencies() {
     for (auto* app : std::as_const(m_apps)) {
         app->setFrequency(getFrequency(app->id()));
     }
-    // Rebuild tree to reflect new frequencies.
     rebuildRankTree();
     emit appsChanged();
 }
@@ -300,7 +296,6 @@ void AppDb::updateApps() {
             dirty = true;
             auto* const newEntry = new AppEntry(entry, getFrequency(id), this);
             QObject::connect(newEntry, &AppEntry::removed, this, [id, this]() {
-                // Also remove from rank tree before erasing from m_apps.
                 if (auto* a = m_apps.value(id)) {
                     m_rankTree.erase(makeKey(a));
                 }

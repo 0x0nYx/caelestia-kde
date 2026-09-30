@@ -276,24 +276,19 @@ void KWinWorkspaceState::updateShowingDesktop(bool showing) {
 }
 
 void KWinWorkspaceState::updateActiveId() {
-    // --- Counting sort over desktop positions ---
-    // Desktop positions are small non-negative integers (0..K, K << 32) assigned
-    // by KWin, so counting sort is O(N + K) — faster than the previous O(N log N)
-    // std::sort, with zero comparisons.
+    // Counting sort by desktop position.
     int maxPos = 0;
     for (const auto& d : std::as_const(m_desktops)) {
         if (d.position > maxPos)
             maxPos = d.position;
     }
 
-    // Bucket array indexed by position; nullptrs for empty slots.
     QVector<const KWinDesktopData*> buckets(maxPos + 1, nullptr);
     for (const auto& d : std::as_const(m_desktops)) {
         if (d.position >= 0 && d.position <= maxPos)
             buckets[d.position] = &d;
     }
 
-    // Rebuild m_desktops in sorted order and populate m_uuidToIndex in one pass.
     m_uuidToIndex.clear();
     m_uuidToIndex.reserve(m_desktops.size());
     QList<KWinDesktopData> sorted;
@@ -306,7 +301,6 @@ void KWinWorkspaceState::updateActiveId() {
     }
     m_desktops = std::move(sorted);
 
-    // O(1) UUID lookup instead of O(N) linear scan.
     const int newActiveId = m_uuidToIndex.value(m_currentUuid, 1);
 
     if (m_activeId != newActiveId) {

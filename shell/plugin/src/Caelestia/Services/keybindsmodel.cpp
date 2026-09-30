@@ -27,7 +27,6 @@ KeybindsModel::KeybindsModel(QObject* parent)
     bool shouldSave = false;
 
     QJsonObject defaults = caelestia::config::defaultKeybinds();
-    // Cache defaults once — defaultKeybinds() parses JSON on every call.
     m_defaults = defaults;
     bool krohnkiteEnabled = caelestia::config::ConfigSingleton::instance()->general()->krohnkiteEnabled();
 
@@ -185,7 +184,6 @@ QVariantList KeybindsModel::query(const QString& searchText) const {
         }
     }
 
-    // Sort matches alphabetically by description, falling back to name
     std::sort(matches.begin(), matches.end(), [](GlobalShortcut* a, GlobalShortcut* b) {
         const QString strA = a->description().isEmpty() ? a->name() : a->description();
         const QString strB = b->description().isEmpty() ? b->name() : b->description();
@@ -204,8 +202,6 @@ QVariantList KeybindsModel::query(const QString& searchText) const {
 }
 
 void KeybindsModel::updateLowerCache(GlobalShortcut* sc) {
-    // Concatenate all searchable fields lowercased once so query() never needs
-    // to call toLower() at keystroke time.
     m_lowerCache.insert(sc->name(), (sc->key() + u' ' + sc->description() + u' ' + sc->name()).toLower());
 }
 
@@ -230,7 +226,7 @@ void KeybindsModel::onShortcutRegistered(GlobalShortcut* sc) {
     connect(sc, &GlobalShortcut::keyChanged, this, [this, sc] {
         int idx = m_rows.indexOf(sc);
         if (idx >= 0) {
-            updateLowerCache(sc); // refresh cache on key change
+            updateLowerCache(sc);
             emit dataChanged(index(idx), index(idx), { KeyRole, IsOverriddenRole });
             if (QCoreApplication::instance()) {
                 m_loadTimer->start();

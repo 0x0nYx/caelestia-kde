@@ -63,11 +63,7 @@ private:
     QHash<QString, QString> m_keybinds;
     QTimer* m_saveTimer = nullptr;
     QTimer* m_loadTimer = nullptr;
-    // Cached once in the constructor; defaultKeybinds() parses JSON on every
-    // call, which was previously happening on every data() and query() call.
     QJsonObject m_defaults;
-    // Pre-lowercased search strings per shortcut, keyed by shortcut name.
-    // Avoids repeated toLower() allocations inside query() on every keystroke.
     QHash<QString, QString> m_lowerCache;
 
     QString keybindsPath() const;

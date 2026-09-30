@@ -434,10 +434,6 @@ void FileSystemModel::applyChanges(const QSet<QString>& removedPaths, const QSet
     });
 
     if (!newEntries.isEmpty()) {
-        // Append sorted new entries to the back of the existing (already sorted)
-        // list, then merge the two sorted halves in-place. This avoids the
-        // O(M*N) repeated vector shifts caused by repeated mid-insertions.
-        // std::inplace_merge is O((N+M)*log(N+M)) time, O(log N) space.
         const int oldSize = static_cast<int>(m_entries.size());
         const int addedCount = static_cast<int>(newEntries.size());
 
@@ -445,14 +441,11 @@ void FileSystemModel::applyChanges(const QSet<QString>& removedPaths, const QSet
         m_entries.append(std::move(newEntries));
         endInsertRows();
 
-        // Merge the two sorted halves in-place.
-        // beginMoveRows/endMoveRows communicates positional changes to the view.
         std::inplace_merge(m_entries.begin(), m_entries.begin() + oldSize, m_entries.end(),
             [this](const FileSystemEntry* a, const FileSystemEntry* b) {
                 return compareEntries(a, b);
             });
 
-        // Notify the view that the layout has changed so delegates are re-ordered.
         emit layoutChanged();
     }
 

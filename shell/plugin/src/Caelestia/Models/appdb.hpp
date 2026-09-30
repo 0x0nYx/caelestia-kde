@@ -12,15 +12,11 @@
 
 namespace caelestia::models {
 
-// Key used in the PBDS order-statistics rank tree.
-// Ordering: favourites first (notFav=0 < 1), then by descending frequency
-// (-freq), then alphabetically by name. Encoding all three fields into a
-// single comparable struct lets the tree maintain the correct sort order
-// without any extra sorting step.
+// Sort key: favourites, descending frequency, ascending name.
 struct AppRankKey {
-    int notFav;   // 0 = favourite, 1 = regular
-    int negFreq;  // stored as negative so higher frequency sorts first
-    QString name; // tie-break: ascending locale-aware name
+    int notFav;  // 0 = fav, 1 = regular
+    int negFreq; // Negative frequency for descending order
+    QString name;
 
     bool operator<(const AppRankKey& o) const {
         if (notFav != o.notFav)
@@ -33,8 +29,6 @@ struct AppRankKey {
 
 class AppEntry;
 
-// PBDS tree keyed on AppRankKey → AppEntry*.
-// Provides O(log N) insert, erase, and order-of/find-by-order.
 using AppRankTree = __gnu_pbds::tree<AppRankKey, AppEntry*, std::less<AppRankKey>, __gnu_pbds::rb_tree_tag,
     __gnu_pbds::tree_order_statistics_node_update>;
 
@@ -136,9 +130,9 @@ private:
     QStringList m_favouriteApps;
     QList<QRegularExpression> m_favouriteAppsRegex;
     QHash<QString, AppEntry*> m_apps;
-    AppRankTree m_rankTree;                  // Replaces the flat m_sortedApps vector.
-    mutable QList<AppEntry*> m_cachedSorted; // Backing storage for QQmlListProperty.
-    QVariantList m_cachedAlphaApps;          // Backing storage for alphaApps property.
+    AppRankTree m_rankTree;
+    mutable QList<AppEntry*> m_cachedSorted;
+    QVariantList m_cachedAlphaApps;
 
     QString regexifyString(const QString& original) const;
     void rebuildRankTree();

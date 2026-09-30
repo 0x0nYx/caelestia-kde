@@ -51,9 +51,7 @@ private:
 
     QVector<EmojiEntry> m_emojis;
     QHash<QString, int> m_frequencies;
-    // Trigram inverted index: 3-char substring -> sorted list of emoji indices.
-    // Built once after all emojis are loaded; used to quickly get candidates
-    // during search(), avoiding the O(N*L) full linear scan.
+    // Trigram -> emoji indices
     QHash<QString, QVector<int>> m_trigramIndex;
     bool m_loaded = false;
 };

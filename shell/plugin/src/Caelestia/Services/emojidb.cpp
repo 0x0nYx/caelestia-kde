@@ -286,8 +286,6 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
     QVariantList result;
     result.reserve(std::min(limit, static_cast<int>(m_emojis.size())));
 
-    // For queries shorter than 3 chars the trigram index cannot help;
-    // fall back to a plain linear scan (still O(N) but unavoidable).
     if (queryLen < 3 || m_trigramIndex.isEmpty()) {
         for (const auto& e : m_emojis) {
             if (e.nameLower.contains(lower)) {
@@ -303,16 +301,12 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
         return result;
     }
 
-    // --- Trigram candidate filtering ---
-    // Extract all trigrams from the query and intersect their posting lists.
-    // Only emoji indices present in *every* trigram's list can possibly match.
     QSet<int> candidates;
     bool first = true;
     for (int i = 0; i + 2 < queryLen; ++i) {
         const QString trigram = lower.mid(i, 3);
         const auto it = m_trigramIndex.constFind(trigram);
         if (it == m_trigramIndex.constEnd()) {
-            // No emoji contains this trigram → zero results guaranteed.
             return {};
         }
         const QVector<int>& postings = it.value();
@@ -327,7 +321,6 @@ QVariantList EmojiDb::search(const QString& text, int limit) const {
         }
     }
 
-    // --- Verification pass (only on candidates) ---
     for (int idx : std::as_const(candidates)) {
         const auto& e = m_emojis[idx];
         if (e.nameLower.contains(lower)) {
