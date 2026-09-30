@@ -443,8 +443,11 @@ Singleton {
 
     function monitorNames(): list<string> {
         const names = [];
-        for (const key in root.monitors)
-            names.push(root.monitors[key].name);
+        for (const key in root.monitors) {
+            const m = root.monitors[key];
+            if (m && m.name)
+                names.push(m.name);
+        }
         return names;
     }
 

@@ -142,7 +142,7 @@ Singleton {
                 console.error("Wallhaven parse error:", e);
                 searchComplete([], {});
             }
-        });
+        }, () => loading = false);
     }
 
     function searchRandom(query: string): void {
@@ -181,7 +181,7 @@ Singleton {
                 console.error("Wallhaven random parse error:", e);
                 searchComplete([], {});
             }
-        });
+        }, () => loading = false);
     }
 
     function searchNextPage(): void {
@@ -220,7 +220,7 @@ Singleton {
                 console.error("Wallhaven page load error:", e);
                 searchComplete([], {});
             }
-        });
+        }, () => loading = false);
     }
 
     function setFilter(key: string, value: string): void {
