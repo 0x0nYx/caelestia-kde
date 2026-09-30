@@ -138,7 +138,7 @@ private:
     QHash<QString, AppEntry*> m_apps;
     AppRankTree m_rankTree;                  // Replaces the flat m_sortedApps vector.
     mutable QList<AppEntry*> m_cachedSorted; // Backing storage for QQmlListProperty.
-    QVariantList m_cachedAlphaApps; // Backing storage for alphaApps property.
+    QVariantList m_cachedAlphaApps;          // Backing storage for alphaApps property.
 
     QString regexifyString(const QString& original) const;
     void rebuildRankTree();

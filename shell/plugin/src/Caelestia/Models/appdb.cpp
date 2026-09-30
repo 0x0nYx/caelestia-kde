@@ -329,18 +329,18 @@ void AppDb::updateApps() {
 
     if (dirty) {
         rebuildRankTree();
-        
+
         QList<AppEntry*> alphaList = m_apps.values();
         std::sort(alphaList.begin(), alphaList.end(), [](AppEntry* a, AppEntry* b) {
             return a->name().localeAwareCompare(b->name()) < 0;
         });
-        
+
         m_cachedAlphaApps.clear();
         m_cachedAlphaApps.reserve(alphaList.size());
         for (auto* a : alphaList) {
             m_cachedAlphaApps.append(QVariant::fromValue(a->entry()));
         }
-        
+
         emit appsChanged();
     }
 }
