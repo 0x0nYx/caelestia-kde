@@ -8,6 +8,7 @@ import Caelestia.Config
 import qs.components
 import qs.services
 import qs.utils
+import qs.modules.launcher.services
 import qs.modules.nexus.common
 
 PageBase {
