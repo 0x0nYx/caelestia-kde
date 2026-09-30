@@ -207,10 +207,11 @@ Singleton {
         path: `${Paths.state}/notifs.json`
         onLoaded: {
             const data = JSON.parse(text());
+            data.sort((a, b) => b.time - a.time);
             const cap = root.notifCap;
-            for (const notif of data.slice(0, cap))
-                root.list.push(notifComp.createObject(root, notif));
-            root.list.sort((a, b) => b.time - a.time);
+            
+            root.list = data.slice(0, cap).map(n => notifComp.createObject(root, n));
+            
             root.openCount = root.list.filter(n => !n.closed).length;
             root.popupCount = root.list.filter(n => n.popup).length;
             root.lastSavedState = root.serializeState();
