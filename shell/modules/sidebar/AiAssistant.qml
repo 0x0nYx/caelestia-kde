@@ -19,6 +19,14 @@ import qs.utils
 Item {
     id: root
 
+    // The tool-call text protocol. These tags travel through both the prompt
+    // and the parsers, so they live in exactly one place. The concatenation
+    // is deliberate: an over-eager formatter once stripped the literal tags
+    // out of this file, and empty tags here would make every scan spin
+    // forever on each streamed chunk.
+    readonly property string toolCallStart: "<" + "tool_call" + ">"
+    readonly property string toolCallEnd: "</" + "tool_call" + ">"
+
     ListModel { id: chatHistory }
     ListModel { id: historySessionsModel }
 
@@ -728,14 +736,6 @@ Item {
         if (str === null || str === undefined) return "''";
         return "'" + String(str).replace(/'/g, "'\\''") + "'";
     }
-
-    // The tool-call text protocol. These tags travel through both the prompt
-    // and the parsers, so they live in exactly one place. The concatenation
-    // is deliberate: an over-eager formatter once stripped the literal tags
-    // out of this file, and empty tags here would make every scan spin
-    // forever on each streamed chunk.
-    readonly property string toolCallStart: "<" + "tool_call" + ">"
-    readonly property string toolCallEnd: "</" + "tool_call" + ">"
 
     function parseTextToolCalls(text) {
         var calls = [];
