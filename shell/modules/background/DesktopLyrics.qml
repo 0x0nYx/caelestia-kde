@@ -296,7 +296,6 @@ Item {
             }
         }
 
-        // --- NEW INNER CONTAINER FOR FADE MASK ---
         Item {
             id: fadeContainer
 
