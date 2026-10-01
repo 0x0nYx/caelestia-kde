@@ -294,8 +294,7 @@ Item {
         required property var modelData
         readonly property int wsId: modelData?.index ?? -1
         readonly property string icon: Icons.getSpecialWsIcon(modelData?.name ?? "")
-        // Bind through windowList so the count follows open/close events;
-        // workspace.id is the same 1-based position as modelData.index.
+        // Bind through windowList so the count follows open/close events
         readonly property bool hasWindows: wsId > 0
             && Config.bar.workspaces.showWindowsOnSpecialWorkspaces
             && Kwin.windowList.filter(w => (w.workspace?.id ?? -1) === wsId).length > 0
@@ -369,7 +368,6 @@ Item {
             }
         }
 
-        // MOVED COMPONENTS INSIDE DELEGATE: This fixes the "ws is not defined" error
         Component {
             id: columnComponent
 
