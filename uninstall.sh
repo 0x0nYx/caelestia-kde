@@ -158,9 +158,9 @@ ensure_konsave() {
 }
 
 restore_or_remove() {
-    local name="$1"           # e.g. "fish"
-    local target="$2"         # full destination path
-    local backup_subdir="$3"  # "config" or "local"
+    local name="$1"
+    local target="$2"
+    local backup_subdir="$3"
     local backup_dir="$SELECTED_BACKUP"
 
     rm -rf "$target"
