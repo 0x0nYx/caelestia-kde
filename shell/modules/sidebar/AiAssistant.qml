@@ -108,8 +108,6 @@ Item {
         listView.positionViewAtEnd();
     }
 
-    // Ask every enabled provider what it offers, rather than shipping lists that
-    // go stale each time a vendor releases a model.
     function refreshAllModels() {
         fetchOllamaModels();
         fetchClaudeCodeModels();
