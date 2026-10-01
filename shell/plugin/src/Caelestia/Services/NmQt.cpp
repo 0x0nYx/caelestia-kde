@@ -337,7 +337,7 @@ void NmQt::connectToNetwork(const QString& ssid, const QString& password, const 
                                          .dynamicCast<NetworkManager::WirelessSecuritySetting>();
         if (securitySetting) {
             securitySetting->setPsk(password);
-            existingConn->update();
+            existingConn->update(existingConn->settings()->toMap());
             activateProfile(existingConn, wifiDev, callback);
             return;
         }
