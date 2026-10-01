@@ -4,7 +4,7 @@ set -uo pipefail
 
 BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-LIB_DIR="$(dirname "${BASH_SOURCE[0]}")/scripts/lib"
+LIB_DIR="$BUNDLE_DIR/scripts/lib"
 
 source "$LIB_DIR/log.sh"
 # shellcheck source=scripts/lib/packages.sh
@@ -158,9 +158,9 @@ ensure_konsave() {
 }
 
 restore_or_remove() {
-    local name="$1"           # e.g. "fish"
-    local target="$2"         # full destination path
-    local backup_subdir="$3"  # "config" or "local"
+    local name="$1"
+    local target="$2"
+    local backup_subdir="$3"
     local backup_dir="$SELECTED_BACKUP"
 
     rm -rf "$target"
@@ -204,7 +204,7 @@ else
 fi
 
 pkill -f "caelestia shell" 2>/dev/null || true
-pkill -f "quickshell"      2>/dev/null || true
+pkill -f "quickshell.*caelestia" 2>/dev/null || true
 ok "Stopped any running shell processes"
 
 section "Step 2 - Remove Service and Autostart Files"
