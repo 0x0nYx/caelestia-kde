@@ -857,7 +857,7 @@ StyledWindow {
         BlurMask {
             target: panels.popoutsWrapper
             contentItem: root.contentItem
-            blurOffsetTop: root.blurOffsetTop
+            blurOffsetTop: root.blurOffsetTop - (popoutBg.connectedToSidebar ? Tokens.spacing.extraLarge + 10 + Tokens.rounding.extraLarge : 0)
             blurOffsetBottom: root.blurOffsetBottom
             blurOffsetLeft: root.blurOffsetLeft
             blurOffsetRight: root.blurOffsetRight

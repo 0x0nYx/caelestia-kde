@@ -11,6 +11,8 @@ Item {
     required property DrawerVisibilities visibilities
     property var popouts
     property var utilities
+    // Set while a popout pushes the sidebar; its height is already animated.
+    property bool followsPopout: false
     readonly property Props props: Props {}
     readonly property bool shouldBeActive: visibilities.sidebar && Config.sidebar.enabled && !visibilities.overview
     property bool aiBusy: false
@@ -33,7 +35,11 @@ Item {
     Behavior on offsetScale {
         Anim {}
     }
+    // Animating on top of the popout's own height animation makes the edge lag
+    // behind it, leaving a gap or an overlap while switching popouts.
     Behavior on anchors.bottomMargin {
+        enabled: !root.followsPopout
+
         Anim {}
     }
     Loader {
