@@ -18,13 +18,6 @@ namespace caelestia::services {
 
 class HotspotController;
 
-/**
- * NetworkManager Qt / D-Bus singleton replacing the nmcli-shelling-out
- * approach of the old Nmcli.qml.
- *
- * All properties reactively update via NetworkManagerQt signals — no
- * command-line parsing, no locale assumptions, no repeated process spawning.
- */
 class NmQt : public QObject {
     Q_OBJECT
 

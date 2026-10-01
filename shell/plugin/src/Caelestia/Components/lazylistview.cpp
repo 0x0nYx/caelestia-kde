@@ -11,7 +11,6 @@ constexpr int k_asyncBatchCreate = 2;
 constexpr int k_asyncBatchDestroy = 4;
 constexpr qreal k_fallbackHeight = 40;
 
-// Clip a rect vertically to [top, bottom], empty if there is no overlap
 QRectF clipVertical(const QRectF& rect, qreal top, qreal bottom) {
     const qreal newTop = std::max(rect.y(), top);
     const qreal newBottom = std::min(rect.y() + rect.height(), bottom);

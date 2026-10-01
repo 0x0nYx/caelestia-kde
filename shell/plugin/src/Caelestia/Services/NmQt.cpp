@@ -218,10 +218,6 @@ NmQt::NmQt(QObject* parent)
 
 NmQt::~NmQt() = default;
 
-// ---
-//  Property accessors
-// ---
-
 bool NmQt::isConnected() const {
     return NetworkManager::status() == NetworkManager::Status::Connected ||
            NetworkManager::status() == NetworkManager::Status::ConnectedLinkLocal ||
