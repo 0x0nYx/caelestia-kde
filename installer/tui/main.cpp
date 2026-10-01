@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
             std::string script = g_bundle_dir + (action == "update" ? "/update.sh" : "/uninstall.sh");
             run_external(script); // exits; does not return
         }
-        break; // install
+        break;
     }
 
     std::cerr << "[installer] phase 2: sudo_prompt" << std::endl;
@@ -218,7 +218,6 @@ int main(int argc, char** argv) {
     Runner::execute();
 
     check_signals();
-    // Phase 5: Complete
     std::cerr << "[installer] phase 5: complete_screen" << std::endl;
     UI::complete_screen();
     Term::restore();
@@ -235,7 +234,6 @@ int main(int argc, char** argv) {
         std::filesystem::remove_all(cache_dir, remove_error);
     }
 
-    // Secure cleanup of sudo credentials
     Sudo::cleanup();
 
     if (g_logout) {

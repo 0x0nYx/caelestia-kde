@@ -410,7 +410,7 @@ else
     info "Skipping Darkly package installation by user choice."
 fi
 
-fi  # end of PACKAGE_GROUP themes/all block
+fi
 
 if [[ "$PACKAGE_GROUP" == "all" || "$PACKAGE_GROUP" == "shell" ]]; then
 
@@ -426,7 +426,7 @@ if ! command -v qdbus6 >/dev/null 2>&1; then
     fi
 fi
 
-fi  # end of PACKAGE_GROUP shell/all block
+fi
 
 if [ ${#FAILED_PKGS[@]} -ne 0 ]; then
     mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/caelestia-kde"

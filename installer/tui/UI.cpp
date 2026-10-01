@@ -210,7 +210,6 @@ namespace UI {
             Draw::text_center(ty + 3, "Caelestia installer", "primary");
             Draw::text_center(ty + 6, "Detected distribution: " + distro_label(g_base_distro), "secondary");
 
-            // Startup problems sit under the distro line, if there is room above the hint.
             if (ty + 7 < y + h - 3)
                 Draw::problems(x + 2, ty + 7, w - 4, 2);
 
@@ -264,7 +263,6 @@ namespace UI {
             if (help_y < y + h - 2)
                 Draw::text(x + 4, help_y, Draw::fit(actions[selected].help, (size_t)(w - 8)), "secondary");
 
-            // Startup problems go above the footer, where nothing else is drawn.
             if (y + h - 4 > help_y + 1)
                 Draw::problems(x + 2, y + h - 4, w - 4, 2);
 
@@ -330,7 +328,6 @@ namespace UI {
             Draw::text(left + 2, top + 2, "Root privileges are required to install packages.", "on_surface");
             Draw::text(left + 2, top + 3, "Password: ", Draw::bold + Draw::color("primary"));
 
-            // Masked password
             string masked(pw.length(), '*');
             masked.resize(30, ' ');
             Draw::text(left + 12, top + 3, masked, Draw::reset);
@@ -371,7 +368,7 @@ namespace UI {
             if (key == "enter") {
                 if (pw.empty()) continue;
                 if (submit(pw)) return true;
-            } else if (key == "backspace" || (key.length() == 1 && (key[0] == '\x7f' || key[0] == '\x08'))) { // Backspace
+            } else if (key == "backspace" || (key.length() == 1 && (key[0] == '\x7f' || key[0] == '\x08'))) {
                 if (!pw.empty()) pw.pop_back();
                 error_msg.clear();
             } else if (key == "escape") {
@@ -418,7 +415,6 @@ namespace UI {
 
             Draw::box(x, y, w, h, "REVIEW INSTALLATION", "primary", "on_surface");
 
-            // Build lines grouped by phase.
             struct Line { string text; string color; };
             vector<Line> lines;
             for (const auto& ph : Runner::phases) {
@@ -488,7 +484,7 @@ namespace UI {
             if (in) {
                 in.seekg(0, ios::end);
                 streamoff len = in.tellg();
-                const streamoff kMax = 1024 * 1024; // tail at most 1 MiB
+                const streamoff kMax = 1024 * 1024;
                 if (len > kMax)
                     in.seekg(len - kMax, ios::beg);
                 else
@@ -653,7 +649,6 @@ namespace UI {
             int top = 1;
             const size_t content_width = w > 4 ? static_cast<size_t>(w - 4) : 0;
 
-            // Gather error status
             vector<string> failed_pkgs;
             ifstream pf(pkgs_file);
             string pkg;
@@ -729,7 +724,6 @@ namespace UI {
                 break;
             } else if (key == "l" || key == "L") {
                 log_view(log_path);
-                // The loop redraws the summary after returning from the log.
             }
         }
     }
@@ -751,7 +745,7 @@ namespace UI {
         int num_items = static_cast<int>(menu_items.size());
         if (num_items == 0) return true;
 
-        // Seed defaults for this (sub)menu (idempotent: only fills gaps).
+        // Idempotent: only fills gaps.
         init_menu_defaults(menu_items);
 
         vector<MenuItemMeta> meta;
@@ -841,7 +835,6 @@ namespace UI {
                 Draw::text(left + 4, start_y + i, line, color_name);
             }
 
-            // Help text for the selected item.
             const string& help = meta[selected].help;
             if (!help.empty()) {
                 Draw::text(left + 2, top + h - 2, Draw::fit(help, (size_t)(w - 4)), "muted");
@@ -891,7 +884,7 @@ namespace UI {
                         g_answers[id] = selected_meta.options[static_cast<size_t>(current_idx)];
                     }
                 } else {
-                    return false; // back out of submenu
+                    return false;
                 }
             } else if (key == "escape") {
                 return false;
