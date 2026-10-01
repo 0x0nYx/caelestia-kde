@@ -2,7 +2,6 @@
 backups/
 src/bin/build/
 
-# Python
 __pycache__/
 *.py[cod]
 
@@ -20,6 +19,5 @@ run.sh
 /shell/translations/caelestia_en.ts
 /shell/translations/caelestia_en.qm
 
-# caelestia-kde
 caelestia-kde-plugins/
 wallpaper-selector/
