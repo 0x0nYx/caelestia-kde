@@ -39,11 +39,6 @@ fetch_submodule_by_clone() {
     [[ -n "$url" ]] || return 1
     command -v git >/dev/null 2>&1 || return 1
 
-    # The checkout pins submodule content to a commit. When that pin is
-    # resolvable, a rescue clone may only deliver exactly that commit:
-    # default-branch HEAD is a supply-chain swap, not a repair, and it needs
-    # an explicit opt-in. Without a resolvable pin (a tarball checkout) the
-    # clone is the only repair there is, as before.
     if [[ -d "$dir/.git" ]]; then
         pinned="$(git -C "$dir" ls-tree HEAD -- "$path" 2>/dev/null | awk '{print $3}')"
     fi
