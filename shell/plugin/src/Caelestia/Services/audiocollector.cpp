@@ -11,6 +11,7 @@
 #include <stop_token>
 #include <vector>
 
+#include "../Config/rootnodes.hpp"
 #include "service.hpp"
 
 Q_LOGGING_CATEGORY(lcAc, "caelestia.services.ac", QtInfoMsg)
@@ -242,7 +243,13 @@ AudioCollector::AudioCollector(QObject* parent)
     , m_buffer2(ac::CHUNK_SIZE)
     , m_readBuffer(&m_buffer1)
     , m_writeBuffer(&m_buffer2)
-    , m_captureMode(caelestia::config::VisualiserInput::Output) {}
+    , m_captureMode(caelestia::config::VisualiserInput::Output) {
+    auto* services = caelestia::config::ConfigSingleton::instance()->services();
+    m_captureMode.store(services->visualiserInput(), std::memory_order_relaxed);
+    QObject::connect(services, &caelestia::config::ServiceConfig::visualiserInputChanged, this, [this, services] {
+        setCaptureMode(services->visualiserInput());
+    });
+}
 
 AudioCollector::~AudioCollector() {
     AudioCollector::stop();

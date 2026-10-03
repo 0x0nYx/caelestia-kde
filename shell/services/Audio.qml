@@ -178,7 +178,7 @@ Singleton {
     function playSoundSource(sourcePath: string, enabled: bool, volume: real): void {
         if (!GlobalConfig.audio.sounds.enabled || !enabled)
             return;
-            
+
         let sfx = root._sfxCache[sourcePath];
         if (!sfx) {
             sfx = sfxComponent.createObject(root, { source: sourcePath, volume: volume });
@@ -314,7 +314,7 @@ Singleton {
 
         try {
             root.cava = Qt.createQmlObject(
-                'import Caelestia.Config\nimport Caelestia.Services\nCavaProvider { bars: GlobalConfig.services.visualiserBars; input: GlobalConfig.services.visualiserInput }',
+                'import Caelestia.Config\nimport Caelestia.Services\nCavaProvider { bars: GlobalConfig.services.visualiserBars }',
                 root, "CavaProviderDynamic");
         } catch (e) {
             console.warn("Caelestia: CavaProvider unavailable, visualiser disabled:", e);
@@ -345,7 +345,6 @@ Singleton {
         id: beatTracker
     }
 
-
     IpcHandler {
         function cycleOutput(): void {
             root.cycleNextAudioOutput();
@@ -353,5 +352,4 @@ Singleton {
 
         target: "audio"
     }
-
 }
